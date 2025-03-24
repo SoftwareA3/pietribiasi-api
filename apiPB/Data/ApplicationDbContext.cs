@@ -9,10 +9,6 @@ public partial class ApplicationDbContext : DbContext
 {
     private readonly IConfiguration _configuration;
 
-    public ApplicationDbContext() : this(new DbContextOptions<ApplicationDbContext>(), null!)
-    {
-    }
-
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
         : base(options)
     {

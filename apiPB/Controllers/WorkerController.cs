@@ -5,6 +5,7 @@ using apiPB.Mappers;
 using apiPB.Dto;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 
 namespace apiPB.Controllers
 {
@@ -106,18 +107,18 @@ namespace apiPB.Controllers
             return ok;
         }
 
-        [HttpGet("/workersfield/createOrUpdate/{password}")]
-        public IActionResult PostLastLoginLineOrUpdate([FromRoute] string password)
+        [HttpPost]
+        public async Task<IActionResult> PostLastLoginLineOrUpdate([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
             // Ritorna le informazioni della tabella della query con Last Login aggiornato o creato
             var worker = _context.VwWorkers.ToList()
-            .FirstOrDefault(w => w.Password == password);
+            .FirstOrDefault(w => w.Password == passwordWorkersRequestDto.Password);
 
             if (worker == null)
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{password}; StatusCode: {nf.StatusCode}; Message: Not Found;");
+                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {nf.StatusCode}; Message: Not Found;");
 
                 return nf;
             }
@@ -126,13 +127,13 @@ namespace apiPB.Controllers
             
             // Chiama la funzione in Services per cercare quale entry aggiornare
             // Ritorna il record con MAX(Line)
-            var workersField = _workerService.GetWorkerFieldsLastLineFromWorkerId(workersFieldId);
+            var workersField = await _workerService.GetWorkerFieldsLastLineFromWorkerId(workersFieldId);
             
-            if(workersField == null)
+            if (workersField == null)
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{password}; StatusCode: {nf.StatusCode}; Message: Not Found;");
+                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {nf.StatusCode}; Message: Not Found;");
 
                 return nf;
             }
@@ -147,7 +148,7 @@ namespace apiPB.Controllers
 
                 var ok = Ok(workersField.ToWorkersFieldDto());
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{password}; StatusCode: {ok.StatusCode}; Message: OK;");
+                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {ok.StatusCode}; Message: OK;");
                 
                 // Crea una lista per passarla al metodo AppendWorkersFieldListToLog
                 _logService.AppendWorkersFieldListToLog([workersField.ToWorkersFieldDto()]);
@@ -172,13 +173,13 @@ namespace apiPB.Controllers
                     TbcreatedId = _configuration.GetValue<int>("UserId"),
                     TbmodifiedId = _configuration.GetValue<int>("UserId")
                 };
-
+                
                 _context.RmWorkersFields.Add(newRecord);
                 _context.SaveChanges();
                 
                 var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = newRecord.WorkerId }, newRecord.ToWorkersFieldDto());
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{password}; StatusCode: {created.StatusCode}; Message: Created;");
+                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {created.StatusCode}; Message: Created;");
 
                 
                 return created;

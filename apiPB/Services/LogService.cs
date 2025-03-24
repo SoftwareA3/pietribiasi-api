@@ -15,7 +15,7 @@ namespace apiPB.Services
         {
             _configuration = configuration;
             _logFolderPath = _configuration.GetValue<string>("LogFolderPath") ?? string.Empty;
-            _logFilePath = Path.Combine(_logFolderPath, "log.txt");
+            _logFilePath = Path.Combine(_logFolderPath, "API.log");
         }
 
         private void CreateDirectory()
@@ -63,9 +63,8 @@ namespace apiPB.Services
         public void AppendWorkersFieldListToLog(List<RmWorkersFieldDto> workersFields)
         {
             CreateLogFile();
-            var logFilePath = Path.Combine(_logFolderPath, "log.txt");
 
-            using var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
             using var writer = new StreamWriter(fileStream);
             foreach (var workerField in workersFields)
             {

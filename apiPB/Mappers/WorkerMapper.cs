@@ -15,11 +15,11 @@ namespace apiPB.Mappers
             return new WorkerDto
             {
                 WorkerId = workerModel.WorkerId,
-                Name = workerModel.Name,
-                LastName = workerModel.LastName,
-                Pin = workerModel.Pin,
-                Password = workerModel.Password,
-                TipoUtente = workerModel.TipoUtente,
+                Name = workerModel.Name ?? string.Empty,
+                LastName = workerModel.LastName ?? string.Empty,
+                Pin = workerModel.Pin ?? string.Empty,
+                Password = workerModel.Password ?? string.Empty,
+                TipoUtente = workerModel.TipoUtente ?? string.Empty,
                 StorageVersamenti = workerModel.StorageVersamenti,
                 Storage = workerModel.Storage,
                 LastLogin = workerModel.LastLogin
