@@ -173,8 +173,21 @@ namespace apiPB.Controllers
                     TbcreatedId = _configuration.GetValue<int>("UserId"),
                     TbmodifiedId = _configuration.GetValue<int>("UserId")
                 };
+                // _context.RmWorkersFields.Add(newRecord);
+
+                // Invocando stored procedure
+                _context.Database.ExecuteSqlRaw("EXEC dbo.InsertWorkersFields @WorkerId = {0}, @Line = {1}, @FieldName = {2}, @FieldValue = {3}, @Notes = {4}, @HideOnLayout = {5}, @Tbcreated = {6}, @Tbmodified = {7}, @TbcreatedId = {8}, @TbmodifiedId = {9}", 
+                newRecord.WorkerId,
+                newRecord.Line, 
+                newRecord.FieldName, 
+                newRecord.FieldValue, 
+                newRecord.Notes, 
+                newRecord.HideOnLayout, 
+                newRecord.Tbcreated, 
+                newRecord.Tbmodified, 
+                newRecord.TbcreatedId, 
+                newRecord.TbmodifiedId);
                 
-                _context.RmWorkersFields.Add(newRecord);
                 _context.SaveChanges();
                 
                 var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = newRecord.WorkerId }, newRecord.ToWorkersFieldDto());
