@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using apiPB.Dto;
+using apiPB.Models;
+
+namespace apiPB.Mappers
+{
+    public static class WorkerMapper
+    {
+        public static WorkerDto ToWorkerDto(this VwWorker workerModel)
+        {
+            return new WorkerDto
+            {
+                WorkerId = workerModel.WorkerId,
+                Name = workerModel.Name,
+                LastName = workerModel.LastName,
+                Pin = workerModel.Pin,
+                Password = workerModel.Password,
+                TipoUtente = workerModel.TipoUtente,
+                StorageVersamenti = workerModel.StorageVersamenti,
+                Storage = workerModel.Storage,
+                LastLogin = workerModel.LastLogin
+            };
+        }
+
+        public static RmWorkersFieldDto ToWorkersFieldDto(this RmWorkersField workersField)
+        {
+            return new RmWorkersFieldDto
+            {
+                WorkerId = workersField.WorkerId,
+                Line = workersField.Line,
+                FieldName = workersField.FieldName,
+                FieldValue = workersField.FieldValue,
+                Notes = workersField.Notes,
+                HideOnLayout = workersField.HideOnLayout,
+                Tbcreated = workersField.Tbcreated,
+                Tbmodified = workersField.Tbmodified,
+                TbcreatedId = workersField.TbcreatedId,
+                TbmodifiedId = workersField.TbmodifiedId
+            };
+        }
+
+        public static RmWorkersField ToWorkersFieldFromCreateDto(this RmWorkersFieldDto workersFieldRequestDto)
+        {
+            return new RmWorkersField
+            {
+                WorkerId = workersFieldRequestDto.WorkerId,
+                Line = workersFieldRequestDto.Line,
+                FieldName = workersFieldRequestDto.FieldName,
+                FieldValue = workersFieldRequestDto.FieldValue,
+                Notes = workersFieldRequestDto.Notes,
+                HideOnLayout = workersFieldRequestDto.HideOnLayout,
+                Tbcreated = workersFieldRequestDto.Tbcreated,
+                Tbmodified = workersFieldRequestDto.Tbmodified,
+                TbcreatedId = workersFieldRequestDto.TbcreatedId,
+                TbmodifiedId = workersFieldRequestDto.TbmodifiedId
+            };
+        }
+    }
+}

@@ -1,0 +1,84 @@
+Time: 21/03/2025 15:46:18; GET api/worker; StatusCode: 200; Message: OK;
+	WorkerId: 18; Name: CONZATO; LastName: MICHELE; Pin: 60721130; Password: MC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:13:23
+	WorkerId: 20; Name: Alessandro; LastName: Cailotto; Pin: 56216736; Password: AC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:27:13
+	WorkerId: 22; Name: Roberto; LastName: Chiofolo; Pin: 18226013; Password: RC; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:28:48
+	WorkerId: 37; Name: Stankovic; LastName: Sava; Pin: 98964539; Password: SS; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 12:39:52
+	WorkerId: 38; Name: Paolo; LastName: Cappellari; Pin: 50111084; Password: PC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 39; Name: Amadou; LastName: Jatta; Pin: 20717163; Password: AJ; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 40; Name: Sara; LastName: Osmani; Pin: 10420227; Password: SO; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 34; Name: Muttin; LastName: Daniele; Pin: 10802002; Password: DM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 43; Name: A3; LastName: A3; Pin: 57848206; Password: A3; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 48; Name: Elettricista; LastName: Esterno; Pin: 61405029; Password: EE; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 50; Name: Andrea; LastName: Vescovi; Pin: 64643250; Password: AV; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 23; Name: Maurizio; LastName: Manea; Pin: 42799683; Password: MM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 24; Name: Nebojsa; LastName: Vojinovic; Pin: 23257751; Password: NV; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 25; Name: Simone; LastName: Dal Bon; Pin: 66714172; Password: SDB; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 26; Name: Nicola; LastName: Rigoni; Pin: 94086609; Password: NR; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 27; Name: Silvio; LastName: Toniolo; Pin: 67895203; Password: ST; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 28; Name: Giuliano; LastName: Meneghini; Pin: 87958984; Password: GM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 29; Name: Federico; LastName: Brazzale; Pin: 91801453; Password: FB; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 30; Name: Luciano; LastName: Zenere; Pin: 24930420; Password: LZ; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 31; Name: Matteo; LastName: Pegoraro; Pin: 87632141; Password: MP; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 41; Name: Luca; LastName: Gnoato; Pin: 44008179; Password: LG; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+
+
+Time: 21/03/2025 15:46:28; GET api/worker/RC; StatusCode: 200; Message: OK;
+	WorkerId: 22; Name: Roberto; LastName: Chiofolo; Pin: 18226013; Password: RC; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:28:48
+
+
+Time: 21/03/2025 15:59:47; GET api/worker; StatusCode: 200; Message: OK;
+	WorkerId: 18; Name: CONZATO; LastName: MICHELE; Pin: 60721130; Password: MC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:13:23
+	WorkerId: 20; Name: Alessandro; LastName: Cailotto; Pin: 56216736; Password: AC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:27:13
+	WorkerId: 22; Name: Roberto; LastName: Chiofolo; Pin: 18226013; Password: RC; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:28:48
+	WorkerId: 37; Name: Stankovic; LastName: Sava; Pin: 98964539; Password: SS; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 12:39:52
+	WorkerId: 38; Name: Paolo; LastName: Cappellari; Pin: 50111084; Password: PC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 39; Name: Amadou; LastName: Jatta; Pin: 20717163; Password: AJ; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 40; Name: Sara; LastName: Osmani; Pin: 10420227; Password: SO; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 34; Name: Muttin; LastName: Daniele; Pin: 10802002; Password: DM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 43; Name: A3; LastName: A3; Pin: 57848206; Password: A3; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 48; Name: Elettricista; LastName: Esterno; Pin: 61405029; Password: EE; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 50; Name: Andrea; LastName: Vescovi; Pin: 64643250; Password: AV; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 23; Name: Maurizio; LastName: Manea; Pin: 42799683; Password: MM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 24; Name: Nebojsa; LastName: Vojinovic; Pin: 23257751; Password: NV; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 25; Name: Simone; LastName: Dal Bon; Pin: 66714172; Password: SDB; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 26; Name: Nicola; LastName: Rigoni; Pin: 94086609; Password: NR; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 27; Name: Silvio; LastName: Toniolo; Pin: 67895203; Password: ST; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 28; Name: Giuliano; LastName: Meneghini; Pin: 87958984; Password: GM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 29; Name: Federico; LastName: Brazzale; Pin: 91801453; Password: FB; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 30; Name: Luciano; LastName: Zenere; Pin: 24930420; Password: LZ; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 31; Name: Matteo; LastName: Pegoraro; Pin: 87632141; Password: MP; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 41; Name: Luca; LastName: Gnoato; Pin: 44008179; Password: LG; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+
+
+Time: 21/03/2025 16:38:38; GET api/worker; StatusCode: 200; Message: OK;
+	WorkerId: 18; Name: CONZATO; LastName: MICHELE; Pin: 60721130; Password: MC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:13:23
+	WorkerId: 20; Name: Alessandro; LastName: Cailotto; Pin: 56216736; Password: AC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:27:13
+	WorkerId: 22; Name: Roberto; LastName: Chiofolo; Pin: 18226013; Password: RC; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:28:48
+	WorkerId: 37; Name: Stankovic; LastName: Sava; Pin: 98964539; Password: SS; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 12:39:52
+	WorkerId: 38; Name: Paolo; LastName: Cappellari; Pin: 50111084; Password: PC; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 39; Name: Amadou; LastName: Jatta; Pin: 20717163; Password: AJ; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 40; Name: Sara; LastName: Osmani; Pin: 10420227; Password: SO; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 34; Name: Muttin; LastName: Daniele; Pin: 10802002; Password: DM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 43; Name: A3; LastName: A3; Pin: 57848206; Password: A3; TipoUtente: Amministrazione; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 48; Name: Elettricista; LastName: Esterno; Pin: 61405029; Password: EE; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 50; Name: Andrea; LastName: Vescovi; Pin: 64643250; Password: AV; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 23; Name: Maurizio; LastName: Manea; Pin: 42799683; Password: MM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 24; Name: Nebojsa; LastName: Vojinovic; Pin: 23257751; Password: NV; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 25; Name: Simone; LastName: Dal Bon; Pin: 66714172; Password: SDB; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 26; Name: Nicola; LastName: Rigoni; Pin: 94086609; Password: NR; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 27; Name: Silvio; LastName: Toniolo; Pin: 67895203; Password: ST; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 28; Name: Giuliano; LastName: Meneghini; Pin: 87958984; Password: GM; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 29; Name: Federico; LastName: Brazzale; Pin: 91801453; Password: FB; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 30; Name: Luciano; LastName: Zenere; Pin: 24930420; Password: LZ; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 31; Name: Matteo; LastName: Pegoraro; Pin: 87632141; Password: MP; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+	WorkerId: 41; Name: Luca; LastName: Gnoato; Pin: 44008179; Password: LG; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 
+
+
+Time: 21/03/2025 16:38:46; GET api/worker/RC; StatusCode: 200; Message: OK;
+	WorkerId: 22; Name: Roberto; LastName: Chiofolo; Pin: 18226013; Password: RC; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:28:48
+
+
+Time: 24/03/2025 08:39:38; GET api/worker/RC; StatusCode: 200; Message: OK;
+	WorkerId: 22; Name: Roberto; LastName: Chiofolo; Pin: 18226013; Password: RC; TipoUtente: Addetto; StorageVersamenti: SEDE; Storage: SEDE; LastLogin: 2025-03-21 10:28:48
+
+
