@@ -9,6 +9,8 @@ using System.Net;
 
 namespace apiPB.Services
 {
+    // Classe che si occupa della creazione della directory e del file di log
+    // Aggiunge dei metodi per l'inserimento di informazioni nel file di log
     public class LogService
     {
         private readonly IConfiguration _configuration;
@@ -17,23 +19,24 @@ namespace apiPB.Services
         public LogService(IConfiguration configuration)
         {
             _configuration = configuration;
+            // _logFolderPath è salvato in appsettings.json indica il percorso dove verrà salvato il file di log
             _logFolderPath = _configuration.GetValue<string>("LogFolderPath") ?? string.Empty;
             _logFilePath = Path.Combine(_logFolderPath, "API.log");
         }
 
+        // Metodo per la creazione della cartella di log
         private void CreateDirectory()
         {
-            // Creazione della cartella di log
             if (!Directory.Exists(_logFolderPath))
             {
                 Directory.CreateDirectory(_logFolderPath);
             }
         }
 
+        // Metodo per la creazione del file di log
         private void CreateLogFile()
         {
             CreateDirectory();
-            // Creazione del file di log
             if (!File.Exists(_logFilePath))
             {
                 using (File.Create(_logFilePath))
@@ -42,9 +45,7 @@ namespace apiPB.Services
             }
         }
 
-        // Invece che message generico, info specifiche
-        // Time: {DateTime.Now}; POST api/worker; StatusCode: {nf.StatusCode}; Message: Not Found;
-        // DateTime.Now è scontato
+        // Metodo che aggiunge un messaggio al file di log, passando informazioni specifiche
         public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage)
         {
             CreateLogFile();
@@ -56,6 +57,7 @@ namespace apiPB.Services
             writer.WriteLine(message);
         }
 
+        // Metodo che aggiunge una lista di WorkerDto al file di log
         public void AppendWorkerListToLog(List<WorkerDto> workers)
         {
             CreateLogFile();
@@ -68,7 +70,7 @@ namespace apiPB.Services
             }
         }
     
-
+        // Metodo che aggiunge una lista di RmWorkersFieldDto al file di log
         public void AppendWorkersFieldListToLog(List<RmWorkersFieldDto> workersFields)
         {
             CreateLogFile();
@@ -79,9 +81,9 @@ namespace apiPB.Services
             {
                 writer.WriteLine($"\tWorkerId: {workerField.WorkerId} - Line: {workerField.Line} - FieldName: {workerField.FieldName} - FieldValue: {workerField.FieldValue} - Notes: {workerField.Notes} - HideOnLayout: {workerField.HideOnLayout} - Tbcreated: {workerField.Tbcreated} - Tbmodified: {workerField.Tbmodified} - TbcreatedId: {workerField.TbcreatedId} - TbmodifiedId: {workerField.TbmodifiedId}");
             }
-            writer.WriteLine("\n");
         }
 
+        // Metodo che restituisce la stringa contenente l'indirizzo IP
         private string AppendIpAddress()
         {
             string ipAddress = string.Empty;

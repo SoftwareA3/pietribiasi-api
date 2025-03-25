@@ -8,6 +8,7 @@ using apiPB.Models;
 
 namespace apiPB.Mappers
 {
+    // Classe che mappa il parametro per il tipo ritornato, in modo che il controller possa restituire un oggetto con specifiche informazioni
     public static class WorkerMapper
     {
         public static WorkerDto ToWorkerDto(this VwWorker workerModel)

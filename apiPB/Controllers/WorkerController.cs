@@ -27,6 +27,7 @@ namespace apiPB.Controllers
             _context = context;
         }
 
+        // Ritorna tutti i VwWorkers presenti nella vista del database
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -104,10 +105,11 @@ namespace apiPB.Controllers
             return ok;
         }
 
+        // Ritorna Alcune informazioni della tabella RmWorkersField con Last Login aggiornato o inserito con un nuovo record
         [HttpPost]
         public async Task<IActionResult> PostLastLoginLineOrUpdate([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
-            // Ritorna le informazioni della tabella della query con Last Login aggiornato o creato
+            // Trova worker tramite la password 
             var worker = _context.VwWorkers.ToList()
             .FirstOrDefault(w => w.Password == passwordWorkersRequestDto.Password);
 
@@ -120,12 +122,15 @@ namespace apiPB.Controllers
                 return nf;
             }
             
-            // Invocando stored procedure
+            // Invoca la stored procedure passando il WorkerId trovato con la query e la data corrente
             await _context.Database.ExecuteSqlRawAsync("EXEC dbo.InsertWorkersFields @WorkerId = {0}, @FieldValue = {1}", 
             worker.WorkerId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             
+            // Salva il contesto del database
             await _context.SaveChangesAsync();
 
+            // Recupera l'ultimo record inserito nella tabella RmWorkersFields per ritornare alcune informazioni
+            // Se non si vogliono tornare informazioni, basta rimuovere questo pezzo e modificare CreatedAtAction
             var workersField = _context.RmWorkersFields
             .FromSqlRaw(@"SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC", worker.WorkerId)
             .AsNoTracking()
