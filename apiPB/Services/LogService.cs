@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using apiPB.Dto;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using System.Net;
 
 namespace apiPB.Services
 {
@@ -33,7 +36,9 @@ namespace apiPB.Services
             // Creazione del file di log
             if (!File.Exists(_logFilePath))
             {
-                File.Create(_logFilePath);
+                using (File.Create(_logFilePath))
+                {
+                };
             }
         }
 
@@ -41,8 +46,10 @@ namespace apiPB.Services
         {
             CreateLogFile();
 
-            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
+            message = AppendIpAddress() + " - " + message;
+            
             writer.WriteLine(message);
         }
 
@@ -50,7 +57,7 @@ namespace apiPB.Services
         {
             CreateLogFile();
 
-            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
             foreach (var worker in workers)
             {
@@ -64,7 +71,7 @@ namespace apiPB.Services
         {
             CreateLogFile();
 
-            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
             foreach (var workerField in workersFields)
             {
@@ -72,5 +79,23 @@ namespace apiPB.Services
             }
             writer.WriteLine("\n");
         }
+
+        private string AppendIpAddress()
+        {
+            string ipAddress = string.Empty;
+
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+
+            foreach (var address in host.AddressList)
+            {
+                if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    ipAddress = address.ToString();
+                    break;
+                }
+            }
+
+            return ipAddress;
+        } 
     }
 }

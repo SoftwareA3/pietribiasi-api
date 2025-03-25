@@ -59,5 +59,16 @@ namespace apiPB.Mappers
                 TbmodifiedId = workersFieldRequestDto.TbmodifiedId
             };
         }
+
+        public static WorkersFieldRequestDto ToWorkersFieldRequestDto(this RmWorkersField workersField)
+        {
+            return new WorkersFieldRequestDto
+            {
+                WorkerId = workersField.WorkerId,
+                Line = workersField.Line,
+                FieldName = workersField.FieldName,
+                FieldValue = workersField.FieldValue
+            };
+        }
     }
 }

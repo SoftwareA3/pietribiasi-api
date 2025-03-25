@@ -15,15 +15,12 @@ namespace apiPB.Controllers
     {
         // variabile utilizzata per il recupero delle informazioni dal file appsettings.json
         private readonly IConfiguration _configuration;
-        private readonly WorkerService _workerService;
         private readonly LogService _logService;
         private readonly ApplicationDbContext _context;
         
-        public WorkerController(WorkerService workerService, LogService logService, ApplicationDbContext context, IConfiguration configuration) 
+        public WorkerController(LogService logService, ApplicationDbContext context, IConfiguration configuration) 
         {
             _configuration = configuration;
-
-            _workerService = workerService;
 
             _logService = logService;
 
@@ -122,14 +119,19 @@ namespace apiPB.Controllers
 
                 return nf;
             }
+            
+            // Invocando stored procedure
+            await _context.Database.ExecuteSqlRawAsync("EXEC dbo.InsertWorkersFields @WorkerId = {0}, @FieldValue = {1}", 
+            worker.WorkerId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            
+            await _context.SaveChangesAsync();
 
-            var workersFieldId = worker.WorkerId;
-            
-            // Chiama la funzione in Services per cercare quale entry aggiornare
-            // Ritorna il record con MAX(Line)
-            var workersField = await _workerService.GetWorkerFieldsLastLineFromWorkerId(workersFieldId);
-            
-            if (workersField == null)
+            var workersField = _context.RmWorkersFields
+            .FromSqlRaw(@"SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC", worker.WorkerId)
+            .AsNoTracking()
+            .FirstOrDefault();  
+
+            if(workersField == null)
             {
                 var nf = NotFound();
 
@@ -138,65 +140,12 @@ namespace apiPB.Controllers
                 return nf;
             }
             
-            // Esiste una entry con Last Login come valore del campo FieldValue
-            if(workersField.FieldName == "Last Login")
-            {
-                // Aggiorna FieldValue con data e ora attuali
-                workersField.FieldValue = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = worker.WorkerId }, workersField.ToWorkersFieldRequestDto());
 
-                _context.SaveChanges();
+            _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {created.StatusCode}; Message: Created;");
 
-                var ok = Ok(workersField.ToWorkersFieldDto());
-
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {ok.StatusCode}; Message: OK;");
-                
-                // Crea una lista per passarla al metodo AppendWorkersFieldListToLog
-                _logService.AppendWorkersFieldListToLog([workersField.ToWorkersFieldDto()]);
-
-                return ok;
-            }
-            // Viene creato un nuovo record con Line = 4; FieldName "Last Login";
-            // FieldValue, Tbcreated, Tbmodified con DateTime attuali e 
-            // TbcreatedId, TbmodifiedId con il campo "UserId" nel file appsettings.json
-            else
-            {
-                var newRecord = new RmWorkersField
-                {
-                    WorkerId = workersField.WorkerId,
-                    Line = (short) (workersField.Line + 1),
-                    FieldName = "Last Login",
-                    FieldValue = DateTime.Now.ToString("yyy-MM-dd HH:mm:ss"),
-                    Notes = workersField.Notes,
-                    HideOnLayout = workersField.HideOnLayout,
-                    Tbcreated = DateTime.Now,
-                    Tbmodified = DateTime.Now,
-                    TbcreatedId = _configuration.GetValue<int>("UserId"),
-                    TbmodifiedId = _configuration.GetValue<int>("UserId")
-                };
-                // _context.RmWorkersFields.Add(newRecord);
-
-                // Invocando stored procedure
-                _context.Database.ExecuteSqlRaw("EXEC dbo.InsertWorkersFields @WorkerId = {0}, @Line = {1}, @FieldName = {2}, @FieldValue = {3}, @Notes = {4}, @HideOnLayout = {5}, @Tbcreated = {6}, @Tbmodified = {7}, @TbcreatedId = {8}, @TbmodifiedId = {9}", 
-                newRecord.WorkerId,
-                newRecord.Line, 
-                newRecord.FieldName, 
-                newRecord.FieldValue, 
-                newRecord.Notes, 
-                newRecord.HideOnLayout, 
-                newRecord.Tbcreated, 
-                newRecord.Tbmodified, 
-                newRecord.TbcreatedId, 
-                newRecord.TbmodifiedId);
-                
-                _context.SaveChanges();
-                
-                var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = newRecord.WorkerId }, newRecord.ToWorkersFieldDto());
-
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {created.StatusCode}; Message: Created;");
-
-                
-                return created;
-            }
+            
+            return created;
         }
     }
 }
