@@ -7,7 +7,7 @@ CREATE PROCEDURE InsertWorkersFields
     @FieldValue VARCHAR(255)
 AS
 BEGIN
-	declare @maxLine INT = 0;
+	DECLARE @maxLine INT = 0;
 	DECLARE @fieldName VARCHAR(255) = NULL;
 	DECLARE @Notes VARCHAR(255) = NULL;
     DECLARE @HideOnLayout BIT = 0;

@@ -42,13 +42,16 @@ namespace apiPB.Services
             }
         }
 
-        public void AppendMessageToLog(string message)
+        // Invece che message generico, info specifiche
+        // Time: {DateTime.Now}; POST api/worker; StatusCode: {nf.StatusCode}; Message: Not Found;
+        // DateTime.Now è scontato
+        public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage)
         {
             CreateLogFile();
 
             using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
-            message = AppendIpAddress() + " - " + message;
+            string message = $"{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {requestType} - StatusCode: {statusCode} - Message: {statusMessage}";
             
             writer.WriteLine(message);
         }
@@ -61,9 +64,8 @@ namespace apiPB.Services
             using var writer = new StreamWriter(fileStream);
             foreach (var worker in workers)
             {
-                writer.WriteLine($"\tWorkerId: {worker.WorkerId}; Name: {worker.Name}; LastName: {worker.LastName}; Pin: {worker.Pin}; Password: {worker.Password}; TipoUtente: {worker.TipoUtente}; StorageVersamenti: {worker.StorageVersamenti}; Storage: {worker.Storage}; LastLogin: {worker.LastLogin}");
+                writer.WriteLine($"\tWorkerId: {worker.WorkerId} - Name: {worker.Name} - LastName: {worker.LastName} - Pin: {worker.Pin} - Password: {worker.Password} - TipoUtente: {worker.TipoUtente} - StorageVersamenti: {worker.StorageVersamenti} - Storage: {worker.Storage} - LastLogin: {worker.LastLogin}");
             }
-            writer.WriteLine("\n");
         }
     
 
@@ -75,7 +77,7 @@ namespace apiPB.Services
             using var writer = new StreamWriter(fileStream);
             foreach (var workerField in workersFields)
             {
-                writer.WriteLine($"\tWorkerId: {workerField.WorkerId}; Line: {workerField.Line}; FieldName: {workerField.FieldName}; FieldValue: {workerField.FieldValue}; Notes: {workerField.Notes}; HideOnLayout: {workerField.HideOnLayout}; Tbcreated: {workerField.Tbcreated}; Tbmodified: {workerField.Tbmodified}; TbcreatedId: {workerField.TbcreatedId}; TbmodifiedId: {workerField.TbmodifiedId}");
+                writer.WriteLine($"\tWorkerId: {workerField.WorkerId} - Line: {workerField.Line} - FieldName: {workerField.FieldName} - FieldValue: {workerField.FieldValue} - Notes: {workerField.Notes} - HideOnLayout: {workerField.HideOnLayout} - Tbcreated: {workerField.Tbcreated} - Tbmodified: {workerField.Tbmodified} - TbcreatedId: {workerField.TbcreatedId} - TbmodifiedId: {workerField.TbmodifiedId}");
             }
             writer.WriteLine("\n");
         }

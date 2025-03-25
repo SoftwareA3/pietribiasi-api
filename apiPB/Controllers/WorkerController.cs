@@ -38,14 +38,14 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker; StatusCode: {nf.StatusCode}; Message: Not Found;");
+                _logService.AppendMessageToLog("GET api/worker", nf.StatusCode, "Not Found");
 
                 return nf;
             }
 
             var ok = Ok(workers);
 
-            _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker; StatusCode: {ok.StatusCode}; Message: OK;");
+            _logService.AppendMessageToLog("GET api/worker", ok.StatusCode, "OK");
             _logService.AppendWorkerListToLog(workers.ToList());
 
             return ok;
@@ -63,7 +63,7 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{password}; StatusCode: {nf.StatusCode}; Message: Not Found;");
+                _logService.AppendMessageToLog($"GET api/worker/{password}", nf.StatusCode, "Not Found");
 
                 return nf;
             }
@@ -72,7 +72,7 @@ namespace apiPB.Controllers
 
             var ok = Ok(workerDtos);
 
-            _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{password}; StatusCode: {ok.StatusCode}; Message: OK;");
+            _logService.AppendMessageToLog($"GET api/worker/{password}", ok.StatusCode, "OK");
             _logService.AppendWorkerListToLog(workerDtos);
 
             return ok;
@@ -89,7 +89,7 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{id}; StatusCode: {nf.StatusCode}; Message: Not Found;");
+                _logService.AppendMessageToLog($"GET api/worker/{id}", nf.StatusCode, "Not Found");
 
                 return nf;
             }
@@ -98,7 +98,7 @@ namespace apiPB.Controllers
 
             var ok = Ok(workersFieldDtos);
 
-            _logService.AppendMessageToLog($"Time: {DateTime.Now}; GET api/worker/{id}; StatusCode: {ok.StatusCode}; Message: OK;");
+            _logService.AppendMessageToLog($"GET api/worker{id}", ok.StatusCode, "OK");
             _logService.AppendWorkersFieldListToLog(workersFieldDtos);
             
             return ok;
@@ -115,7 +115,7 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {nf.StatusCode}; Message: Not Found;");
+                _logService.AppendMessageToLog("POST api/worker", nf.StatusCode, "Not Found");
 
                 return nf;
             }
@@ -135,14 +135,14 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {nf.StatusCode}; Message: Not Found;");
+                _logService.AppendMessageToLog("POST api/worker", nf.StatusCode, "Not Found");
 
                 return nf;
             }
             
             var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = worker.WorkerId }, workersField.ToWorkersFieldRequestDto());
 
-            _logService.AppendMessageToLog($"Time: {DateTime.Now}; POST api/worker; StatusCode: {created.StatusCode}; Message: Created;");
+            _logService.AppendMessageToLog("POST api/worker", created.StatusCode, "Created");
 
             
             return created;
