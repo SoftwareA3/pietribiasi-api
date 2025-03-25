@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Models;
@@ -7,7 +7,7 @@ namespace apiPB.Data;
 
 public partial class ApplicationDbContext : DbContext
 {
-    private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
         : base(options)
@@ -21,7 +21,13 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<RmWorkersField> RmWorkersFields { get; set; }
 
-    public virtual DbSet<VwWorker> VwWorkers { get; set; }
+    public virtual DbSet<VwApiJob> VwApiJobs { get; set; }
+
+    public virtual DbSet<VwApiMo> VwApiMos { get; set; }
+
+    public virtual DbSet<VwApiMostep> VwApiMosteps { get; set; }
+
+    public virtual DbSet<VwApiWorker> VwApiWorkers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,7 +37,7 @@ public partial class ApplicationDbContext : DbContext
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<MaStorage>(entity =>
@@ -617,11 +623,83 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("FK_RM_WorkersFields_00");
         });
 
-        modelBuilder.Entity<VwWorker>(entity =>
+        modelBuilder.Entity<VwApiJob>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToView("Vw_Workers");
+                .ToView("vw_api_job");
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(128)
+                .IsUnicode(false);
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("job");
+        });
+
+        modelBuilder.Entity<VwApiMo>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_api_mo");
+
+            entity.Property(e => e.Alternate)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.Bom)
+                .HasMaxLength(21)
+                .IsUnicode(false)
+                .HasColumnName("BOM");
+            entity.Property(e => e.ItemDesc)
+                .HasMaxLength(128)
+                .IsUnicode(false);
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Moid).HasColumnName("MOId");
+            entity.Property(e => e.Mono)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("MONo");
+            entity.Property(e => e.Uom)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .HasColumnName("uom");
+            entity.Property(e => e.Variant)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VwApiMostep>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_api_mosteps");
+
+            entity.Property(e => e.Alternate)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.Storage)
+                .HasMaxLength(4)
+                .IsUnicode(false);
+            entity.Property(e => e.Wc)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .HasColumnName("WC");
+        });
+
+        modelBuilder.Entity<VwApiWorker>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_api_workers");
 
             entity.Property(e => e.LastLogin)
                 .HasMaxLength(256)

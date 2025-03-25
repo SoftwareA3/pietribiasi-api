@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace apiPB.Models;
 
-public partial class VwWorker
+public partial class VwApiWorker
 {
     public int WorkerId { get; set; }
 

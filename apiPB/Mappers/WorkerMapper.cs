@@ -11,9 +11,9 @@ namespace apiPB.Mappers
     // Classe che mappa il parametro per il tipo ritornato, in modo che il controller possa restituire un oggetto con specifiche informazioni
     public static class WorkerMapper
     {
-        public static WorkerDto ToWorkerDto(this VwWorker workerModel)
+        public static VwApiWorkerDto ToWorkerDto(this VwApiWorker workerModel)
         {
-            return new WorkerDto
+            return new VwApiWorkerDto
             {
                 WorkerId = workerModel.WorkerId,
                 Name = workerModel.Name ?? string.Empty,

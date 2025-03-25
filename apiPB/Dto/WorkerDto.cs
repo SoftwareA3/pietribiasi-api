@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto
 {
-    public class WorkerDto
+    public class VwApiWorkerDto
     {
         public int WorkerId { get; set; }
         public string Name { get; set; } = string.Empty;

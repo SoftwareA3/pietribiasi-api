@@ -13,15 +13,11 @@ namespace apiPB.Controllers
     [ApiController]
     public class WorkerController : ControllerBase
     {
-        // variabile utilizzata per il recupero delle informazioni dal file appsettings.json
-        private readonly IConfiguration _configuration;
         private readonly LogService _logService;
         private readonly ApplicationDbContext _context;
         
-        public WorkerController(LogService logService, ApplicationDbContext context, IConfiguration configuration) 
+        public WorkerController(LogService logService, ApplicationDbContext context) 
         {
-            _configuration = configuration;
-
             _logService = logService;
 
             _context = context;
@@ -32,7 +28,7 @@ namespace apiPB.Controllers
         public IActionResult GetAll()
         {
             // Lista di WorkerQueryResults recuperata tramite query al database
-            var workers = _context.VwWorkers.ToList()
+            var workers = _context.VwApiWorkers.ToList()
             .Select(w => w.ToWorkerDto());
 
             if (workers.IsNullOrEmpty())
@@ -48,33 +44,6 @@ namespace apiPB.Controllers
 
             _logService.AppendMessageToLog("GET api/worker", ok.StatusCode, "OK");
             _logService.AppendWorkerListToLog(workers.ToList());
-
-            return ok;
-        }
-
-        [HttpGet("{password}")]
-        public IActionResult GetWorkerByPassword([FromRoute] string password)
-        {
-            // Chiama il metodo che restituisce tutti i WorkerQueryResults
-            // Dalla query, il campo Password dovrebbe essere univoco
-            var workers = _context.VwWorkers.ToList()
-            .FindAll(w => w.Password == password);
-
-            if (workers.IsNullOrEmpty())
-            {
-                var nf = NotFound();
-
-                _logService.AppendMessageToLog($"GET api/worker/{password}", nf.StatusCode, "Not Found");
-
-                return nf;
-            }
-
-            var workerDtos = workers.Select(w => w.ToWorkerDto()).ToList();
-
-            var ok = Ok(workerDtos);
-
-            _logService.AppendMessageToLog($"GET api/worker/{password}", ok.StatusCode, "OK");
-            _logService.AppendWorkerListToLog(workerDtos);
 
             return ok;
         }
@@ -110,7 +79,7 @@ namespace apiPB.Controllers
         public async Task<IActionResult> PostLastLoginLineOrUpdate([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
             // Trova worker tramite la password 
-            var worker = _context.VwWorkers.ToList()
+            var worker = _context.VwApiWorkers.ToList()
             .FirstOrDefault(w => w.Password == passwordWorkersRequestDto.Password);
 
             if (worker == null)

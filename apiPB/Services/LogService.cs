@@ -6,6 +6,7 @@ using apiPB.Dto;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Net;
+using apiPB.Models;
 
 namespace apiPB.Services
 {
@@ -45,6 +46,25 @@ namespace apiPB.Services
             }
         }
 
+        // Metodo che restituisce la stringa contenente l'indirizzo IP
+        private string AppendIpAddress()
+        {
+            string ipAddress = string.Empty;
+
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+
+            foreach (var address in host.AddressList)
+            {
+                if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    ipAddress = address.ToString();
+                    break;
+                }
+            }
+
+            return ipAddress;
+        } 
+
         // Metodo che aggiunge un messaggio al file di log, passando informazioni specifiche
         public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage)
         {
@@ -57,8 +77,8 @@ namespace apiPB.Services
             writer.WriteLine(message);
         }
 
-        // Metodo che aggiunge una lista di WorkerDto al file di log
-        public void AppendWorkerListToLog(List<WorkerDto> workers)
+        // Metodo che aggiunge una lista di VwApiWorkerDto al file di log
+        public void AppendWorkerListToLog(List<VwApiWorkerDto> workers)
         {
             CreateLogFile();
 
@@ -81,25 +101,46 @@ namespace apiPB.Services
             {
                 writer.WriteLine($"\tWorkerId: {workerField.WorkerId} - Line: {workerField.Line} - FieldName: {workerField.FieldName} - FieldValue: {workerField.FieldValue} - Notes: {workerField.Notes} - HideOnLayout: {workerField.HideOnLayout} - Tbcreated: {workerField.Tbcreated} - Tbmodified: {workerField.Tbmodified} - TbcreatedId: {workerField.TbcreatedId} - TbmodifiedId: {workerField.TbmodifiedId}");
             }
+            writer.WriteLine();
         }
 
-        // Metodo che restituisce la stringa contenente l'indirizzo IP
-        private string AppendIpAddress()
+        public void AppendJobListToLog(List<VwApiJobDto> jobs)
         {
-            string ipAddress = string.Empty;
+            CreateLogFile();
 
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-
-            foreach (var address in host.AddressList)
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(fileStream);
+            foreach (var job in jobs)
             {
-                if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    ipAddress = address.ToString();
-                    break;
-                }
+                writer.WriteLine($"\tJob: {job.Job} - Description: {job.Description}");
             }
+            writer.WriteLine();
+        }
 
-            return ipAddress;
-        } 
+        public void AppendJobMoListToLog(List<VwApiMo> jobMo)
+        {
+            CreateLogFile();
+
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(fileStream);
+            foreach (var j in jobMo)
+            {
+                writer.WriteLine($"\tJob: {j.Job} - RtgStep: {j.RtgStep} - Alternate: {j.Alternate} - AltRtgStep: {j.AltRtgStep}");
+            }
+            writer.WriteLine();
+        }
+
+        public void AppendMostepListToLog(List<VwApiMostep> moStep)
+        {
+            CreateLogFile();
+
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(fileStream);
+            foreach (var m in moStep)
+            {
+                writer.WriteLine($"\tJob: {m.Job}");
+            }
+            writer.WriteLine();
+        }
     }
 }
