@@ -34,7 +34,7 @@ namespace apiPB.Controllers
         // Ritorna tutte le informazioni della vista vw_api_jobs
         public IActionResult GetVwApiJobs()
         {
-            string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var jobsDto = _context.VwApiJobs.ToList()
             .Select(j => j.ToVwApiJobDto());
@@ -55,8 +55,7 @@ namespace apiPB.Controllers
         // Ritorna tutte le informazioni della vista vw_api_mo
         public IActionResult PostVWApiMo([FromBody] VwApiMoRequestDto moRequestDto)
         {
-            string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
-
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
             var jobMoDto = _context.VwApiMos
             .Where(j => j.Job == moRequestDto.Job && j.RtgStep == moRequestDto.RtgStep && j.Alternate == moRequestDto.Alternate && j.AltRtgStep == moRequestDto.AltRtgStep)
             .ToList()
@@ -78,7 +77,7 @@ namespace apiPB.Controllers
         // Ritorna tutte le informazioni della vista vw_api_mostep
         public IActionResult PostVwApiMostep([FromBody] VwApiMostepRequestDto mostepRequestDto)
         {
-            string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var mostepDto = _context.VwApiMosteps
             .Where(m => m.Job == mostepRequestDto.Job)

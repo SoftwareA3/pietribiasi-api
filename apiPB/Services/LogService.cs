@@ -16,14 +16,11 @@ namespace apiPB.Services
     // Aggiunge dei metodi per l'inserimento di informazioni nel file di log
     public class LogService
     {
-        private readonly IConfiguration _configuration;
         private readonly string _logFolderPath = string.Empty;
         private readonly string _logFilePath = string.Empty;
-        public LogService(IConfiguration configuration)
+        public LogService()
         {
-            _configuration = configuration;
-            // _logFolderPath è salvato in appsettings.json indica il percorso dove verrà salvato il file di log
-            _logFolderPath = _configuration.GetValue<string>("LogFolderPath") ?? string.Empty;
+            _logFolderPath = "Logs\\";
             _logFilePath = Path.Combine(_logFolderPath, "API.log");
         }
 

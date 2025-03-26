@@ -27,7 +27,7 @@ namespace apiPB.Controllers
         [HttpGet]
         public IActionResult GetAllWorkers()
         {
-            string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             // Lista di WorkerQueryResults recuperata tramite query al database
             var workersDto = _context.VwApiWorkers.ToList()
@@ -41,7 +41,6 @@ namespace apiPB.Controllers
             } 
 
             _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersDto.ToList());
-            // _logService.AppendWorkerListToLog(workers.ToList());
 
             return Ok(workersDto.ToList());
         }
@@ -49,7 +48,7 @@ namespace apiPB.Controllers
         [HttpGet("workersfield/{id}")]
         public IActionResult GetWorkersFieldsById([FromRoute] int id)
         {
-            string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             // Recupera tutti i RmWorkersFields tramite WorkerId
             var workersFieldDto = _context.RmWorkersFields.ToList()
@@ -73,7 +72,7 @@ namespace apiPB.Controllers
         [HttpPost("lastlogin")]
         public async Task<IActionResult> PostLastLoginLineOrUpdate([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
-            string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             // Trova worker tramite la password 
             var workerDto = _context.VwApiWorkers.ToList()
