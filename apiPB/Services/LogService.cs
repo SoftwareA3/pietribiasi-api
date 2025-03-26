@@ -88,6 +88,7 @@ namespace apiPB.Services
             {
                 writer.WriteLine($"\tWorkerId: {worker.WorkerId} - Name: {worker.Name} - LastName: {worker.LastName} - Pin: {worker.Pin} - Password: {worker.Password} - TipoUtente: {worker.TipoUtente} - StorageVersamenti: {worker.StorageVersamenti} - Storage: {worker.Storage} - LastLogin: {worker.LastLogin}");
             }
+            writer.WriteLine();
         }
     
         // Metodo che aggiunge una lista di RmWorkersFieldDto al file di log

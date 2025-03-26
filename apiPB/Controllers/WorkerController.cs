@@ -27,6 +27,8 @@ namespace apiPB.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+
             // Lista di WorkerQueryResults recuperata tramite query al database
             var workers = _context.VwApiWorkers.ToList()
             .Select(w => w.ToWorkerDto());
@@ -35,22 +37,24 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog("GET api/worker", nf.StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
 
                 return nf;
             }
 
             var ok = Ok(workers);
 
-            _logService.AppendMessageToLog("GET api/worker", ok.StatusCode, "OK");
+            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
             _logService.AppendWorkerListToLog(workers.ToList());
 
             return ok;
         }
 
-        [HttpGet("/workersfield/{id}")]
+        [HttpGet("workersfield/{id}")]
         public IActionResult GetWorkersFieldsById([FromRoute] int id)
         {
+            string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+
             // Recupera tutti i RmWorkersFields tramite WorkerId
             var workersField = _context.RmWorkersFields.ToList()
             .FindAll(w => w.WorkerId == id);
@@ -59,7 +63,7 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog($"GET api/worker/{id}", nf.StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
 
                 return nf;
             }
@@ -68,16 +72,18 @@ namespace apiPB.Controllers
 
             var ok = Ok(workersFieldDtos);
 
-            _logService.AppendMessageToLog($"GET api/worker{id}", ok.StatusCode, "OK");
+            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
             _logService.AppendWorkersFieldListToLog(workersFieldDtos);
             
             return ok;
         }
 
         // Ritorna Alcune informazioni della tabella RmWorkersField con Last Login aggiornato o inserito con un nuovo record
-        [HttpPost]
+        [HttpPost("lastlogin")]
         public async Task<IActionResult> PostLastLoginLineOrUpdate([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
+            string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+
             // Trova worker tramite la password 
             var worker = _context.VwApiWorkers.ToList()
             .FirstOrDefault(w => w.Password == passwordWorkersRequestDto.Password);
@@ -86,7 +92,7 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog("POST api/worker", nf.StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
 
                 return nf;
             }
@@ -109,14 +115,14 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog("POST api/worker", nf.StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
 
                 return nf;
             }
             
             var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = worker.WorkerId }, workersField.ToWorkersFieldRequestDto());
 
-            _logService.AppendMessageToLog("POST api/worker", created.StatusCode, "Created");
+            _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created");
 
             
             return created;

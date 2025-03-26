@@ -33,6 +33,8 @@ namespace apiPB.Controllers
         [HttpGet]
         public IActionResult GetVwApiJobs()
         {
+            string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+
             var jobs = _context.VwApiJobs.ToList()
             .Select(j => j.ToVwApiJobDto());
 
@@ -40,14 +42,14 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog("GET api/job", nf.StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
 
                 return nf;
             }
 
             var ok = Ok(jobs);
 
-            _logService.AppendMessageToLog("GET api/job", ok.StatusCode, "OK");
+            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
             _logService.AppendJobListToLog(jobs.ToList());
 
             return ok;
@@ -55,8 +57,10 @@ namespace apiPB.Controllers
 
         [Authorize]
         [HttpPost("mo")]
-        public IActionResult GetVWApiMo([FromBody] VwApiMoRequestDto moRequestDto)
+        public IActionResult PostVWApiMo([FromBody] VwApiMoRequestDto moRequestDto)
         {
+            string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+
             var jobMo = _context.VwApiMos
             .Where(j => j.Job == moRequestDto.Job && j.RtgStep == moRequestDto.RtgStep && j.Alternate == moRequestDto.Alternate && j.AltRtgStep == moRequestDto.AltRtgStep)
             .ToList();
@@ -65,14 +69,14 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog("GET api/job", nf.StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
 
                 return nf;
             }
 
             var ok = Ok(jobMo);
 
-            _logService.AppendMessageToLog("GET api/job", ok.StatusCode, "OK");
+            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
             _logService.AppendJobMoListToLog(jobMo.ToList());
 
             return ok;
@@ -80,8 +84,10 @@ namespace apiPB.Controllers
 
         [Authorize]
         [HttpPost("mostep")]
-        public IActionResult GetVwApiMostep([FromBody] VwApiMostepRequestDto mostepRequestDto)
+        public IActionResult PostVwApiMostep([FromBody] VwApiMostepRequestDto mostepRequestDto)
         {
+            string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
+
             var mostep = _context.VwApiMosteps
             .Where(m => m.Job == mostepRequestDto.Job)
             .ToList();
@@ -90,14 +96,14 @@ namespace apiPB.Controllers
             {
                 var nf = NotFound();
 
-                _logService.AppendMessageToLog("GET api/job", nf.StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
 
                 return nf;
             }
 
             var ok = Ok(mostep);
 
-            _logService.AppendMessageToLog("GET api/job", ok.StatusCode, "OK");
+            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
             _logService.AppendMostepListToLog(mostep.ToList());
 
             return ok;
