@@ -30,24 +30,20 @@ namespace apiPB.Controllers
             string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
 
             // Lista di WorkerQueryResults recuperata tramite query al database
-            var workers = _context.VwApiWorkers.ToList()
+            var workersDto = _context.VwApiWorkers.ToList()
             .Select(w => w.ToWorkerDto());
 
-            if (workers.IsNullOrEmpty())
+            if (workersDto.IsNullOrEmpty())
             {
-                var nf = NotFound();
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
-                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
+                return NotFound();
+            } 
 
-                return nf;
-            }
-
-            var ok = Ok(workers);
-
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", workers.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersDto.ToList());
             // _logService.AppendWorkerListToLog(workers.ToList());
 
-            return ok;
+            return Ok(workersDto.ToList());
         }
 
         [HttpGet("workersfield/{id}")]
@@ -63,19 +59,14 @@ namespace apiPB.Controllers
 
             if(workersFieldDto.IsNullOrEmpty())
             {
-                var nf = NotFound();
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
-                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
-
-                return nf;
+                return NotFound();
             }
 
-            var ok = Ok(workersFieldDto.ToList());
-
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", workersFieldDto.ToList());
-            // _logService.AppendWorkersFieldListToLog(workersFieldDtos);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto.ToList());
             
-            return ok;
+            return Ok(workersFieldDto.ToList());
         }
 
         // Ritorna Alcune informazioni della tabella RmWorkersField con Last Login aggiornato o inserito con un nuovo record
@@ -90,11 +81,9 @@ namespace apiPB.Controllers
 
             if (workerDto == null)
             {
-                var nf = NotFound();
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
-                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
-
-                return nf;
+                return NotFound();
             }
             
             // Invoca la stored procedure passando il WorkerId trovato con la query e la data corrente
@@ -109,18 +98,18 @@ namespace apiPB.Controllers
             var workersField = _context.RmWorkersFields
             .FromSqlRaw(@"SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC", workerDto.WorkerId)
             .AsNoTracking()
+            .ToList()
+            .Select(w => w.ToWorkersFieldRequestDto())
             .FirstOrDefault();  
 
             if(workersField == null)
             {
-                var nf = NotFound();
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
-                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
-
-                return nf;
+                return NotFound();
             }
             
-            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = workerDto.WorkerId }, workersField.ToWorkersFieldRequestDto());
+            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = workerDto.WorkerId }, workersField);
 
             _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created");
 

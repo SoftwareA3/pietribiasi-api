@@ -39,20 +39,16 @@ namespace apiPB.Controllers
             var jobsDto = _context.VwApiJobs.ToList()
             .Select(j => j.ToVwApiJobDto());
 
-            if (jobsDto == null)
+            if (jobsDto.IsNullOrEmpty())
             {
-                var nf = NotFound();
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
-                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
-
-                return nf;
+                return NotFound();
             }
 
-            var ok = Ok(jobsDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobsDto.ToList());
 
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobsDto.ToList());
-
-            return ok;
+            return Ok(jobsDto.ToList());
         }
 
         [HttpPost("mo")]
@@ -68,18 +64,14 @@ namespace apiPB.Controllers
 
             if(jobMoDto.IsNullOrEmpty())
             {
-                var nf = NotFound();
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
-                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
-
-                return nf;
+                return NotFound();
             }
 
-            var ok = Ok(jobMoDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobMoDto.ToList());
 
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobMoDto.ToList());
-
-            return ok;
+            return Ok(jobMoDto.ToList());
         }
 
         [HttpPost("mostep")]
@@ -95,18 +87,14 @@ namespace apiPB.Controllers
 
             if(mostepDto.IsNullOrEmpty())
             {
-                var nf = NotFound();
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
-                _logService.AppendMessageToLog(requestPath, nf.StatusCode, "Not Found");
-
-                return nf;
+                return NotFound();
             }
 
-            var ok = Ok(mostepDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepDto.ToList());
 
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", mostepDto.ToList());
-
-            return ok;
+            return Ok(mostepDto.ToList());
         }
 
     }
