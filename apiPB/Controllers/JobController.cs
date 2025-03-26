@@ -30,17 +30,16 @@ namespace apiPB.Controllers
             _context = context;
         }
 
-        [Authorize]
         [HttpGet]
         // Ritorna tutte le informazioni della vista vw_api_jobs
         public IActionResult GetVwApiJobs()
         {
             string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
 
-            var jobs = _context.VwApiJobs.ToList()
+            var jobsDto = _context.VwApiJobs.ToList()
             .Select(j => j.ToVwApiJobDto());
 
-            if (jobs == null)
+            if (jobsDto == null)
             {
                 var nf = NotFound();
 
@@ -49,25 +48,25 @@ namespace apiPB.Controllers
                 return nf;
             }
 
-            var ok = Ok(jobs);
+            var ok = Ok(jobsDto);
 
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobs.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobsDto.ToList());
 
             return ok;
         }
 
-        [Authorize]
         [HttpPost("mo")]
         // Ritorna tutte le informazioni della vista vw_api_mo
         public IActionResult PostVWApiMo([FromBody] VwApiMoRequestDto moRequestDto)
         {
             string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
 
-            var jobMo = _context.VwApiMos
+            var jobMoDto = _context.VwApiMos
             .Where(j => j.Job == moRequestDto.Job && j.RtgStep == moRequestDto.RtgStep && j.Alternate == moRequestDto.Alternate && j.AltRtgStep == moRequestDto.AltRtgStep)
-            .ToList();
+            .ToList()
+            .Select(j => j.ToVwApiMoDto());
 
-            if(jobMo.Count == 0)
+            if(jobMoDto.IsNullOrEmpty())
             {
                 var nf = NotFound();
 
@@ -76,25 +75,25 @@ namespace apiPB.Controllers
                 return nf;
             }
 
-            var ok = Ok(jobMo);
+            var ok = Ok(jobMoDto);
 
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobMo.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobMoDto.ToList());
 
             return ok;
         }
 
-        [Authorize]
         [HttpPost("mostep")]
         // Ritorna tutte le informazioni della vista vw_api_mostep
         public IActionResult PostVwApiMostep([FromBody] VwApiMostepRequestDto mostepRequestDto)
         {
             string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
 
-            var mostep = _context.VwApiMosteps
+            var mostepDto = _context.VwApiMosteps
             .Where(m => m.Job == mostepRequestDto.Job)
-            .ToList();
+            .ToList()
+            .Select(m => m.ToVwApiMoStepDto());
 
-            if(mostep.Count == 0)
+            if(mostepDto.IsNullOrEmpty())
             {
                 var nf = NotFound();
 
@@ -103,9 +102,9 @@ namespace apiPB.Controllers
                 return nf;
             }
 
-            var ok = Ok(mostep);
+            var ok = Ok(mostepDto);
 
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", mostep.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", mostepDto.ToList());
 
             return ok;
         }

@@ -56,10 +56,12 @@ namespace apiPB.Controllers
             string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
 
             // Recupera tutti i RmWorkersFields tramite WorkerId
-            var workersField = _context.RmWorkersFields.ToList()
-            .FindAll(w => w.WorkerId == id);
+            var workersFieldDto = _context.RmWorkersFields.ToList()
+            .Select(w => w.ToWorkersFieldDto())
+            .ToList()
+            .Where(w => w.WorkerId == id);
 
-            if(workersField.IsNullOrEmpty())
+            if(workersFieldDto.IsNullOrEmpty())
             {
                 var nf = NotFound();
 
@@ -68,11 +70,9 @@ namespace apiPB.Controllers
                 return nf;
             }
 
-            var workersFieldDtos = workersField.Select(s => s.ToWorkersFieldDto()).ToList();
+            var ok = Ok(workersFieldDto.ToList());
 
-            var ok = Ok(workersFieldDtos);
-
-            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", workersFieldDtos);
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", workersFieldDto.ToList());
             // _logService.AppendWorkersFieldListToLog(workersFieldDtos);
             
             return ok;
@@ -85,10 +85,10 @@ namespace apiPB.Controllers
             string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
 
             // Trova worker tramite la password 
-            var worker = _context.VwApiWorkers.ToList()
+            var workerDto = _context.VwApiWorkers.ToList()
             .FirstOrDefault(w => w.Password == passwordWorkersRequestDto.Password);
 
-            if (worker == null)
+            if (workerDto == null)
             {
                 var nf = NotFound();
 
@@ -99,7 +99,7 @@ namespace apiPB.Controllers
             
             // Invoca la stored procedure passando il WorkerId trovato con la query e la data corrente
             await _context.Database.ExecuteSqlRawAsync("EXEC dbo.InsertWorkersFields @WorkerId = {0}, @FieldValue = {1}", 
-            worker.WorkerId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            workerDto.WorkerId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             
             // Salva il contesto del database
             await _context.SaveChangesAsync();
@@ -107,7 +107,7 @@ namespace apiPB.Controllers
             // Recupera l'ultimo record inserito nella tabella RmWorkersFields per ritornare alcune informazioni
             // Se non si vogliono tornare informazioni, basta rimuovere questo pezzo e modificare CreatedAtAction
             var workersField = _context.RmWorkersFields
-            .FromSqlRaw(@"SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC", worker.WorkerId)
+            .FromSqlRaw(@"SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC", workerDto.WorkerId)
             .AsNoTracking()
             .FirstOrDefault();  
 
@@ -120,7 +120,7 @@ namespace apiPB.Controllers
                 return nf;
             }
             
-            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = worker.WorkerId }, workersField.ToWorkersFieldRequestDto());
+            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = workerDto.WorkerId }, workersField.ToWorkersFieldRequestDto());
 
             _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created");
 

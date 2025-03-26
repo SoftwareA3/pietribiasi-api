@@ -103,11 +103,18 @@ namespace apiPB.Services
                 // Ottiene le proprietà dell'oggetto attraverso la riflessione
                 PropertyInfo[] property = typeof(T).GetProperties();
 
+                writer.Write("\t");
+
                 // Itera sulle proprietà dell'oggetto
                 foreach (var p in property)
                 {
                     var value = p.GetValue(item); 
-                    writer.Write($"\t{p.Name}: {value}");
+                    writer.Write($"{p.Name}: {value}");
+
+                    if (p != property.Last())
+                    {
+                        writer.Write(" - ");
+                    }
                 }
                 writer.WriteLine();
             }
