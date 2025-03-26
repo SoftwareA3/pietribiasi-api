@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Net;
 using apiPB.Models;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace apiPB.Services
 {
@@ -77,70 +79,39 @@ namespace apiPB.Services
             writer.WriteLine(message);
         }
 
-        // Metodo che aggiunge una lista di VwApiWorkerDto al file di log
-        public void AppendWorkerListToLog(List<VwApiWorkerDto> workers)
+        public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list)
         {
-            CreateLogFile();
-
-            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            using var writer = new StreamWriter(fileStream);
-            foreach (var worker in workers)
+            AppendMessageToLog(requestType, statusCode, statusMessage);
+            if (list != null)
             {
-                writer.WriteLine($"\tWorkerId: {worker.WorkerId} - Name: {worker.Name} - LastName: {worker.LastName} - Pin: {worker.Pin} - Password: {worker.Password} - TipoUtente: {worker.TipoUtente} - StorageVersamenti: {worker.StorageVersamenti} - Storage: {worker.Storage} - LastLogin: {worker.LastLogin}");
+                AppendListToLog(list);
             }
-            writer.WriteLine();
-        }
-    
-        // Metodo che aggiunge una lista di RmWorkersFieldDto al file di log
-        public void AppendWorkersFieldListToLog(List<RmWorkersFieldDto> workersFields)
-        {
-            CreateLogFile();
-
-            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            using var writer = new StreamWriter(fileStream);
-            foreach (var workerField in workersFields)
-            {
-                writer.WriteLine($"\tWorkerId: {workerField.WorkerId} - Line: {workerField.Line} - FieldName: {workerField.FieldName} - FieldValue: {workerField.FieldValue} - Notes: {workerField.Notes} - HideOnLayout: {workerField.HideOnLayout} - Tbcreated: {workerField.Tbcreated} - Tbmodified: {workerField.Tbmodified} - TbcreatedId: {workerField.TbcreatedId} - TbmodifiedId: {workerField.TbmodifiedId}");
-            }
-            writer.WriteLine();
         }
 
-        public void AppendJobListToLog(List<VwApiJobDto> jobs)
+        // Metodo che aggiunge una lista di oggetti al file di log
+        // Questo metodo riceve una lista generica come parametro
+        private void AppendListToLog<T>(List<T> list)
         {
             CreateLogFile();
 
             using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
-            foreach (var job in jobs)
-            {
-                writer.WriteLine($"\tJob: {job.Job} - Description: {job.Description}");
+
+            // Itera sugli elementi della lista
+            foreach (var item in list)
+            {  
+                // Ottiene le proprietà dell'oggetto attraverso la riflessione
+                PropertyInfo[] property = typeof(T).GetProperties();
+
+                // Itera sulle proprietà dell'oggetto
+                foreach (var p in property)
+                {
+                    var value = p.GetValue(item); 
+                    writer.Write($"\t{p.Name}: {value}");
+                }
+                writer.WriteLine();
             }
-            writer.WriteLine();
-        }
 
-        public void AppendJobMoListToLog(List<VwApiMo> jobMo)
-        {
-            CreateLogFile();
-
-            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            using var writer = new StreamWriter(fileStream);
-            foreach (var j in jobMo)
-            {
-                writer.WriteLine($"\tJob: {j.Job} - RtgStep: {j.RtgStep} - Alternate: {j.Alternate} - AltRtgStep: {j.AltRtgStep}");
-            }
-            writer.WriteLine();
-        }
-
-        public void AppendMostepListToLog(List<VwApiMostep> moStep)
-        {
-            CreateLogFile();
-
-            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            using var writer = new StreamWriter(fileStream);
-            foreach (var m in moStep)
-            {
-                writer.WriteLine($"\tJob: {m.Job}");
-            }
             writer.WriteLine();
         }
     }

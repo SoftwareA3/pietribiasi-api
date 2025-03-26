@@ -17,14 +17,18 @@ namespace apiPB.Authentication
         private const string Realm = "Gestione Commesse";
         private readonly LogService _logService;
 
+        private readonly IConfiguration _configuration;
+
         public BasicAuthentication(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder, LogService logService)
+            UrlEncoder encoder, LogService logService, IConfiguration configuration)
             : base(options, logger, encoder)
         {
             // Inizializza il servizio di log per scrive i messaggi di log sul file API.log
             _logService = logService;
+            // Legge i valori da appsettings.json
+            _configuration = configuration;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -43,6 +47,8 @@ namespace apiPB.Authentication
             }
 
             string authHeader = headerValues.FirstOrDefault() ?? string.Empty;
+
+            // Controlla se l'header è vuoto, ha spazi vuoti o non inizia con "Basic "
             if (string.IsNullOrWhiteSpace(authHeader) || 
                 !authHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
             {
@@ -70,7 +76,7 @@ namespace apiPB.Authentication
             try
             {
                 var credentialBytes = Convert.FromBase64String(encodedCredentials);
-                credentials = Encoding.UTF8.GetString(credentialBytes); // Use UTF-8 encoding
+                credentials = Encoding.UTF8.GetString(credentialBytes);
             }
             catch (FormatException)
             {
@@ -141,7 +147,9 @@ namespace apiPB.Authentication
         // Fixme: si potrebbero inserire i valori in appsettings.json in modo che siano nascoste
         private bool ValidateCredentials(string username, string password)
         {
-            return username == "admin" && password == "password"; 
+            string expectedUsername = _configuration.GetValue<string>("Authentication:Username") ?? string.Empty;
+            string expectedPassword = _configuration.GetValue<string>("Authentication:Password") ?? string.Empty;
+            return username == expectedUsername && password == expectedPassword; 
         }
 
         // Metodo per la gestione della risposta di autenticazione

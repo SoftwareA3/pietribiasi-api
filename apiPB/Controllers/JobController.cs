@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using apiPB.Mappers;
 using apiPB.Dto;
 using Microsoft.IdentityModel.Tokens;
+using apiPB.Models;
 
 namespace apiPB.Controllers
 {
@@ -31,6 +32,7 @@ namespace apiPB.Controllers
 
         [Authorize]
         [HttpGet]
+        // Ritorna tutte le informazioni della vista vw_api_jobs
         public IActionResult GetVwApiJobs()
         {
             string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
@@ -49,14 +51,14 @@ namespace apiPB.Controllers
 
             var ok = Ok(jobs);
 
-            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
-            _logService.AppendJobListToLog(jobs.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobs.ToList());
 
             return ok;
         }
 
         [Authorize]
         [HttpPost("mo")]
+        // Ritorna tutte le informazioni della vista vw_api_mo
         public IActionResult PostVWApiMo([FromBody] VwApiMoRequestDto moRequestDto)
         {
             string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
@@ -76,14 +78,14 @@ namespace apiPB.Controllers
 
             var ok = Ok(jobMo);
 
-            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
-            _logService.AppendJobMoListToLog(jobMo.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", jobMo.ToList());
 
             return ok;
         }
 
         [Authorize]
         [HttpPost("mostep")]
+        // Ritorna tutte le informazioni della vista vw_api_mostep
         public IActionResult PostVwApiMostep([FromBody] VwApiMostepRequestDto mostepRequestDto)
         {
             string requestPath = "POST " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
@@ -103,8 +105,7 @@ namespace apiPB.Controllers
 
             var ok = Ok(mostep);
 
-            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
-            _logService.AppendMostepListToLog(mostep.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", mostep.ToList());
 
             return ok;
         }

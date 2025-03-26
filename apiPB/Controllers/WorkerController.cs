@@ -25,7 +25,7 @@ namespace apiPB.Controllers
 
         // Ritorna tutti i VwWorkers presenti nella vista del database
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAllWorkers()
         {
             string requestPath = "GET " + HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty;
 
@@ -44,8 +44,8 @@ namespace apiPB.Controllers
 
             var ok = Ok(workers);
 
-            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
-            _logService.AppendWorkerListToLog(workers.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", workers.ToList());
+            // _logService.AppendWorkerListToLog(workers.ToList());
 
             return ok;
         }
@@ -72,8 +72,8 @@ namespace apiPB.Controllers
 
             var ok = Ok(workersFieldDtos);
 
-            _logService.AppendMessageToLog(requestPath, ok.StatusCode, "OK");
-            _logService.AppendWorkersFieldListToLog(workersFieldDtos);
+            _logService.AppendMessageAndListToLog(requestPath, ok.StatusCode, "OK", workersFieldDtos);
+            // _logService.AppendWorkersFieldListToLog(workersFieldDtos);
             
             return ok;
         }
