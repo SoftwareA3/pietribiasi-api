@@ -71,7 +71,7 @@ namespace apiPB.Services
 
             using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
-            string message = $"{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {requestType} - StatusCode: {statusCode} - Message: {statusMessage}";
+            string message = $"{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - [{requestType}] - StatusCode: {statusCode} - Message: {statusMessage}";
             
             writer.WriteLine(message);
         }

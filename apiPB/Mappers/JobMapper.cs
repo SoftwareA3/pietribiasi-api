@@ -52,6 +52,51 @@ namespace apiPB.Mappers
             };
         }
 
+        public static VwApiMocomponentDto ToVwApiMocomponentDto(this VwApiMocomponent mocomponentModel)
+        {
+            return new VwApiMocomponentDto
+            {
+                Job = mocomponentModel.Job ?? string.Empty,
+                Moid = mocomponentModel.Moid,
+                Mono = mocomponentModel.Mono ?? string.Empty,
+                Line = mocomponentModel.Line,
+                Position = mocomponentModel.Position,
+                ReferredPosition = mocomponentModel.ReferredPosition,
+                Component = mocomponentModel.Component ?? string.Empty,
+                ComponentDesc = mocomponentModel.ComponentDesc ?? string.Empty,
+                UoM = mocomponentModel.UoM ?? string.Empty,
+                NeededQty = mocomponentModel.NeededQty,
+                AssignedQuantity = mocomponentModel.AssignedQuantity,
+                PickedQuantity = mocomponentModel.PickedQuantity,
+                Storage = mocomponentModel.Storage ?? string.Empty,
+                Lot = mocomponentModel.Lot ?? string.Empty,
+                SpecificatorType = mocomponentModel.SpecificatorType,
+                Specificator = mocomponentModel.Specificator ?? string.Empty,
+                Closed = mocomponentModel.Closed ?? string.Empty
+            };
+        }
+
+        public static VwApiMoStepsComponentDto ToVwApiMoStepsComponentDto(this VwApiMoStepsComponent moStepsComponentModel)
+        {
+            return new VwApiMoStepsComponentDto
+            {
+                Job = moStepsComponentModel.Job ?? string.Empty,
+                RtgStep = moStepsComponentModel.RtgStep,
+                Alternate = moStepsComponentModel.Alternate ?? string.Empty,
+                AltRtgStep = moStepsComponentModel.AltRtgStep,
+                Position = moStepsComponentModel.Position,
+                Component = moStepsComponentModel.Component ?? string.Empty,
+                Bom = moStepsComponentModel.Bom ?? string.Empty,
+                Variant = moStepsComponentModel.Variant ?? string.Empty,
+                ItemDesc = moStepsComponentModel.ItemDesc ?? string.Empty,
+                Moid = moStepsComponentModel.Moid,
+                Mono = moStepsComponentModel.Mono ?? string.Empty,
+                Uom = moStepsComponentModel.Uom ?? string.Empty,
+                ProductionQty = moStepsComponentModel.ProductionQty,
+                ProducedQty = moStepsComponentModel.ProducedQty
+            };
+        }
+
         // Dto Richieste
         public static VwApiMoRequestDto ToVwApiMoRequestDto(this VwApiMo moModel)
         {
@@ -64,11 +109,32 @@ namespace apiPB.Mappers
             };
         }
 
-        public static VwApiMostepRequestDto ToVwMostepRequestDto(this VwApiMostep mostepModel)
+        public static VwApiMostepRequestDto ToVwApiMostepRequestDto(this VwApiMostep mostepModel)
         {
             return new VwApiMostepRequestDto
             {
                 Job = mostepModel.Job ?? string.Empty
+            };
+        }
+
+        public static VwApiMocomponentRequestDto ToVwApiMocomponentRequestDto(this VwApiMocomponent mocomponentModel)
+        {
+            return new VwApiMocomponentRequestDto
+            {
+                Job = mocomponentModel.Job ?? string.Empty
+            };
+        }
+
+        public static VwApiMoStepsComponentRequestDto ToVwApiMoStepsComponentRequestDto(this VwApiMoStepsComponent moStepsComponentModel)
+        {
+            return new VwApiMoStepsComponentRequestDto
+            {
+                Job = moStepsComponentModel.Job ?? string.Empty,
+                RtgStep = moStepsComponentModel.RtgStep,
+                Alternate = moStepsComponentModel.Alternate ?? string.Empty,
+                AltRtgStep = moStepsComponentModel.AltRtgStep,
+                Position = moStepsComponentModel.Position,
+                Component = moStepsComponentModel.Component ?? string.Empty
             };
         }
     }

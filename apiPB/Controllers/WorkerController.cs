@@ -6,6 +6,7 @@ using apiPB.Dto;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using apiPB.Repository.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -14,13 +15,14 @@ namespace apiPB.Controllers
     public class WorkerController : ControllerBase
     {
         private readonly LogService _logService;
-        private readonly ApplicationDbContext _context;
+        private readonly IRmWorkersFieldRepository _rmWorkersFieldRepository;
+        private readonly IVwApiWorkerRepository _vwApiWorkerRepository;
         
-        public WorkerController(LogService logService, ApplicationDbContext context) 
+        public WorkerController(LogService logService, IRmWorkersFieldRepository rmWorkersFieldRepository, IVwApiWorkerRepository vwApiWorkerRepository)
         {
             _logService = logService;
-
-            _context = context;
+            _rmWorkersFieldRepository = rmWorkersFieldRepository;
+            _vwApiWorkerRepository = vwApiWorkerRepository;
         }
 
         // Ritorna tutti i VwWorkers presenti nella vista del database
@@ -30,7 +32,7 @@ namespace apiPB.Controllers
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             // Lista di WorkerQueryResults recuperata tramite query al database
-            var workersDto = _context.VwApiWorkers.ToList()
+            var workersDto = _vwApiWorkerRepository.GetVwApiWorkers()
             .Select(w => w.ToWorkerDto());
 
             if (workersDto.IsNullOrEmpty())
@@ -51,10 +53,9 @@ namespace apiPB.Controllers
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             // Recupera tutti i RmWorkersFields tramite WorkerId
-            var workersFieldDto = _context.RmWorkersFields.ToList()
-            .Select(w => w.ToWorkersFieldDto())
-            .ToList()
-            .Where(w => w.WorkerId == id);
+            var workersFieldDto = _rmWorkersFieldRepository.GetRmWorkersFieldsById(id)
+            .Select(w => w.ToWorkersFieldRequestDto())
+            .ToList();
 
             if(workersFieldDto.IsNullOrEmpty())
             {
@@ -63,22 +64,21 @@ namespace apiPB.Controllers
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto);
             
-            return Ok(workersFieldDto.ToList());
+            return Ok(workersFieldDto);
         }
 
         // Ritorna Alcune informazioni della tabella RmWorkersField con Last Login aggiornato o inserito con un nuovo record
         [HttpPost("lastlogin")]
-        public async Task<IActionResult> PostLastLoginLineOrUpdate([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
+        public async Task<IActionResult> UpdateOrCreateLastLogin([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             // Trova worker tramite la password 
-            var workerDto = _context.VwApiWorkers.ToList()
-            .FirstOrDefault(w => w.Password == passwordWorkersRequestDto.Password);
+            var worker = _vwApiWorkerRepository.GetVwApiWorkerByPassword(passwordWorkersRequestDto.Password);
 
-            if (workerDto == null)
+            if (worker == null)
             {
                 _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
@@ -86,29 +86,22 @@ namespace apiPB.Controllers
             }
             
             // Invoca la stored procedure passando il WorkerId trovato con la query e la data corrente
-            await _context.Database.ExecuteSqlRawAsync("EXEC dbo.InsertWorkersFields @WorkerId = {0}, @FieldValue = {1}", 
-            workerDto.WorkerId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            
-            // Salva il contesto del database
-            await _context.SaveChangesAsync();
+            await _vwApiWorkerRepository.CallStoredProcedure(worker.WorkerId);
 
             // Recupera l'ultimo record inserito nella tabella RmWorkersFields per ritornare alcune informazioni
             // Se non si vogliono tornare informazioni, basta rimuovere questo pezzo e modificare CreatedAtAction
-            var workersField = _context.RmWorkersFields
-            .FromSqlRaw(@"SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC", workerDto.WorkerId)
-            .AsNoTracking()
-            .ToList()
-            .Select(w => w.ToWorkersFieldRequestDto())
-            .FirstOrDefault();  
+            var lastWorkerField = _rmWorkersFieldRepository.GetLastWorkerFeldLine(worker.WorkerId);
 
-            if(workersField == null)
+            if (lastWorkerField == null)
             {
                 _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
                 return NotFound();
             }
+
+            var workersFieldDto = lastWorkerField.ToWorkersFieldRequestDto();
             
-            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = workerDto.WorkerId }, workersField);
+            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = workersFieldDto.WorkerId }, workersFieldDto);
 
             _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created");
 

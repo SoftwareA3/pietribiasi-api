@@ -7,7 +7,7 @@ namespace apiPB.Data;
 
 public partial class ApplicationDbContext : DbContext
 {
-        private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
         : base(options)
@@ -24,6 +24,10 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<VwApiJob> VwApiJobs { get; set; }
 
     public virtual DbSet<VwApiMo> VwApiMos { get; set; }
+
+    public virtual DbSet<VwApiMoStepsComponent> VwApiMoStepsComponents { get; set; }
+
+    public virtual DbSet<VwApiMocomponent> VwApiMocomponents { get; set; }
 
     public virtual DbSet<VwApiMostep> VwApiMosteps { get; set; }
 
@@ -668,6 +672,81 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnName("uom");
             entity.Property(e => e.Variant)
                 .HasMaxLength(21)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VwApiMoStepsComponent>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_api_mo_steps_components");
+
+            entity.Property(e => e.Alternate)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.Bom)
+                .HasMaxLength(21)
+                .IsUnicode(false)
+                .HasColumnName("BOM");
+            entity.Property(e => e.Component)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.ItemDesc)
+                .HasMaxLength(128)
+                .IsUnicode(false);
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Moid).HasColumnName("MOId");
+            entity.Property(e => e.Mono)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("MONo");
+            entity.Property(e => e.Uom)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .HasColumnName("uom");
+            entity.Property(e => e.Variant)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VwApiMocomponent>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_api_mocomponent");
+
+            entity.Property(e => e.Closed)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.Component)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.ComponentDesc)
+                .HasMaxLength(128)
+                .IsUnicode(false);
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Lot)
+                .HasMaxLength(16)
+                .IsUnicode(false)
+                .HasColumnName("lot");
+            entity.Property(e => e.Moid).HasColumnName("MOId");
+            entity.Property(e => e.Mono)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("MONo");
+            entity.Property(e => e.Specificator)
+                .HasMaxLength(12)
+                .IsUnicode(false);
+            entity.Property(e => e.Storage)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.UoM)
+                .HasMaxLength(8)
                 .IsUnicode(false);
         });
 

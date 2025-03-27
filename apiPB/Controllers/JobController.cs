@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 using apiPB.Mappers;
 using apiPB.Dto;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using apiPB.Models;
+using apiPB.Repository.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -20,14 +22,22 @@ namespace apiPB.Controllers
     public class JobController : ControllerBase
     {
         private readonly LogService _logService;
-        private readonly ApplicationDbContext _context;
+        private readonly IVwApiJobRepository _vwApiJobRepository;
+        private readonly IVwApiMoRepository _vwApiMoRepository;
+        private readonly IVwApiMostepRepository _vwApiMostepRepository;
+        private readonly IVwApiMocomponentRepository _vwApiMocomponentRepository;
 
-        public JobController(LogService logService, ApplicationDbContext context) 
+        public JobController(LogService logService, 
+            IVwApiJobRepository vwApiJobRepository,
+            IVwApiMoRepository vwApiMoRepository,
+            IVwApiMostepRepository vwApiMostepRepository,
+            IVwApiMocomponentRepository vwApiMocomponentRepository)
         {
-
             _logService = logService;
-
-            _context = context;
+            _vwApiJobRepository = vwApiJobRepository;
+            _vwApiMoRepository = vwApiMoRepository;
+            _vwApiMostepRepository = vwApiMostepRepository;
+            _vwApiMocomponentRepository = vwApiMocomponentRepository;
         }
 
         [HttpGet]
@@ -36,30 +46,30 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var jobsDto = _context.VwApiJobs.ToList()
-            .Select(j => j.ToVwApiJobDto());
+            var jobsDto = _vwApiJobRepository.GetVwApiJobs()
+            .Select(j => j.ToVwApiJobDto())
+            .ToList();
 
             if (jobsDto.IsNullOrEmpty())
-            {
+            {   
                 _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobsDto.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobsDto);
 
-            return Ok(jobsDto.ToList());
+            return Ok(jobsDto);    
         }
 
         [HttpPost("mo")]
         // Ritorna tutte le informazioni della vista vw_api_mo
-        public IActionResult PostVWApiMo([FromBody] VwApiMoRequestDto moRequestDto)
+        public IActionResult GetVWApiMoFromBody([FromBody] VwApiMoRequestDto moRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-            var jobMoDto = _context.VwApiMos
-            .Where(j => j.Job == moRequestDto.Job && j.RtgStep == moRequestDto.RtgStep && j.Alternate == moRequestDto.Alternate && j.AltRtgStep == moRequestDto.AltRtgStep)
-            .ToList()
-            .Select(j => j.ToVwApiMoDto());
+            var jobMoDto = _vwApiMoRepository.GetVwApiMo(moRequestDto.Job, moRequestDto.RtgStep, moRequestDto.Alternate, moRequestDto.AltRtgStep)
+            .Select(j => j.ToVwApiMoDto())
+            .ToList();
 
             if(jobMoDto.IsNullOrEmpty())
             {
@@ -68,21 +78,20 @@ namespace apiPB.Controllers
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobMoDto.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobMoDto);
 
-            return Ok(jobMoDto.ToList());
+            return Ok(jobMoDto);
         }
 
         [HttpPost("mostep")]
         // Ritorna tutte le informazioni della vista vw_api_mostep
-        public IActionResult PostVwApiMostep([FromBody] VwApiMostepRequestDto mostepRequestDto)
+        public IActionResult GetVwApiMostepFromBody([FromBody] VwApiMostepRequestDto mostepRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepDto = _context.VwApiMosteps
-            .Where(m => m.Job == mostepRequestDto.Job)
-            .ToList()
-            .Select(m => m.ToVwApiMoStepDto());
+            var mostepDto = _vwApiMostepRepository.GetVwApiMostep(mostepRequestDto.Job)
+            .Select(m => m.ToVwApiMoStepDto())
+            .ToList();
 
             if(mostepDto.IsNullOrEmpty())
             {
@@ -91,11 +100,43 @@ namespace apiPB.Controllers
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepDto.ToList());
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepDto);
 
-            return Ok(mostepDto.ToList());
+            return Ok(mostepDto);
         }
 
+        [HttpPost("mocomponent")]
+        // Ritorna tutte le informazioni della vista vw_api_mocomponent
+        public IActionResult GetVwApiMocomponent([FromBody] VwApiMocomponentDto moComponentRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mocomponentDto = _vwApiMocomponentRepository.GetVwApiMocomponent(moComponentRequestDto.Job)
+            .Select(m => m.ToVwApiMocomponentDto())
+            .ToList();
+
+            if(mocomponentDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            return Ok(mocomponentDto);
+        }
+
+        [HttpPost("mostepcomponent")]
+        // Ritorna tutte le informazioni della vista vw_api_mostep e vw_api_mo_steps_components
+        public IActionResult GetVwApiMoStepsComponent([FromBody] VwApiMoStepsComponentRequestDto moStepsComponentRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mostepComponentDto = _vwApiMostepRepository.GetVwApiMostep(moStepsComponentRequestDto.Job)
+            .Select(m => m.ToVwApiMoStepDto())
+            .ToList();
+
+            return Ok(mostepComponentDto);
+        }
     }
 
     
