@@ -18,6 +18,7 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
+        // Restituisce tutte le informazioni della vista vw_api_jobs
         public IEnumerable<VwApiJob> GetVwApiJobs()
         {
             return _context.VwApiJobs.AsNoTracking().ToList();

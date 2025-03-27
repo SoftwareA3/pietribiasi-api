@@ -26,18 +26,21 @@ namespace apiPB.Controllers
         private readonly IVwApiMoRepository _vwApiMoRepository;
         private readonly IVwApiMostepRepository _vwApiMostepRepository;
         private readonly IVwApiMocomponentRepository _vwApiMocomponentRepository;
+        private readonly IVwApiMoStepsComponentRepository _vwApiMoStepsComponentRepository;
 
         public JobController(LogService logService, 
             IVwApiJobRepository vwApiJobRepository,
             IVwApiMoRepository vwApiMoRepository,
             IVwApiMostepRepository vwApiMostepRepository,
-            IVwApiMocomponentRepository vwApiMocomponentRepository)
+            IVwApiMocomponentRepository vwApiMocomponentRepository,
+            IVwApiMoStepsComponentRepository vwApiMoStepsComponentRepository)
         {
             _logService = logService;
             _vwApiJobRepository = vwApiJobRepository;
             _vwApiMoRepository = vwApiMoRepository;
             _vwApiMostepRepository = vwApiMostepRepository;
             _vwApiMocomponentRepository = vwApiMocomponentRepository;
+            _vwApiMoStepsComponentRepository = vwApiMoStepsComponentRepository;
         }
 
         [HttpGet]
@@ -122,6 +125,8 @@ namespace apiPB.Controllers
                 return NotFound();
             }
 
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mocomponentDto);
+
             return Ok(mocomponentDto);
         }
 
@@ -131,9 +136,24 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepComponentDto = _vwApiMostepRepository.GetVwApiMostep(moStepsComponentRequestDto.Job)
-            .Select(m => m.ToVwApiMoStepDto())
+            var mostepComponentDto = _vwApiMoStepsComponentRepository
+            .GetVwApiMoStepsComponent(moStepsComponentRequestDto.Job,
+            moStepsComponentRequestDto.RtgStep,
+            moStepsComponentRequestDto.Alternate,
+            moStepsComponentRequestDto.AltRtgStep,
+            moStepsComponentRequestDto.Position,
+            moStepsComponentRequestDto.Component)
+            .Select(m => m.ToVwApiMoStepsComponentDto())
             .ToList();
+
+            if(mostepComponentDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
 
             return Ok(mostepComponentDto);
         }

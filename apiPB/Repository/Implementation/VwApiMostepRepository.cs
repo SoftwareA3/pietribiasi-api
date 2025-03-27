@@ -18,11 +18,13 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
+        // Restituisce tutte le informazioni della vista vw_api_mosteps filtrate per job
         public IEnumerable<VwApiMostep> GetVwApiMostep(string job)
         {
             return _context.VwApiMosteps
             .Where(m => m.Job == job)
-            .AsNoTracking();
+            .AsNoTracking()
+            .ToList();
         }
     }
 }

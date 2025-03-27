@@ -18,6 +18,7 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
         
+        // Restituisce tutti i campi del lavoratore
         public IEnumerable<RmWorkersField> GetRmWorkersFieldsById(int workerId)
         {
             return _context.RmWorkersFields
@@ -26,6 +27,7 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
+        // Restituisce la MAX(Line) del lavoratore con id workerId
         public RmWorkersField? GetLastWorkerFeldLine(int workerId)
         {
             return _context.RmWorkersFields

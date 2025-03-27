@@ -19,14 +19,14 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
+        // Restituisce tutte le informazioni della vista vw_api_mo_steps_component
+        // Parametri di ricerca: job, rtgStep, alternate, altRtgStep
+        // Parametri di ricerca opzionali: position, component
         public IEnumerable<VwApiMoStepsComponent> GetVwApiMoStepsComponent(string job, short rtgStep, string alternate, short altRtgStep, short? position, string? component)
         {
             var query = _context.VwApiMoStepsComponents
             .AsNoTracking()
-            .Where(m => m.Job == job &&
-                m.RtgStep == rtgStep &&
-                m.Alternate == alternate &&
-                m.AltRtgStep == altRtgStep);
+            .Where(m => m.Job == job && m.RtgStep == rtgStep && m.Alternate == alternate && m.AltRtgStep == altRtgStep);
 
             if (position != null)
             {
@@ -38,7 +38,11 @@ namespace apiPB.Repository.Implementation
                 query = query.Where(m => m.Component == component);
             }
 
-            return query;
+            var list = query.ToList();
+
+            Console.WriteLine(query.ToQueryString());
+
+            return list;
         }
     }
 }

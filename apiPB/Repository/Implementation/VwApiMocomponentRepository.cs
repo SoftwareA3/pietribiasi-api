@@ -19,6 +19,7 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
+        // Restituisce tutte le informazioni della vista vw_api_mocomponents filtrate per job
         public IEnumerable<VwApiMocomponent> GetVwApiMocomponent(string job)
         {
             return _context.VwApiMocomponents

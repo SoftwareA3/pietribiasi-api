@@ -31,7 +31,6 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            // Lista di WorkerQueryResults recuperata tramite query al database
             var workersDto = _vwApiWorkerRepository.GetVwApiWorkers()
             .Select(w => w.ToWorkerDto());
 
@@ -52,7 +51,6 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            // Recupera tutti i RmWorkersFields tramite WorkerId
             var workersFieldDto = _rmWorkersFieldRepository.GetRmWorkersFieldsById(id)
             .Select(w => w.ToWorkersFieldRequestDto())
             .ToList();
@@ -75,7 +73,6 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            // Trova worker tramite la password 
             var worker = _vwApiWorkerRepository.GetVwApiWorkerByPassword(passwordWorkersRequestDto.Password);
 
             if (worker == null)
@@ -85,11 +82,8 @@ namespace apiPB.Controllers
                 return NotFound();
             }
             
-            // Invoca la stored procedure passando il WorkerId trovato con la query e la data corrente
             await _vwApiWorkerRepository.CallStoredProcedure(worker.WorkerId);
 
-            // Recupera l'ultimo record inserito nella tabella RmWorkersFields per ritornare alcune informazioni
-            // Se non si vogliono tornare informazioni, basta rimuovere questo pezzo e modificare CreatedAtAction
             var lastWorkerField = _rmWorkersFieldRepository.GetLastWorkerFeldLine(worker.WorkerId);
 
             if (lastWorkerField == null)

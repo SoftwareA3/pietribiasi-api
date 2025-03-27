@@ -18,6 +18,8 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
+        // Restituisce tutte le informazioni della vista vw_api_mo
+        // Parametri di ricerca: job, rtgStep, alternate, altRtgStep
         public IEnumerable<VwApiMo> GetVwApiMo(string job, short rtgStep, string alternate, short altRtgStep)
         {
             return _context.VwApiMos
@@ -25,7 +27,8 @@ namespace apiPB.Repository.Implementation
                 && j.RtgStep == rtgStep 
                 && j.Alternate == alternate 
                 && j.AltRtgStep == altRtgStep)
-            .AsNoTracking();
+            .AsNoTracking()
+            .ToList();
         }
     }
 }
