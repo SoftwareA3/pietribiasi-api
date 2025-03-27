@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using apiPB.Dto;
+using apiPB.Dto.Request;
+using apiPB.Dto.Models;
 using apiPB.Models;
 
-namespace apiPB.Mappers
+namespace apiPB.Mappers.Dto
 {
-    public static class JobMapper
+    public static class JobMapperDto
     {
         // Dto Modelli
         public static VwApiJobDto ToVwApiJobDto(this VwApiJob jobModel)

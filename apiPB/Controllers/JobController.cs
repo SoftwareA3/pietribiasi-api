@@ -5,14 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using apiPB.Services;
-using apiPB.Data;
 using Microsoft.AspNetCore.Authorization;
-using apiPB.Mappers;
-using apiPB.Dto;
+using apiPB.Mappers.Dto;
+using apiPB.Dto.Models;
+using apiPB.Dto.Request;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Models;
 using apiPB.Repository.Abstraction;
+using Azure.Core;
 
 namespace apiPB.Controllers
 {
@@ -110,7 +111,7 @@ namespace apiPB.Controllers
 
         [HttpPost("mocomponent")]
         // Ritorna tutte le informazioni della vista vw_api_mocomponent
-        public IActionResult GetVwApiMocomponent([FromBody] VwApiMocomponentDto moComponentRequestDto)
+        public IActionResult GetVwApiMocomponent([FromBody] VwApiMocomponentRequestDto moComponentRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
@@ -157,7 +158,5 @@ namespace apiPB.Controllers
 
             return Ok(mostepComponentDto);
         }
-    }
-
-    
+    }    
 }

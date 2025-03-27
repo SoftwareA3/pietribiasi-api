@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using apiPB.Models;
 using apiPB.Data;
-using apiPB.Mappers;
-using apiPB.Dto;
+using apiPB.Mappers.Dto;
+using apiPB.Dto.Request;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,9 @@ namespace apiPB.Controllers
         private readonly IRmWorkersFieldRepository _rmWorkersFieldRepository;
         private readonly IVwApiWorkerRepository _vwApiWorkerRepository;
         
-        public WorkerController(LogService logService, IRmWorkersFieldRepository rmWorkersFieldRepository, IVwApiWorkerRepository vwApiWorkerRepository)
+        public WorkerController(LogService logService,
+        IRmWorkersFieldRepository rmWorkersFieldRepository, 
+        IVwApiWorkerRepository vwApiWorkerRepository)
         {
             _logService = logService;
             _rmWorkersFieldRepository = rmWorkersFieldRepository;

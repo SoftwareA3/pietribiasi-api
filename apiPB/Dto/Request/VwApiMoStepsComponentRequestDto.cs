@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Dto
+namespace apiPB.Dto.Request
 {
     public class VwApiMoStepsComponentRequestDto
     {

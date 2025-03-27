@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using apiPB.Dto;
+using apiPB.Dto.Request;
+using apiPB.Dto.Models;
 using apiPB.Models;
 
-namespace apiPB.Mappers
+namespace apiPB.Mappers.Dto
 {
     // Classe che mappa il parametro per il tipo ritornato, in modo che il controller possa restituire un oggetto con specifiche informazioni
-    public static class WorkerMapper
+    public static class WorkerMapperDto
     {
         public static VwApiWorkerDto ToWorkerDto(this VwApiWorker workerModel)
         {
