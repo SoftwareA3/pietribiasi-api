@@ -1,26 +1,36 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using apiPB.Data;
 using apiPB.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using apiPB.Authentication;
 using apiPB.Repository.Abstraction;
 using apiPB.Repository.Implementation;
-
+using apiPB.Mappers.Filters;
+using apiPB.Mappers.Filter;
+using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Request.Implementation;
+using apiPB.Services.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthentication>("BasicAuthentication", null);
+    
+    // Authorization
     builder.Services.AddAuthorization();
+    
+    // Controllers
     builder.Services.AddControllers();
+    
     builder.Services.AddEndpointsApiExplorer();
+    
+    // Swagger
     builder.Services.AddSwaggerGen();
+    
+    // DbContext
     builder.Services.AddDbContext<ApplicationDbContext> (options => {options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));}); 
-    builder.Services.AddScoped<LogService>();
+    
+    // Repositories
     builder.Services.AddScoped<IRmWorkersFieldRepository, RmWorkersFieldRepository>();
     builder.Services.AddScoped<IVwApiWorkerRepository, VwApiWorkerRepository>();
     builder.Services.AddScoped<IVwApiJobRepository, VwApiJobRepository>();
@@ -28,6 +38,19 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IVwApiMostepRepository, VwApiMostepRepository>();
     builder.Services.AddScoped<IVwApiMocomponentRepository, VwApiMocomponentRepository>();
     builder.Services.AddScoped<IVwApiMoStepsComponentRepository, VwApiMoStepsComponentRepository>();
+    
+    // Services
+    builder.Services.AddScoped<LogService>();
+    builder.Services.AddScoped<IMocomponentRequestService, MocomponentRequestService>();
+    builder.Services.AddScoped<IMoRequestService, MoRequestService>();
+    builder.Services.AddScoped<IMostepRequestService, MostepRequestService>();
+    builder.Services.AddScoped<IMoStepsComponentRequestService, MoStepsComponentRequestService>();
+    builder.Services.AddScoped<IPasswordWorkersRequestService, PasswordWorkersRequestService>();
+    
+    
+    // AutoMappers
+    builder.Services.AddAutoMapper(typeof(WorkerFiltersMapper));
+    builder.Services.AddAutoMapper(typeof(JobFiltersMapper));
 }
 
 var app = builder.Build();

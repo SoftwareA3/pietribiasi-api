@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using apiPB.Models;
+using apiPB.Filters;
 
 namespace apiPB.Repository.Abstraction
 {
     public interface IVwApiWorkerRepository
     {
         IEnumerable<VwApiWorker> GetVwApiWorkers();
-        VwApiWorker? GetVwApiWorkerByPassword(string password);
+        VwApiWorker? GetVwApiWorkerByPassword(PasswordWorkersRequestFilter filter);
         Task CallStoredProcedure(int workerId);
     }
 }

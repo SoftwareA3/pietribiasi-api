@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using apiPB.Filters;
 using apiPB.Models;
 
 namespace apiPB.Repository.Abstraction
 {
     public interface IVwApiMostepRepository
     {
-        IEnumerable<VwApiMostep> GetVwApiMostep(string job);
+        IEnumerable<VwApiMostep> GetVwApiMostep(VwApiMostepRequestFilter filter);
     }
 }

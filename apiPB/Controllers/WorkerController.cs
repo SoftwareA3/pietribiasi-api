@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using apiPB.Models;
-using apiPB.Data;
-using apiPB.Mappers;
-using apiPB.Dto;
+using apiPB.Mappers.Dto;
+using apiPB.Dto.Request;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore;
 using apiPB.Repository.Abstraction;
+using apiPB.Services.Request.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -16,12 +14,18 @@ namespace apiPB.Controllers
     {
         private readonly LogService _logService;
         private readonly IRmWorkersFieldRepository _rmWorkersFieldRepository;
+        private readonly IPasswordWorkersRequestService _passwordWorkersRequestService;
         private readonly IVwApiWorkerRepository _vwApiWorkerRepository;
         
-        public WorkerController(LogService logService, IRmWorkersFieldRepository rmWorkersFieldRepository, IVwApiWorkerRepository vwApiWorkerRepository)
+        public WorkerController(LogService logService,
+        IRmWorkersFieldRepository rmWorkersFieldRepository,
+        IPasswordWorkersRequestService passwordWorkersRequestService,
+        IVwApiWorkerRepository vwApiWorkerRepository 
+        )
         {
             _logService = logService;
             _rmWorkersFieldRepository = rmWorkersFieldRepository;
+            _passwordWorkersRequestService = passwordWorkersRequestService;
             _vwApiWorkerRepository = vwApiWorkerRepository;
         }
 
@@ -73,7 +77,7 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var worker = _vwApiWorkerRepository.GetVwApiWorkerByPassword(passwordWorkersRequestDto.Password);
+            var worker = _passwordWorkersRequestService.GetWorkerByPassword(passwordWorkersRequestDto);
 
             if (worker == null)
             {
@@ -82,9 +86,10 @@ namespace apiPB.Controllers
                 return NotFound();
             }
             
+            // Fixme: passa un int quando dovrebbe passare un filter
             await _vwApiWorkerRepository.CallStoredProcedure(worker.WorkerId);
 
-            var lastWorkerField = _rmWorkersFieldRepository.GetLastWorkerFeldLine(worker.WorkerId);
+            var lastWorkerField = _rmWorkersFieldRepository.GetLastWorkerFieldLine(worker.WorkerId);
 
             if (lastWorkerField == null)
             {

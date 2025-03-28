@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
 using apiPB.Services;
-using Microsoft.VisualBasic;
 
 namespace apiPB.Authentication
 {

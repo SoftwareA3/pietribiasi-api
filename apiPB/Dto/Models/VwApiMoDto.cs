@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Dto
+namespace apiPB.Dto.Models
 {
-    public class VwApiMoStepsComponentDto
+    public class VwApiMoDto
     {
         public string Job { get; set; } = null!;
 
@@ -14,10 +14,6 @@ namespace apiPB.Dto
         public string Alternate { get; set; } = null!;
 
         public short AltRtgStep { get; set; }
-
-        public short? Position { get; set; }
-
-        public string? Component { get; set; }
 
         public string? Bom { get; set; }
 

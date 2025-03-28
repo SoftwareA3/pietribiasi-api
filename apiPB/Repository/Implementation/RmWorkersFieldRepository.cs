@@ -18,7 +18,7 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
         
-        // Restituisce tutti i campi del lavoratore
+        // Esegue la query per ottenere i campi del lavoratore con id workerId
         public IEnumerable<RmWorkersField> GetRmWorkersFieldsById(int workerId)
         {
             return _context.RmWorkersFields
@@ -27,8 +27,8 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
-        // Restituisce la MAX(Line) del lavoratore con id workerId
-        public RmWorkersField? GetLastWorkerFeldLine(int workerId)
+        // Esegue la query per ottenere il record con linea massima, dato il workerId
+        public RmWorkersField? GetLastWorkerFieldLine(int workerId)
         {
             return _context.RmWorkersFields
             .FromSqlRaw(@"SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC", workerId)
