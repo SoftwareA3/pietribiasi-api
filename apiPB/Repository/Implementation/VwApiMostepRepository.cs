@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using apiPB.Data;
 using apiPB.Models;
 using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
+using apiPB.Filters;
 
 namespace apiPB.Repository.Implementation
 {
@@ -18,11 +15,12 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_mosteps filtrate per job
-        public IEnumerable<VwApiMostep> GetVwApiMostep(string job)
+        // Restituisce tutte le informazioni della vista vw_api_mosteps
+        // Parametri: Job
+        public IEnumerable<VwApiMostep> GetVwApiMostep(VwApiMostepRequestFilter filter)
         {
             return _context.VwApiMosteps
-            .Where(m => m.Job == job)
+            .Where(m => m.Job == filter.Job)
             .AsNoTracking()
             .ToList();
         }

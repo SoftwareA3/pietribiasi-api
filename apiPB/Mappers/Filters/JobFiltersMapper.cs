@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using apiPB.Dto.Request;
 using apiPB.Filters;
 
 namespace apiPB.Mappers.Filter
 {
-    public class JobMapperFilters : Profile
+    public class JobFiltersMapper : Profile
     {
-        public JobMapperFilters()
+        public JobFiltersMapper()
         {
-            //Mappa automaticamente i Dto nei Filtri
+            //Mappa automaticamente i Dto nei Filters
             CreateMap<VwApiMoRequestDto, VwApiMoRequestFilter>();
             CreateMap<VwApiMostepRequestDto, VwApiMostepRequestFilter>();
             CreateMap<VwApiMocomponentRequestDto, VwApiMocomponentRequestFilter>();

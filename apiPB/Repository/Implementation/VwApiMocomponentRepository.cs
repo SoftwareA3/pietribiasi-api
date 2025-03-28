@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Data;
 using apiPB.Models;
 using apiPB.Repository.Abstraction;
+using apiPB.Filters;
 
 
 namespace apiPB.Repository.Implementation
@@ -19,11 +16,12 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_mocomponents filtrate per job
-        public IEnumerable<VwApiMocomponent> GetVwApiMocomponent(string job)
+        // Restituisce tutte le informazioni della vista vw_api_mocomponents
+        // Parametri: Job
+        public IEnumerable<VwApiMocomponent> GetVwApiMocomponent(VwApiMocomponentRequestFilter filter)
         {
             return _context.VwApiMocomponents
-            .Where(m => m.Job == job)
+            .Where(m => m.Job == filter.Job)
             .AsNoTracking();
         }
     }

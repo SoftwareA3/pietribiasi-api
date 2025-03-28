@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using apiPB.Dto.Request;
 using apiPB.Dto.Models;
 using apiPB.Models;
@@ -39,7 +35,7 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static VwApiMostepDto ToVwApiMoStepDto(this VwApiMostep mostepModel)
+        public static VwApiMostepDto ToVwApiMostepDto(this VwApiMostep mostepModel)
         {
             return new VwApiMostepDto
             {

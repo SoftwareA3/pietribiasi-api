@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using apiPB.Dto.Request;
 using apiPB.Dto.Models;
 using apiPB.Models;
 
 namespace apiPB.Mappers.Dto
 {
-    // Classe che mappa il parametro per il tipo ritornato, in modo che il controller possa restituire un oggetto con specifiche informazioni
+    // Classe che mappa il Model in Dto
     public static class WorkerMapperDto
     {
+        // Models
         public static VwApiWorkerDto ToWorkerDto(this VwApiWorker workerModel)
         {
             return new VwApiWorkerDto
@@ -45,23 +41,7 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static RmWorkersField ToWorkersFieldFromCreateDto(this RmWorkersFieldDto workersFieldRequestDto)
-        {
-            return new RmWorkersField
-            {
-                WorkerId = workersFieldRequestDto.WorkerId,
-                Line = workersFieldRequestDto.Line,
-                FieldName = workersFieldRequestDto.FieldName,
-                FieldValue = workersFieldRequestDto.FieldValue,
-                Notes = workersFieldRequestDto.Notes,
-                HideOnLayout = workersFieldRequestDto.HideOnLayout,
-                Tbcreated = workersFieldRequestDto.Tbcreated,
-                Tbmodified = workersFieldRequestDto.Tbmodified,
-                TbcreatedId = workersFieldRequestDto.TbcreatedId,
-                TbmodifiedId = workersFieldRequestDto.TbmodifiedId
-            };
-        }
-
+        // Request
         public static WorkersFieldRequestDto ToWorkersFieldRequestDto(this RmWorkersField workersField)
         {
             return new WorkersFieldRequestDto
@@ -72,5 +52,23 @@ namespace apiPB.Mappers.Dto
                 FieldValue = workersField.FieldValue
             };
         }
+
+        // Metodo che mappa il Dto in Model
+        // public static RmWorkersField ToWorkersFieldFromCreateDto(this RmWorkersFieldDto workersFieldRequestDto)
+        // {
+        //     return new RmWorkersField
+        //     {
+        //         WorkerId = workersFieldRequestDto.WorkerId,
+        //         Line = workersFieldRequestDto.Line,
+        //         FieldName = workersFieldRequestDto.FieldName,
+        //         FieldValue = workersFieldRequestDto.FieldValue,
+        //         Notes = workersFieldRequestDto.Notes,
+        //         HideOnLayout = workersFieldRequestDto.HideOnLayout,
+        //         Tbcreated = workersFieldRequestDto.Tbcreated,
+        //         Tbmodified = workersFieldRequestDto.Tbmodified,
+        //         TbcreatedId = workersFieldRequestDto.TbcreatedId,
+        //         TbmodifiedId = workersFieldRequestDto.TbmodifiedId
+        //     };
+        // }
     }
 }
