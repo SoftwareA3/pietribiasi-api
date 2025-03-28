@@ -4,6 +4,7 @@ using apiPB.Dto.Request;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Repository.Abstraction;
+using apiPB.Dto.Models;
 using apiPB.Services.Request.Abstraction;
 
 namespace apiPB.Controllers
@@ -13,20 +14,14 @@ namespace apiPB.Controllers
     public class WorkerController : ControllerBase
     {
         private readonly LogService _logService;
-        private readonly IRmWorkersFieldRepository _rmWorkersFieldRepository;
-        private readonly IPasswordWorkersRequestService _passwordWorkersRequestService;
-        private readonly IVwApiWorkerRepository _vwApiWorkerRepository;
+        private readonly IWorkersRequestService _workerRequestService;
         
         public WorkerController(LogService logService,
-        IRmWorkersFieldRepository rmWorkersFieldRepository,
-        IPasswordWorkersRequestService passwordWorkersRequestService,
-        IVwApiWorkerRepository vwApiWorkerRepository 
+        IWorkersRequestService workersRequestService
         )
         {
             _logService = logService;
-            _rmWorkersFieldRepository = rmWorkersFieldRepository;
-            _passwordWorkersRequestService = passwordWorkersRequestService;
-            _vwApiWorkerRepository = vwApiWorkerRepository;
+            _workerRequestService = workersRequestService;
         }
 
         // Ritorna tutti i VwWorkers presenti nella vista del database
@@ -35,8 +30,7 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var workersDto = _vwApiWorkerRepository.GetVwApiWorkers()
-            .Select(w => w.ToWorkerDto());
+            var workersDto = _workerRequestService.GetWorkers();
 
             if (workersDto.IsNullOrEmpty())
             {
@@ -55,18 +49,16 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var workersFieldDto = _rmWorkersFieldRepository.GetRmWorkersFieldsById(id)
-            .Select(w => w.ToWorkersFieldRequestDto())
-            .ToList();
+            var workersFieldDto = _workerRequestService.GetWorkersFieldsById(new WorkersFieldRequestDto { WorkerId = id });
 
-            if(workersFieldDto.IsNullOrEmpty())
+            if(workersFieldDto == null)
             {
                 _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto);
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto);
             
             return Ok(workersFieldDto);
         }
@@ -76,31 +68,16 @@ namespace apiPB.Controllers
         public async Task<IActionResult> UpdateOrCreateLastLogin([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+            var lastWorkerField = await _workerRequestService.UpdateOrCreateLastLogin(passwordWorkersRequestDto);
 
-            var worker = _passwordWorkersRequestService.GetWorkerByPassword(passwordWorkersRequestDto);
-
-            if (worker == null)
+            if(lastWorkerField == null)
             {
                 _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
                 return NotFound();
             }
             
-            // Fixme: passa un int quando dovrebbe passare un filter
-            await _vwApiWorkerRepository.CallStoredProcedure(worker.WorkerId);
-
-            var lastWorkerField = _rmWorkersFieldRepository.GetLastWorkerFieldLine(worker.WorkerId);
-
-            if (lastWorkerField == null)
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
-
-                return NotFound();
-            }
-
-            var workersFieldDto = lastWorkerField.ToWorkersFieldRequestDto();
-            
-            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = workersFieldDto.WorkerId }, workersFieldDto);
+            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = lastWorkerField.WorkerId }, lastWorkerField);
 
             _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created");
 

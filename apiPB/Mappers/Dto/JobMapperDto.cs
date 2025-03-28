@@ -7,18 +7,18 @@ namespace apiPB.Mappers.Dto
     public static class JobMapperDto
     {
         // Dto Modelli
-        public static VwApiJobDto ToVwApiJobDto(this VwApiJob jobModel)
+        public static JobDto ToJobDto(this VwApiJob jobModel)
         {
-            return new VwApiJobDto
+            return new JobDto
             {
                 Job = jobModel.Job ?? string.Empty,
                 Description = jobModel.Description ?? string.Empty
             };
         }
 
-        public static VwApiMoDto ToVwApiMoDto(this VwApiMo moModel)
+        public static MoDto ToMoDto(this VwApiMo moModel)
         {
-            return new VwApiMoDto
+            return new MoDto
             {
                 Job = moModel.Job ?? string.Empty,
                 RtgStep = moModel.RtgStep,
@@ -35,9 +35,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static VwApiMostepDto ToVwApiMostepDto(this VwApiMostep mostepModel)
+        public static MostepDto ToMostepDto(this VwApiMostep mostepModel)
         {
-            return new VwApiMostepDto
+            return new MostepDto
             {
                 Job = mostepModel.Job ?? string.Empty,
                 RtgStep = mostepModel.RtgStep,
@@ -49,9 +49,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static VwApiMocomponentDto ToVwApiMocomponentDto(this VwApiMocomponent mocomponentModel)
+        public static MocomponentDto ToMocomponentDto(this VwApiMocomponent mocomponentModel)
         {
-            return new VwApiMocomponentDto
+            return new MocomponentDto
             {
                 Job = mocomponentModel.Job ?? string.Empty,
                 Moid = mocomponentModel.Moid,
@@ -73,9 +73,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static VwApiMoStepsComponentDto ToVwApiMoStepsComponentDto(this VwApiMoStepsComponent moStepsComponentModel)
+        public static MoStepsComponentDto ToMoStepsComponentDto(this VwApiMoStepsComponent moStepsComponentModel)
         {
-            return new VwApiMoStepsComponentDto
+            return new MoStepsComponentDto
             {
                 Job = moStepsComponentModel.Job ?? string.Empty,
                 RtgStep = moStepsComponentModel.RtgStep,
@@ -95,9 +95,9 @@ namespace apiPB.Mappers.Dto
         }
 
         // Dto Richieste
-        public static VwApiMoRequestDto ToVwApiMoRequestDto(this VwApiMo moModel)
+        public static MoRequestDto ToMoRequestDto(this VwApiMo moModel)
         {
-            return new VwApiMoRequestDto
+            return new MoRequestDto
             {
                 Job = moModel.Job ?? string.Empty,
                 RtgStep = moModel.RtgStep,
@@ -106,25 +106,25 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static VwApiMostepRequestDto ToVwApiMostepRequestDto(this VwApiMostep mostepModel)
+        public static MostepRequestDto ToMostepRequestDto(this VwApiMostep mostepModel)
         {
-            return new VwApiMostepRequestDto
+            return new MostepRequestDto
             {
                 Job = mostepModel.Job ?? string.Empty
             };
         }
 
-        public static VwApiMocomponentRequestDto ToVwApiMocomponentRequestDto(this VwApiMocomponent mocomponentModel)
+        public static MocomponentRequestDto ToMocomponentRequestDto(this VwApiMocomponent mocomponentModel)
         {
-            return new VwApiMocomponentRequestDto
+            return new MocomponentRequestDto
             {
                 Job = mocomponentModel.Job ?? string.Empty
             };
         }
 
-        public static VwApiMoStepsComponentRequestDto ToVwApiMoStepsComponentRequestDto(this VwApiMoStepsComponent moStepsComponentModel)
+        public static MoStepsComponentRequestDto ToMoStepsComponentRequestDto(this VwApiMoStepsComponent moStepsComponentModel)
         {
-            return new VwApiMoStepsComponentRequestDto
+            return new MoStepsComponentRequestDto
             {
                 Job = moStepsComponentModel.Job ?? string.Empty,
                 RtgStep = moStepsComponentModel.RtgStep,

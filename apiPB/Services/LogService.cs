@@ -85,6 +85,15 @@ namespace apiPB.Services
             }
         }
 
+        public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item)
+        {
+            AppendMessageToLog(requestType, statusCode, statusMessage);
+            if (item != null)
+            {
+                AppendItemToLog(item);
+            }
+        }
+
         // Metodo che aggiunge una lista di oggetti al file di log
         // Questo metodo riceve una lista generica come parametro
         private void AppendListToLog<T>(List<T> list)
@@ -116,6 +125,32 @@ namespace apiPB.Services
                 writer.WriteLine();
             }
 
+            writer.WriteLine();
+        }
+
+        // Metodo che aggiunge un oggetto al file di log
+        // Questo metodo riceve un oggetto generico come parametro
+        private void AppendItemToLog<T>(T item)
+        {
+            CreateLogFile();
+
+            using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(fileStream);
+
+            PropertyInfo[] property = typeof(T).GetProperties();
+
+            writer.Write("\t");
+
+            foreach (var p in property)
+            {
+                var value = p.GetValue(item); 
+                writer.Write($"{p.Name}: {value}");
+
+                if (p != property.Last())
+                {
+                    writer.Write(" - ");
+                }
+            }
             writer.WriteLine();
         }
     }
