@@ -68,32 +68,6 @@ namespace apiPB.Controllers
         public async Task<IActionResult> UpdateOrCreateLastLogin([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
-            // Chiama un service che prende un PasswordWorkersRequestDto e restituisce un VwApiWorkerDto
-            // Questo Dto viene passato per la chiamata alla stored procedure che accetta un VwApiWorkerDto
-            // e restituisce un Task. L'idea è far ritornare un VwApiWorkerDto con l'ultimo login aggiornato
-            // o inserito con un nuovo record
-            // Removed 'async' keyword as no asynchronous operations are present in this method.
-            //var worker = _passwordWorkersRequestService.GetWorkerByPassword(passwordWorkersRequestDto);
-
-            // if (worker == null)
-            // {
-            //     _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
-
-            //     return NotFound();
-            // }
-            
-            // await _passwordWorkersRequestService.CallStoredProcedure(worker);
-
-            // var lastWorkerField = _passwordWorkersRequestService.GetLastWorkerFieldLine(worker);
-
-            // if (lastWorkerField == null)
-            // {
-            //     _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
-
-            //     return NotFound();
-            // }
-
             var lastWorkerField = await _workerRequestService.UpdateOrCreateLastLogin(passwordWorkersRequestDto);
 
             if(lastWorkerField == null)
