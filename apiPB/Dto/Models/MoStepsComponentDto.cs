@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
-    public class VwApiMoDto
+    public class MoStepsComponentDto
     {
         public string Job { get; set; } = null!;
 
@@ -14,6 +14,10 @@ namespace apiPB.Dto.Models
         public string Alternate { get; set; } = null!;
 
         public short AltRtgStep { get; set; }
+
+        public short? Position { get; set; }
+
+        public string? Component { get; set; }
 
         public string? Bom { get; set; }
 

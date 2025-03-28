@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
-    public class RmWorkersFieldDto
+    public class WorkersFieldDto
     {
         public int WorkerId { get; set; }
         public short Line { get; set; }

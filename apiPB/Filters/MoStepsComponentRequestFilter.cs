@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class VwApiMoStepsComponentRequestFilter
+    public class MoStepsComponentRequestFilter
     {
         public string Job { get; set; } = null!;
 

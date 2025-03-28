@@ -8,9 +8,9 @@ namespace apiPB.Mappers.Dto
     public static class WorkerMapperDto
     {
         // Models
-        public static VwApiWorkerDto ToWorkerDto(this VwApiWorker workerModel)
+        public static WorkerDto ToWorkerDto(this VwApiWorker workerModel)
         {
-            return new VwApiWorkerDto
+            return new WorkerDto
             {
                 WorkerId = workerModel.WorkerId,
                 Name = workerModel.Name ?? string.Empty,
@@ -24,9 +24,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static RmWorkersFieldDto ToWorkersFieldDto(this RmWorkersField workersField)
+        public static WorkersFieldDto ToWorkersFieldDto(this RmWorkersField workersField)
         {
-            return new RmWorkersFieldDto
+            return new WorkersFieldDto
             {
                 WorkerId = workersField.WorkerId,
                 Line = workersField.Line,

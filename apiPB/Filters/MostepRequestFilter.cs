@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Dto.Models
+namespace apiPB.Filters
 {
-    public class VwApiJobDto
+    public class MostepRequestFilter
     {
         public string Job { get; set; } = null!;
-
-        public string? Description { get; set; }
     }
 }

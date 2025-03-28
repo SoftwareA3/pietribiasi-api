@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class VwApiMostepRequestDto
+    public class MocomponentRequestDto
     {
         public string Job { get; set; } = null!;
     }

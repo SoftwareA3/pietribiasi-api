@@ -1,0 +1,68 @@
+using apiPB.Mappers.Dto;
+using apiPB.Services.Request.Abstraction;
+using apiPB.Repository.Abstraction;
+using apiPB.Dto.Models;
+using apiPB.Dto.Request;
+using apiPB.Filters;
+using AutoMapper;
+
+namespace apiPB.Services.Request.Implementation
+{
+    public class WorkersRequestService : IWorkersRequestService
+    {
+        // Mappa automaticamente il Dto nei Filter, chiama il repository per eseguire la query e mappa il risultato in un Dto
+        private readonly IWorkerRepository _workerRepository;
+        private readonly IMapper _mapper;
+
+        public WorkersRequestService(IWorkerRepository workerRepository, IMapper mapper)
+        {
+            _workerRepository = workerRepository;
+            _mapper = mapper;
+        }
+
+        public IEnumerable<WorkerDto> GetWorkers()
+        {
+            return _workerRepository.GetWorkers()
+            .Select(w => w.ToWorkerDto());
+        }
+
+        public WorkerDto? GetWorkerByPassword(PasswordWorkersRequestDto request)
+        {
+            var filter = _mapper.Map<PasswordWorkersRequestFilter>(request);
+            var worker = _workerRepository.GetWorkerByPassword(filter);
+            return worker != null ? worker.ToWorkerDto() : null;
+        }
+
+        public Task CallStoredProcedure(WorkerDto request)
+        {
+            var filter = _mapper.Map<WorkerIdRequestFilter>(request);
+            return _workerRepository.CallStoredProcedure(filter);
+        }
+
+        public IEnumerable<WorkersFieldDto> GetWorkersFieldsById(WorkersFieldRequestDto request)
+        {
+            var filter = _mapper.Map<WorkerIdRequestFilter>(request);
+            return _workerRepository.GetWorkersFieldsById(filter)
+            .Select(w => w.ToWorkersFieldDto());
+        }
+
+        public WorkersFieldDto? GetLastWorkerFieldLine(WorkerDto request)
+        {
+            var filter = _mapper.Map<WorkerIdRequestFilter>(request);
+            var worker = _workerRepository.GetLastWorkerFieldLine(filter);
+            return worker != null ? worker.ToWorkersFieldDto() : null;
+        }
+
+        public async Task<WorkersFieldDto?> UpdateOrCreateLastLogin(PasswordWorkersRequestDto request)
+        {
+            var workerDto = GetWorkerByPassword(request);
+            if (workerDto == null)
+            {
+                return null;
+            }
+            var filter = _mapper.Map<PasswordWorkersRequestFilter>(workerDto);
+            await _workerRepository.CreateOrUpdateLastLogin(filter);
+            return GetLastWorkerFieldLine(workerDto);
+        }
+    }
+}

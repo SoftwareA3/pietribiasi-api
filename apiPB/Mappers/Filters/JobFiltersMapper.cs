@@ -9,10 +9,10 @@ namespace apiPB.Mappers.Filter
         public JobFiltersMapper()
         {
             //Mappa automaticamente i Dto nei Filters
-            CreateMap<VwApiMoRequestDto, VwApiMoRequestFilter>();
-            CreateMap<VwApiMostepRequestDto, VwApiMostepRequestFilter>();
-            CreateMap<VwApiMocomponentRequestDto, VwApiMocomponentRequestFilter>();
-            CreateMap<VwApiMoStepsComponentRequestDto, VwApiMoStepsComponentRequestFilter>();
+            CreateMap<MoRequestDto, MoRequestFilter>();
+            CreateMap<MostepRequestDto, MostepRequestFilter>();
+            CreateMap<MocomponentRequestDto, MocomponentRequestFilter>();
+            CreateMap<MoStepsComponentRequestDto, MoStepsComponentRequestFilter>();
         }
     }
 }

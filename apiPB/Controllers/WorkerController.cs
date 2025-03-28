@@ -4,6 +4,7 @@ using apiPB.Dto.Request;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Repository.Abstraction;
+using apiPB.Dto.Models;
 using apiPB.Services.Request.Abstraction;
 
 namespace apiPB.Controllers
@@ -13,20 +14,14 @@ namespace apiPB.Controllers
     public class WorkerController : ControllerBase
     {
         private readonly LogService _logService;
-        private readonly IRmWorkersFieldRepository _rmWorkersFieldRepository;
-        private readonly IPasswordWorkersRequestService _passwordWorkersRequestService;
-        private readonly IVwApiWorkerRepository _vwApiWorkerRepository;
+        private readonly IWorkersRequestService _workerRequestService;
         
         public WorkerController(LogService logService,
-        IRmWorkersFieldRepository rmWorkersFieldRepository,
-        IPasswordWorkersRequestService passwordWorkersRequestService,
-        IVwApiWorkerRepository vwApiWorkerRepository 
+        IWorkersRequestService workersRequestService
         )
         {
             _logService = logService;
-            _rmWorkersFieldRepository = rmWorkersFieldRepository;
-            _passwordWorkersRequestService = passwordWorkersRequestService;
-            _vwApiWorkerRepository = vwApiWorkerRepository;
+            _workerRequestService = workersRequestService;
         }
 
         // Ritorna tutti i VwWorkers presenti nella vista del database
@@ -35,8 +30,7 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var workersDto = _vwApiWorkerRepository.GetVwApiWorkers()
-            .Select(w => w.ToWorkerDto());
+            var workersDto = _workerRequestService.GetWorkers();
 
             if (workersDto.IsNullOrEmpty())
             {
@@ -55,18 +49,16 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var workersFieldDto = _rmWorkersFieldRepository.GetRmWorkersFieldsById(id)
-            .Select(w => w.ToWorkersFieldRequestDto())
-            .ToList();
+            var workersFieldDto = _workerRequestService.GetWorkersFieldsById(new WorkersFieldRequestDto { WorkerId = id });
 
-            if(workersFieldDto.IsNullOrEmpty())
+            if(workersFieldDto == null)
             {
                 _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto);
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto);
             
             return Ok(workersFieldDto);
         }
@@ -77,30 +69,41 @@ namespace apiPB.Controllers
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var worker = _passwordWorkersRequestService.GetWorkerByPassword(passwordWorkersRequestDto);
+            // Chiama un service che prende un PasswordWorkersRequestDto e restituisce un VwApiWorkerDto
+            // Questo Dto viene passato per la chiamata alla stored procedure che accetta un VwApiWorkerDto
+            // e restituisce un Task. L'idea è far ritornare un VwApiWorkerDto con l'ultimo login aggiornato
+            // o inserito con un nuovo record
+            // Removed 'async' keyword as no asynchronous operations are present in this method.
+            //var worker = _passwordWorkersRequestService.GetWorkerByPassword(passwordWorkersRequestDto);
 
-            if (worker == null)
+            // if (worker == null)
+            // {
+            //     _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+            //     return NotFound();
+            // }
+            
+            // await _passwordWorkersRequestService.CallStoredProcedure(worker);
+
+            // var lastWorkerField = _passwordWorkersRequestService.GetLastWorkerFieldLine(worker);
+
+            // if (lastWorkerField == null)
+            // {
+            //     _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+            //     return NotFound();
+            // }
+
+            var lastWorkerField = await _workerRequestService.UpdateOrCreateLastLogin(passwordWorkersRequestDto);
+
+            if(lastWorkerField == null)
             {
                 _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
 
                 return NotFound();
             }
             
-            // Fixme: passa un int quando dovrebbe passare un filter
-            await _vwApiWorkerRepository.CallStoredProcedure(worker.WorkerId);
-
-            var lastWorkerField = _rmWorkersFieldRepository.GetLastWorkerFieldLine(worker.WorkerId);
-
-            if (lastWorkerField == null)
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
-
-                return NotFound();
-            }
-
-            var workersFieldDto = lastWorkerField.ToWorkersFieldRequestDto();
-            
-            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = workersFieldDto.WorkerId }, workersFieldDto);
+            var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = lastWorkerField.WorkerId }, lastWorkerField);
 
             _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created");
 
