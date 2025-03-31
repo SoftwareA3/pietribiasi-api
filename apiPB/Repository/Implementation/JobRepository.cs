@@ -15,14 +15,11 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_jobs
         public IEnumerable<VwApiJob> GetJobs()
         {
             return _context.VwApiJobs.AsNoTracking().ToList();
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_mocomponents
-        // Parametri: Job
         public IEnumerable<VwApiMocomponent> GetMocomponent(MocomponentRequestFilter filter)
         {
             return _context.VwApiMocomponents
@@ -30,8 +27,6 @@ namespace apiPB.Repository.Implementation
             .AsNoTracking();
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_mo
-        // Parametri di ricerca: Job, RtgStep, Alternate, AltRtgStep
         public IEnumerable<VwApiMo> GetMo(MoRequestFilter filter)
         {
             return _context.VwApiMos
@@ -43,8 +38,6 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_mosteps
-        // Parametri: Job
         public IEnumerable<VwApiMostep> GetMostep(MostepRequestFilter filter)
         {
             return _context.VwApiMosteps
@@ -53,9 +46,13 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_mo_steps_component
-        // Parametri di ricerca: Job, RtgStep, Alternate, AltRtgStep
-        // Parametri di ricerca opzionali: Position, Component
+        /// <summary>
+        /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Job, RtgStep, Alternate, AltRtgStep.Il filtro contiene parametri opzionali: Position, Component</param>
+        /// <returns>
+        /// IEnumerable di VwApiMoStepsComponent: restituisce una collezione generica di modelli VwApiMoStepsComponent
+        /// </returns>
         public IEnumerable<VwApiMoStepsComponent> GetMoStepsComponent(MoStepsComponentRequestFilter filter)
         {
             var query = _context.VwApiMoStepsComponents

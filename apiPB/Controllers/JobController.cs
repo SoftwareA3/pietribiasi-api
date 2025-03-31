@@ -23,9 +23,15 @@ namespace apiPB.Controllers
         }
 
         [HttpGet]
-        // Ritorna tutte le informazioni della vista vw_api_jobs
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_jobs
+        /// </summary>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_jobs</response>
+        /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiJobs()
         {
+            // Stringa necessaria per il log: inserisce il nome del metodo e il percorso della richiesta
+            // Esempio: GET api/job
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var jobsDto = _jobRequestService.GetJobs()
@@ -44,7 +50,12 @@ namespace apiPB.Controllers
         }
 
         [HttpPost("mo")]
-        // Ritorna tutte le informazioni della vista vw_api_mo
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo
+        /// </summary>
+        /// <param name="moRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo</response>
+        /// <response code="404">Non trovato</response>
         public IActionResult GetVWApiMoFromBody([FromBody] MoRequestDto moRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
@@ -64,7 +75,12 @@ namespace apiPB.Controllers
         }
 
         [HttpPost("mostep")]
-        // Ritorna tutte le informazioni della vista vw_api_mostep
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mostep
+        /// </summary>
+        /// <param name="mostepRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
+        /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiMostepFromBody([FromBody] MostepRequestDto mostepRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
@@ -84,7 +100,12 @@ namespace apiPB.Controllers
         }
 
         [HttpPost("mocomponent")]
-        // Ritorna tutte le informazioni della vista vw_api_mocomponent
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mocomponent
+        /// </summary>
+        /// <param name="moComponentRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mocomponent</response>
+        /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiMocomponent([FromBody] MocomponentRequestDto moComponentRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
@@ -104,7 +125,12 @@ namespace apiPB.Controllers
         }
 
         [HttpPost("mostepcomponent")]
-        // Ritorna tutte le informazioni della vista vw_api_mo_steps_components
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components
+        /// </summary>
+        /// <param name="moStepsComponentRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiMoStepsComponent([FromBody] MoStepsComponentRequestDto moStepsComponentRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";

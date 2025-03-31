@@ -1,5 +1,9 @@
 # Pietribiasi API
 
+# FrontEnd
+
+# Backend
+
 ## Controllers
 I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT, DELETE)
 
@@ -50,3 +54,40 @@ Sono necessari per ridurre al minimo il compito dei controllers, che si occupera
 - Filters: per passarli come parametri ai Services
 - Repository: per ricevere i filtri e gestire la logica delle richieste
 - Dtos: per ricevere i Dto di richiesta come parametri e ritornare i Dto inviabili all'utente
+
+## Sequenza di esecuzione
+
+### Richieste GET
+Nel controller, alla richiesta di un GET all'API, non vengono passati argomenti come parametri del metodo oppure viene passato un parametro che prende delle informazioni dalla Route.
+**Senza parametri:** Viene creata una variabile che sarà il Dto da ritornare all'utente. Questa variabile viene inizializzata invocando un servizio, che non richiede parametri.
+**Con un parametro preso da Route:** Viene creata una variabile che sarà il Dto da ritornare all'utente. Questa variabile viene inizializzata invocando un servizio. Il servizio richiederà un RequestDto come parametro che potrà essere inizializzato prima dell'invocazione del metodo o direttamente creato al passaggio del parametro.
+
+### Richieste POST
+Nel controller, alla richiesta di un POST all'API, viene richiesto all'utente dall'interfaccia, di inserire dei parametri specifici. Questi parametri saranno salvati in formato JSON e presi come parametro dal metodo che si occuperà di gestire la richiesta.
+
+### Di seguito:
+- Nel service viene invocato un mapper che si occuperà di mappare il Dto passato (se presente) nel rispettivo Filter;
+- Verrà invocato un Repository che si occuperà della logica della richiesta, eseguendo ad esempio una query o invocando una stored procedure;
+- Il Repository ritornerà un Model che, se necessario, verrà mappato dal Service in un Dto specifico per restituire solo alcune informazioni all'utente;
+- Altrimenti il Model ritornato verrà mappato nel rispettivo Dto e restituito sotto forma di IEnumerable, ossia una raccolta generica
+- Nel Controller viene fatta una conversione a ToList() del tipo di ritorno (se è una lista);
+- Viene fatto un controllo di esistenza sulla lista o l'elemento ritornato;
+- Nel caso di "null" o "List.Empty()", viene ritornato un messaggio "NotFound()" all'utente e viene inserito l'errore nel file di log API.log;
+- In caso di successo, verrà ritornato un messaggio "Ok()" o "Created()" che ritorerà le informazioni richieste, lo stato di successo e il rispettivo messaggio. Verrà prima aggiunta la richiesta sul file API.log con le informazioni restituite all'utente.
+
+## Comandi
+
+### Avvio API
+Per avviare l'API, il comando è: ```dotnet run watch```. Questo comando aprirà una porta di comunicazione con l'API e renderà accessibile un'interfaccia su quella porta tramite Swagger (o Postman)
+
+### Scaffolding
+Per eseguire lo scaffolding del database e creare in automatico sia le tabelle che il DbContext, si deve usare il comando:
+``` shell
+dotnet ef dbcontext scaffold "Data Source=SERVERNAME\SQLEXPRESS;Initial Catalog=NOMEDATABASE;User ID=user_id;Password=password;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" Microsoft.EntityFrameworkCore.SqlServer --output-dir models_directory --context-dir db_context_directory --context nome_file_dbcontext --table table_1 --table table_2 --force
+```
+- La stringa del database è prefissata e alcuni campi probabilmente non servono. Sono da modificare i campi "Data Source" con l'IP del database o il nome del Server; "Initial Catalog" con il nome del database; "User ID" e "Password" con le credenziali di accesso al server.
+- "--output-dir" indica la directory di destinazione per il salvataggio dei modelli presi dal database
+- "--context" indica la directory dove verrà salvato il file che descrive il contesto del database
+- "--context" con il nome che si vuole dare al file che genererà in automatico la classe derivata da DbContext, classe che descriverà i modelli e si occuperà di interrogare il database. Alla creazione del file, scriverà anche la stringa di connessione al database sul codice, che andrà poi tolta, ma mantenuto un riferimento
+- "--table" indica il nome delle tabelle che si vogliono recuperare e "simulare" dal database. Si possono inserire tabelle e viste indifferentemente e basta indicare il nome (ad esempio dbo.User diventa User)
+- "--force" è una direttiva che permette di sovrascrivere dati o file già creati, in modo da non doverli rimuovere a mano.

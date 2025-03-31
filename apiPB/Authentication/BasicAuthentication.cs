@@ -35,12 +35,9 @@ namespace apiPB.Authentication
             // Controlla l'esistenza dell'header Authorization
             if (!Request.Headers.TryGetValue("Authorization", out var headerValues))
             {
-                // Logger.LogWarning("Authorization header is missing.");
-                // return Task.FromResult(AuthenticateResult.Fail("Authorization header is missing."));
+                _logService.AppendMessageToLog("Authorization header is missing.", 401, "Unauthorized");
                 
                 var miss = Task.FromResult(AuthenticateResult.Fail("Authorization header is missing."));
-                
-                _logService.AppendMessageToLog("Authorization header is missing.", 401, "Unauthorized");
                 
                 return miss;
             }
@@ -51,10 +48,9 @@ namespace apiPB.Authentication
             if (string.IsNullOrWhiteSpace(authHeader) || 
                 !authHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
             {
-                // Logger.LogWarning("Authorization header is missing or invalid.");
-                var miss = Task.FromResult(AuthenticateResult.Fail("Missing or invalid Authorization header."));
-
                 _logService.AppendMessageToLog("Authorization header is missing or invalid.", 401, "Unauthorized");
+
+                var miss = Task.FromResult(AuthenticateResult.Fail("Missing or invalid Authorization header."));
 
                 return miss;
             }
@@ -63,10 +59,9 @@ namespace apiPB.Authentication
             string encodedCredentials = authHeader.Substring("Basic ".Length).Trim();
             if (string.IsNullOrWhiteSpace(encodedCredentials))
             {
-                // Logger.LogWarning("Encoded credentials are empty.");
-                var empty = Task.FromResult(AuthenticateResult.Fail("Empty credentials."));
-
                 _logService.AppendMessageToLog("Encoded credentials are empty.", 401, "Unauthorized");
+
+                var empty = Task.FromResult(AuthenticateResult.Fail("Empty credentials."));
 
                 return empty;
             }
@@ -79,10 +74,9 @@ namespace apiPB.Authentication
             }
             catch (FormatException)
             {
-                // Logger.LogWarning("Base64 decoding failed for the Authorization header.");
-                var invalid = Task.FromResult(AuthenticateResult.Fail("Invalid Base64 string."));
-
                 _logService.AppendMessageToLog("Base64 decoding failed for the Authorization header.", 401, "Unauthorized");
+
+                var invalid = Task.FromResult(AuthenticateResult.Fail("Invalid Base64 string."));
 
                 return invalid;
             }
@@ -92,10 +86,10 @@ namespace apiPB.Authentication
             // Se il separatore è minore di 0 o è in una posizione non valida ritorna errore
             if (separatorIndex <= 0)
             {
-                // Logger.LogWarning("Invalid credentials format: ':' separator missing or in an invalid position.");
+                _logService.AppendMessageToLog("Invalid credentials format: ':' separator missing or in an invalid position.", 401, "Unauthorized");
+
                 var invalid = Task.FromResult(AuthenticateResult.Fail("Invalid credentials format."));
 
-                _logService.AppendMessageToLog("Invalid credentials format: ':' separator missing or in an invalid position.", 401, "Unauthorized");
                 return invalid;
             }
 
@@ -108,10 +102,9 @@ namespace apiPB.Authentication
             // Controlla se username o password sono vuoti
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
-                // Logger.LogWarning("Empty username or password provided.");
-                var empty = Task.FromResult(AuthenticateResult.Fail("Empty username or password."));
-
                 _logService.AppendMessageToLog("Empty username or password provided.", 401, "Unauthorized");
+
+                var empty = Task.FromResult(AuthenticateResult.Fail("Empty username or password."));
 
                 return empty;
             }
@@ -120,11 +113,9 @@ namespace apiPB.Authentication
             // La funzione e questa condizione sono sostituibili in caso di cambio di meccanismo per la validazione
             if (!ValidateCredentials(username, password))
             {
-                // Logger.LogWarning("Invalid username or password for user: {Username}", username);
+                _logService.AppendMessageToLog($"Invalid username or password for user: {username}", 401, "Unauthorized");
                 
                 var invalid = Task.FromResult(AuthenticateResult.Fail("Invalid username or password."));
-
-                _logService.AppendMessageToLog($"Invalid username or password for user: {username}", 401, "Unauthorized");
                 
                 return invalid;
             }
@@ -135,9 +126,9 @@ namespace apiPB.Authentication
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
-            var success = Task.FromResult(AuthenticateResult.Success(ticket));
-
             _logService.AppendMessageToLog($"User {username} authenticated successfully.", 200, "OK");
+
+            var success = Task.FromResult(AuthenticateResult.Success(ticket));
 
             return success;
         }

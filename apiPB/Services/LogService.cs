@@ -64,7 +64,12 @@ namespace apiPB.Services
             return ipAddress;
         } 
 
-        // Metodo che aggiunge un messaggio al file di log, passando informazioni specifiche
+        /// <summary>
+        /// Metodo che aggiunge un messaggio al file di log, passando informazioni specifiche
+        /// </summary>
+        /// <param name="requestType">Tipo di richiesta e percorso di questa. Ad esempio: GET api/user</param>
+        /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
+        /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
         public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage)
         {
             CreateLogFile();
@@ -76,6 +81,14 @@ namespace apiPB.Services
             writer.WriteLine(message);
         }
 
+        /// <summary>
+        /// Chiama il metodo AppendMessageToLog e aggiunge una lista di oggetti generici al file di log
+        /// </summary>
+        /// <typeparam name="T">Nome del tipo di classe o oggetto passato in una lista generica</typeparam>
+        /// <param name="requestType">Tipo di richiesta e percorso di questa. Ad esempio: GET api/user</param>
+        /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
+        /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
+        /// <param name="list">Lista di tipo generico</param>
         public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list)
         {
             AppendMessageToLog(requestType, statusCode, statusMessage);
@@ -85,6 +98,14 @@ namespace apiPB.Services
             }
         }
 
+        /// <summary>
+        /// Chiama il metodo AppendMessageToLog e aggiunge un oggetto generico al file di log
+        /// </summary>
+        /// <typeparam name="T">Nome del tipo di classe o oggetto passato</typeparam>
+        /// <param name="requestType">Tipo di richiesta e percorso di questa. Ad esempio: GET api/user</param>
+        /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
+        /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
+        /// <param name="item">Oggetto generico</param>
         public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item)
         {
             AppendMessageToLog(requestType, statusCode, statusMessage);

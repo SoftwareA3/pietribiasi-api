@@ -24,10 +24,16 @@ namespace apiPB.Controllers
             _workerRequestService = workersRequestService;
         }
 
-        // Ritorna tutti i VwWorkers presenti nella vista del database
         [HttpGet]
+        /// <summary>
+        /// Ritorna tutti i VwWorkers presenti nella vista del database
+        /// </summary>
+        /// <response code="200">Ritorna tutti i VwWorkers</response>
+        /// <response code="404">Non trovato</response>
         public IActionResult GetAllWorkers()
         {
+            // Stringa necessaria per il log: inserisce il nome del metodo e il percorso della richiesta
+            // Esempio: GET api/worker
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var workersDto = _workerRequestService.GetWorkers();
@@ -45,6 +51,12 @@ namespace apiPB.Controllers
         }
 
         [HttpGet("workersfield/{id}")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della tabella RmWorkersField
+        /// </summary>
+        /// <param name="id">Id del lavoratore</param>
+        /// <response code="200">Ritorna tutte le informazioni della tabella RmWorkersField</response>
+        /// <response code="404">Non trovato</response>
         public IActionResult GetWorkersFieldsById([FromRoute] int id)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
@@ -63,8 +75,13 @@ namespace apiPB.Controllers
             return Ok(workersFieldDto);
         }
 
-        // Ritorna Alcune informazioni della tabella RmWorkersField con Last Login aggiornato o inserito con un nuovo record
         [HttpPost("lastlogin")]
+        /// <summary>
+        /// Ritorna Alcune informazioni della tabella RmWorkersField con Last Login aggiornato o inserito con un nuovo record
+        /// /// </summary>
+        /// <param name="passwordWorkersRequestDto">Oggetto PasswordWorkersRequestDto: richiede la password dell'utente</param>
+        /// <response code="201">Creato</response>
+        /// <response code="404">Non trovato</response>
         public async Task<IActionResult> UpdateOrCreateLastLogin([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";

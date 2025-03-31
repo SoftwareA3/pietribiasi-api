@@ -16,20 +16,16 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_workers
         public IEnumerable<VwApiWorker> GetWorkers()
         {
             return _context.VwApiWorkers.AsNoTracking().ToList();
         }
 
-        // Restituisce tutte le informazioni della vista vw_api_workers 
-        // Parametri: Password
         public VwApiWorker? GetWorkerByPassword(PasswordWorkersRequestFilter filter)
         {
             return _context.VwApiWorkers.AsNoTracking().FirstOrDefault(w => w.Password == filter.Password);
         }
 
-        // Invoca la stored procedure dbo.InsertWorkersFields passando workerId e la dataora corrente
         public Task CallStoredProcedure(WorkerIdRequestFilter filter)
         {
             Console.WriteLine("Calling stored procedure dbo.InsertWorkersFields: {0}, {1}", filter.WorkerId, filter.FieldValue);
@@ -56,7 +52,6 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
-        // Esegue la query per ottenere il record con linea massima, dato il workerId
         public RmWorkersField? GetLastWorkerFieldLine(WorkerIdRequestFilter filter)
         {
             // SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC
