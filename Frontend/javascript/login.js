@@ -1,47 +1,61 @@
-document.addEventListener("DOMContentLoaded", function() {
+import { fetchWithAuth } from "./fetch.js";
+
+document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.getElementById("login-form");
 
-    // Verifica se il form di login esiste sul type="submit"
-    loginForm.addEventListener("submit", function(event) {
-        event.preventDefault(); 
+    // Controlla se l'utente è autenticato e la pagina è già stata caricata
+    // In quel caso, mostra il messaggio di successo e reindirizza
+    if(localStorage.getItem("apiResults") != null) {
+        const resultDiv = document.getElementById("login-result");
+        resultDiv.textContent = "Login effettuato con successo: \nReindirizzamento fra 3 secondi...";
+        setTimeout(() => {
+            window.location.href = "../html/request.html";
+        }, 3000);
+    }
 
-        // Recupera i valori dal form
-        const username = document.querySelector("input[name='username']").value;
-        const password = document.querySelector("input[name='password']").value;
-        
-        // Codifica le credenziali in Base64
-        const credentials = btoa(username + ":" + password);
-        
-        // Salva le credenziali in sessionStorage (si può usare anche localStorage)
-        sessionStorage.setItem("basicAuthCredentials", credentials);
-        
-        // Aggiorna il contenuto della pagina per informare l'utente
-        document.getElementById("result").textContent = "Credenziali salvate. Ora sei autenticato.";
-    });
+    if (loginForm) {
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const resultDiv = document.getElementById("login-result");
+            resultDiv.textContent = "Autenticazione in corso...";
+
+            // Recupera le informazioni dal form
+            const username = document.querySelector("#login-username").value;
+            const password = document.querySelector("#login-password").value;
+
+            // COntrolla che tutte le informazioni siano state inserite
+            if (!username || !password) {
+                resultDiv.textContent = "Username e password sono obbligatori.";
+                return false;
+            }
+
+            const credentials = btoa(username + ":" + password);
+            localStorage.setItem("basicAuthCredentials", credentials);
+
+            try {
+                // Chiama la funzione fetchWithAuth per inviare la richiesta
+                const response = await fetchWithAuth("http://localhost:5245/api/auth/login", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    return true;
+                } else {
+                    resultDiv.textContent = "Errore nella richiesta: " + response.status + " - " + response.statusText;
+                    return false;
+                }
+            } catch (error) {
+                resultDiv.textContent = "Errore: " + error.message;
+                console.error("Errore nella richiesta:", error);
+            }
+            return false;
+        });
+    }
 });
 
-/**
- * Funzione di esempio per effettuare una chiamata fetch con Basic Authentication.
- * Questa funzione può essere richiamata in altre parti dell'applicazione.
- */
-async function fetchWithAuth(url, options = {}) {
-    // Recupera le credenziali salvate
-    const credentials = sessionStorage.getItem("basicAuthCredentials");
-    
-    if (!credentials) {
-        throw new Error("Credenziali non presenti. Effettua il login prima di chiamare l'API.");
-    }
-    
-    // Imposta l'header Authorization
-    const headers = {
-        "Authorization": "Basic " + credentials,
-        ...options.headers
-    };
-    
-    const response = await fetch(url, {
-        ...options,
-        headers: headers
-    });
-    
-    return response;
-}

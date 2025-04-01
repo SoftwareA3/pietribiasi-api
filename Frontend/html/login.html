@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../javascript/login.js" defer></script>
+    <script src="../javascript/login.js" type="module" defer></script>
+    <script src="../javascript/fetch.js" type="module"></script>
     <title>Login</title>
 </head>
 <body>
     <h1>
         Login
     </h1>
-    <form action="" id="login-form">
+    <form id="login-form">
         <fieldset>
             <legend>Inserire Credenziali</legend>
-            <label for="username">Username</label>
-            <input type="text" name="username" class="form-control" required>
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" name="username" class="form-control" required>
 
-            <label for="password">Password</label>
-            <input type="password" name="password" class="form-control" required>
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" class="form-control" required>
             
             <button type="submit" class="submit-button">Send</button>
         </fieldset>
     </form>
 
-    <div id="result"></div>
+    <div id="login-result"></div>
 </body>
 </html>

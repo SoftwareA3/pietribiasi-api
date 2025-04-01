@@ -37,6 +37,16 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<LogService>();
     builder.Services.AddScoped<IWorkersRequestService, WorkersRequestService>();
     builder.Services.AddScoped<IJobRequestService, JobRequestService>();
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+    });
     
     
     // AutoMappers
@@ -53,6 +63,8 @@ var app = builder.Build();
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors("AllowAll");
 
     app.UseAuthentication();
     app.UseAuthorization();
