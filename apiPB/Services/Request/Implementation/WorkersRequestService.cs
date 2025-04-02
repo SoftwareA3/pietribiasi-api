@@ -35,20 +35,20 @@ namespace apiPB.Services.Request.Implementation
 
         public Task CallStoredProcedure(WorkerDto request)
         {
-            var filter = _mapper.Map<WorkerIdRequestFilter>(request);
+            var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
             return _workerRepository.CallStoredProcedure(filter);
         }
 
         public IEnumerable<WorkersFieldDto> GetWorkersFieldsById(WorkersFieldRequestDto request)
         {
-            var filter = _mapper.Map<WorkerIdRequestFilter>(request);
+            var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
             return _workerRepository.GetWorkersFieldsById(filter)
             .Select(w => w.ToWorkersFieldDto());
         }
 
         public WorkersFieldDto? GetLastWorkerFieldLine(WorkerDto request)
         {
-            var filter = _mapper.Map<WorkerIdRequestFilter>(request);
+            var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
             var worker = _workerRepository.GetLastWorkerFieldLine(filter);
             return worker != null ? worker.ToWorkersFieldDto() : null;
         }
@@ -63,6 +63,17 @@ namespace apiPB.Services.Request.Implementation
             var filter = _mapper.Map<PasswordWorkersRequestFilter>(workerDto);
             await _workerRepository.CreateOrUpdateLastLogin(filter);
             return GetLastWorkerFieldLine(workerDto);
+        }
+
+        public WorkerIdAndPasswordRequestDto? LoginWithPassword(PasswordWorkersRequestDto request)
+        {
+            var workerDto = GetWorkerByPassword(request);
+            if (workerDto == null)
+            {
+                return null;
+            }
+            UpdateOrCreateLastLogin(request).Wait();
+            return workerDto.ToWorkerIdAndPasswordRequestDto();
         }
     }
 }

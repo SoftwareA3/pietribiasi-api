@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class WorkerIdAndValueRequestFilter
+    public class WorkerIdAndPasswordFilter
     {
         public int WorkerId { get; set; }
-        public string FieldValue { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
