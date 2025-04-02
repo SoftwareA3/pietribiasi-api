@@ -8,7 +8,7 @@ export async function fetchWithAuth(url, options = {}) {
     const credentials = localStorage.getItem("basicAuthCredentials");
 
     // Se le credenziali non esistono, fa un refresh della pagina
-    if (!credentials) {t
+    if (!credentials) {
         window.location.href = "../html/login.html";
         throw new Error("Credenziali non presenti. Effettua il login prima di chiamare l'API.");
     }
