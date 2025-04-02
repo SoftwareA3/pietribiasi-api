@@ -21,6 +21,7 @@ namespace apiPB.Controllers
     // Controller per la verifica delle credenziali.
     public class AuthController : ControllerBase
     {
+<<<<<<< HEAD
         private readonly IWorkersRequestService _workerRequestService;
         private readonly LogService _logService;
 
@@ -54,6 +55,13 @@ namespace apiPB.Controllers
             return ok;   
         }
 
+=======
+        // Classe usata unicamente per la verifica delle credenziali.
+        public AuthController()
+        {
+        }
+
+>>>>>>> login-page
         [Authorize]
         [HttpGet("validate")]
         public IActionResult Login()

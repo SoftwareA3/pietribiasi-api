@@ -1,0 +1,29 @@
+:root {
+    --primary-color: #1A6CA8;
+    --secondary-color: #DDAD16;
+    --background-color: #f4f7f9;
+    --card-background: #ffffff;
+    --text-color: #333;
+    --header-text-color: #ffffff;
+    --button-text-color: #ffffff;
+    --input-border-color: #ccc;
+    --input-focus-border-color: var(--primary-color);
+    --border-radius: 6px;
+    --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#caption 
+{
+    text-align: center;
+    font-size: 0.8em;
+    color: #777;
+    margin-top: 15px;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
