@@ -30,6 +30,7 @@ namespace apiPB.Controllers
         [HttpGet("validate")]
         public IActionResult Login()
         {
+
             // Se il codice raggiunge questo punto, l'utente è già stato autenticato
             // dal middleware BasicAuthentication, quindi possiamo restituire un risultato positivo
             return Ok(new { 
