@@ -46,13 +46,6 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
-        /// <summary>
-        /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component
-        /// </summary>
-        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Job, RtgStep, Alternate, AltRtgStep.Il filtro contiene parametri opzionali: Position, Component</param>
-        /// <returns>
-        /// IEnumerable di VwApiMoStepsComponent: restituisce una collezione generica di modelli VwApiMoStepsComponent
-        /// </returns>
         public IEnumerable<VwApiMoStepsComponent> GetMoStepsComponent(MoStepsComponentRequestFilter filter)
         {
             var query = _context.VwApiMoStepsComponents

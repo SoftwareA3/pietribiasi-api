@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
+using apiPB.Services.Request.Abstraction;
 using apiPB.Services;
+using apiPB.Dto.Request;
 
 namespace apiPB.Authentication
 {
@@ -15,19 +17,19 @@ namespace apiPB.Authentication
     {
         private const string Realm = "Gestione Commesse";
         private readonly LogService _logService;
-
-        private readonly IConfiguration _configuration;
+        private readonly IWorkersRequestService _workerRequestService;
 
         public BasicAuthentication(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder, LogService logService, IConfiguration configuration)
+            UrlEncoder encoder, LogService logService, IWorkersRequestService workerRequestService)
             : base(options, logger, encoder)
         {
             // Inizializza il servizio di log per scrive i messaggi di log sul file API.log
             _logService = logService;
-            // Legge i valori da appsettings.json
-            _configuration = configuration;
+
+            // Servizio per interrogare il database e verificare le credenziali
+            _workerRequestService = workerRequestService;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -114,7 +116,7 @@ namespace apiPB.Authentication
             if (!ValidateCredentials(username, password))
             {
                 _logService.AppendMessageToLog($"Invalid username or password for user: {username}", 401, "Unauthorized");
-                
+
                 var invalid = Task.FromResult(AuthenticateResult.Fail("Invalid username or password."));
                 
                 return invalid;
@@ -137,8 +139,10 @@ namespace apiPB.Authentication
         // Fixme: si potrebbero inserire i valori in appsettings.json in modo che siano nascoste
         private bool ValidateCredentials(string username, string password)
         {
-            string expectedUsername = _configuration.GetValue<string>("Authentication:Username") ?? string.Empty;
-            string expectedPassword = _configuration.GetValue<string>("Authentication:Password") ?? string.Empty;
+            // Usando la password, il servizio recupera Password e WorkerId e le usa come credenziali
+            var credentials = _workerRequestService.GetWorkerByPassword(new PasswordWorkersRequestDto { Password = password });
+            string expectedUsername = credentials?.WorkerId.ToString() ?? string.Empty;
+            string expectedPassword = credentials?.Password ?? string.Empty;
             return username == expectedUsername && password == expectedPassword; 
         }
 

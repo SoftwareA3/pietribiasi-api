@@ -59,5 +59,15 @@ namespace apiPB.Services.Request.Abstraction
         /// </returns>
         Task<WorkersFieldDto?> UpdateOrCreateLastLogin(PasswordWorkersRequestDto request);
         
+        /// <summary>
+        /// Data la password del lavoratore, recupera il WorkerId rispettivo. 
+        /// Autenticazione tramite WorkerId e Password, cercando corrispondenza nel database.
+        /// Aggiornamento del campo LastLogin della tabella RmWorkersField.
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>
+        /// WorkerDto: restituisce un Dto WorkerDto con le informazioni del lavoratore loggato
+        /// </returns>
+        WorkerIdAndPasswordRequestDto? LoginWithPassword(PasswordWorkersRequestDto request);
     }
 }
