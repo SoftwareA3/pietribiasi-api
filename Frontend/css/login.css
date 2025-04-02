@@ -1,0 +1,85 @@
+/* Stile generale */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #e0e0e0, #ffffff);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+h1 {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* Stile del form */
+form {
+    background: linear-gradient(135deg, #ffffff, #f5f5f5);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+fieldset {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #444;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    color: #666;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f9f9f9;
+    font-size: 1em;
+}
+
+input:focus {
+    border-color: #888;
+    outline: none;
+    background: #fff;
+}
+
+.submit-button {
+    background: linear-gradient(135deg, #666, #444);
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+    background: linear-gradient(135deg, #444, #222);
+}
+
+#login-result {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+}

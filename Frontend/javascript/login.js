@@ -5,7 +5,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Controlla se l'utente è autenticato e la pagina è già stata caricata
     // In quel caso, mostra il messaggio di successo e reindirizza
-    if(localStorage.getItem("apiResults") != null) {
+
+    // Debug
+    if(localStorage.getItem("basicAuthCredentials") != null) {
+        localStorage.removeItem("basicAuthCredentials");
+    }
+    // Debug
+
+    if(sessionStorage.getItem("apiResults") != null) {
         const resultDiv = document.getElementById("login-result");
         resultDiv.textContent = "Login effettuato con successo: \nReindirizzamento fra 3 secondi...";
         setTimeout(() => {
