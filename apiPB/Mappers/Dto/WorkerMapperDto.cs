@@ -53,6 +53,15 @@ namespace apiPB.Mappers.Dto
             };
         }
 
+        public static WorkerIdAndPasswordRequestDto ToWorkerIdAndPasswordRequestDto(this WorkerDto worker)
+        {
+            return new WorkerIdAndPasswordRequestDto
+            {
+                WorkerId = worker.WorkerId,
+                Password = worker.Password ?? string.Empty
+            };
+        }
+
         // Metodo che mappa il Dto in Model
         // public static RmWorkersField ToWorkersFieldFromCreateDto(this RmWorkersFieldDto workersFieldRequestDto)
         // {

@@ -27,7 +27,7 @@ namespace apiPB.Repository.Abstraction
         /// </summary>
         /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId, FieldValue</param>
         /// <returns></returns>
-        Task CallStoredProcedure(WorkerIdRequestFilter filter);
+        Task CallStoredProcedure(WorkerIdAndValueRequestFilter filter);
 
         /// <summary>
         /// Recupera il lavoratore tramite la password. Tramite il lavoratore recupera il workerId e lo passa alla stored procedure dbo.InsertWorkersFields
@@ -45,7 +45,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di RmWorkersField: restituisce una collezione generica di modelli RmWorkersField
         /// </returns>
-        IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkerIdRequestFilter filter);
+        IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter);
 
         /// <summary>
         /// Esegue la query per ottenere il record con linea massima, dato il WorkerId
@@ -54,6 +54,6 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// RmWorkersField: restituisce il record con linea massima della tabella RmWorkersField
         /// </returns>
-        public RmWorkersField? GetLastWorkerFieldLine(WorkerIdRequestFilter filter);
+        public RmWorkersField? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter);
     }
 }
