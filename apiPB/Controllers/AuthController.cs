@@ -21,37 +21,9 @@ namespace apiPB.Controllers
     // Controller per la verifica delle credenziali.
     public class AuthController : ControllerBase
     {
-        private readonly IWorkersRequestService _workerRequestService;
-        private readonly LogService _logService;
-
-        public AuthController(IWorkersRequestService workerRequestService, LogService logService)
+        // Classe usata unicamente per la verifica delle credenziali.
+        public AuthController()
         {
-            _workerRequestService = workerRequestService;
-            _logService = logService;
-        }
-
-        /// <summary>
-        /// Verifica le credenziali inviate tramite Basic Authentication.
-        /// </summary>
-        /// <returns>200 OK se le credenziali sono corrette, altrimenti 401 Unauthorized.</returns>
-        [HttpPost("login")]
-        public IActionResult LoginWithPassword([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
-        {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
-            var workerIdAndPasswordDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
-            if(workerIdAndPasswordDto == null)
-            {
-                // Se il lavoratore non esiste, restituisce 401 Unauthorized
-                _logService.AppendMessageToLog("Invalid credentials", 401, "Unauthorized");
-                return Unauthorized(new { message = "Invalid credentials" });
-            }
-            
-            var ok = Ok(workerIdAndPasswordDto);
-
-            _logService.AppendMessageAndItemToLog(requestPath, ok.StatusCode, "OK", workerIdAndPasswordDto);
-
-            return ok;   
         }
 
         [Authorize]
