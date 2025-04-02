@@ -6,18 +6,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Controlla se l'utente è autenticato e la pagina è già stata caricata
     // In quel caso, mostra il messaggio di successo e reindirizza
 
-    // Debug
-    if(localStorage.getItem("basicAuthCredentials") != null) {
-        localStorage.removeItem("basicAuthCredentials");
-    }
-    // Debug
-
-    if(sessionStorage.getItem("apiResults") === "true") {
-        let resultDiv = document.getElementById("login-result");
-        resultDiv.textContent = "Login effettuato con successo: \nReindirizzamento fra 3 secondi...";
+    if(sessionStorage.getItem("login") === "true") {
+        const successMessage = document.getElementById('success-message');
+        successMessage.classList.remove('hidden');
+        sessionStorage.removeItem("login");
         setTimeout(() => {
             window.location.href = "../html/home.html";
         }, 3000);
+    }
+    else if (sessionStorage.getItem("login") === "false") {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.classList.remove('hidden');
+        sessionStorage.removeItem("login");
     }
 
     if (loginForm) {
@@ -25,17 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
             event.stopPropagation();
 
-            let lock = false;
-
-            let resultDiv = document.getElementById("login-result");
-            resultDiv.textContent = "Autenticazione in corso...";
-
             // Recupera le informazioni dal form
             const password = document.querySelector("#login-password").value;
 
             // COntrolla che tutte le informazioni siano state inserite
             if (!password) {
-                resultDiv.textContent = "Password obbligatoria.";
                 return false;
             }
 
@@ -50,18 +44,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 if (!request.ok) {
-                    resultDiv.textContent = "Errore nella richiesta: " + request.status + " - " + request.statusText;
-                    return false;
+                    sessionStorage.setItem("login", false);
+                    console.error("Errore nella richiesta:", request.status, request.statusText);
                 }
                 const result = await request.json();
                 const workerId = result.workerId;
                 const credentials = btoa(`${workerId}:${password}`);
-                console.log("Risultato cript:", credentials);
                 localStorage.setItem("basicAuthCredentials", credentials);
-                sessionStorage.setItem("apiResults", true);
+                console.log("Risultato cript:", credentials);
             }
             catch (error) {
-                resultDiv.textContent = "Errore: " + error.message;
+                sessionStorage.setItem("login", false);
                 console.error("Non è stato possibile recuperare l'ID:", error);
             }
             
@@ -75,19 +68,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 if (response.ok) {
-                    resultDiv.textContent = "Login effettuato con successo: \nReindirizzamento fra 3 secondi...";
-                    
+                    sessionStorage.setItem("login", true);
                     return true;
                 } else {
-                    resultDiv.textContent = "Errore nella richiesta: " + response.status + " - " + response.statusText;
-                    console.error("Errore nella richiesta:", response.status, response.statusText);
                     localStorage.removeItem("basicAuthCredentials");
+                    console.error("Errore nella richiesta:", response.status, response.statusText);
                     return false;
                 }
             } catch (error) {
-                resultDiv.textContent = "Errore: " + error.message;
-                console.error("Errore nella richiesta:", error);
+                sessionStorage.setItem("login", false);
                 localStorage.removeItem("basicAuthCredentials");
+                console.error("Errore nella richiesta:", error);
                 return false;
             }
         });

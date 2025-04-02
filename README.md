@@ -2,6 +2,12 @@
 
 # FrontEnd
 
+## Accesso e validazione delle credenziali
+Per l'accesso alla pagina principale dell'applicazione, è necessario l'inserimento di un Codice Addetto. 
+Inserita questa password, viene inoltrata una richiesta all'API per il recupero dell'ID del lavoratore. 
+Queste due credenziali verranno poi validate attraverso una ricerca di corrispondenza nel database e utilizzate come username(Id) e password(password) per la validazione in Basic Authentication. Queste variabili vengono salvate nella parte FrontEnd in localStorage e rimosse una volta effettuato il Logout. 
+Questo viene fatto per permettere l'inoltro di altre richieste all'API che richiedono l'autorizzazione tramite Basic Authentication. 
+
 # Backend
 
 ## Controllers

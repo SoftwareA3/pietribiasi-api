@@ -9,6 +9,10 @@
     padding-top: 0;
 }
 
+.hidden {
+    display: none;
+}
+
 form {
     display: block;
     margin-top: 0em;
