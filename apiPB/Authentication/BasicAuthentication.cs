@@ -116,7 +116,7 @@ namespace apiPB.Authentication
             if (!ValidateCredentials(username, password))
             {
                 _logService.AppendMessageToLog($"Invalid username or password for user: {username}", 401, "Unauthorized");
-                
+
                 var invalid = Task.FromResult(AuthenticateResult.Fail("Invalid username or password."));
                 
                 return invalid;
