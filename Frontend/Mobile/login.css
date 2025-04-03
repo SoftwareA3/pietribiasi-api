@@ -1,0 +1,37 @@
+.card
+{
+    margin: 35% auto 0 auto;
+}
+
+#login-card
+{
+    font-size: 2.5em;
+    max-width: 600px;
+}
+
+#login-password
+{
+    margin-top: 0.5em;
+    height: 90px;
+}
+
+#login-form
+{
+    margin-bottom: 1em;
+}
+
+.button
+{
+    height: 90px;
+    margin-top: 1em;
+}
+
+.login-message
+{
+    margin-top: 1em;
+}
+
+#caption
+{
+    margin-top: 1em;
+}

@@ -1,34 +1,81 @@
-// FIXME: Controllare se è possibile utilizzare sessionStorage per il salvataggio delle informazioni 
-// invece che sessionStorage
+import { deleteCookie, getCookie } from "./cookies.js";
 
-import { fetchWithAuth } from "./fetch.js";
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function() {
+    // Gestione logout
+    setupLogoutButton();
+
+    await loadWorkerInfo();
+});
+
+function setupLogoutButton() {
     const logoutButton = document.getElementById("logout");
-
     if (logoutButton) {
-        logoutButton.addEventListener("click", function () {
-            localStorage.removeItem("basicAuthCredentials");
+        logoutButton.addEventListener("click", function() {
+            deleteCookie("basicAuthCredentials");
+            deleteCookie("userInfo");
             sessionStorage.clear();
-
             window.location.href = "../html/login.html";
         });
     }
-});
+}
 
-function displayData(data) {
-    // Salva i dati in sessionStorage
-    sessionStorage.setItem("apiResults", JSON.stringify(data));
-    
-
-    const container = document.getElementById("resultContainer");
-    // Ad esempio, crea un nuovo elemento per ogni informazione nel JSON
-    container.innerHTML = ""; // Pulisce il contenuto precedente, se necessario
-    for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-        const p = document.createElement("p");
-        p.textContent = `${key}: ${data[key]}`;
-        container.appendChild(p);
-        }
+async function loadWorkerInfo() {
+    const workerInformations = document.getElementById("current-user");
+    if (!workerInformations) {
+        console.error("Elemento worker-informations non trovato nel DOM");
+        return;
     }
+    
+    // Verifica se ci sono credenziali salvate
+    const encodedCredentials = getCookie("basicAuthCredentials");
+    console.log("Credenziali salvate:", encodedCredentials);
+    if (!encodedCredentials) {
+        displayError(workerInformations, "Credenziali non trovate");
+        return;
+    }
+    
+    try {
+        // Decodifica delle credenziali
+        const stringCredentials = atob(encodedCredentials);
+        const [workerId, password] = stringCredentials.split(":");
+        
+        if (!workerId || !password) {
+            throw new Error("Formato credenziali non valido");
+        }
+        
+        // Recupero informazioni worker dall'API
+        const workerInfo = getCookie("userInfo");
+        
+        // Visualizzazione delle informazioni
+        displayWorkerInfo(workerInformations, workerInfo);
+    } catch (error) {
+        console.error("Errore nel caricamento delle informazioni:", error);
+        displayError(workerInformations, "Errore nel caricamento delle informazioni");
+    }
+}
+
+function displayWorkerInfo(container, cookie) {
+    cookie = JSON.parse(cookie);
+    if (!cookie) {
+        displayError(container, "Cookie non valido o vuoto");
+        return;
+    }
+    container.innerHTML = `
+        ${cookie.tipoUtente || 'N/A'}: ${cookie.password || 'N/A'} - ${cookie.name || 'N/A'} ${cookie.lastName || 'N/A'} ${displayCurrentDate()}`;
+}
+
+function displayError(container, message) {
+    container.innerHTML = `<p class="error">${message}</p>`;
+}
+
+function displayCurrentDate()
+{
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+
+    today = mm + '/' + dd + '/' + yyyy;
+    return today;
 }

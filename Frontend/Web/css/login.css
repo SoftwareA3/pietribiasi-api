@@ -1,14 +1,3 @@
-.card {
-    background-color: var(--card-background);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 40px;
-    margin-bottom: 20px;
-    max-width: 450px;
-    margin: 80px auto 0 auto;
-    padding-top: 0;
-}
-
 .hidden {
     display: none;
 }
@@ -18,6 +7,17 @@ form {
     margin-top: 0em;
     unicode-bidi: isolate;
     border-color: var(--card-background);
+}
+
+.login-message {
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#login-card {
+    max-width: 450px;
+    padding: 5px 40px 10px;
 }
 
 fieldset {
@@ -48,28 +48,6 @@ p {
 input:not([type="image" i], [type="range" i], [type="checkbox" i], [type="radio" i]) {
     overflow-clip-margin: 0px !important;
     overflow: clip !important;
-}
-
-button {
-    width: 100%;
-    margin-top: 10px;
-    display: inline-block;
-    padding: 12px 20px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    text-align: center;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-    text-decoration: none;
-    height: 44px;
-    box-sizing: border-box;
-    vertical-align: middle;
-    line-height: 1.3;
-    background-color: var(--primary-color);
-    color: var(--button-text-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 label {

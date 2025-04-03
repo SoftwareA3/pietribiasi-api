@@ -61,5 +61,13 @@ namespace apiPB.Repository.Implementation
             .AsNoTracking()
             .FirstOrDefault();
         }
+
+        public VwApiWorker GetWorkerByIdAndPassword(WorkerIdAndPasswordFilter filter)
+        {
+            return _context.VwApiWorkers
+            .Where(w => w.WorkerId == filter.WorkerId && w.Password == filter.Password)
+            .AsNoTracking()
+            .FirstOrDefault() ?? throw new InvalidOperationException("Worker not found.");
+        }
     }
 }

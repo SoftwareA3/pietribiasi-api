@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../javascript/login.js" type="module" defer></script>
     <script src="../javascript/fetch.js" type="module"></script>
-    <link rel="stylesheet" href="../css/root.css">
-    <link rel="stylesheet" href="../css/login.css">
+    <script src="../javascript/cookies.js" type="module"></script>
+    <link rel="stylesheet" type="text/css" href="../css/root.css">
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <link rel="stylesheet" type="text/css" media="screen and (max-width: 768px)" href="../../Mobile/login.css">
     <title>Login</title>
 </head>
 <body>
-    <div class="card">
+    <div class="card" id="login-card">
         <h1>
             Login
         </h1>
@@ -20,11 +22,11 @@
                 <label for="login-password">Password</label>
                 <input type="text" id="login-password" name="password" class="form-control" required>
                 
-                <button type="submit" class="submit-button">Accedi</button>
+                <button type="submit" class="button">Accedi</button>
             </fieldset>
-            <p id="caption">v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>
-            <div id="error-message" class="error-message hidden">Qualcosa è andato storto... Riprova</div>
-            <div id="success-message" class="success-message hidden">Credenziali corrette! Reindirizzamento in corso</div>
+            <div id="error-message" class="error-message hidden login-message">Qualcosa è andato storto... Riprova</div>
+            <div id="success-message" class="success-message hidden login-message">Credenziali corrette! Reindirizzamento in corso</div>
+            <footer id="caption">v.1.0.0 - Powered by A3 Soluzioni Informatiche</footer>
         </form>
     </div>
 </body>

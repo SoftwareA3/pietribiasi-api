@@ -5,21 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../javascript/home.js" type="module" defer></script>
     <script src="../javascript/fetch.js" type="module"></script>
-    <link rel="stylesheet" href="../css/root.css">
+    <link rel="stylesheet" type="text/css" href="../css/root.css">
+    <link rel="stylesheet" type="text/css" href="../css/home.css">
+    <link rel="stylesheet" type="text/css" media="screen and (max-width: 768px)" href="../../Mobile/home.css">
     <title>Request page</title>
 
 </head>
 <body>
-    <header>
-        <button id="logo" class="logo-button">Logo</button>
-        <h1>Pietribiasi App</h1>
-        <p>Addetto: codice - FirstName LastName Data:Now</p>
-        <a id="logout">Logout</a>
+    <header class="header" id="main-app-header">
+        <div id="logo" class="logo-link button">Logo</div>
+        <h1 id="header-title">Pietribiasi App</h1>
+        <div class="user-info">
+            <span id="current-user"></span>
+            <a id="logout" class="button">Logout</a>
+        </div>
     </header>
 
-    <h2>Menù Principale</h2>
-    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iusto blanditiis modi illo quidem repellendus neque velit at in. Obcaecati nulla quibusdam doloremque qui culpa odio commodi illo esse nihil quasi!</p>
+    <div class="card" id="home-card">
+        <h2 id="menu-title">Menu Principale</h2>
+        <div class="home-menu">
+            <a href="#" id="goto-reg-ore" class="menu-button"><span class="button-icon">⏱️</span>Registrazione Ore Commessa</a>
+            <a href="#" id="goto-prel-mat" class="menu-button"><span class="button-icon">📦</span>Prelievo Materiali Produzione</a>
+            <a href="#" id="goto-inventario" class="menu-button"><span class="button-icon">📋</span>Inventario</a>
+            <a href="#" id="goto-view-ore" class="menu-button secondary"><span class="button-icon">📊</span>Visualizza Ore Registrate</a>
+            <a href="#" id="goto-view-prelievi" class="menu-button secondary"><span class="button-icon">🚚</span>Visualizza Prelievi Effettuati</a>
+            <a href="#" id="goto-view-inventario" class="menu-button secondary"><span class="button-icon">🔍</span>Visualizza Inventario</a>
+            <a href="#" id="goto-poweruser-login" class="menu-button poweruser"><span class="button-icon">⚙️</span>Modalità Power User</a>
+        </div>  
+    </div>
 
+    <footer class="app-footer" id="app-main-footer" style="display: block;">
+        Pietribiasi Michelangelo S.r.l. - App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche
+    </footer>
 
 </body>
 </html>

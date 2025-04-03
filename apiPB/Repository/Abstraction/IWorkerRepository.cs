@@ -54,6 +54,15 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// RmWorkersField: restituisce il record con linea massima della tabella RmWorkersField
         /// </returns>
-        public RmWorkersField? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter);
+        RmWorkersField? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter);
+
+        /// <summary>
+        /// /// Esegue una query su id e password per trovare un lavoratore
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId, Password</param>
+        /// <returns>
+        /// VwApiWorker: restituisce un oggetto del modello VwApiWorker
+        /// </returns>
+        VwApiWorker GetWorkerByIdAndPassword(WorkerIdAndPasswordFilter filter);
     }
 }

@@ -66,8 +66,16 @@ namespace apiPB.Services.Request.Abstraction
         /// </summary>
         /// <param name="request">Dto di richiesta</param>
         /// <returns>
-        /// WorkerDto: restituisce un Dto WorkerDto con le informazioni del lavoratore loggato
+        /// WorkerIdAndPasswordRequestDto: restituisce un Dto WorkerIdAndPasswordRequestDto con le informazioni del lavoratore loggato
         /// </returns>
-        WorkerIdAndPasswordRequestDto? LoginWithPassword(PasswordWorkersRequestDto request);
+        WorkerDto? LoginWithPassword(PasswordWorkersRequestDto request);
+
+        /// <summary>
+        /// Ritorna il lavoratore in base all'ID e alla password forniti.
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>WorkerDto: restituisce un WorkerDto con tutte le informazioni sul lavoratore loggato</returns>
+        WorkerDto? GetWorkerByIdAndPassword(WorkerIdAndPasswordRequestDto request);
+
     }
 }

@@ -2,40 +2,38 @@
  * Funzione per confermare l'autenticazione delle credenziali con Basic Authentication.
  * Questa funzione gestisce la richiesta di autenticazione e il reindirizzamento in caso di errore.
  */
-export async function fetchWithAuth(url, options = {}) {
-    
-    // Recupera le credenziali da sessionStorage
-    const credentials = localStorage.getItem("basicAuthCredentials");
+import { getCookie } from "./cookies.js";
 
-    // Se le credenziali non esistono, fa un refresh della pagina
+export async function fetchWithAuth(url, options = {}) {
+    const credentials = getCookie("basicAuthCredentials");
+
     if (!credentials) {
-        window.location.href = "../html/login.html";
         throw new Error("Credenziali non presenti. Effettua il login prima di chiamare l'API.");
     }
 
-    // Aggiungi le credenziali all'intestazione Authorization
+    // Create the headers object
     const headers = {
         "Authorization": "Basic " + credentials,
         ...options.headers
     };
 
-    console.log("Authorization Header:", headers["Authorization"]);
+    console.log("Fetching URL:", url);
+    console.log("Request Headers:", headers);
 
-    // Esegui la richiesta fetch con le credenziali
-    const response = await fetch(url, {
-        ...options,
-        headers: headers
-    });
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: headers, // Pass the headers object directly
+            mode: "cors"
+        });
 
-    // Controlla lo stato della risposta: se non positivo, restituisce caso per caso una risposta
-    if (!response.ok) {
-        if (response.status === 401) {
-            localStorage.removeItem("basicAuthCredentials");
-            window.location.href = "../html/login.html";
-            throw new Error("Sessione scaduta. Effettua nuovamente il login.");
+        if (!response.ok) {
+            console.error("Errore nella risposta:", response.status, response.statusText);
         }
-        throw new Error("Errore nella richiesta: " + response.status + " - " + response.statusText);
-    }
 
-    return response;
+        return response;
+    } catch (error) {
+        console.error("Errore durante la richiesta fetch:", error.message);
+        throw error;
+    }
 }

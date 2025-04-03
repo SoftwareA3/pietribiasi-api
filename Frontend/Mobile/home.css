@@ -1,0 +1,48 @@
+#home-card {
+    height: auto;
+    font-size: 2em;
+    margin-top: 6em;
+}
+
+#main-app-header
+{
+    height: 150px;
+    display: flex;
+}
+
+.app-footer
+{
+    font-size: 1.5em;
+}
+
+.header
+{
+    font-size: 1.7em;
+}
+
+#header-title
+{
+    font-size: 1.2em;
+    margin-left: 15px;
+    text-align: center;
+}
+
+#current-user
+{
+    text-align: center;
+    font-size: 0.9em;
+    width: 190px;
+    display: block;
+}
+
+#logout, #logo
+{
+    padding: 60px 0;
+    font-size: 1em;
+}
+
+.menu-button
+{
+    font-size: 1em;
+    height: 3em;
+}
