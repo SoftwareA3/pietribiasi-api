@@ -37,6 +37,9 @@
     --success: #28a745;
     --warning: #ffc107;
     --error: #dc3545;
+    --save: #6ddc4c;
+    --logout: #f71b3d;
+    --delete: #f71b3d;
     --info: #17a2b8;
     
     /* Layout */
@@ -98,7 +101,7 @@ a {
 }
 
 a:hover {
-    color: var(--primary-dark);
+    color: var(--white);
 }
 
 /* Container e layout */
@@ -182,12 +185,12 @@ input:focus {
 }
 
 .btn-secondary {
-    background-color: var(--secondary-color);
+    background-color: var(--logout);
     color: var(--gray-800);
 }
 
 .btn-secondary:hover {
-    background-color: var(--secondary-dark);
+    background-color: var(--logout);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
