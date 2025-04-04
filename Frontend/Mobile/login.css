@@ -1,37 +1,236 @@
-.card
-{
-    margin: 35% auto 0 auto;
+/* @media only screen and (max-width: 768px)
+{ 
+    .card
+    {
+        margin: 35% auto 0 auto;
+    }
+
+    #login-card
+    {
+        font-size: 2.5em;
+        max-width: 600px;
+    }
+
+    #login-password
+    {
+        margin-top: 0.5em;
+        height: 90px;
+    }
+
+    #login-form
+    {
+        margin-bottom: 1em;
+    }
+
+    .button
+    {
+        height: 90px;
+        margin-top: 1em;
+    }
+
+    .login-message
+    {
+        margin-top: 1em;
+    }
+
+    #caption
+    {
+        margin-top: 1em;
+    }
 }
 
-#login-card
-{
-    font-size: 2.5em;
-    max-width: 600px;
+@media only screen and (min-width: 425px) {
+    #login-card
+    {
+        font-size: 1em;
+        width: 300px;
+        margin-top: 5em;
+    }
+
+    #login-password
+    {
+        margin-top: 0.5em;
+        height: 60px;
+    }
+
+    .button
+    {
+        height: 60px;
+        margin-top: 1em;
+    }
+} */
+
+/* Mobile/home.css - Stili per schermi fino a 768px */
+/* Se le modifiche non appaiono, prova a pulire la cache del browser! */
+
+/* Header adjustments */
+.header {
+    padding: 10px 15px; /* Padding per mobile */
+    display: flex; /* Assicura che sia flex container */
+    flex-direction: row; /* Elementi in riga */
+    justify-content: space-between; /* Spazio tra logo/titolo e info utente */
+    align-items: center; /* Allinea verticalmente al centro */
+    height: auto; /* Altezza automatica */
+    gap: 10px; /* Spazio uniforme tra gli elementi flex (logo, titolo, user-info) */
+    position: fixed; /* Mantiene l'header fisso in alto (ereditato da desktop) */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box; /* Assicura che padding sia incluso nella larghezza */
+    background-color: var(--primary-color); /* Assicura sfondo anche su mobile */
 }
 
-#login-password
-{
-    margin-top: 0.5em;
-    height: 90px;
+#logo {
+    order: -1; /* Forza il logo ad essere il primo elemento */
+
+    /* === Inizio Override Stili Conflittuali === */
+    /* Sovrascrive gli stili ereditati da .button e home.css (desktop) */
+    display: flex; /* Usa flex per centrare il testo "Logo" all'interno del div */
+    align-items: center; /* Allinea testo verticalmente */
+    justify-content: center; /* Allinea testo orizzontalmente */
+    width: 80px; /* Larghezza fissa desiderata (sovrascrive width: 100% da .button) */
+    height: 30px; /* Altezza fissa desiderata (sovrascrive height: 44px da .button) */
+    margin: 0; /* Rimuovi tutti i margini (sovrascrive margin-top da .button) */
+    padding: 0; /* Rimuovi padding (sovrascrive padding da .button) */
+    line-height: normal; /* Resetta line-height se ereditato */
+    box-shadow: none; /* Rimuovi ombra se ereditata da .button */
+    /* === Fine Override Stili Conflittuali === */
+
+    /* Stili specifici per il logo mobile (alcuni potrebbero essere ripristinati da home.css) */
+    font-size: 0.7em; /* Dimensione font */
+    flex-shrink: 0; /* Impedisce al logo di restringersi */
+    background-color: rgba(255, 255, 255, 0.8); /* Sfondo (da home.css) */
+    border-radius: 4px; /* Angoli arrotondati (da home.css) */
+    color: #555; /* Colore testo (da home.css) */
+    font-weight: bold; /* Grassetto (da home.css) */
+    text-decoration: none; /* Assicura nessuna sottolineatura */
 }
 
-#login-form
-{
-    margin-bottom: 1em;
+#header-title {
+    /* Rimuovi order */
+    text-align: left; /* Allinea a sinistra */
+    flex-grow: 1; /* Permette al titolo di occupare lo spazio disponibile */
+    flex-shrink: 1; /* Permette al titolo di restringersi se necessario */
+    margin: 0; /* Rimuovi tutti i margini specifici */
+    font-size: 1em; /* Dimensione font titolo */
+    min-width: 0; /* Permette al titolo di restringersi sotto la sua larghezza intrinseca */
+    color: var(--header-text-color); /* Assicura colore testo header */
+    font-weight: bold; /* Assicura grassetto */
 }
 
-.button
-{
-    height: 90px;
-    margin-top: 1em;
+.user-info {
+    /* Rimuovi order */
+    width: auto; /* Larghezza automatica */
+    margin: 0; /* Rimuovi tutti i margini specifici */
+    gap: 10px; /* Spazio tra nome utente e logout */
+    font-size: 0.8em; /* Riduci dimensione font */
+    display: flex; /* Assicura che sia flex container */
+    align-items: center; /* Allinea elementi interni */
+    flex-shrink: 0; /* Impedisce a user-info di restringersi */
 }
 
-.login-message
-{
-    margin-top: 1em;
+#current-user {
+    display: inline; /* Mantieni sulla stessa riga */
+    white-space: nowrap; /* Evita che il nome vada a capo */
+    overflow: hidden; /* Nascondi se troppo lungo */
+    text-overflow: ellipsis; /* Aggiungi puntini se troppo lungo */
+    max-width: 80px; /* Limita larghezza massima nome utente */
+    color: var(--header-text-color); /* Assicura colore testo header */
+    font-weight: bold;
 }
 
-#caption
-{
-    margin-top: 1em;
+#logout {
+    /* Stili specifici per il logout button nell'header mobile */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto; /* Larghezza automatica */
+    height: 30px; /* Stessa altezza del logo per coerenza */
+    padding: 0 10px; /* Padding orizzontale, nessun padding verticale */
+    margin: 0; /* Rimuovi margini ereditati */
+    font-size: 0.85em; /* Dimensione font logout */
+    flex-shrink: 0; /* Evita che il bottone si restringa */
+    background-color: var(--secondary-color); /* Colore sfondo (da home.css) */
+    color: #333; /* Colore testo (da home.css) */
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: none; /* Rimuovi ombra se presente */
 }
+
+/* Card adjustments */
+#home-card {
+    width: 90%; /* Occupa quasi tutta la larghezza dello schermo */
+    max-width: none; /* Rimuovi il limite massimo di larghezza del desktop */
+    /* Aumenta il margine superiore per tenere conto dell'header fisso */
+    /* L'altezza dell'header è ora più definita (circa 30px logo/logout + padding) */
+    margin: 60px auto 20px auto; /* Prova con 60px, aggiusta se necessario */
+    padding: 20px; /* Riduci padding interno */
+    padding-top: 15px;
+}
+
+/* Menu adjustments */
+.home-menu {
+    grid-template-columns: 1fr; /* Una sola colonna per i bottoni */
+    gap: 15px; /* Riduci lo spazio tra i bottoni */
+    padding: 10px 0 0 0; /* Riduci padding superiore, annulla laterali */
+}
+
+#menu-title {
+    font-size: 1.1em; /* Riduci dimensione titolo menu */
+    text-align: center; /* Centra il titolo del menu */
+    margin-bottom: 15px; /* Aggiungi spazio sotto il titolo */
+    font-weight: bold; /* Assicura grassetto */
+}
+
+.menu-button {
+    font-size: 1em; /* Leggermente più piccolo */
+    padding: 12px 15px; /* Aggiusta padding */
+    text-align: left; /* Allinea testo a sinistra */
+    width: 100%; /* Forza la larghezza piena */
+    box-sizing: border-box; /* Include padding/border nella larghezza */
+    margin-top: 0; /* Rimuovi margine specifico del bottone generale */
+    display: flex; /* Usa flex per allineare icona e testo */
+    align-items: center; /* Allinea verticalmente icona e testo */
+    /* Ripristina stili base bottone se sovrascritti altrove */
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    height: auto; /* Altezza automatica basata sul contenuto */
+    line-height: 1.3; /* Ripristina line-height */
+    background: linear-gradient(145deg, var(--primary-color), #005fa3); /* Stile da home.css */
+    color: #fff; /* Stile da home.css */
+    box-shadow: var(--box-shadow); /* Stile da home.css */
+}
+
+/* Applica stili specifici per bottoni secondari e poweruser anche su mobile */
+.menu-button.secondary {
+    background: linear-gradient(145deg, var(--secondary-color), #e08e0b);
+    color: #fff;
+}
+
+.menu-button.poweruser {
+    background: linear-gradient(145deg, #6c757d, #5c636a);
+    color: #fff;
+}
+
+
+.button-icon {
+    font-size: 1.1em; /* Leggermente più piccolo */
+    margin-right: 10px; /* Aumenta spazio a destra dell'icona */
+    flex-shrink: 0; /* Evita che l'icona si restringa */
+}
+
+/* Footer adjustments */
+.app-footer {
+    margin-top: 20px; /* Riduci margine superiore */
+    font-size: 0.8em; /* Riduci dimensione font */
+    padding: 10px; /* Riduci padding */
+}
+
+

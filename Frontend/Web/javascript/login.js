@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
         successMessage.classList.remove('hidden');
         setTimeout(() => {
             window.location.href = "../html/home.html";
-        }, 3000);
+        }, 2000);
     }
     else if (sessionStorage.getItem("login") === "false") {
         errorMessage.classList.remove('hidden');
@@ -25,25 +25,25 @@ document.addEventListener("DOMContentLoaded", function () {
             // Get form information
             const password = document.getElementById("login-password").value;
 
-            try 
-            {
-                console.log("Password prima di fetch:", password);
-                const request = await fetch("http://localhost:5245/api/worker/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({"password": password})
-                });
+            console.log("Password prima di fetch:", password);
+            const request = await fetch("http://localhost:5245/api/worker/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"password": password})
+            });
 
-                if (!request.ok) {
-                    sessionStorage.setItem("login", "false"); // Set cookie for 1 day
-                    console.error("Errore nella richiesta:", request.status, request.statusText);
-                    return;
-                }
+            if (!request.ok) {
+                sessionStorage.setItem("login", "false"); // Set cookie for 1 day
+                console.error("Errore nella richiesta:", request.status, request.statusText);
+                return;
+            }
+            
+            try {
                 
                 const result = await request.json();
-                const workerId = result.workerId;
+                const workerId = await result.workerId;
                 
                 // Save credentials in a cookie
                 if(getCookie("basicAuthCredentials")) {

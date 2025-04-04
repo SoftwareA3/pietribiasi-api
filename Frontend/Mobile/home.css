@@ -1,48 +1,205 @@
+/* @media only screen and (max-width: 768px) {
+    #home-card {
+        height: auto;
+        font-size: 1em;
+        margin-top: 6em;
+    }
+
+    #main-app-header
+    {
+        font-size: 110%;
+        height: 5em;
+        display: flex;
+        padding: 0;
+    }
+
+    .app-footer
+    {
+        font-size: 1.5em;
+    }
+
+    .header
+    {
+        font-size: 1.7em;
+        justify-content: space-evenly;
+    }
+
+    #header-title
+    {
+        margin: 0;
+        font-size: 1.2em;
+        text-align: center;
+        max-width: 150px;
+    }
+
+    #current-user
+    {
+        text-align: center;
+        font-size: 0.9em;
+        max-width: 100px;
+        display: inline-block;
+    }
+
+    #logout, #logo
+    {
+        padding: 30px 20px;
+        font-size: 1em;
+        max-width: 100%;
+    }
+
+    #logout
+    {
+        margin-right: 1em;
+        width: 60px;
+        max-width: 50%;
+    }
+
+    .menu-button
+    {
+        font-size: 1em;
+        height: 3em;
+    }
+}
+
+@media only screen and (max-width: 425px) {
+    .header
+    {
+        font-size: 1.7em;
+        height: 50px;
+        padding: 50px 0;
+    }
+
+    .button
+    {
+        font-size: 1.5em;
+        height: 1em;
+        padding: 20px 0;
+    }
+
+    #logout, #logo
+    {
+        padding: 0;
+        font-size: 1em;
+        width: 60px;
+        max-width: 50%;
+    }
+
+    #home-card
+    {
+        height: 100%;
+        font-size: 1em;
+        margin-top: 0;
+        max-width: 100%;
+        margin-top: 5em;
+        padding-top: 0.5em;
+    }
+
+    .user-info
+    {
+        font-size: 1em;
+        height: 50px;
+    }
+
+    #main-app-header
+    {
+        font-size: 1em;
+        height: 70px;
+        display: flex;
+        padding: 30px 0;
+    }
+
+    .app-footer
+    {
+        font-size: 1em;
+        height: 50px;
+        padding: 30px 0;
+        margin-top: 1em;
+    }
+} */
+
+.header {
+    padding: 10px 15px; /* Riduci padding verticale */
+    flex-direction: column; /* Impila gli elementi verticalmente */
+    height: auto; /* Altezza automatica per accomodare il contenuto impilato */
+    text-align: center; /* Centra il testo quando impilato */
+}
+
+#header-title {
+    margin: 10px 0; /* Aggiungi margine sopra/sotto il titolo */
+    font-size: 1.1em; /* Riduci leggermente la dimensione del font */
+    margin-left: 0; /* Rimuovi il margine sinistro specifico del desktop */
+    order: 1; /* Ordine del titolo */
+}
+
+#logo {
+    margin-top: 5px; /* Leggero margine superiore */
+    margin-bottom: 10px; /* Margine inferiore per separare dal titolo */
+    width: 100px; /* Riduci larghezza logo */
+    height: 35px; /* Riduci altezza logo */
+    font-size: 0.75em; /* Riduci dimensione font logo */
+    order: 0; /* Ordine del logo (prima del titolo) */
+}
+
+.user-info {
+    width: 100%; /* Occupa tutta la larghezza */
+    justify-content: center; /* Centra gli elementi */
+    margin-top: 10px; /* Margine superiore */
+    gap: 15px; /* Aumenta lo spazio tra nome utente e logout */
+    order: 2; /* Ordine delle info utente */
+    font-size: 0.8em; /* Riduci dimensione font */
+}
+
+#current-user {
+    display: block; /* Metti su riga separata se necessario */
+    margin-bottom: 5px; /* Spazio sotto il nome utente */
+}
+
+#logout {
+    width: auto; /* Larghezza automatica basata sul contenuto */
+    padding: 8px 15px; /* Aggiusta padding */
+    font-size: 0.9em; /* Dimensione font logout */
+    margin-left: 0; /* Rimuovi margine sinistro */
+    height: auto; /* Altezza automatica */
+}
+
+/* Card adjustments */
 #home-card {
-    height: auto;
-    font-size: 2em;
-    margin-top: 6em;
+    width: 90%; /* Occupa quasi tutta la larghezza dello schermo */
+    max-width: none; /* Rimuovi il limite massimo di larghezza del desktop */
+    margin: 100px auto 20px auto; /* Aumenta margine superiore per accomodare l'header fisso più alto, riduci margine inferiore */
+    padding: 20px; /* Riduci padding interno */
+    padding-top: 15px;
 }
 
-#main-app-header
-{
-    height: 150px;
-    display: flex;
+/* Menu adjustments */
+.home-menu {
+    grid-template-columns: 1fr; /* Una sola colonna per i bottoni */
+    gap: 15px; /* Riduci lo spazio tra i bottoni */
+    padding: 10px 0 0 0; /* Riduci padding superiore, annulla laterali */
 }
 
-.app-footer
-{
-    font-size: 1.5em;
+#menu-title {
+    font-size: 1.1em; /* Riduci dimensione titolo menu */
+    text-align: center; /* Centra il titolo del menu */
+    margin-bottom: 15px; /* Aggiungi spazio sotto il titolo */
 }
 
-.header
-{
-    font-size: 1.7em;
+.menu-button {
+    font-size: 1em; /* Leggermente più piccolo */
+    padding: 12px 15px; /* Aggiusta padding */
+    text-align: left; /* Allinea testo a sinistra */
+    width: 100%; /* Forza la larghezza piena */
+    box-sizing: border-box; /* Include padding/border nella larghezza */
+    margin-top: 0; /* Rimuovi margine specifico del bottone generale */
 }
 
-#header-title
-{
-    font-size: 1.2em;
-    margin-left: 15px;
-    text-align: center;
+.button-icon {
+    font-size: 1.1em; /* Leggermente più piccolo */
 }
 
-#current-user
-{
-    text-align: center;
-    font-size: 0.9em;
-    width: 190px;
-    display: block;
-}
-
-#logout, #logo
-{
-    padding: 60px 0;
-    font-size: 1em;
-}
-
-.menu-button
-{
-    font-size: 1em;
-    height: 3em;
+/* Footer adjustments */
+.app-footer {
+    margin-top: 20px; /* Riduci margine superiore */
+    font-size: 0.8em; /* Riduci dimensione font */
+    padding: 10px; /* Riduci padding */
 }
