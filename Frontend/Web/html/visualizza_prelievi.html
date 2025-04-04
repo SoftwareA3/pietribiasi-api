@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Visualizzazione Materiali Produzione</title>
+        <!-- Stili comuni -->
+        <link rel="stylesheet" href="../css/root.css">
+        <!-- Stili mobile comuni-->
+        <link rel="stylesheet" href="../../Mobile/mobile.css" media="screen and (max-width: 768px)">
+        <!-- Stili desktop -->
+        <link rel="stylesheet" href="../css/cards_style.css" media="screen and (min-width: 769px)">
+        <!-- Script (caricati in modo asincrono) -->
+        <script src="../javascript/main.js" type="module" defer></script>
+        <script src="../javascript/fetch.js" type="module" defer></script>
+    </head>
+    <body>
+        <div class="header"></div>
+        <main class="container">
+            <div class="card">
+                <div class="card-header">Visualizza Prelievi Effettuati</div>
+                <form id="filter-prelievi-form" class="filter-form"> <div class="form-group">
+                        <label for="filter-prel-data-da">Data Da:</label>
+                        <input type="date" id="filter-prel-data-da" name="filter-prel-data-da">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-data-a">Data A:</label>
+                        <input type="date" id="filter-prel-data-a" name="filter-prel-data-a">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-commessa">Commessa:</label>
+                        <input type="text" id="filter-prel-commessa" name="filter-prel-commessa">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-barcode">Barcode Articolo:</label>
+                        <input type="text" id="filter-prel-barcode" name="filter-prel-barcode">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-lavorazione">Lavorazione:</label>
+                        <input type="text" id="filter-prel-lavorazione" name="filter-prel-lavorazione">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-odp">Ordine Produzione:</label>
+                        <input type="text" id="filter-prel-odp" name="filter-prel-odp">
+                    </div>
+                    <button type="button" id="filter-prel-submit" class="button button-primary">Filtra <span class="button-icon">🔎</span></button>
+                </form>
+
+                <ul id="prelievi-list" class="item-list" style="margin-top: 20px;">
+                    <li>
+                        <div class="item-content">
+                            <strong>Commessa:</strong> COMM001 | <strong>Articolo:</strong> ART001 - Tubo Inox 50mm | <strong>Lav:</strong> LAV001 | <strong>ODP:</strong> ODP12345 | <strong>Q.tà:</strong> 5 | <strong>Data:</strong> 01/04/2025
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <strong>Commessa:</strong> COMM002 | <strong>Articolo:</strong> ART007 - Valvola XYZ | <strong>Lav:</strong> LAV003 | <strong>ODP:</strong> ODP67890 | <strong>Q.tà:</strong> 1 | <strong>Data:</strong> 31/03/2025
+                        </div>
+                    </li>
+                </ul>
+                <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro</button>
+            </div>
+        </main>
+    </body>
+</html>

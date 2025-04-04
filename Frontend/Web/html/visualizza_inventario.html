@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Visualizzazione Inventario</title>
+        <!-- Stili comuni -->
+        <link rel="stylesheet" href="../css/root.css">
+        <!-- Stili mobile comuni-->
+        <link rel="stylesheet" href="../../Mobile/mobile.css" media="screen and (max-width: 768px)">
+        <!-- Stili desktop -->
+        <link rel="stylesheet" href="../css/cards_style.css" media="screen and (min-width: 769px)">
+        <!-- Script (caricati in modo asincrono) -->
+        <script src="../javascript/main.js" type="module" defer></script>
+        <script src="../javascript/fetch.js" type="module" defer></script>
+    </head>
+    <body>
+        <div class="header"></div>
+        <mian class="container">
+                <div class="card">
+                <div class="card-header">Visualizza Registrazioni Inventario</div>
+                <form id="filter-inventario-form" class="filter-form">
+                    <div class="form-group">
+                        <label for="filter-inv-data-da">Data Da:</label>
+                        <input type="date" id="filter-inv-data-da" name="filter-inv-data-da">
+                    </div>
+                        <div class="form-group">
+                            <label for="filter-inv-data-a">Data A:</label>
+                        <input type="date" id="filter-inv-data-a" name="filter-inv-data-a">
+                    </div>
+                        <div class="form-group">
+                        <label for="filter-inv-barcode">Barcode Articolo:</label>
+                        <input type="text" id="filter-inv-barcode" name="filter-inv-barcode">
+                    </div>
+                    <button type="button" id="filter-inv-submit" class="button button-primary">Filtra <span class="button-icon">🔎</span></button>
+                </form>
+
+                    <ul id="inventario-list" class="item-list" style="margin-top: 20px;">
+                        <li>
+                            <div class="item-content">
+                            <strong>Articolo:</strong> ART001 - Tubo Inox 50mm | <strong>Q.tà:</strong> 120 | <strong>Data:</strong> 01/04/2025
+                        </div>
+                        <div class="item-actions">
+                            <button class="icon-button edit" title="Modifica Quantità">✏️</button>
+                        </div>
+                    </li>
+                    <li>
+                            <div class="item-content">
+                            <strong>Articolo:</strong> ART002 - Valvola Sicurezza | <strong>Q.tà:</strong> 45 | <strong>Data:</strong> 31/03/2025
+                        </div>
+                        <div class="item-actions">
+                            <button class="icon-button edit" title="Modifica Quantità">✏️</button>
+                        </div>
+                    </li>
+                    </ul>
+                    <button type="button" class="button button-secondary" onclick="location.href='home.html'" >Indietro</button>
+            </div>
+        </main>
+    </body>
+</html>

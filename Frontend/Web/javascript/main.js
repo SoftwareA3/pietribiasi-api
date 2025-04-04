@@ -2,11 +2,14 @@ import { deleteCookie, getCookie } from "./cookies.js";
 
 
 document.addEventListener("DOMContentLoaded", async function() {
-    // Gestione logout
+    await fetch("../html/header.html")
+        .then(response => response.text())
+        .then(data => {document.getElementsByClassName("header")[0].innerHTML = data;})
     setupLogoutButton();
 
     await loadWorkerInfo();
 });
+
 
 function setupLogoutButton() {
     const logoutButton = document.getElementById("logout");
@@ -79,3 +82,6 @@ function displayCurrentDate()
     today = mm + '/' + dd + '/' + yyyy;
     return today;
 }
+
+
+

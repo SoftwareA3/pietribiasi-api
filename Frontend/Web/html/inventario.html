@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Inventario</title>
+        <!-- Stili comuni -->
+        <link rel="stylesheet" href="../css/root.css">
+        <!-- Stili mobile comuni-->
+        <link rel="stylesheet" href="../../Mobile/mobile.css" media="screen and (max-width: 768px)">
+        <!-- Stili desktop -->
+        <link rel="stylesheet" href="../css/cards_style.css" media="screen and (min-width: 769px)">
+        <!-- Script (caricati in modo asincrono) -->
+        <script src="../javascript/main.js" type="module" defer></script>
+        <script src="../javascript/fetch.js" type="module" defer></script>
+    </head>
+    <body>
+        <div class="header"></div>
+        <main class="container">
+            <div class="card">
+                <div class="card-header">Gestione Inventario</div>
+                <form id="inventario-form">
+                    <div class="form-group">
+                        <label for="inv-barcode">Barcode Articolo:</label>
+                            <div class="input-group">
+                            <input type="text" id="inv-barcode" name="inv-barcode" required="">
+                            <button type="button" class="button button-secondary button-inline">Scan <span class="button-icon">📷</span></button>
+                        </div>
+                            <div id="inv-articolo-desc" class="field-description" style="display: none;">
+                                <strong>Codice:</strong> <span id="inv-cod-art">...</span><br>
+                                <strong>Descrizione:</strong> <span id="inv-desc-art">Caricamento...</span>
+                            </div>
+                    </div>
+                        <div class="form-group">
+                        <label for="inv-quantita">Quantità Rilevata:</label>
+                        <input type="number" id="inv-quantita" name="inv-quantita" min="0" required="" style="max-width: 150px;">
+                    </div>
+                        <div class="button-group">
+                        <button type="button" id="inv-add-list" class="button button-primary">Aggiungi <span class="button-icon">➕</span></button>
+                        <button type="submit" id="inv-save" class="button button-secondary">Salva <span class="button-icon">💾</span></button>
+                            <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla</button>
+                    </div>
+                </form>
+            </div>
+                <div class="card">
+                    <div class="card-header">Articoli Inventariati (Sessione Corrente)</div>
+                    <ul id="inv-lista-temp" class="item-list">
+                        <li>
+                            <div class="item-content">ART001 - Tubo Inox 50mm - <strong>Qta: 120</strong></div>
+                            <div class="item-actions"><button class="icon-button delete" title="Rimuovi">🗑️</button></div>
+                        </li>
+                    </ul>
+            </div>
+        </main>
+    </body>
+</html>

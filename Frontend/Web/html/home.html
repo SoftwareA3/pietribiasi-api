@@ -10,30 +10,17 @@
     <link rel="stylesheet" href="../css/home.css" media="screen and (min-width: 769px)">
     <!-- Stili mobile -->
     <link rel="stylesheet" href="../../Mobile/home.css" media="screen and (max-width: 768px)">
+    <!-- Stili mobile comuni-->
+    <link rel="stylesheet" href="../../Mobile/mobile.css" media="screen and (max-width: 768px)">
     <!-- Font Awesome per icone moderne -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Script (caricati in modo asincrono) -->
-    <script src="../javascript/home.js" type="module" defer></script>
-    <script src="../javascript/fetch.js" type="module"></script>
+    <script src="../javascript/login.js" type="module" defer></script>
+    <script src="../javascript/main.js" type="module" defer></script>
+    <script src="../javascript/fetch.js" type="module" defer></script>
 </head>
 <body>
-    <header class="app-header" id="main-app-header">
-        <div class="header-left">
-            <div id="logo" class="logo">P</div>
-            <h1 id="header-title">Pietribiasi App</h1>
-        </div>
-        
-        <div class="user-info">
-            <span id="current-user">
-                <i class="fa-solid fa-user"></i>
-                <span class="username-text"></span>
-            </span>
-            <a id="logout" class="btn btn-secondary">
-                <i class="fa-solid fa-sign-out-alt"></i>
-                <span class="btn-text">Logout</span>
-            </a>
-        </div>
-    </header>
+    <div class="header"></div>
 
     <main class="container">
         <div class="card home-card" id="home-card">
@@ -41,42 +28,41 @@
             
             <div class="home-menu">
                 <!-- Funzioni primarie -->
-                <a href="#" id="goto-reg-ore" class="menu-button primary">
+                <button onclick="location.href='registrazione_ore.html'" id="goto-reg-ore" class="menu-button primary">
                     <span class="menu-icon">⏱️</span>
-                    <span>Registrazione Ore Commessa</span>
-                </a>
+                    <span class="menu-button-descr">Registrazione Ore Commessa</span>
+                </button>
                 
-                <a href="#" id="goto-prel-mat" class="menu-button primary">
+                <button onclick="location.href='prelievo_materiali.html'" id="goto-prel-mat" class="menu-button primary">
                     <span class="menu-icon">📦</span>
-                    <span>Prelievo Materiali Produzione</span>
-                </a>
+                    <span class="menu-button-descr">Prelievo Materiali Produzione</span>
+                </button>
                 
-                <a href="#" id="goto-inventario" class="menu-button primary">
+                <button onclick="location.href='inventario.html'" id="goto-inventario" class="menu-button primary">
                     <span class="menu-icon">📋</span>
-                    <span>Inventario</span>
-                </a>
+                    <span class="menu-button-descr">Inventario</span>
+                </button>
                 
                 <!-- Funzioni secondarie -->
-                <a href="#" id="goto-view-ore" class="menu-button secondary">
+                <button onclick="location.href='visualizza_ore.html'" id="goto-view-ore" class="menu-button secondary">
                     <span class="menu-icon">📊</span>
-                    <span>Visualizza Ore Registrate</span>
-                </a>
+                    <span class="menu-button-descr">Visualizza Ore Registrate</span>
+                </button>
                 
-                <a href="#" id="goto-view-prelievi" class="menu-button secondary">
+                <button onclick="location.href='visualizza_prelievi.html'" id="goto-view-prelievi" class="menu-button secondary">
                     <span class="menu-icon">🚚</span>
-                    <span>Visualizza Prelievi Effettuati</span>
-                </a>
+                    <span class="menu-button-descr">Visualizza Prelievi Effettuati</span>
+                </button>
                 
-                <a href="#" id="goto-view-inventario" class="menu-button secondary">
+                <button onclick="location.href='visualizza_inventario.html'" id="goto-view-inventario" class="menu-button secondary">
                     <span class="menu-icon">🔍</span>
-                    <span>Visualizza Inventario</span>
-                </a>
+                    <span class="menu-button-descr">Visualizza Inventario</span>
+                </button>
                 
-                <!-- Power user -->
-                <a href="#" id="goto-poweruser-login" class="menu-button poweruser">
+                <button onclick="location.href='power_user.html'" id="goto-poweruser-login" class="menu-button poweruser">
                     <span class="menu-icon">⚙️</span>
-                    <span>Modalità Power User</span>
-                </a>
+                    <span class="menu-button-descr">Modalità Power User</span>
+                </button>
             </div>  
         </div>
     </main>

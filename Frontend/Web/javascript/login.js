@@ -8,13 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if user is authenticated using cookies instead of sessionStorage
     if(sessionStorage.getItem("login") === "true") {
-        successMessage.classList.remove('hidden');
+        if(successMessage.classList.contains('hidden')) {
+            successMessage.classList.remove('hidden');
+        }
+        
         setTimeout(() => {
             window.location.href = "../html/home.html";
         }, 2000);
     }
     else if (sessionStorage.getItem("login") === "false") {
-        errorMessage.classList.remove('hidden');
+        if(errorMessage.classList.contains('hidden')) {
+            errorMessage.classList.remove('hidden');
+        }
     }
 
     if (loginForm) {

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registrazione Ore Commessa</title>
+        <!-- Stili comuni -->
+        <link rel="stylesheet" href="../css/root.css">
+        <!-- Stili mobile comuni-->
+        <link rel="stylesheet" href="../../Mobile/mobile.css" media="screen and (max-width: 768px)">
+        <!-- Stili desktop -->
+        <link rel="stylesheet" href="../css/cards_style.css" media="screen and (min-width: 769px)">
+        <!-- Script (caricati in modo asincrono) -->
+        <script src="../javascript/main.js" type="module" defer></script>
+        <script src="../javascript/fetch.js" type="module" defer></script>
+    </head>
+    <body>
+        <div class="header"></div>
+        <main class="container">
+            <div class="card">
+                <div class="card-header">Prelievo Materiali per Produzione</div>
+                <form id="prel-mat-form">
+                    <div class="form-group">
+                    <label for="prel-mat-commessa">Codice Commessa:</label>
+                    <div class="input-group">
+                        <input type="text" id="prel-mat-commessa" name="prel-mat-commessa" required="">
+                        <button type="button" class="button button-secondary button-inline">Cerca <span class="button-icon">🔍</span></button>
+                    </div>
+                        <div id="prel-mat-commessa-desc" class="field-description" style="display: none;">
+                            <strong>Descrizione:</strong> <span>Caricamento...</span>
+                        </div>
+                </div>
+                    <div class="form-group">
+                    <label for="prel-mat-barcode">Barcode Articolo:</label>
+                    <div class="input-group">
+                        <input type="text" id="prel-mat-barcode" name="prel-mat-barcode" required="">
+                        <button type="button" class="button button-secondary button-inline">Scan <span class="button-icon">📷</span></button>
+                    </div>
+                        <div id="prel-mat-articolo-desc" class="field-description" style="display: none;">
+                            <strong>Codice:</strong> <span id="prel-mat-cod-art">...</span><br>
+                            <strong>Descrizione:</strong> <span id="prel-mat-desc-art">Caricamento...</span>
+                        </div>
+                </div>
+                    <div class="form-group">
+                    <label for="prel-mat-lavorazione">Lavorazione:</label>
+                    <input type="text" id="prel-mat-lavorazione" name="prel-mat-lavorazione" list="lavorazioni-datalist" required="">
+                </div>
+                <div class="form-group">
+                    <label for="prel-mat-odp">Ordine di Produzione:</label>
+                    <input type="text" id="prel-mat-odp" name="prel-mat-odp" list="odp-datalist" required="">
+                </div>
+                <div class="form-group">
+                    <label for="prel-mat-quantita">Quantità:</label>
+                    <input type="number" id="prel-mat-quantita" name="prel-mat-quantita" value="1" min="1" required="" style="max-width: 150px;">
+                </div>
+                    <p><strong>Tipo Movimento: Prelievo</strong></p>
+                    <div class="button-group">
+                    <button type="button" id="prel-mat-add-list" class="button button-primary">Aggiungi <span class="button-icon">➕</span></button>
+                    <button type="submit" id="prel-mat-save" class="button button-secondary">Salva <span class="button-icon">💾</span></button>
+                        <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla</button>
+                </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Prelievi da Salvare</div>
+                <ul id="prel-mat-lista-temp" class="item-list">
+                <li>
+                        <div class="item-content">COMM001 / ART001 - Tubo Inox / LAV001 / ODP12345 - <strong>Qta: 5</strong></div>
+                        <div class="item-actions"><button class="icon-button delete" title="Rimuovi">🗑️</button></div>
+                    </li>
+                </ul>
+            </div>
+        </main>
+    </body>
+</html>

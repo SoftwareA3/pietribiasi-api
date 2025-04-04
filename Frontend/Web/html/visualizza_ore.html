@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Visualizzazione Ore Registrate</title>
+        <!-- Stili comuni -->
+        <link rel="stylesheet" href="../css/root.css">
+        <!-- Stili mobile comuni-->
+        <link rel="stylesheet" href="../../Mobile/mobile.css" media="screen and (max-width: 768px)">
+        <!-- Stili desktop -->
+        <link rel="stylesheet" href="../css/cards_style.css" media="screen and (min-width: 769px)">
+        <!-- Script (caricati in modo asincrono) -->
+        <script src="../javascript/main.js" type="module" defer></script>
+        <script src="../javascript/fetch.js" type="module" defer></script>
+    </head>
+    <body>
+        <div class="header"></div>
+        <main class="container">
+            <div class="card">
+            <div class="card-header">Visualizza Ore Registrate</div>
+                <form id="filter-ore-form" class="filter-form">
+                    <div class="form-group">
+                        <label for="filter-ore-data-da">Data Da:</label>
+                        <input type="date" id="filter-ore-data-da" name="filter-ore-data-da">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-ore-data-a">Data A:</label>
+                        <input type="date" id="filter-ore-data-a" name="filter-ore-data-a">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-ore-commessa">Commessa:</label>
+                        <input type="text" id="filter-ore-commessa" name="filter-ore-commessa">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-ore-lavorazione">Lavorazione:</label>
+                        <input type="text" id="filter-ore-lavorazione" name="filter-ore-lavorazione">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-ore-odp">Ordine Produzione:</label>
+                        <input type="text" id="filter-ore-odp" name="filter-ore-odp">
+                    </div>
+                    <button type="button" id="filter-ore-submit" class="button button-primary">Filtra <span class="button-icon">🔎</span></button>
+                </form>
+
+                <ul id="ore-list" class="item-list" style="margin-top: 20px;">
+                <li> <div class="item-content">
+                            <span class="status-indicator status-open" title="Aperto"></span>
+                        <strong>Comm:</strong> COMM001 | <strong>Lav:</strong> LAV002 | <strong>ODP:</strong> ODP12345 | <strong>Ore:</strong> 2.5 | <strong>Data:</strong> 01/04/2025
+                    </div>
+                    <div class="item-actions">
+                        <button class="icon-button edit" title="Modifica Ore">✏️</button>
+                        <button class="icon-button delete" title="Elimina Registrazione">🗑️</button>
+                    </div>
+                </li>
+                    <li> <div class="item-content">
+                            <span class="status-indicator status-closed" title="Chiuso"></span>
+                        <strong>Comm:</strong> COMM003 | <strong>Lav:</strong> LAV001 | <strong>ODP:</strong> ODP11223 | <strong>Ore:</strong> 8 | <strong>Data:</strong> 30/03/2025
+                    </div>
+                        <div class="item-actions"></div>
+                </li>
+                </ul>
+                <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro</button>
+            </div>
+        </main>
+    </body>
+</html>
