@@ -1,78 +1,91 @@
-.hidden {
-    display: none;
+/* login-desktop.css - Stili desktop specifici per la pagina di login */
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
 }
 
-form {
-    display: block;
-    margin-top: 0em;
-    unicode-bidi: isolate;
-    border-color: var(--card-background);
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
 }
 
-.login-message {
-    font-size: 0.9em;
-    margin-top: 10px;
-    text-align: center;
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--spacing-5);
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--border-radius-lg);
+    animation: fadeIn 0.5s ease;
 }
 
-#login-card {
-    max-width: 450px;
-    padding: 5px 40px 10px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-4);
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1) rotate(10deg);
 }
 
 h1 {
-    border-bottom: 1px solid #eee;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-    font-size: 1.2em;
-    font-weight: bold;
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-4);
     color: var(--primary-color);
+    padding-bottom: var(--spacing-3);
+    border-bottom: 2px solid var(--gray-200);
 }
 
-p {
-    display: block;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    unicode-bidi: isolate;
-}
-
-input:not([type="image" i], [type="range" i], [type="checkbox" i], [type="radio" i]) {
-    overflow-clip-margin: 0px !important;
-    overflow: clip !important;
+.form-group {
+    margin-bottom: var(--spacing-4);
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: 1rem;
+    color: var(--gray-700);
 }
 
-input[type="text"], input[type="password"], input[type="number"], input[type="date"] {
+input {
+    padding: var(--spacing-3);
+    font-size: 1.1rem;
+    border: 2px solid var(--gray-300);
+}
+
+.btn {
     width: 100%;
-    padding: 10px;
-    border: 1px solid var(--input-border-color);
-    border-radius: var(--border-radius);
-    box-sizing: border-box;
-    font-size: 1em;
+    padding: var(--spacing-3);
+    font-size: 1.1rem;
+    margin-top: var(--spacing-3);
+    transition: all 0.3s ease;
 }
 
-input:hover, input:focus {
-    border-color: var(--input-focus-border-color);
-    box-shadow: 0 0 5px rgba(26, 108, 168, 0.5);
-}
-
-input:-internal-autofill-selected {
-    appearance: menulist-button;
-    background-image: none !important;
-    background-color: light-dark(rgb(232, 240, 254), rgba(70, 90, 126, 0.4)) !important;
-    color: fieldtext !important;
+.login-footer {
+    margin-top: var(--spacing-5);
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 0.85rem;
+    line-height: 1.4;
 }

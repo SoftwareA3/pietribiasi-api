@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pietribiasi App - Mockup</title>
+    <style>
+        :root {
+            /* Palette colori principale */
+            --primary-color: #0074d9;
+            --primary-dark: #005aa6;
+            --primary-light: #3d94e3;
+            
+            --secondary-color: #ffb700;
+            --secondary-dark: #e09e00;
+            --secondary-light: #ffc530;
+            
+            /* Colori neutri */
+            --white: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --black: #000000;
+            
+            /* Colori funzionali */
+            --background: var(--gray-100);
+            --text: var(--gray-800);
+            --text-light: var(--gray-600);
+            --text-inverted: var(--white);
+            
+            /* Elementi interfaccia */
+            --card-bg: var(--white);
+            --input-border: var(--gray-300);
+            --input-focus-border: var(--primary-color);
+            --input-focus-shadow: rgba(0, 116, 217, 0.25);
+            
+            /* Messaggi */
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            --info: #17a2b8;
+            
+            /* Layout */
+            --border-radius-sm: 4px;
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            
+            --spacing-1: 0.25rem;
+            --spacing-2: 0.5rem;
+            --spacing-3: 1rem;
+            --spacing-4: 1.5rem;
+            --spacing-5: 3rem;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            
+            --transition: all 0.3s ease;
+            
+            /* Tipografia */
+            --font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Helvetica Neue', sans-serif;
+            --font-weight-normal: 400;
+            --font-weight-bold: 700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-weight: var(--font-weight-normal);
+            line-height: 1.5;
+            color: var(--text);
+            background-color: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: var(--font-weight-bold);
+            line-height: 1.2;
+            margin-bottom: var(--spacing-3);
+            color: var(--gray-800);
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Container e layout */
+        .container {
+            width: 100%;
+            padding-right: var(--spacing-3);
+            padding-left: var(--spacing-3);
+            margin-right: auto;
+            margin-left: auto;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-4);
+            transition: var(--transition);
+        }
+
+        /* Tabs navigation */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--spacing-4);
+        }
+
+        .tab {
+            padding: var(--spacing-2) var(--spacing-4);
+            background-color: var(--gray-200);
+            color: var(--gray-600);
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            margin: 0 var(--spacing-1);
+            font-weight: var(--font-weight-bold);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Login Page */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: var(--spacing-5);
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--border-radius-lg);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--spacing-4);
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: var(--spacing-4);
+            color: var(--primary-color);
+            padding-bottom: var(--spacing-3);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-4);
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 1rem;
+            color: var(--gray-700);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-2);
+        }
+
+        input {
+            width: 100%;
+            padding: var(--spacing-3);
+            font-size: 1.1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 3px var(--input-focus-shadow);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            text-align: center;
+            vertical-align: middle;
+            padding: var(--spacing-2) var(--spacing-3);
+            font-size: 1rem;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+            gap: var(--spacing-2);
+        }
+
+        .btn i {
+            font-size: 1.1em;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-inverted);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--gray-800);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .login-footer {
+            margin-top: var(--spacing-5);
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Home Page */
+        .app-header {
+            background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            color: var(--white);
+            padding: var(--spacing-3) var(--spacing-4);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+
+        #header-title {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-bold);
+        }
+
+        #logo {
+            width: 48px;
+            height: 48px;
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+
+        #current-user {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            color: var(--white);
+            font-weight: var(--font-weight-normal);
+        }
+
+        #logout {
+            padding: var(--spacing-2) var(--spacing-3);
+            font-weight: var(--font-weight-bold);
+            font-size: 0.9rem;
+        }
+
+        .home-container {
+            padding-top: 80px;
+            max-width: 1200px;
+        }
+
+        .home-card {
+            animation: slideIn 0.5s ease;
+            max-width: 1000px;
+            margin: var(--spacing-4) auto;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #menu-title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-4);
+            padding-bottom: var(--spacing-2);
+            border-bottom: 2px solid var(--gray-200);
+            color: var(--primary-color);
+        }
+
+        .home-menu {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-3);
+        }
+
+        .menu-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--spacing-4);
+            border-radius: var(--border-radius);
+            color: var(--white);
+            transition: all 0.3s ease;
+            height: 160px;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            box-shadow: var(--shadow);
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .menu-button span {
+            margin-top: var(--spacing-2);
+            font-weight: var(--font-weight-bold);
+            font-size: 1rem;
+            z-index: 1;
+        }
+
+        .menu-icon {
+            font-size: 2.2rem;
+            margin-bottom: var(--spacing-2);
+            transition: transform 0.3s ease;
+            z-index: 1;
+        }
+
+        .menu-button:hover .menu-icon {
+            transform: scale(1.2);
+        }
+
+        /* Menu button colors */
+        .menu-button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .menu-button.primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        }
+
+        .menu-button.secondary {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+        }
+
+        .menu-button.secondary:hover {
+            background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary-color) 100%);
+        }
+
+        .menu-button.poweruser {
+            background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
+        }
+
+        .menu-button.poweruser:hover {
+            background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
+        }
+
+        /* Footer */
+        .app-footer {
+            text-align: center;
+            padding: var(--spacing-4);
+            background-color: var(--gray-100);
+            border-top: 1px solid var(--gray-200);
+            color: var(--gray-600);
+            margin-top: auto;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: var(--spacing-2);
+                flex-wrap: wrap;
+            }
+
+            .header-left {
+                gap: var(--spacing-2);
+            }
+
+            #header-title {
+                font-size: 1.2rem;
+                max-width: 180px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #logo {
+                width: 36px;
+                height: 36px;
+                font-size: 1.4rem;
+            }
+
+            .user-info {
+                gap: var(--spacing-2);
+            }
+
+            #current-user {
+                font-size: 0.9rem;
+                gap: var(--spacing-1);
+            }
+
+            .username-text {
+                max-width: 80px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #logout {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+
+            #logout .btn-text {
+                display: none; /* Nascondi testo bottone su mobile */
+            }
+
+            .home-container {
+                padding-top: 64px;
+            }
+
+            .home-menu {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-button {
+                flex-direction: row;
+                text-align: left;
+                padding: var(--spacing-3);
+                height: auto;
+            }
+
+            .menu-icon {
+                font-size: 1.5rem;
+                margin-right: var(--spacing-3);
+                margin-bottom: 0;
+                width: 24px;
+                display: flex;
+                justify-content: center;
+            }
+
+            .login-card {
+                padding: var(--spacing-4);
+            }
+        }
+
+        .message {
+            padding: var(--spacing-2) var(--spacing-3);
+            margin-top: var(--spacing-3);
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+
+        .success-message {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+
+        .error-message {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="tabs">
+        <button class="tab active" data-tab="login">Login Page</button>
+        <button class="tab" data-tab="home">Home Page</button>
+    </div>
+
+    <div id="login" class="tab-content active">
+        <div class="login-screen">
+            <div class="card login-card">
+                <div class="logo-container">
+                    <div class="logo" aria-label="Logo Pietribiasi">P</div>
+                </div>
+                <h1>Accesso</h1>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-password">
+                            <i class="fa-solid fa-lock"></i> Password
+                        </label>
+                        <input type="text" id="login-password" name="password" 
+                            class="form-control" required 
+                            placeholder="Inserisci la password">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-right-to-bracket"></i> Accedi
+                    </button>
+                    
+                    <div id="error-message" class="message error-message hidden">
+                        <i class="fa-solid fa-circle-exclamation"></i> 
+                        Qualcosa è andato storto... Riprova
+                    </div>
+                    
+                    <div id="success-message" class="message success-message hidden">
+                        <i class="fa-solid fa-circle-check"></i> 
+                        Credenziali corrette! Reindirizzamento in corso
+                    </div>
+                </form>
+                
+                <footer class="login-footer">
+                    <p>Pietribiasi Michelangelo S.r.l.</p>
+                    <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <div id="home" class="tab-content">
+        <header class="app-header">
+            <div class="header-left">
+                <div id="logo" class="logo">P</div>
+                <h1 id="header-title">Pietribiasi App</h1>
+            </div>
+            
+            <div class="user-info">
+                <span id="current-user">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="username-text">Operaio: 1234 - Mario Rossi 04/04/2025</span>
+                </span>
+                <a id="logout" class="btn btn-secondary">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                    <span class="btn-text">Logout</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="container home-container">
+            <div class="card home-card">
+                <h2 id="menu-title">Menu Principale</h2>
+                
+                <div class="home-menu">
+                    <!-- Funzioni primarie -->
+                    <a href="#" class="menu-button primary">
+                        <i class="fa-solid fa-clock menu-icon"></i>
+                        <span>Registrazione Ore Commessa</span>
+                    </a>
+                    
+                    <a href="#" class="menu-button primary">
+                        <i class="fa-solid fa-box menu-icon"></i>
+                        <span>Prelievo Materiali Produzione</span>
+                    </a>
+                    
+                    <a href="#" class="menu-button primary">
+                        <i class="fa-solid fa-clipboard-list menu-icon"></i>
+                        <span>Inventario</span>
+                    </a>
+                    
+                    <!-- Funzioni secondarie -->
+                    <a href="#" class="menu-button secondary">
+                        <i class="fa-solid fa-chart-bar menu-icon"></i>
+                        <span>Visualizza Ore Registrate</span>
+                    </a>
+                    
+                    <a href="#" class="menu-button secondary">
+                        <i class="fa-solid fa-truck menu-icon"></i>
+                        <span>Visualizza Prelievi Effettuati</span>
+                    </a>
+                    
+                    <a href="#" class="menu-button secondary">
+                        <i class="fa-solid fa-search menu-icon"></i>
+                        <span>Visualizza Inventario</span>
+                    </a>
+                    
+                    <!-- Power user -->
+                    <a href="#" class="menu-button poweruser">
+                        <i class="fa-solid fa-gear menu-icon"></i>
+                        <span>Modalità Power User</span>
+                    </a>
+                </div>  
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>Pietribiasi Michelangelo S.r.l.</p>
+            <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show active content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Form submission simulation
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const password = document.getElementById('login-password').value;
+                
+                if (password) {
+                    // Show success message
+                    document.getElementById('success-message').classList.remove('hidden');
+                    document.getElementById('error-message').classList.add('hidden');
+                    
+                    // Switch to home tab after 1 second
+                    setTimeout(() => {
+                        document.querySelector('.tab[data-tab="home"]').click();
+                    }, 1000);
+                } else {
+                    // Show error message
+                    document.getElementById('error-message').classList.remove('hidden');
+                    document.getElementById('success-message').classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
