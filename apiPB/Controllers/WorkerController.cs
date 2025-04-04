@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using apiPB.Repository.Abstraction;
 using apiPB.Dto.Models;
 using apiPB.Services.Request.Abstraction;
+using Microsoft.AspNetCore.Authorization;
 
 namespace apiPB.Controllers
 {
@@ -103,25 +104,24 @@ namespace apiPB.Controllers
         }
 
         /// <summary>
-        /// Verifica le credenziali inviate tramite Basic Authentication.
+        /// Verifica le credenziali inviate tramite Basic Authentication e recupera le informazioni del lavoratore autenticato.
         /// </summary>
-        /// <returns>200 OK se le credenziali sono corrette, altrimenti 401 Unauthorized.</returns>
+        /// <returns>WorkerDto; 200 OK se le credenziali sono corrette, altrimenti 404 Not Found.</returns>
         [HttpPost("login")]
         public IActionResult LoginWithPassword([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var workerIdAndPasswordDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
-            if(workerIdAndPasswordDto == null)
+            var workerDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
+            if(workerDto == null)
             {
-                // Se il lavoratore non esiste, restituisce 401 Unauthorized
-                _logService.AppendMessageToLog("Invalid credentials", 401, "Unauthorized");
-                return Unauthorized(new { message = "Invalid credentials" });
+                _logService.AppendMessageAndItemToLog(requestPath, NotFound().StatusCode, "Not Found", passwordWorkersRequestDto);
+                return NotFound();
             }
             
-            var ok = Ok(workerIdAndPasswordDto);
+            var ok = Ok(workerDto);
 
-            _logService.AppendMessageAndItemToLog(requestPath, ok.StatusCode, "OK", workerIdAndPasswordDto);
+            _logService.AppendMessageAndItemToLog(requestPath, ok.StatusCode, "OK", workerDto);
 
             return ok;   
         }

@@ -65,7 +65,7 @@ namespace apiPB.Services.Request.Implementation
             return GetLastWorkerFieldLine(workerDto);
         }
 
-        public WorkerIdAndPasswordRequestDto? LoginWithPassword(PasswordWorkersRequestDto request)
+        public WorkerDto? LoginWithPassword(PasswordWorkersRequestDto request)
         {
             var workerDto = GetWorkerByPassword(request);
             if (workerDto == null)
@@ -73,7 +73,19 @@ namespace apiPB.Services.Request.Implementation
                 return null;
             }
             UpdateOrCreateLastLogin(request).Wait();
-            return workerDto.ToWorkerIdAndPasswordRequestDto();
+            return workerDto;
+        }
+
+        public WorkerDto? GetWorkerByIdAndPassword(WorkerIdAndPasswordRequestDto request)
+        {
+            var filter = _mapper.Map<WorkerIdAndPasswordFilter>(request);
+            var worker = _workerRepository.GetWorkerByIdAndPassword(filter);
+            if (worker == null)
+            {
+                return null;
+            }
+            UpdateOrCreateLastLogin(new PasswordWorkersRequestDto { Password = request.Password }).Wait();
+            return worker.ToWorkerDto();
         }
     }
 }

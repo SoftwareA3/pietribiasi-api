@@ -1,0 +1,164 @@
+/* home-desktop.css - Stili desktop specifici per la home page */
+
+/* Header */
+.app-header {
+    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    color: var(--white);
+    padding: var(--spacing-3) var(--spacing-4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+#header-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+}
+
+#logo {
+    width: 48px;
+    height: 48px;
+    font-size: 1.8rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+#current-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--white);
+    font-weight: var(--font-weight-normal);
+}
+
+#logout {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-weight: var(--font-weight-bold);
+    font-size: 0.9rem;
+}
+
+/* Main Content */
+.container {
+    padding-top: 80px;
+    max-width: 1200px;
+}
+
+.home-card {
+    animation: slideIn 0.5s ease;
+    max-width: 1000px;
+    margin: var(--spacing-4) auto;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#menu-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 2px solid var(--gray-200);
+    color: var(--primary-color);
+}
+
+.home-menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-3);
+}
+
+.menu-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-4);
+    border-radius: var(--border-radius);
+    color: var(--white);
+    transition: all 0.3s ease;
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+}
+
+.menu-button:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.menu-button span {
+    margin-top: var(--spacing-2);
+    font-weight: var(--font-weight-bold);
+    z-index: 1;
+}
+
+.menu-icon{
+    font-size: 2.2rem;
+    font-style: normal;
+    margin-bottom: var(--spacing-2);
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+.menu-button:hover .menu-icon {
+    transform: scale(1.2);
+}
+
+/* Menu button colors */
+.menu-button.primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.menu-button.primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+}
+
+.menu-button.secondary {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+}
+
+.menu-button.secondary:hover {
+    background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary-color) 100%);
+}
+
+.menu-button.poweruser {
+    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
+}
+
+.menu-button.poweruser:hover {
+    background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
+}
+
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: var(--spacing-4);
+    background-color: var(--gray-100);
+    border-top: 1px solid var(--gray-200);
+    color: var(--gray-600);
+    margin-top: auto;
+}

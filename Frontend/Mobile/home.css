@@ -1,0 +1,199 @@
+/* home-mobile.css - Stili mobile specifici per la home page */
+
+/* Header */
+.app-header {
+    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    color: var(--white);
+    padding: var(--spacing-2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+#header-title {
+    margin: 0;
+    font-size: 1.2rem;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#logo {
+    width: 36px;
+    height: 36px;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    row-gap: var(--spacing-2);
+    column-gap: 10rem;
+}
+
+#current-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-size: 0.9rem;
+}
+
+.username-text {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#logout {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+#logout .btn-text {
+    display: none; /* Nascondi testo bottone su mobile */
+}
+
+/* Main Content */
+.container {
+    padding-top: 64px;
+    padding-bottom: var(--spacing-3);
+}
+
+.home-card {
+    margin: var(--spacing-5) auto;
+    padding: var(--spacing-3);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#menu-title {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 2px solid var(--gray-200);
+    color: var(--primary-color);
+}
+
+.home-menu {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+}
+
+.menu-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius);
+    color: var(--white);
+    transition: all 0.3s ease;
+    height: auto;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-button:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-sm);
+}
+
+.menu-icon {
+    font-size: 2.2rem;
+    margin-right: var(--spacing-3);
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.menu-button span {
+    font-weight: var(--font-weight-bold);
+    font-size: 0.95rem;
+}
+
+/* Menu button colors */
+.menu-button.primary {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.menu-button.secondary {
+    background: linear-gradient(90deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+}
+
+.menu-button.poweruser {
+    background: linear-gradient(90deg, var(--gray-700) 0%, var(--gray-800) 100%);
+}
+
+/* Orientation changes - Support landscape on mobile */
+@media screen and (min-width: 480px) and (max-width: 768px) {
+    .home-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: var(--spacing-3);
+    background-color: var(--gray-100);
+    border-top: 1px solid var(--gray-200);
+    color: var(--gray-600);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.app-footer p {
+    margin: var(--spacing-1) 0;
+}
+
+/* Small phone sizes */
+@media screen and (max-width: 360px) {
+    #header-title {
+        font-size: 1rem;
+        max-width: 120px;
+    }
+    
+    #logo {
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+    }
+    
+    .menu-button {
+        padding: var(--spacing-2);
+    }
+    
+    .menu-icon {
+        font-size: 1.3rem;
+        margin-right: var(--spacing-2);
+    }
+    
+    .menu-button span {
+        font-size: 0.85rem;
+    }
+}
