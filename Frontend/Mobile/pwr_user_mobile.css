@@ -1,4 +1,8 @@
 /* Stili specifici per la pagina power user - Mobile */
+.container {
+    padding-top: 0;
+}
+
 .field-description {
     border-left: 3px solid var(--primary-color);
     padding-left: var(--spacing-2);

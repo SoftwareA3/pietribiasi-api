@@ -33,6 +33,7 @@
 }
 
 .menu-button {
+    font-size: 0.8rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -42,7 +43,7 @@
     border-radius: var(--border-radius);
     color: var(--white);
     transition: all 0.3s ease;
-    height: 160px;
+    height: 140px;
     position: relative;
     overflow: hidden;
     text-decoration: none;

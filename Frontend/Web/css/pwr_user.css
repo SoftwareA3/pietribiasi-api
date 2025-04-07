@@ -3,6 +3,10 @@
     font-weight: var(--font-weight-bold);
 }
 
+.container{
+    padding-top: 0;
+}
+
 #pu-addetto-desc {
     border-left-color: var(--info);
     background-color: rgba(23, 162, 184, 0.05);

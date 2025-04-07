@@ -83,7 +83,7 @@
 /* Tooltip per gli indicatori di stato */
 [title] {
     position: relative;
-    cursor: help;
+    cursor: pointer;
 }
 
 .status-tooltip {

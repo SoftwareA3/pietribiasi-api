@@ -5,123 +5,175 @@ document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.getElementById("login-form");
     const errorMessage = document.getElementById('error-message');
     const successMessage = document.getElementById('success-message');
+    
+    // Flag per evitare il doppio invio del form
+    let isSubmitting = false;
 
-    // Check if we're on the login page
+    // Se siamo nella pagina di login, controlliamo lo stato di autenticazione
     if (window.location.href.includes("login.html")) {
-        // Check if user is already authenticated
-        if(sessionStorage.getItem("login") === "true") {
-            if(successMessage && successMessage.classList && successMessage.classList.contains('hidden')) {
-                successMessage.classList.remove('hidden');
-            }
-            
+        // Ripulisci qualsiasi messaggio precedente
+        hideAllMessages();
+        
+        // Verifica se ci sono già credenziali valide
+        const credentials = getCookie("basicAuthCredentials");
+        const userInfo = getCookie("userInfo");
+        const loginStatus = sessionStorage.getItem("login");
+        
+        if (credentials && userInfo && loginStatus === "true") {
+            // L'utente è già autenticato, mostra successo e reindirizza
+            showMessage(successMessage);
+            redirectToHome();
+        } else if (loginStatus === "false") {
+            // Login fallito in precedenza, mostra messaggio di errore
+            showMessage(errorMessage);
+            // Pulizia di credenziali parziali che potrebbero causare problemi
+            deleteCookie("basicAuthCredentials");
+            deleteCookie("userInfo");
+            // Reset dello stato dopo la visualizzazione
             setTimeout(() => {
-                window.location.href = "../html/home.html";
-            }, 2000);
-        }
-        else if (sessionStorage.getItem("login") === "false") {
-            if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
-                errorMessage.classList.remove('hidden');
-            }
+                sessionStorage.removeItem("login");
+            }, 1500);
         }
     }
 
+    // Setup del form di login
     if (loginForm) {
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
             event.stopPropagation();
-
-            // Get form information
-            const password = document.getElementById("login-password").value;
-
-            console.log("Password prima di fetch:", password);
-            const request = await fetch("http://localhost:5245/api/worker/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({"password": password})
-            });
-
-            if (!request.ok) {
-                sessionStorage.setItem("login", "false");
-                console.error("Errore nella richiesta:", request.status, request.statusText);
-                
-                if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
-                    errorMessage.classList.remove('hidden');
-                }
-                return;
-            }
+            
+            // Previene invii multipli
+            if (isSubmitting) return;
+            isSubmitting = true;
+            
+            // Nascondi eventuali messaggi precedenti
+            hideAllMessages();
             
             try {
-                const result = await request.json();
+                // Get form information
+                const passwordInput = document.getElementById("login-password");
+                if (!passwordInput) {
+                    throw new Error("Campo password non trovato");
+                }
+                
+                const password = passwordInput.value.trim();
+                if (!password) {
+                    throw new Error("Password non inserita");
+                }
+
+                console.log("Invio richiesta di login...");
+                
+                // Prima richiesta: ottieni workerId
+                const request = await fetch("http://localhost:5245/api/worker/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"password": password}),
+                    // Aggiungi un timeout per evitare richieste che non si completano mai
+                    signal: AbortSignal.timeout(10000)
+                }).catch(error => {
+                    console.error("Errore di rete:", error);
+                    throw new Error("Errore di connessione al server");
+                });
+
+                if (!request || !request.ok) {
+                    const status = request ? request.status : "N/A";
+                    const text = request ? request.statusText : "Connessione fallita";
+                    throw new Error(`Errore nella richiesta: ${status} ${text}`);
+                }
+                
+                // Estrai le informazioni del lavoratore
+                const result = await request.json().catch(error => {
+                    console.error("Errore nel parsing della risposta:", error);
+                    throw new Error("Errore nel formato della risposta");
+                });
+                
                 const workerId = result.workerId;
                 
-                // Save credentials in a cookie
-                if(getCookie("basicAuthCredentials")) {
-                    deleteCookie("basicAuthCredentials");
+                if (!workerId) {
+                    throw new Error("ID lavoratore non trovato nella risposta");
                 }
-                if(getCookie("userInfo")) {
-                    deleteCookie("userInfo");
-                }
-
+                
+                console.log("WorkerId ottenuto:", workerId);
+                
+                // Pulizia preventiva dei cookie
+                deleteCookie("basicAuthCredentials");
+                deleteCookie("userInfo");
+                
+                // Salva le credenziali nel cookie
                 const credentials = btoa(`${workerId}:${password}`);
                 setCookie("basicAuthCredentials", credentials, 1);
-                console.log("basicAuthCredentials cookie: " + getCookie("basicAuthCredentials"));
                 
-                // Save the entire result in another cookie
-                setCookie("userInfo", JSON.stringify(result), 1); // Set cookie for 1 day
-                console.log("userInfo cookie: " + getCookie("userInfo"));
-                
-                console.log("Results:", result);
-                console.log("Risultato cript:", credentials);
-            }
-            catch (error) {
-                sessionStorage.setItem("login", "false");
-                console.error("Non è stato possibile recuperare l'ID:", error);
-                
-                if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
-                    errorMessage.classList.remove('hidden');
+                // Verifica che il cookie sia stato correttamente impostato
+                const savedCredentials = getCookie("basicAuthCredentials");
+                if (!savedCredentials || savedCredentials !== credentials) {
+                    throw new Error("Errore nel salvataggio delle credenziali");
                 }
-                return;
-            }
-            
-            try {
-                // Use fetchWithAuth to send the request
-                const response = await fetchWithAuth("http://localhost:5245/api/auth/validate", {
+                
+                // Salva le informazioni utente nel cookie
+                setCookie("userInfo", JSON.stringify(result), 1);
+                
+                console.log("Validazione credenziali...");
+                
+                // Seconda richiesta: valida le credenziali
+                const validationResponse = await fetchWithAuth("http://localhost:5245/api/auth/validate", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"
-                    }
+                    },
+                    // Aggiungi un timeout per evitare richieste che non si completano mai
+                    signal: AbortSignal.timeout(10000)
+                }).catch(error => {
+                    console.error("Errore durante la validazione:", error);
+                    throw new Error("Errore nella validazione delle credenziali");
                 });
 
-                if (response.ok) {
-                    sessionStorage.setItem("login", "true");
-                    
-                    if(successMessage && successMessage.classList && successMessage.classList.contains('hidden')) {
-                        successMessage.classList.remove('hidden');
-                    }
-                    
-                    setTimeout(() => {
-                        window.location.href = "../html/home.html";
-                    }, 2000);
-                } else {
-                    deleteCookie("basicAuthCredentials");
-                    sessionStorage.setItem("login", "false");
-                    console.error("Errore nella richiesta:", response.status, response.statusText);
-                    
-                    if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
-                        errorMessage.classList.remove('hidden');
-                    }
+                if (!validationResponse || !validationResponse.ok) {
+                    const status = validationResponse ? validationResponse.status : "N/A";
+                    const text = validationResponse ? validationResponse.statusText : "Connessione fallita";
+                    throw new Error(`Validazione fallita: ${status} ${text}`);
                 }
-            } catch (error) {
-                sessionStorage.setItem("login", "false");
-                deleteCookie("basicAuthCredentials");
-                console.error("Errore nella richiesta:", error);
                 
-                if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
-                    errorMessage.classList.remove('hidden');
-                }
+                console.log("Validazione completata con successo");
+                
+                // Autenticazione riuscita
+                sessionStorage.setItem("login", "true");
+                showMessage(successMessage);
+                redirectToHome();
+                
+            } catch (error) {
+                // Gestione errori: pulisci i cookie e mostra il messaggio di errore
+                console.error("Errore di login:", error);
+                deleteCookie("basicAuthCredentials");
+                deleteCookie("userInfo");
+                sessionStorage.setItem("login", "false");
+                showMessage(errorMessage);
+            } finally {
+                // Reset del flag di submitting
+                setTimeout(() => {
+                    isSubmitting = false;
+                }, 2000);
             }
         });
+    }
+    
+    // Funzioni helper
+    function hideAllMessages() {
+        if (errorMessage && errorMessage.classList) errorMessage.classList.add('hidden');
+        if (successMessage && successMessage.classList) successMessage.classList.add('hidden');
+    }
+    
+    function showMessage(messageElement) {
+        if (messageElement && messageElement.classList) {
+            messageElement.classList.remove('hidden');
+        }
+    }
+    
+    function redirectToHome() {
+        console.log("Reindirizzamento a home.html...");
+        setTimeout(() => {
+            window.location.href = "../html/home.html";
+        }, 1500);
     }
 });
