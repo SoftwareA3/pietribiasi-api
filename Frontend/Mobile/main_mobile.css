@@ -51,14 +51,14 @@
 }
 
 .user-info {
+    margin-top: 0.5rem;
     display: flex;
     align-items: center;
     row-gap: var(--spacing-2);
-    column-gap: 10rem;
 }
 
 #current-user {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: var(--spacing-1);
     font-size: 0.9rem;
@@ -72,10 +72,25 @@
 }
 
 #logout {
-    padding: 6px 10px;
+    padding: 15px 15px;
     font-size: 0.85rem;
 }
 
 #logout .btn-text {
     display: none; /* Nascondi testo bottone su mobile */
+}
+
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: var(--spacing-3);
+    background-color: var(--gray-100);
+    border-top: 1px solid var(--gray-200);
+    color: var(--gray-600);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.app-footer p {
+    margin: var(--spacing-1) 0;
 }

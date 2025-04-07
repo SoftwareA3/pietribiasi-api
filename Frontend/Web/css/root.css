@@ -63,6 +63,16 @@
     --font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Helvetica Neue', sans-serif;
     --font-weight-normal: 400;
     --font-weight-bold: 700;
+
+    --gray-50: #f9fafb;
+    
+    /* Colori di stato */
+    --status-open: var(--primary-color);
+    --status-in-progress: var(--warning);
+    --status-closed: var(--gray-600);
+    
+    /* Effetti di transizione aggiuntivi */
+    --transition-fast: all 0.15s ease;
 }
 
 /* Reset e stili base */
@@ -124,6 +134,22 @@ a:hover {
     transition: var(--transition);
 }
 
+.header {
+    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    color: var(--white);
+    padding: var(--spacing-3) var(--spacing-4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
 /* Header */
 .app-header {
     background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-color) 100%);
@@ -178,6 +204,14 @@ a:hover {
     padding: var(--spacing-2) var(--spacing-3);
     font-weight: var(--font-weight-bold);
     font-size: 0.9rem;
+    background: linear-gradient(135deg, var(--delete) 0%, var(--error) 100%);
+    color: var(--white);
+}
+
+#logout:hover {
+    background: linear-gradient(135deg, var(--error) 0%, var(--delete) 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
 /* Form elements */
@@ -306,6 +340,49 @@ input:focus {
     font-size: 0.9rem;
 }
 
-.app-footer p {
-    margin: var(--spacing-1) 0;
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: var(--spacing-4);
+    background-color: var(--gray-100);
+    border-top: 1px solid var(--gray-200);
+    color: var(--gray-600);
+    margin-top: auto;
+}
+
+input[type="date"] {
+    font-family: var(--font-family);
+}
+
+/* Utility classes */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mt-1 {
+    margin-top: var(--spacing-1);
+}
+
+.mt-2 {
+    margin-top: var(--spacing-2);
+}
+
+.mt-3 {
+    margin-top: var(--spacing-3);
+}
+
+.mb-1 {
+    margin-bottom: var(--spacing-1);
+}
+
+.mb-2 {
+    margin-bottom: var(--spacing-2);
+}
+
+.mb-3 {
+    margin-bottom: var(--spacing-3);
 }

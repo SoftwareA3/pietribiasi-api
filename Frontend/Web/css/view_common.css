@@ -1,0 +1,162 @@
+/* Stili comuni per le pagine di visualizzazione */
+.filter-form {
+    background-color: var(--gray-50);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-3);
+}
+
+/* Button allineato correttamente in grid */
+.filter-form button {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-top: var(--spacing-2);
+}
+
+/* Miglioramenti per il layout delle liste di elementi */
+.item-list {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-sm);
+    margin-top: var(--spacing-4);
+    overflow: hidden; /* Mantenere i bordi arrotondati */
+}
+
+.item-list li {
+    transition: background-color 0.2s ease;
+    padding: var(--spacing-3) var(--spacing-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.item-list li:hover {
+    background-color: var(--gray-50);
+}
+
+.item-list li:nth-child(even) {
+    background-color: var(--gray-50);
+}
+
+.item-list li:nth-child(even):hover {
+    background-color: var(--gray-100);
+}
+
+.item-content {
+    flex: 1;
+    min-width: 0; /* Previene overflow */
+    word-break: break-word;
+}
+
+.item-actions {
+    display: flex;
+    gap: var(--spacing-2);
+    flex-shrink: 0;
+    margin-left: var(--spacing-2);
+}
+
+/* Stile per indicatori di stato */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: var(--spacing-2);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.status-open {
+    background-color: var(--status-open);
+}
+
+.status-in-progress {
+    background-color: var(--status-in-progress);
+}
+
+.status-closed {
+    background-color: var(--status-closed);
+}
+
+/* Tooltip per gli indicatori di stato */
+[title] {
+    position: relative;
+    cursor: help;
+}
+
+.status-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status-tooltip:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 20px;
+    top: -2px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/* Pulsante indietro in basso */
+.button-secondary {
+    margin-top: var(--spacing-4);
+}
+
+/* Aggiunta animazione per i pulsanti di azione */
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: var(--spacing-1);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.icon-button:hover {
+    transform: scale(1.2);
+    background-color: var(--gray-100);
+}
+
+.icon-button.edit {
+    color: var(--primary-color);
+}
+
+.icon-button.edit:hover {
+    background-color: rgba(0, 116, 217, 0.1);
+}
+
+.icon-button.delete {
+    color: var(--error);
+}
+
+/* Stile per loader durante la ricerca */
+.loading-indicator {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 116, 217, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-left: var(--spacing-1);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}

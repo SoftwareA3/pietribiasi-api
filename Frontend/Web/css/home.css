@@ -19,7 +19,7 @@
 
 #menu-title {
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-bottom: var(--spacing-4);
     padding-bottom: var(--spacing-2);
     border-bottom: 2px solid var(--gray-200);
@@ -101,14 +101,4 @@
 
 .menu-button.poweruser:hover {
     background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
-}
-
-/* Footer */
-.app-footer {
-    text-align: center;
-    padding: var(--spacing-4);
-    background-color: var(--gray-100);
-    border-top: 1px solid var(--gray-200);
-    color: var(--gray-600);
-    margin-top: auto;
 }

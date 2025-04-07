@@ -6,19 +6,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const errorMessage = document.getElementById('error-message');
     const successMessage = document.getElementById('success-message');
 
-    // Check if user is authenticated using cookies instead of sessionStorage
-    if(sessionStorage.getItem("login") === "true") {
-        if(successMessage.classList.contains('hidden')) {
-            successMessage.classList.remove('hidden');
+    // Check if we're on the login page
+    if (window.location.href.includes("login.html")) {
+        // Check if user is already authenticated
+        if(sessionStorage.getItem("login") === "true") {
+            if(successMessage && successMessage.classList && successMessage.classList.contains('hidden')) {
+                successMessage.classList.remove('hidden');
+            }
+            
+            setTimeout(() => {
+                window.location.href = "../html/home.html";
+            }, 2000);
         }
-        
-        setTimeout(() => {
-            window.location.href = "../html/home.html";
-        }, 2000);
-    }
-    else if (sessionStorage.getItem("login") === "false") {
-        if(errorMessage.classList.contains('hidden')) {
-            errorMessage.classList.remove('hidden');
+        else if (sessionStorage.getItem("login") === "false") {
+            if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
+                errorMessage.classList.remove('hidden');
+            }
         }
     }
 
@@ -40,15 +43,18 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             if (!request.ok) {
-                sessionStorage.setItem("login", "false"); // Set cookie for 1 day
+                sessionStorage.setItem("login", "false");
                 console.error("Errore nella richiesta:", request.status, request.statusText);
+                
+                if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
+                    errorMessage.classList.remove('hidden');
+                }
                 return;
             }
             
             try {
-                
                 const result = await request.json();
-                const workerId = await result.workerId;
+                const workerId = result.workerId;
                 
                 // Save credentials in a cookie
                 if(getCookie("basicAuthCredentials")) {
@@ -72,6 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
             catch (error) {
                 sessionStorage.setItem("login", "false");
                 console.error("Non è stato possibile recuperare l'ID:", error);
+                
+                if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
+                    errorMessage.classList.remove('hidden');
+                }
                 return;
             }
             
@@ -85,16 +95,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 if (response.ok) {
-                    sessionStorage.setItem("login", "true"); // Set cookie for 1 day
+                    sessionStorage.setItem("login", "true");
+                    
+                    if(successMessage && successMessage.classList && successMessage.classList.contains('hidden')) {
+                        successMessage.classList.remove('hidden');
+                    }
+                    
+                    setTimeout(() => {
+                        window.location.href = "../html/home.html";
+                    }, 2000);
                 } else {
                     deleteCookie("basicAuthCredentials");
                     sessionStorage.setItem("login", "false");
                     console.error("Errore nella richiesta:", response.status, response.statusText);
+                    
+                    if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
+                        errorMessage.classList.remove('hidden');
+                    }
                 }
             } catch (error) {
                 sessionStorage.setItem("login", "false");
                 deleteCookie("basicAuthCredentials");
                 console.error("Errore nella richiesta:", error);
+                
+                if(errorMessage && errorMessage.classList && errorMessage.classList.contains('hidden')) {
+                    errorMessage.classList.remove('hidden');
+                }
             }
         });
     }

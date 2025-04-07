@@ -6,10 +6,16 @@
         <title>Registrazione Ore Commessa</title>
         <!-- Stili comuni -->
         <link rel="stylesheet" href="../css/root.css">
-        <!-- Stili mobile comuni-->
-        <link rel="stylesheet" href="../../Mobile/mobile.css" media="screen and (max-width: 768px)">
         <!-- Stili desktop -->
-        <link rel="stylesheet" href="../css/cards_style.css" media="screen and (min-width: 769px)">
+        <link rel="stylesheet" href="../css/cards_style.css">
+        <link rel="stylesheet" href="../css/reg_ore.css">
+        <!-- Stili mobile comuni-->
+        <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
+        <link rel="stylesheet" href="../../Mobile/cards_style_mobile.css" media="screen and (max-width: 768px)">
+        <!-- Stili mobile -->
+        <link rel="stylesheet" href="../../Mobile/reg_ore_mobile.css" media="screen and (max-width: 768px)">
+        <!-- Font Awesome per icone moderne -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <!-- Script (caricati in modo asincrono) -->
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
@@ -24,7 +30,9 @@
                         <label for="reg-ore-commessa">Codice Commessa:</label>
                         <div class="input-group">
                             <input type="text" id="reg-ore-commessa" name="reg-ore-commessa" required="">
-                            <button type="button" class="button button-secondary button-inline">Cerca <span class="button-icon">🔍</span></button>
+                            <button type="button" class="button button-secondary button-inline">Cerca 
+                                <i class="fa-solid fa-magnifying-glass button-icon"></i>
+                            </button>
                         </div>
                             <div id="reg-ore-commessa-desc" class="field-description" style="display: none;">
                                 <strong>Descrizione:</strong> <span>Caricamento...</span>
@@ -52,22 +60,34 @@
                         <input type="number" id="reg-ore-ore" name="reg-ore-ore" step="0.1" min="0" required="" style="max-width: 150px;">
                     </div>
                     <div class="button-group">
-                        <button type="button" id="reg-ore-add-list" class="button button-primary">Aggiungi <span class="button-icon">➕</span></button>
-                        <button type="submit" id="reg-ore-save" class="button button-secondary">Salva <span class="button-icon">💾</span></button>
-                            <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla</button>
+                        <button type="button" id="inv-add-list" class="button button-primary">Aggiungi 
+                            <i class="fa-solid fa-plus button-icon"></i>
+                        </button>
+                        <button type="submit" id="inv-save" class="button button-secondary">Salva 
+                            <i class="fa-solid fa-floppy-disk button-icon"></i>
+                        </button>
+                            <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla
+                                <i class="fa-solid fa-xmark button-icon"></i>
+                        </button>
                     </div>
                 </form>
             </div>
 
             <div class="card">
-                    <div class="card-header">Attività da Salvare</div>
-                    <ul id="reg-ore-lista-temp" class="item-list">
-                        <li>
-                            <div class="item-content">COMM001 / LAV002 - Saldatura / ODP12345 - <strong>2.5 ore</strong></div>
-                            <div class="item-actions"><button class="icon-button delete" title="Rimuovi">🗑️</button></div>
-                        </li>
-                    </ul>
+                <div class="card-header">Attività da Salvare</div>
+                <ul id="reg-ore-lista-temp" class="item-list">
+                    <li>
+                        <div class="item-content">COMM001 / LAV002 - Saldatura / ODP12345 - <strong>2.5 ore</strong></div>
+                        <div class="item-actions"><button class="button-icon delete option-button" title="Rimuovi">
+                            <i class="fa-solid fa-trash"></i>
+                        </button></div>
+                    </li>
+                </ul>
             </div>
         </main>
+        <footer class="app-footer" id="app-main-footer">
+            <p>Pietribiasi Michelangelo S.r.l.</p>
+            <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>
+        </footer>
     </body>
 </html>

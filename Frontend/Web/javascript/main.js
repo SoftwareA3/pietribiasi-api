@@ -1,15 +1,29 @@
 import { deleteCookie, getCookie } from "./cookies.js";
 
-
 document.addEventListener("DOMContentLoaded", async function() {
+    // Check if user is not authenticated
+    if (sessionStorage.getItem("login") !== "true") {
+        // Only redirect if we're not already on the login page
+        if (!window.location.href.includes("login.html")) {
+            window.location.href = "../html/login.html";
+            return;
+        }
+    }
+    
+    // Continue with normal page loading if authenticated
     await fetch("../html/header.html")
         .then(response => response.text())
-        .then(data => {document.getElementsByClassName("header")[0].innerHTML = data;})
+        .then(data => {
+            const headerElement = document.getElementsByClassName("header")[0];
+            if (headerElement) {
+                headerElement.innerHTML = data;
+            }
+        })
+        .catch(error => console.error("Error loading header:", error));
+    
     setupLogoutButton();
-
     await loadWorkerInfo();
 });
-
 
 function setupLogoutButton() {
     const logoutButton = document.getElementById("logout");
@@ -17,7 +31,7 @@ function setupLogoutButton() {
         logoutButton.addEventListener("click", function() {
             deleteCookie("basicAuthCredentials");
             deleteCookie("userInfo");
-            sessionStorage.clear();
+            sessionStorage.removeItem("login");
             window.location.href = "../html/login.html";
         });
     }
@@ -59,21 +73,25 @@ async function loadWorkerInfo() {
 }
 
 function displayWorkerInfo(container, cookie) {
-    cookie = JSON.parse(cookie);
-    if (!cookie) {
-        displayError(container, "Cookie non valido o vuoto");
-        return;
+    try {
+        cookie = JSON.parse(cookie);
+        if (!cookie) {
+            displayError(container, "Cookie non valido o vuoto");
+            return;
+        }
+        container.innerHTML = `
+            ${cookie.tipoUtente || 'N/A'}: ${cookie.password || 'N/A'} - ${cookie.name || 'N/A'} ${cookie.lastName || 'N/A'} ${displayCurrentDate()}`;
+    } catch (error) {
+        console.error("Errore nel parsing del cookie:", error);
+        displayError(container, "Errore nel formato del cookie");
     }
-    container.innerHTML = `
-        ${cookie.tipoUtente || 'N/A'}: ${cookie.password || 'N/A'} - ${cookie.name || 'N/A'} ${cookie.lastName || 'N/A'} ${displayCurrentDate()}`;
 }
 
 function displayError(container, message) {
     container.innerHTML = `<p class="error">${message}</p>`;
 }
 
-function displayCurrentDate()
-{
+function displayCurrentDate() {
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -82,6 +100,3 @@ function displayCurrentDate()
     today = mm + '/' + dd + '/' + yyyy;
     return today;
 }
-
-
-

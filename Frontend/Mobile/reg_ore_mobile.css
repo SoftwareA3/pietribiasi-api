@@ -1,0 +1,86 @@
+/* Stili specifici per la pagina registrazione ore - Mobile */
+.field-description {
+    border-left: 3px solid var(--primary-color);
+    padding-left: var(--spacing-2);
+    margin-top: var(--spacing-3);
+    font-size: 0.9rem;
+}
+
+#reg-ore-commessa-desc {
+    background-color: var(--gray-100);
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius-sm);
+    width: 100%;
+}
+
+#reg-ore-ore {
+    text-align: right;
+    font-weight: var(--font-weight-bold);
+    width: 100%;
+}
+
+.item-list strong {
+    color: var(--primary-color);
+}
+
+/* Stile per elementi appena aggiunti */
+.just-added {
+    animation: highlight 2s ease-out;
+}
+
+@keyframes highlight {
+    0% { background-color: rgba(0, 116, 217, 0.2); }
+    100% { background-color: transparent; }
+}
+
+/* Bottone con icona */
+.button-icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.button:hover .button-icon {
+    transform: scale(1.2);
+}
+
+/* Stile per loader durante la ricerca */
+.loading {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid rgba(0, 116, 217, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-right: var(--spacing-1);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Layout specifico per mobile */
+.form-group {
+    margin-bottom: var(--spacing-3);
+}
+
+/* Input numerici più visibili */
+input[type="number"] {
+    font-size: 1.1rem;
+    height: 44px;
+}
+
+/* Adattamenti per schermi molto piccoli */
+@media screen and (max-width: 360px) {
+    .card {
+        padding: var(--spacing-2);
+    }
+    
+    .form-group {
+        margin-bottom: var(--spacing-2);
+    }
+    
+    .field-description {
+        font-size: 0.8rem;
+    }
+}

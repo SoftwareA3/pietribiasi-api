@@ -1,0 +1,68 @@
+/* Stili specifici per la pagina Power User */
+#pu-codice-addetto {
+    font-weight: var(--font-weight-bold);
+}
+
+#pu-addetto-desc {
+    border-left-color: var(--info);
+    background-color: rgba(23, 162, 184, 0.05);
+}
+
+/* Stile per il menu delle azioni */
+.home-menu {
+    margin-top: var(--spacing-2);
+}
+
+#poweruser-actions .card-header {
+    background-color: rgba(0, 116, 217, 0.1);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--border-radius-sm);
+    margin: calc(-1 * var(--spacing-4)) calc(-1 * var(--spacing-4)) var(--spacing-3);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#pu-selected-user-name {
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-dark);
+}
+
+/* Stile dei menu button specifici per power user */
+.menu-button {
+    position: relative;
+    overflow: hidden;
+    border: none;
+    font-size: 1rem;
+}
+
+.menu-button:hover::before {
+    transform: translateX(100%);
+}
+
+/* Differenzia i tipi di azioni */
+.menu-button:nth-child(1),
+.menu-button:nth-child(2),
+.menu-button:nth-child(3) {
+    background-color: var(--primary-dark);
+}
+
+.menu-button.secondary {
+    color: var(--white);
+}
+
+/* Animazione per far apparire le azioni disponibili */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#poweruser-actions.visible {
+    display: block;
+    animation: fadeInUp 0.5s ease-out forwards;
+}
