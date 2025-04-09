@@ -14,5 +14,7 @@ namespace apiPB.Dto.Request
         public string Alternate { get; set; } = null!;
 
         public short AltRtgStep { get; set; }
+
+        public string? Operation { get; set; }
     }
 }

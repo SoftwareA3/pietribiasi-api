@@ -19,6 +19,6 @@ namespace apiPB.Dto.Models
 
         public string? Operation { get; set; }
 
-    public string Storage { get; set; } = null!;
+        public string Storage { get; set; } = null!;
     }
 }

@@ -41,7 +41,7 @@ public partial class ApplicationDbContext : DbContext
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<MaStorage>(entity =>
@@ -666,6 +666,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("MONo");
+            entity.Property(e => e.Operation)
+                .HasMaxLength(21)
+                .IsUnicode(false);
             entity.Property(e => e.Uom)
                 .HasMaxLength(8)
                 .IsUnicode(false)
@@ -691,6 +694,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Component)
                 .HasMaxLength(21)
                 .IsUnicode(false);
+            entity.Property(e => e.CreationDate).HasColumnType("datetime");
             entity.Property(e => e.ItemDesc)
                 .HasMaxLength(128)
                 .IsUnicode(false);
@@ -702,6 +706,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("MONo");
+            entity.Property(e => e.Operation)
+                .HasMaxLength(21)
+                .IsUnicode(false);
             entity.Property(e => e.Uom)
                 .HasMaxLength(8)
                 .IsUnicode(false)

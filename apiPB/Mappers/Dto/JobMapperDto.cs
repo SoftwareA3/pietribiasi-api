@@ -102,7 +102,8 @@ namespace apiPB.Mappers.Dto
                 Job = moModel.Job ?? string.Empty,
                 RtgStep = moModel.RtgStep,
                 Alternate = moModel.Alternate ?? string.Empty,
-                AltRtgStep = moModel.AltRtgStep
+                AltRtgStep = moModel.AltRtgStep,
+                Operation = moModel.Operation ?? string.Empty
             };
         }
 

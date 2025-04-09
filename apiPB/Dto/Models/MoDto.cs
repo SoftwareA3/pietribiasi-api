@@ -15,6 +15,8 @@ namespace apiPB.Dto.Models
 
         public short AltRtgStep { get; set; }
 
+        public string? Operation { get; set; }
+
         public string? Bom { get; set; }
 
         public string? Variant { get; set; }

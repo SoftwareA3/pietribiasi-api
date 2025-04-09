@@ -1,6 +1,7 @@
 using AutoMapper;
 using apiPB.Dto.Request;
 using apiPB.Filters;
+using apiPB.Dto.Models;
 
 namespace apiPB.Mappers.Filter
 {
@@ -13,6 +14,7 @@ namespace apiPB.Mappers.Filter
             CreateMap<MostepRequestDto, MostepRequestFilter>();
             CreateMap<MocomponentRequestDto, MocomponentRequestFilter>();
             CreateMap<MoStepsComponentRequestDto, MoStepsComponentRequestFilter>();
+            CreateMap<MostepDto, MoStepsComponentRequestDto>();
         }
     }
 }

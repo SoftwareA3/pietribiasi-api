@@ -13,6 +13,8 @@ public partial class VwApiMoStepsComponent
 
     public short AltRtgStep { get; set; }
 
+    public string? Operation { get; set; }
+
     public short? Position { get; set; }
 
     public string? Component { get; set; }
@@ -27,9 +29,13 @@ public partial class VwApiMoStepsComponent
 
     public string? Mono { get; set; }
 
+    public DateTime? CreationDate { get; set; }
+
     public string? Uom { get; set; }
 
     public double? ProductionQty { get; set; }
 
     public double? ProducedQty { get; set; }
+
+    public double? ResQty { get; set; }
 }

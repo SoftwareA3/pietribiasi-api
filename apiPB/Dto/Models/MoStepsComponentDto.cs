@@ -29,10 +29,14 @@ namespace apiPB.Dto.Models
 
         public string? Mono { get; set; }
 
+        public DateTime? CreationDate { get; set; }
+
         public string? Uom { get; set; }
 
         public double? ProductionQty { get; set; }
 
         public double? ProducedQty { get; set; }
+
+        public double? ResQty { get; set; }
     }
 }

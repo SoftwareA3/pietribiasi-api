@@ -13,6 +13,8 @@ public partial class VwApiMo
 
     public short AltRtgStep { get; set; }
 
+    public string? Operation { get; set; }
+
     public string? Bom { get; set; }
 
     public string? Variant { get; set; }

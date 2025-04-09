@@ -148,5 +148,30 @@ namespace apiPB.Controllers
 
             return Ok(mostepComponentDto);
         }
+
+        [HttpPost("mostepcomponent/regore")]
+        /// <summary>  
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components
+        /// </summary>
+        /// <param name="mostepRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetMoStepsComponentForRegOreDistinct([FromBody] MostepRequestDto mostepRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mostepComponentDto = _jobRequestService.GetMoStepsComponentForRegOre(mostepRequestDto).ToList();
+
+            if(mostepComponentDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+
+            return Ok(mostepComponentDto);
+        }
     }    
 }

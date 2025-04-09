@@ -48,5 +48,13 @@ namespace apiPB.Repository.Abstraction
         /// IEnumerable di VwApiMo: restituisce una collezione generica di modelli VwApiMo
         /// </returns>
         IEnumerable<VwApiMo> GetMo(MoRequestFilter filter);    
+
+        /// <summary>
+        /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MoStepsComponentRequestFilter
+        /// Viene applicato il filtro Distinct per evitare duplicati
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        IEnumerable<VwApiMoStepsComponent> GetMoStepsComponentDistinct(MoStepsComponentRequestFilter filter);
     }
 }

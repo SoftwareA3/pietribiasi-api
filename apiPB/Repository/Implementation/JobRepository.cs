@@ -33,7 +33,8 @@ namespace apiPB.Repository.Implementation
             .Where(j => j.Job == filter.Job 
                 && j.RtgStep == filter.RtgStep
                 && j.Alternate == filter.Alternate
-                && j.AltRtgStep == filter.AltRtgStep)
+                && j.AltRtgStep == filter.AltRtgStep
+                && j.Operation == filter.Operation)
             .AsNoTracking()
             .ToList();
         }
@@ -51,6 +52,28 @@ namespace apiPB.Repository.Implementation
             var query = _context.VwApiMoStepsComponents
             .AsNoTracking()
             .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep);
+
+            if (filter.Position != null)
+            {
+                query = query.Where(m => m.Position == filter.Position);
+            }
+
+            if (filter.Component != null)
+            {
+                query = query.Where(m => m.Component == filter.Component);
+            }
+
+            var list = query.ToList();
+
+            return list;
+        }
+
+        public IEnumerable<VwApiMoStepsComponent> GetMoStepsComponentDistinct(MoStepsComponentRequestFilter filter)
+        {
+            var query = _context.VwApiMoStepsComponents
+            .AsNoTracking()
+            .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep)
+            .Distinct();
 
             if (filter.Position != null)
             {
