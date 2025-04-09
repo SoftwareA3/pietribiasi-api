@@ -122,7 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    // Aggiungi un timeout per evitare richieste che non si completano mai
                     signal: AbortSignal.timeout(10000)
                 }).catch(error => {
                     console.error("Errore durante la validazione:", error);
@@ -143,7 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 redirectToHome();
                 
             } catch (error) {
-                // Gestione errori: pulisci i cookie e mostra il messaggio di errore
                 console.error("Errore di login:", error);
                 deleteCookie("basicAuthCredentials");
                 deleteCookie("userInfo");

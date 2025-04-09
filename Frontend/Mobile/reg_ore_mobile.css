@@ -70,6 +70,17 @@ input[type="number"] {
     height: 44px;
 }
 
+/* Autocomplete mobile styles */
+.autocomplete-items {
+    max-height: 200px;
+    box-shadow: var(--shadow-sm);
+}
+
+.autocomplete-items div {
+    padding: var(--spacing-2);
+    font-size: 0.9rem;
+}
+
 /* Adattamenti per schermi molto piccoli */
 @media screen and (max-width: 360px) {
     .card {

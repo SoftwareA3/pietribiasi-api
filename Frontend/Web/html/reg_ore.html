@@ -19,6 +19,7 @@
         <!-- Script (caricati in modo asincrono) -->
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
+        <script src="../javascript/reg_ore_autocomplete.js" type="module"></script>
     </head>
     <body>
         <div class="header"></div>
@@ -29,35 +30,32 @@
                     <div class="form-group">
                         <label for="reg-ore-commessa">Codice Commessa:</label>
                         <div class="input-group">
-                            <input type="text" id="reg-ore-commessa" name="reg-ore-commessa" required="">
-                            <button type="button" class="button button-secondary button-inline">Cerca 
+                            <div class="autocomplete-container">
+                                <input type="text" id="reg-ore-commessa" name="reg-ore-commessa" required="">
+                                <div id="reg-ore-commessa-autocomplete-list" class="autocomplete-items hidden"></div>
+                            </div>
+                            <button type="button" id="reg-ore-cerca" class="button button-secondary button-inline">Cerca 
                                 <i class="fa-solid fa-magnifying-glass button-icon"></i>
                             </button>
                         </div>
-                            <div id="reg-ore-commessa-desc" class="field-description" style="display: none;">
-                                <strong>Descrizione:</strong> <span>Caricamento...</span>
-                            </div>
                     </div>
                     <div class="form-group">
                         <label for="reg-ore-lavorazione">Lavorazione:</label>
-                        <input type="text" id="reg-ore-lavorazione" name="reg-ore-lavorazione" list="lavorazioni-datalist" required="">
-                            <datalist id="lavorazioni-datalist">
-                            <option value="LAV001 - Taglio">
-                            </option><option value="LAV002 - Saldatura">
-                            </option><option value="LAV003 - Montaggio">
-                        </option></datalist>
+                        <div class="autocomplete-container">
+                            <input type="text" id="reg-ore-lavorazione" name="reg-ore-lavorazione" required="">
+                            <div id="reg-ore-lavorazione-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="reg-ore-odp">Ordine di Produzione:</label>
-                        <input type="text" id="reg-ore-odp" name="reg-ore-odp" list="odp-datalist" required="">
-                            <datalist id="odp-datalist">
-                            <option value="ODP12345">
-                            </option><option value="ODP67890">
-                        </option></datalist>
+                        <div class="autocomplete-container">
+                            <input type="text" id="reg-ore-odp" name="reg-ore-odp" required="">
+                            <div id="reg-ore-odp-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                         <div class="form-group">
                         <label for="reg-ore-ore">Ore Lavorate:</label>
-                        <input type="number" id="reg-ore-ore" name="reg-ore-ore" step="0.1" min="0" required="" style="max-width: 150px;">
+                        <input type="number" id="reg-ore-ore" name="reg-ore-ore" step="0.1" min="0" required="">
                     </div>
                     <div class="button-group">
                         <button type="button" id="inv-add-list" class="button button-primary">Aggiungi 
