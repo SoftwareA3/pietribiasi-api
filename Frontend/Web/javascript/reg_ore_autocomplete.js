@@ -184,6 +184,10 @@ function setupAutocomplete(inputElement, listElement, list, descriptionList = []
             });
 
             listElement.appendChild(itemDiv);
+
+            if(listElement.children.length > 3) {
+                listElement.classList.add("scrollable");
+            }
         });
     });
     
@@ -243,6 +247,9 @@ function setupAutocomplete(inputElement, listElement, list, descriptionList = []
             });
             
             listElement.appendChild(itemDiv);
+            if(listElement.children.length > 3) {
+                listElement.classList.add("scrollable");
+            }
         });
     });
     

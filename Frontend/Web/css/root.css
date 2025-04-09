@@ -306,6 +306,14 @@ input:focus {
     display: none !important;
 }
 
+.scrollable {
+    max-height: 200px; /* Altezza massima della lista */
+    overflow-y: auto;  /* Abilita lo scorrimento verticale */
+    border: 1px solid #ccc; /* Aggiungi un bordo opzionale */
+    padding: 5px; /* Spaziatura interna */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Effetto ombra */
+}
+
 /* Messages */
 .message {
     padding: var(--spacing-2) var(--spacing-3);
