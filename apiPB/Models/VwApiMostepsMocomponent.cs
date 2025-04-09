@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace apiPB.Models;
 
-public partial class VwApiMoStepsComponent
+public partial class VwApiMostepsMocomponent
 {
     public string Job { get; set; } = null!;
 
@@ -14,6 +14,8 @@ public partial class VwApiMoStepsComponent
     public short AltRtgStep { get; set; }
 
     public string? Operation { get; set; }
+
+    public string? OperDesc { get; set; }
 
     public short? Position { get; set; }
 
@@ -38,4 +40,6 @@ public partial class VwApiMoStepsComponent
     public double? ProducedQty { get; set; }
 
     public double? ResQty { get; set; }
+
+    public string Storage { get; set; } = null!;
 }

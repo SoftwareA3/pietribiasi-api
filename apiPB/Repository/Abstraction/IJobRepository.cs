@@ -14,15 +14,6 @@ namespace apiPB.Repository.Abstraction
         IEnumerable<VwApiJob> GetJobs();
 
         /// <summary>
-        /// Restituisce tutte le informazioni della vista vw_api_mocomponents
-        /// </summary>
-        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Job</param>
-        /// <returns> 
-        /// IEnumerable di VwApiMocomponent: restituisce una collezione generica di modelli VwApiMocomponent
-        /// </returns>
-        IEnumerable<VwApiMocomponent> GetMocomponent(MocomponentRequestFilter filter);
-
-        /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mosteps
         /// </summary>
         /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Job</param>
@@ -36,25 +27,16 @@ namespace apiPB.Repository.Abstraction
         /// </summary>
         /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Job, RtgStep, Alternate, AltRtgStep.Il filtro contiene parametri opzionali: Position, Component</param>
         /// <returns>
-        /// IEnumerable di VwApiMoStepsComponent: restituisce una collezione generica di modelli VwApiMoStepsComponent
+        /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMoStepsComponent> GetMoStepsComponent(MoStepsComponentRequestFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponent(MostepsMocomponentRequestFilter filter); 
 
         /// <summary>
-        /// Restituisce tutte le informazioni della vista vw_api_mo
-        /// </summary>
-        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Job, RtgStep, Alternate, AltRtgStep</param>
-        /// <returns>
-        /// IEnumerable di VwApiMo: restituisce una collezione generica di modelli VwApiMo
-        /// </returns>
-        IEnumerable<VwApiMo> GetMo(MoRequestFilter filter);    
-
-        /// <summary>
-        /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MoStepsComponentRequestFilter
+        /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentRequestFilter
         /// Viene applicato il filtro Distinct per evitare duplicati
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        IEnumerable<VwApiMoStepsComponent> GetMoStepsComponentDistinct(MoStepsComponentRequestFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentDistinct(MostepsMocomponentRequestFilter filter);
     }
 }

@@ -20,36 +20,19 @@ namespace apiPB.Repository.Implementation
             return _context.VwApiJobs.AsNoTracking().ToList();
         }
 
-        public IEnumerable<VwApiMocomponent> GetMocomponent(MocomponentRequestFilter filter)
-        {
-            return _context.VwApiMocomponents
-            .Where(m => m.Job == filter.Job)
-            .AsNoTracking();
-        }
-
-        public IEnumerable<VwApiMo> GetMo(MoRequestFilter filter)
-        {
-            return _context.VwApiMos
-            .Where(j => j.Job == filter.Job 
-                && j.RtgStep == filter.RtgStep
-                && j.Alternate == filter.Alternate
-                && j.AltRtgStep == filter.AltRtgStep
-                && j.Operation == filter.Operation)
-            .AsNoTracking()
-            .ToList();
-        }
-
         public IEnumerable<VwApiMostep> GetMostep(MostepRequestFilter filter)
         {
+            // FIXME: controllo sui parametri e sulla richiesta
             return _context.VwApiMosteps
             .Where(m => m.Job == filter.Job)
             .AsNoTracking()
             .ToList();
         }
 
-        public IEnumerable<VwApiMoStepsComponent> GetMoStepsComponent(MoStepsComponentRequestFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponent(MostepsMocomponentRequestFilter filter)
         {
-            var query = _context.VwApiMoStepsComponents
+            // FIXME
+            var query = _context.VwApiMostepsMocomponents
             .AsNoTracking()
             .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep);
 
@@ -68,9 +51,10 @@ namespace apiPB.Repository.Implementation
             return list;
         }
 
-        public IEnumerable<VwApiMoStepsComponent> GetMoStepsComponentDistinct(MoStepsComponentRequestFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentDistinct(MostepsMocomponentRequestFilter filter)
         {
-            var query = _context.VwApiMoStepsComponents
+            // FIXME
+            var query = _context.VwApiMostepsMocomponents
             .AsNoTracking()
             .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep)
             .Distinct();

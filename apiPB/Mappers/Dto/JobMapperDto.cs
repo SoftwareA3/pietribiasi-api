@@ -16,25 +16,6 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static MoDto ToMoDto(this VwApiMo moModel)
-        {
-            return new MoDto
-            {
-                Job = moModel.Job ?? string.Empty,
-                RtgStep = moModel.RtgStep,
-                Alternate = moModel.Alternate ?? string.Empty,
-                AltRtgStep = moModel.AltRtgStep,
-                Bom = moModel.Bom ?? string.Empty,
-                Variant = moModel.Variant ?? string.Empty,
-                ItemDesc = moModel.ItemDesc ?? string.Empty,
-                Moid = moModel.Moid,
-                Mono = moModel.Mono ?? string.Empty,
-                Uom = moModel.Uom ?? string.Empty,
-                ProductionQty = moModel.ProductionQty,
-                ProducedQty = moModel.ProducedQty
-            };
-        }
-
         public static MostepDto ToMostepDto(this VwApiMostep mostepModel)
         {
             return new MostepDto
@@ -43,69 +24,44 @@ namespace apiPB.Mappers.Dto
                 RtgStep = mostepModel.RtgStep,
                 Alternate = mostepModel.Alternate ?? string.Empty,
                 AltRtgStep = mostepModel.AltRtgStep,
-                Wc = mostepModel.Wc ?? string.Empty,
                 Operation = mostepModel.Operation ?? string.Empty,
+                OperDesc = mostepModel.OperDesc ?? string.Empty,
+                Bom = mostepModel.Bom ?? string.Empty,
+                Variant = mostepModel.Variant ?? string.Empty,
+                ItemDesc = mostepModel.ItemDesc ?? string.Empty,
+                Moid = mostepModel.Moid,
+                Mono = mostepModel.Mono ?? string.Empty,
+                CreationDate = mostepModel.CreationDate,
+                Uom = mostepModel.Uom ?? string.Empty,
+                ProductionQty = mostepModel.ProductionQty,
+                ProducedQty = mostepModel.ProducedQty,
+                ResQty = mostepModel.ResQty,
                 Storage = mostepModel.Storage ?? string.Empty
             };
         }
 
-        public static MocomponentDto ToMocomponentDto(this VwApiMocomponent mocomponentModel)
+        public static MostepsMocomponentDto ToMostepsMocomponentDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
         {
-            return new MocomponentDto
+            return new MostepsMocomponentDto
             {
-                Job = mocomponentModel.Job ?? string.Empty,
-                Moid = mocomponentModel.Moid,
-                Mono = mocomponentModel.Mono ?? string.Empty,
-                Line = mocomponentModel.Line,
-                Position = mocomponentModel.Position,
-                ReferredPosition = mocomponentModel.ReferredPosition,
-                Component = mocomponentModel.Component ?? string.Empty,
-                ComponentDesc = mocomponentModel.ComponentDesc ?? string.Empty,
-                UoM = mocomponentModel.UoM ?? string.Empty,
-                NeededQty = mocomponentModel.NeededQty,
-                AssignedQuantity = mocomponentModel.AssignedQuantity,
-                PickedQuantity = mocomponentModel.PickedQuantity,
-                Storage = mocomponentModel.Storage ?? string.Empty,
-                Lot = mocomponentModel.Lot ?? string.Empty,
-                SpecificatorType = mocomponentModel.SpecificatorType,
-                Specificator = mocomponentModel.Specificator ?? string.Empty,
-                Closed = mocomponentModel.Closed ?? string.Empty
-            };
-        }
-
-        public static MoStepsComponentDto ToMoStepsComponentDto(this VwApiMoStepsComponent moStepsComponentModel)
-        {
-            return new MoStepsComponentDto
-            {
-                Job = moStepsComponentModel.Job ?? string.Empty,
-                RtgStep = moStepsComponentModel.RtgStep,
-                Alternate = moStepsComponentModel.Alternate ?? string.Empty,
-                AltRtgStep = moStepsComponentModel.AltRtgStep,
-                Position = moStepsComponentModel.Position,
-                Component = moStepsComponentModel.Component ?? string.Empty,
-                Bom = moStepsComponentModel.Bom ?? string.Empty,
-                Variant = moStepsComponentModel.Variant ?? string.Empty,
-                ItemDesc = moStepsComponentModel.ItemDesc ?? string.Empty,
-                Moid = moStepsComponentModel.Moid,
-                Mono = moStepsComponentModel.Mono ?? string.Empty,
-                Uom = moStepsComponentModel.Uom ?? string.Empty,
-                ProductionQty = moStepsComponentModel.ProductionQty,
-                ProducedQty = moStepsComponentModel.ProducedQty
+                Job = mostepsMocomponentModel.Job ?? string.Empty,
+                RtgStep = mostepsMocomponentModel.RtgStep,
+                Alternate = mostepsMocomponentModel.Alternate ?? string.Empty,
+                AltRtgStep = mostepsMocomponentModel.AltRtgStep,
+                Position = mostepsMocomponentModel.Position,
+                Component = mostepsMocomponentModel.Component ?? string.Empty,
+                Bom = mostepsMocomponentModel.Bom ?? string.Empty,
+                Variant = mostepsMocomponentModel.Variant ?? string.Empty,
+                ItemDesc = mostepsMocomponentModel.ItemDesc ?? string.Empty,
+                Moid = mostepsMocomponentModel.Moid,
+                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+                Uom = mostepsMocomponentModel.Uom ?? string.Empty,
+                ProductionQty = mostepsMocomponentModel.ProductionQty,
+                ProducedQty = mostepsMocomponentModel.ProducedQty
             };
         }
 
         // Dto Richieste
-        public static MoRequestDto ToMoRequestDto(this VwApiMo moModel)
-        {
-            return new MoRequestDto
-            {
-                Job = moModel.Job ?? string.Empty,
-                RtgStep = moModel.RtgStep,
-                Alternate = moModel.Alternate ?? string.Empty,
-                AltRtgStep = moModel.AltRtgStep,
-                Operation = moModel.Operation ?? string.Empty
-            };
-        }
 
         public static MostepRequestDto ToMostepRequestDto(this VwApiMostep mostepModel)
         {
@@ -115,24 +71,16 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static MocomponentRequestDto ToMocomponentRequestDto(this VwApiMocomponent mocomponentModel)
+        public static MostepsMocomponentRequestDto ToMostepsMocomponentRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
         {
-            return new MocomponentRequestDto
+            return new MostepsMocomponentRequestDto
             {
-                Job = mocomponentModel.Job ?? string.Empty
-            };
-        }
-
-        public static MoStepsComponentRequestDto ToMoStepsComponentRequestDto(this VwApiMoStepsComponent moStepsComponentModel)
-        {
-            return new MoStepsComponentRequestDto
-            {
-                Job = moStepsComponentModel.Job ?? string.Empty,
-                RtgStep = moStepsComponentModel.RtgStep,
-                Alternate = moStepsComponentModel.Alternate ?? string.Empty,
-                AltRtgStep = moStepsComponentModel.AltRtgStep,
-                Position = moStepsComponentModel.Position,
-                Component = moStepsComponentModel.Component ?? string.Empty
+                Job = mostepsMocomponentModel.Job ?? string.Empty,
+                RtgStep = mostepsMocomponentModel.RtgStep,
+                Alternate = mostepsMocomponentModel.Alternate ?? string.Empty,
+                AltRtgStep = mostepsMocomponentModel.AltRtgStep,
+                Position = mostepsMocomponentModel.Position,
+                Component = mostepsMocomponentModel.Component ?? string.Empty
             };
         }
     }

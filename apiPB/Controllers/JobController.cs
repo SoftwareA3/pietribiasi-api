@@ -49,31 +49,6 @@ namespace apiPB.Controllers
             return Ok(jobsDto);    
         }
 
-        [HttpPost("mo")]
-        /// <summary>
-        /// Ritorna tutte le informazioni della vista vw_api_mo
-        /// </summary>
-        /// <param name="moRequestDto">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo</response>
-        /// <response code="404">Non trovato</response>
-        public IActionResult GetVWApiMoFromBody([FromBody] MoRequestDto moRequestDto)
-        {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-            var jobMoDto = _jobRequestService.GetMo(moRequestDto)
-            .ToList();
-
-            if(jobMoDto.IsNullOrEmpty())
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
-
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobMoDto);
-
-            return Ok(jobMoDto);
-        }
-
         [HttpPost("mostep")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mostep
@@ -99,43 +74,18 @@ namespace apiPB.Controllers
             return Ok(mostepDto);
         }
 
-        [HttpPost("mocomponent")]
-        /// <summary>
-        /// Ritorna tutte le informazioni della vista vw_api_mocomponent
-        /// </summary>
-        /// <param name="moComponentRequestDto">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mocomponent</response>
-        /// <response code="404">Non trovato</response>
-        public IActionResult GetVwApiMocomponent([FromBody] MocomponentRequestDto moComponentRequestDto)
-        {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
-            var mocomponentDto = _jobRequestService.GetMocomponent(moComponentRequestDto).ToList();
-
-            if(mocomponentDto.IsNullOrEmpty())
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
-
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mocomponentDto);
-
-            return Ok(mocomponentDto);
-        }
-
         [HttpPost("mostepcomponent")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components
         /// </summary>
-        /// <param name="moStepsComponentRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <param name="MostepsMocomponentRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetVwApiMoStepsComponent([FromBody] MoStepsComponentRequestDto moStepsComponentRequestDto)
+        public IActionResult GetVwApiMostepsMocomponent([FromBody] MostepsMocomponentRequestDto mostepsMocomponentRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepComponentDto = _jobRequestService.GetMoStepsComponentByMoId(moStepsComponentRequestDto).ToList();
+            var mostepComponentDto = _jobRequestService.GetMostepsMocomponentByMoId(mostepsMocomponentRequestDto).ToList();
 
             if(mostepComponentDto.IsNullOrEmpty())
             {
@@ -156,11 +106,11 @@ namespace apiPB.Controllers
         /// <param name="mostepRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetMoStepsComponentForRegOreDistinct([FromBody] MostepRequestDto mostepRequestDto)
+        public IActionResult GetMostepsMocomponentForRegOreDistinct([FromBody] MostepRequestDto mostepRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepComponentDto = _jobRequestService.GetMoStepsComponentForRegOre(mostepRequestDto).ToList();
+            var mostepComponentDto = _jobRequestService.GetMostepsMocomponentForRegOre(mostepRequestDto).ToList();
 
             if(mostepComponentDto.IsNullOrEmpty())
             {

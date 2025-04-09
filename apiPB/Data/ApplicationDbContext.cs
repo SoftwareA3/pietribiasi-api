@@ -7,12 +7,13 @@ namespace apiPB.Data;
 
 public partial class ApplicationDbContext : DbContext
 {
-    private readonly IConfiguration _configuration;
+    public ApplicationDbContext()
+    {
+    }
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        _configuration = configuration;
     }
 
     public virtual DbSet<MaStorage> MaStorages { get; set; }
@@ -23,24 +24,15 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<VwApiJob> VwApiJobs { get; set; }
 
-    public virtual DbSet<VwApiMo> VwApiMos { get; set; }
-
-    public virtual DbSet<VwApiMoStepsComponent> VwApiMoStepsComponents { get; set; }
-
-    public virtual DbSet<VwApiMocomponent> VwApiMocomponents { get; set; }
-
     public virtual DbSet<VwApiMostep> VwApiMosteps { get; set; }
+
+    public virtual DbSet<VwApiMostepsMocomponent> VwApiMostepsMocomponents { get; set; }
 
     public virtual DbSet<VwApiWorker> VwApiWorkers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseSqlServer(connectionString);
-        }
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=SRV2022MES\\SQLEXPRESS;Initial Catalog=PIETRIBIASISRLM4;User ID=sa;Password=sa_2022;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -642,11 +634,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnName("job");
         });
 
-        modelBuilder.Entity<VwApiMo>(entity =>
+        modelBuilder.Entity<VwApiMostep>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToView("vw_api_mo");
+                .ToView("vw_api_mosteps");
 
             entity.Property(e => e.Alternate)
                 .HasMaxLength(8)
@@ -655,6 +647,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(21)
                 .IsUnicode(false)
                 .HasColumnName("BOM");
+            entity.Property(e => e.CreationDate).HasColumnType("datetime");
             entity.Property(e => e.ItemDesc)
                 .HasMaxLength(128)
                 .IsUnicode(false);
@@ -666,8 +659,14 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("MONo");
+            entity.Property(e => e.OperDesc)
+                .HasMaxLength(96)
+                .IsUnicode(false);
             entity.Property(e => e.Operation)
                 .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.Storage)
+                .HasMaxLength(4)
                 .IsUnicode(false);
             entity.Property(e => e.Uom)
                 .HasMaxLength(8)
@@ -678,11 +677,11 @@ public partial class ApplicationDbContext : DbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<VwApiMoStepsComponent>(entity =>
+        modelBuilder.Entity<VwApiMostepsMocomponent>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToView("vw_api_mo_steps_components");
+                .ToView("vw_api_mosteps_mocomponents");
 
             entity.Property(e => e.Alternate)
                 .HasMaxLength(8)
@@ -706,8 +705,14 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("MONo");
+            entity.Property(e => e.OperDesc)
+                .HasMaxLength(96)
+                .IsUnicode(false);
             entity.Property(e => e.Operation)
                 .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.Storage)
+                .HasMaxLength(4)
                 .IsUnicode(false);
             entity.Property(e => e.Uom)
                 .HasMaxLength(8)
@@ -716,69 +721,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Variant)
                 .HasMaxLength(21)
                 .IsUnicode(false);
-        });
-
-        modelBuilder.Entity<VwApiMocomponent>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("vw_api_mocomponent");
-
-            entity.Property(e => e.Closed)
-                .HasMaxLength(1)
-                .IsUnicode(false)
-                .IsFixedLength();
-            entity.Property(e => e.Component)
-                .HasMaxLength(21)
-                .IsUnicode(false);
-            entity.Property(e => e.ComponentDesc)
-                .HasMaxLength(128)
-                .IsUnicode(false);
-            entity.Property(e => e.Job)
-                .HasMaxLength(10)
-                .IsUnicode(false);
-            entity.Property(e => e.Lot)
-                .HasMaxLength(16)
-                .IsUnicode(false)
-                .HasColumnName("lot");
-            entity.Property(e => e.Moid).HasColumnName("MOId");
-            entity.Property(e => e.Mono)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("MONo");
-            entity.Property(e => e.Specificator)
-                .HasMaxLength(12)
-                .IsUnicode(false);
-            entity.Property(e => e.Storage)
-                .HasMaxLength(8)
-                .IsUnicode(false);
-            entity.Property(e => e.UoM)
-                .HasMaxLength(8)
-                .IsUnicode(false);
-        });
-
-        modelBuilder.Entity<VwApiMostep>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("vw_api_mosteps");
-
-            entity.Property(e => e.Alternate)
-                .HasMaxLength(8)
-                .IsUnicode(false);
-            entity.Property(e => e.Job)
-                .HasMaxLength(10)
-                .IsUnicode(false);
-            entity.Property(e => e.Operation)
-                .HasMaxLength(21)
-                .IsUnicode(false);
-            entity.Property(e => e.Storage)
-                .HasMaxLength(4)
-                .IsUnicode(false);
-            entity.Property(e => e.Wc)
-                .HasMaxLength(8)
-                .IsUnicode(false)
-                .HasColumnName("WC");
         });
 
         modelBuilder.Entity<VwApiWorker>(entity =>
