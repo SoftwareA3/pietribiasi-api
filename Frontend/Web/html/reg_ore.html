@@ -9,6 +9,7 @@
         <!-- Stili desktop -->
         <link rel="stylesheet" href="../css/cards_style.css">
         <link rel="stylesheet" href="../css/reg_ore.css">
+        <link rel="stylesheet" href="../css/overlay.css">
         <!-- Stili mobile comuni-->
         <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
         <link rel="stylesheet" href="../../Mobile/cards_style_mobile.css" media="screen and (max-width: 768px)">
@@ -40,6 +41,13 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="reg-ore-odp">Ordine di Produzione:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="reg-ore-odp" name="reg-ore-odp" required="">
+                            <div id="reg-ore-odp-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="reg-ore-lavorazione">Lavorazione:</label>
                         <div class="autocomplete-container">
                             <input type="text" id="reg-ore-lavorazione" name="reg-ore-lavorazione" required="">
@@ -47,13 +55,6 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="reg-ore-odp">Ordine di Produzione:</label>
-                        <div class="autocomplete-container">
-                            <input type="text" id="reg-ore-odp" name="reg-ore-odp" required="">
-                            <div id="reg-ore-odp-autocomplete-list" class="autocomplete-items hidden"></div>
-                        </div>
-                    </div>
-                        <div class="form-group">
                         <label for="reg-ore-ore">Ore Lavorate:</label>
                         <input type="number" id="reg-ore-ore" name="reg-ore-ore" step="0.1" min="0" required="">
                     </div>
