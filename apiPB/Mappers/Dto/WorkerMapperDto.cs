@@ -62,6 +62,27 @@ namespace apiPB.Mappers.Dto
             };
         }
 
+        public static MostepOdpRequestDto ToMostepOdpRequestDto(this VwApiMostep mostepOdpModel)
+        {
+            return new MostepOdpRequestDto
+            {
+                Job = mostepOdpModel.Job ?? string.Empty,
+                Mono = mostepOdpModel.Mono ?? string.Empty,
+                CreationDate = mostepOdpModel.CreationDate
+            };
+        }
+
+        public static MostepLavorazioniRequestDto ToMostepLavorazioniRequestDto(this VwApiMostep mostepLavorazioniModel)
+        {
+            return new MostepLavorazioniRequestDto
+            {
+                Job = mostepLavorazioniModel.Job ?? string.Empty,
+                Mono = mostepLavorazioniModel.Mono ?? string.Empty,
+                CreationDate = mostepLavorazioniModel.CreationDate,
+                Operation = mostepLavorazioniModel.Operation ?? string.Empty
+            };
+        }
+
         // Metodo che mappa il Dto in Model
         // public static RmWorkersField ToWorkersFieldFromCreateDto(this RmWorkersFieldDto workersFieldRequestDto)
         // {

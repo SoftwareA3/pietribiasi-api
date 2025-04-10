@@ -44,5 +44,19 @@ namespace apiPB.Services.Request.Abstraction
         /// <param name="request">Dto di richiesta</param>
         /// <returns>IEnumerable di MostepsMocomponentDto: restituisce una collezione generica di Dto MostepsMocomponentDto</returns>
         IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentDistinct(MostepsMocomponentRequestDto request);
+
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_component, dato MostepOdpRequestDto
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>Enumerable di MostepDto: restituisce una collezione generica di Dto MostepDto</returns>
+        IEnumerable<MostepDto> GetMostepWithOdp(MostepOdpRequestDto request);
+
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_component, dato MostepLavorazioniRequestDto
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>Enumerable di MostepDto: restituisce una collezione generica di Dto MostepDto</returns>
+        IEnumerable<MostepDto> GetMostepWithLavorazione(MostepLavorazioniRequestDto request);
     }
 }

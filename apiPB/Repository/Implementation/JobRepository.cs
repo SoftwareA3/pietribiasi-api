@@ -17,7 +17,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiJob> GetJobs()
         {
-            return _context.VwApiJobs.AsNoTracking().ToList();
+            return _context.VwApiJobs.AsNoTracking().Distinct().ToList();
         }
 
         public IEnumerable<VwApiMostep> GetMostep(MostepRequestFilter filter)
@@ -72,6 +72,24 @@ namespace apiPB.Repository.Implementation
             var list = query.ToList();
 
             return list;
+        }
+
+        public IEnumerable<VwApiMostep> GetMostepWithOdp(MostepOdpRequestFilter filter)
+        {
+            return _context.VwApiMosteps
+            .AsNoTracking()
+            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate)
+            .Distinct()
+            .ToList();
+        }
+
+        public IEnumerable<VwApiMostep> GetMostepWithLavorazione(MostepLavorazioniRequestFilter filter)
+        {
+            return _context.VwApiMosteps
+            .AsNoTracking()
+            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation)
+            .Distinct()
+            .ToList();
         }
     }
 }

@@ -11,6 +11,9 @@ namespace apiPB.Mappers.Filter
         {
             //Mappa automaticamente i Dto nei Filters
             CreateMap<MostepRequestDto, MostepRequestFilter>();
+            CreateMap<MostepsMocomponentRequestDto, MostepsMocomponentRequestFilter>();
+            CreateMap<MostepLavorazioniRequestDto, MostepLavorazioniRequestFilter>();
+            CreateMap<MostepOdpRequestDto, MostepOdpRequestFilter>();
         }
     }
 }

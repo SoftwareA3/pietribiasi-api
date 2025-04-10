@@ -62,5 +62,19 @@ namespace apiPB.Services.Request.Implementation
             var filter = _mapper.Map<MostepsMocomponentRequestFilter>(MostepsMocomponentDto);
             return GetMostepsMocomponentDistinct(MostepsMocomponentDto);
         }
+
+        public IEnumerable<MostepDto> GetMostepWithOdp(MostepOdpRequestDto request)
+        {
+            var filter = _mapper.Map<MostepOdpRequestFilter>(request);
+            return _jobRepository.GetMostepWithOdp(filter)
+            .Select(m => m.ToMostepDto());
+        }
+
+        public IEnumerable<MostepDto> GetMostepWithLavorazione(MostepLavorazioniRequestDto request)
+        {
+            var filter = _mapper.Map<MostepLavorazioniRequestFilter>(request);
+            return _jobRepository.GetMostepWithLavorazione(filter)
+            .Select(m => m.ToMostepDto());
+        }
     }
 }

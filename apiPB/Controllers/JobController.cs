@@ -74,7 +74,7 @@ namespace apiPB.Controllers
             return Ok(mostepDto);
         }
 
-        [HttpPost("mostepcomponent")]
+        [HttpPost("mostepmocomponent")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components
         /// </summary>
@@ -122,6 +122,56 @@ namespace apiPB.Controllers
             _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
 
             return Ok(mostepComponentDto);
+        }
+
+        [HttpPost("mostep/odp")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mostep
+        /// </summary>
+        /// <param name="mostepOdpRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetMostepWithOdp([FromBody] MostepOdpRequestDto mostepOdpRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mostepDto = _jobRequestService.GetMostepWithOdp(mostepOdpRequestDto).ToList();
+
+            if(mostepDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepDto);
+
+            return Ok(mostepDto);
+        }
+
+        [HttpPost("mostep/lavorazioni")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mostep
+        /// /// </summary>
+        /// <param name="mostepLavorazioniRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetMostepWithLavorazione([FromBody] MostepLavorazioniRequestDto mostepLavorazioniRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mostepDto = _jobRequestService.GetMostepWithLavorazione(mostepLavorazioniRequestDto).ToList();
+
+            if(mostepDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepDto);
+
+            return Ok(mostepDto);
         }
     }    
 }
