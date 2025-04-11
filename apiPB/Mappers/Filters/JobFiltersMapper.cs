@@ -14,6 +14,7 @@ namespace apiPB.Mappers.Filter
             CreateMap<MostepsMocomponentRequestDto, MostepsMocomponentRequestFilter>();
             CreateMap<MostepLavorazioniRequestDto, MostepLavorazioniRequestFilter>();
             CreateMap<MostepOdpRequestDto, MostepOdpRequestFilter>();
+            CreateMap<A3AppRegOreRequestDto, A3AppRegOreFilter>();
         }
     }
 }

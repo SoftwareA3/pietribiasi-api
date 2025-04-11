@@ -58,5 +58,13 @@ namespace apiPB.Services.Request.Abstraction
         /// <param name="request">Dto di richiesta</param>
         /// <returns>Enumerable di MostepDto: restituisce una collezione generica di Dto MostepDto</returns>
         IEnumerable<MostepDto> GetMostepWithLavorazione(MostepLavorazioniRequestDto request);
+
+        /// <summary>
+        /// Ritorna tutte le informazioni salvate nella tabella A3_app_reg_ore, dato A3AppRegOreRequestDto
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>Enumerable di A3AppRegOreDto: restituisce una collezione generica di Dto A3AppRegOreDto</returns>
+        IEnumerable<A3AppRegOreDto> PostAppRegOre(IEnumerable<A3AppRegOreRequestDto> requestList);
+
     }
 }

@@ -91,5 +91,42 @@ namespace apiPB.Repository.Implementation
             .Distinct()
             .ToList();
         }
+
+        public IEnumerable<A3AppRegOre> PostRegOreList(IEnumerable<A3AppRegOreFilter> filterList)
+        {
+            var list = new List<A3AppRegOre>();
+
+            foreach (var filter in filterList)
+            {
+                var regOre = new A3AppRegOre
+                {
+                    WorkerId = filter.WorkerId,
+                    SavedDate = DateTime.Now,
+                    Job = filter.Job,
+                    RtgStep = filter.RtgStep,
+                    Alternate = filter.Alternate,
+                    AltRtgStep = filter.AltRtgStep,
+                    Operation = filter.Operation,
+                    OperDesc = filter.OperDesc,
+                    Bom = filter.Bom,
+                    Variant = filter.Variant,
+                    ItemDesc = filter.ItemDesc,
+                    Moid = filter.Moid,
+                    Uom = filter.Uom,
+                    ProductionQty = filter.ProductionQty,
+                    ProducedQty = filter.ProducedQty,
+                    ResQty = filter.ResQty,
+                    Storage = filter.Storage,
+                    WorkingTime = filter.WorkingTime
+                };
+
+                list.Add(regOre);
+            }
+
+            _context.A3AppRegOres.AddRange(list);
+            _context.SaveChanges();
+
+            return list;
+        }
     }
 }

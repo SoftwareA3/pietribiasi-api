@@ -76,5 +76,25 @@ namespace apiPB.Services.Request.Implementation
             return _jobRepository.GetMostepWithLavorazione(filter)
             .Select(m => m.ToMostepDto());
         }
+
+        public IEnumerable<A3AppRegOreDto> PostAppRegOre(IEnumerable<A3AppRegOreRequestDto> requestList)
+        {
+            var filterList = new List<A3AppRegOreFilter>();
+            foreach (var request in requestList)
+            {
+                var filter = _mapper.Map<A3AppRegOreFilter>(request);
+                filterList.Add(filter);
+            }
+            var result = _jobRepository.PostRegOreList(filterList);
+
+            var resultList = new List<A3AppRegOreDto>();
+            foreach (var item in result)
+            {
+                var dto = item.ToA3AppRegOreDto();
+                resultList.Add(dto);
+            }
+
+            return resultList;
+        }
     }
 }

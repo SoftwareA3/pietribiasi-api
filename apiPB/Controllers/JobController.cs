@@ -173,5 +173,31 @@ namespace apiPB.Controllers
 
             return Ok(mostepDto);
         }
+
+        [HttpPost("regore")]
+        /// <summary>
+        /// Invia la lista di A3AppRegOre al database
+        /// </summary>
+        /// <param name="IEnumerable<a3AppRegOreRequestDto>">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="201">Crea delle entry nel database</response>
+        /// <response code="404">Non trovato</response>
+        IActionResult PostRegOreList([FromBody] IEnumerable<A3AppRegOreRequestDto> a3AppRegOreRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var a3AppRegOreDto = _jobRequestService.PostAppRegOre(a3AppRegOreRequestDto).ToList();
+
+            if (a3AppRegOreDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            var createdResult = CreatedAtAction(nameof(PostRegOreList), a3AppRegOreDto);
+            _logService.AppendMessageAndListToLog(requestPath, createdResult.StatusCode, "Created", a3AppRegOreDto);
+
+            return CreatedAtAction(nameof(PostRegOreList), a3AppRegOreDto);
+        }
     }    
 }

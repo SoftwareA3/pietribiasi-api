@@ -16,6 +16,8 @@ public partial class ApplicationDbContext : DbContext
     {
     }
 
+    public virtual DbSet<A3AppRegOre> A3AppRegOres { get; set; }
+
     public virtual DbSet<MaStorage> MaStorages { get; set; }
 
     public virtual DbSet<RmWorker> RmWorkers { get; set; }
@@ -36,6 +38,51 @@ public partial class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<A3AppRegOre>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("A3_app_reg_ore");
+
+            entity.Property(e => e.Alternate)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.Bom)
+                .IsUnicode(false)
+                .HasColumnName("BOM");
+            entity.Property(e => e.CreationDate).HasColumnType("datetime");
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Moid).HasColumnName("MOId");
+            entity.Property(e => e.Mono)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("MONo");
+            entity.Property(e => e.OperDesc).IsUnicode(false);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.SavedDate).HasColumnType("datetime");
+            entity.Property(e => e.Storage)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Uom)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("uom");
+            entity.Property(e => e.Variant)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Wc)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("WC");
+            entity.Property(e => e.WorkerId)
+                .HasMaxLength(10)
+                .IsFixedLength();
+        });
+
         modelBuilder.Entity<MaStorage>(entity =>
         {
             entity.HasKey(e => e.Storage)

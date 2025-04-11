@@ -56,5 +56,13 @@ namespace apiPB.Repository.Abstraction
         /// IEnumerable di VwApiMostep: restituisce una collezione generica di modelli VwApiMostep
         /// </returns>
         IEnumerable<VwApiMostep> GetMostepWithLavorazione(MostepLavorazioniRequestFilter filter);
+
+        /// <summary>
+        /// Inserisce la lista di A3AppRegOre nel database
+        /// </summary>
+        /// <param name="IEnumerable<a3AppRegOreList>">Lista di A3AppRegOre da inserire</param>
+        /// <returns>
+        /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre
+        IEnumerable<A3AppRegOre> PostRegOreList(IEnumerable<A3AppRegOreFilter> filterList);
     }
 }
