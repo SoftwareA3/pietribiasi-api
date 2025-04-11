@@ -1,243 +1,643 @@
 import { fetchWithAuth } from "./fetch.js";
-
-/*
-    Fetch di tutti i jobs e creazione lista di autocompletamento
-
-    Cerca con il job selezionato come parametro. Crea lista di autocompletamento o lista di tutte
-    le lavorazioni e gli ordini di produzione associati e crea lista di autocompletamento
-*/
+import { getCookie } from "./cookies.js";
 
 document.addEventListener("DOMContentLoaded", async function () {
-    // recupera tutti gli input e le liste di autocompletamento 
-    
+    // Recupera elementi DOM
     const commessaInput = document.getElementById("reg-ore-commessa");
     const commessaAutocompleteList = document.getElementById("reg-ore-commessa-autocomplete-list");
-
     const lavorazioneInput = document.getElementById("reg-ore-lavorazione");
     const lavorazioneAutocompleteList = document.getElementById("reg-ore-lavorazione-autocomplete-list");
+    const odlInput = document.getElementById("reg-ore-odp");
+    const odlAutocompleteList = document.getElementById("reg-ore-odp-autocomplete-list");
+    const addButton = document.getElementById("inv-add-list");
+    const cercaButton = document.getElementById("reg-ore-cerca");
+    const searchOverlay = document.getElementById("search-overlay");
+    const closeSearchButton = document.getElementById("close-search-overlay");
+    const cancelSearchButton = document.getElementById("cancel-search");
+    const selectSearchResultButton = document.getElementById("select-search-result");
+    const searchResultsBody = document.getElementById("search-results-body");
+    const oreInput = document.getElementById("reg-ore-ore");
+    const saveButton = document.getElementById("inv-save");
+    const noContent = document.getElementById("nocontent");
 
-    const odpInput = document.getElementById("reg-ore-odp");
-    const odpAutocompleteList = document.getElementById("reg-ore-odp-autocomplete-list");
+    // Liste di dati
+    let jobList = [];
+    let odpList = [];
+    let lavorazioneList = [];
+    let searchResults = [];
+    let selectedSearchRow = null;
+    let dataResultList = [];
 
-    // Recupera tutti i lavori
-    const result = await fetchAllJobs();
-    var jobList = [];
-
-    result.forEach((job) => {
-        if (job && job.job && job.description) {
-            jobList.push({
+    // Inizializza l'autocompletamento per la commessa e carica i dati iniziali
+    try {
+        const jobResult = await fetchAllJobs();
+        jobList = jobResult
+            .filter(job => job && job.job && job.description)
+            .map(job => ({
                 job: job.job,
                 description: job.description,
-                display: Object.values(job).join(" - ")
-            });
-            console.log("job in jobList mentre viene popolata: ", Object.values(job).join(" - "));
-        }
-    });
+                display: `${job.job} - ${job.description}`
+            }));
 
-    console.log(typeof jobList);
-
-    console.log("Lista di lavori:", jobList);
-
-    // Variabili per memorizzare le selezioni
-    let selectedCommessa = null;
-    let selectedOdp = null;
-    let selectedLavorazione = null;
-
-    // Funzione ausiliaria per trovare la commessa corrispondente al testo inserito
-    function findCommessaByDisplay(displayText) {
-        return jobList.find(item => item.display === displayText);
+        console.log("Lista di lavori:", jobList);
+        setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
+    } catch (error) {
+        console.error("Errore nel caricamento iniziale dei lavori:", error);
     }
 
-    // Funzione ausiliaria per trovare l'ODP corrispondente al testo inserito
-    function findOdpByDisplay(displayText, odpList) {
-        return odpList.find(item => item.display === displayText);
-    }
-
-    // Setup autocomplete per la commessa
-    setupAutocomplete(commessaInput, commessaAutocompleteList, jobList, function(selected) {
-        selectedCommessa = selected;
-        // Puoi eseguire altre azioni qui, come pulire gli altri campi
-        odpInput.value = "";
+    // Event listener per il cambio di commessa
+    commessaInput.addEventListener("change", async function() {
+        // Resetta i campi dipendenti
+        odlInput.value = "";
         lavorazioneInput.value = "";
-        selectedOdp = null;
-        selectedLavorazione = null;
-    });
-
-    // Setup autocomplete per l'ordine di produzione
-    odpInput.addEventListener("focus", async function() {
-        // Verifica se il campo commessa ha un valore
-        if (commessaInput.value && !selectedCommessa) {
-            // Cerca di trovare la commessa corrispondente
-            selectedCommessa = findCommessaByDisplay(commessaInput.value);
-        }
+        odpList = [];
+        lavorazioneList = [];
         
-        if (!selectedCommessa) {
-            alert("Seleziona prima una commessa");
-            commessaInput.focus();
-            return;
-        }
-
-        try {
-            const moStep = await fetchJobMostep(selectedCommessa.job);
-            const odpList = [];
-
-            moStep.forEach((item) => {
-                if (item && item.mono && item.creationDate) {
-                    odpList.push({
-                        mono: item.mono,
-                        creationDate: item.creationDate,
-                        display: `${item.mono} - ${item.creationDate}`
-                    });
-                }
-            });
-
-            console.log("Lista di ODP:", odpList);
-
-            // Verifica se il campo ODP ha già un valore
-            if (odpInput.value && !selectedOdp) {
-                selectedOdp = findOdpByDisplay(odpInput.value, odpList);
-            }
-
-            // Forza l'aggiornamento della lista
-            setupAutocomplete(odpInput, odpAutocompleteList, odpList, function(selected) {
-                selectedOdp = selected;
-                lavorazioneInput.value = "";
-                selectedLavorazione = null;
-            });
-
-            // Mostra la lista immediatamente
-            showAutocompleteList(odpInput, odpAutocompleteList, odpList);
-        } catch (error) {
-            console.error("Errore:", error);
+        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+        if (selectedCommessa) {
+            await loadOdpData(selectedCommessa.job);
         }
     });
 
-    // Setup autocomplete per la lavorazione
-    lavorazioneInput.addEventListener("focus", async function() {
-        // Verifica se il campo commessa ha un valore
-        if (commessaInput.value && !selectedCommessa) {
-            // Cerca di trovare la commessa corrispondente
-            selectedCommessa = findCommessaByDisplay(commessaInput.value);
-        }
-        
-        // Verifica se c'è già un valore nel campo ODP ma non è stato selezionato
-        if (odpInput.value && !selectedOdp && selectedCommessa) {
-            // Recupera la lista ODP e cerca di trovare l'ODP corrispondente
-            const moStep = await fetchJobMostep(selectedCommessa.job);
-            const odpList = [];
-            
-            moStep.forEach((item) => {
-                if (item && item.mono && item.creationDate) {
-                    odpList.push({
-                        mono: item.mono,
-                        creationDate: item.creationDate,
-                        display: `${item.mono} - ${item.creationDate}`
-                    });
-                }
-            });
-            
-            selectedOdp = findOdpByDisplay(odpInput.value, odpList);
-        }
-        
+    odlInput.addEventListener("change", async function() {
+        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+        const selectedOdp = findSelectedItem(odlInput.value, odpList);
+    
         if (!selectedCommessa || !selectedOdp) {
-            if (!selectedCommessa) {
-                alert("Seleziona prima una commessa");
-                commessaInput.focus();
-            } else {
-                alert("Seleziona prima un ordine di produzione");
-                odpInput.focus();
-            }
+            lavorazioneInput.value = ""; // Resetta solo se i dati non sono validi
+            lavorazioneList = [];
             return;
         }
-        
-        try {
-            const mostepOdp = await fetchJobMostepWithOdp(
-                selectedCommessa.job, 
-                selectedOdp.mono, 
-                selectedOdp.creationDate
-            );
-            console.log("Mostep ODP:", mostepOdp);
-            // Crea la lista di lavorazioni...
-            const lavorazioniList = []; // costruisci la lista qui
-            mostepOdp.forEach((item) => {
-                if (item && item.operation && item.operDesc) {
-                    lavorazioniList.push({
-                        operation: item.operation,
-                        operDesc: item.operDesc,
-                        display: `${item.operation} - ${item.operDesc}`
-                    });
-                    console.log("Lavorazione in lista:", item.operDesc);
-                }
-            });
-            console.log("Lista di lavorazioni:", lavorazioniList);
-            
-            setupAutocomplete(lavorazioneInput, lavorazioneAutocompleteList, lavorazioniList, function(selected) {
-                selectedLavorazione = selected;
-            });
+    
+        // Carica i dati della lavorazione solo se necessario
+        await loadLavorazioneData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate);
+    });
 
-            // Mostra la lista immediatamente
-            showAutocompleteList(lavorazioneInput, lavorazioneAutocompleteList, lavorazioniList);
-        } catch (error) {
-            console.error("Errore:", error);
+    lavorazioneInput.addEventListener("change", async function() {
+        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+        const selectedOdp = findSelectedItem(odlInput.value, odpList);
+        const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
+        if (selectedCommessa && selectedOdp && selectedLavorazione) {
+            console.log("Commessa selezionata:", selectedCommessa);
+            console.log("ODP selezionato:", selectedOdp);
+            console.log("Lavorazione selezionata:", selectedLavorazione);
+            oreInput.focus
+            await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
+        }
+    });
+        
+
+    // Event listener per il pulsante Cerca - Ora apre la tabella overlay
+    cercaButton.addEventListener("click", async function() {
+        // Filtra i risultati in base al valore nel campo commessa
+        let filteredResults = [];
+        
+        if (commessaInput) {
+            // Se c'è un valore nel campo commessa, filtra i risultati
+            const jobSearchResults = jobList.filter(job => 
+                job.display.toLowerCase().includes(commessaInput.value.toLowerCase())
+            );
+
+            for(const job of jobSearchResults) {
+                const results = await fetchJobMostep(job.job);
+                console.log("Risultati della ricerca:", results);
+                filteredResults.push(...results.map(item => ({
+                    job: job.job,
+                    mono: item.mono || '',
+                    creationDate: item.creationDate || '',
+                    um: item.um || '',
+                    resQty: item.resQty || '',
+                    bom: item.bom || '',
+                    itemDesc: item.itemDesc || '',
+                    operation: item.operation || '',
+                    operDesc: item.operDesc || ''
+                })));
+            }
+            
+            // Obsoleto: carica troppi dati inutili
+            // // Prepara i dati per la ricerca dettagliata
+            // for (const job of jobSearchResults) {
+            //     try {
+            //         // Ottieni ODP per questo job
+            //         const odpResults = await fetchJobMostep(job.job);
+                    
+            //         // Per ogni ODP ottieni le operazioni
+            //         for (const odp of odpResults) {
+            //             if (odp && odp.mono && odp.creationDate) {
+            //                 try {
+            //                     const operazioni = await fetchJobsByOdp(job.job, odp.mono, odp.creationDate);
+                                
+            //                     // Aggiungi ogni operazione ai risultati
+            //                     operazioni.forEach(op => {
+            //                         filteredResults.push({
+            //                             job: job.job,
+            //                             mono: odp.mono,
+            //                             creationDate: odp.creationDate,
+            //                             um: op.um || '',
+            //                             resQty: op.resQty || '',
+            //                             bom: op.bom || '',
+            //                             itemDesc: op.itemDesc || '',
+            //                             operation: op.operation || '',
+            //                             operDesc: op.operDesc || ''
+            //                         });
+            //                     });
+            //                 } catch (error) {
+            //                     console.error("Errore nel recupero delle operazioni:", error);
+            //                 }
+            //             }
+            //         }
+            //     } catch (error) {
+            //         console.error("Errore nel recupero degli ODP:", error);
+            //     }
+            // }
+
+        } else {
+            // Se il campo commessa è vuoto, mostra tutti i lavori disponibili con struttura semplificata
+            filteredResults = jobList.map(job => ({
+                job: job.job,
+                description: job.description,
+                mono: '',
+                creationDate: '',
+                um: '',
+                resQty: '',
+                bom: '',
+                itemDesc: job.description || '',
+                operation: '',
+                operDesc: ''
+            }));
+        }
+        
+        searchResults = filteredResults;
+        populateSearchResults(searchResults);
+        searchOverlay.classList.add("active");
+    });
+
+    // Event listeners per i pulsanti di chiusura dell'overlay
+    closeSearchButton.addEventListener("click", function() {
+        searchOverlay.classList.remove("active");
+        selectedSearchRow = null;
+    });
+
+    cancelSearchButton.addEventListener("click", function() {
+        searchOverlay.classList.remove("active");
+        selectedSearchRow = null;
+    });
+
+    // Event listener per il pulsante Seleziona
+    selectSearchResultButton.addEventListener("click", function() {
+        if (selectedSearchRow) {
+            // Cerca il job corrispondente nella lista originale per ottenere la description
+            const jobItem = jobList.find(job => job.job === selectedSearchRow.job);
+            const description = jobItem ? jobItem.description : selectedSearchRow.itemDesc;
+            
+            // Compila il campo commessa
+            commessaInput.value = `${selectedSearchRow.job} - ${description}`;
+            
+            const commessaEvent = new Event('change', { bubbles: true });
+            commessaInput.dispatchEvent(commessaEvent);
+
+            // Compila il campo ODP/mono
+            if (selectedSearchRow.mono) {
+                odlInput.value = `${selectedSearchRow.mono} - ${selectedSearchRow.creationDate}`;
+            } else {
+                odlInput.value = ""; // Resetta il campo se non c'è un mono
+            }
+
+            if (odlInput.value) {
+                setTimeout(() => {
+                    const odpEvent = new Event('change', { bubbles: true });
+                    odlInput.dispatchEvent(odpEvent);
+                    console.log("Evento change per ODP dispatchato");
+                }, 300); // Piccolo ritardo per permettere al primo evento di completarsi
+            }
+
+            
+            // Compila il campo lavorazione
+            if (selectedSearchRow.operation) {
+                lavorazioneInput.value = `${selectedSearchRow.operation} - ${selectedSearchRow.operDesc}`;
+            } else {
+                lavorazioneInput.value = ""; // Resetta il campo se non c'è un'operazione
+            }
+
+            // Trigger per lavorazione
+            if (lavorazioneInput.value) {
+                setTimeout(() => {
+                    const lavorazioneEvent = new Event('change', { bubbles: true });
+                    lavorazioneInput.dispatchEvent(lavorazioneEvent);
+                    console.log("Evento change per lavorazione dispatchato");
+                }, 600);
+            }
+
+
+            // Chiudi l'overlay
+            searchOverlay.classList.remove("active");
+            
+            // Trigger eventi change per caricare dati correlati
+            
+            
+            // Se abbiamo un valore in odlInput, triggeriamo anche l'evento change
+            
+            
+            // Azzera la selezione alla fine
+            selectedSearchRow = null;
+        } else {
+            alert("Seleziona una riga prima di procedere");
         }
     });
 
-    // Aggiungi listener diretto per il click sul pulsante "Cerca"
-    const cercaButton = document.getElementById("reg-ore-cerca");
-    cercaButton.addEventListener("click", function() {
-        if (commessaInput.value) {
-            selectedCommessa = findCommessaByDisplay(commessaInput.value);
-            if (!selectedCommessa) {
-                alert("Commessa non trovata");
+    // Funzione per popolare la tabella di risultati
+    function populateSearchResults(results) {
+        searchResultsBody.innerHTML = "";
+        selectedSearchRow = null;
+        
+        if (results.length === 0) {
+            const row = searchResultsBody.insertRow();
+            const cell = row.insertCell();
+            cell.colSpan = 9;
+            cell.textContent = "Nessun risultato trovato";
+            return;
+        }
+        
+        results.forEach((result, index) => {
+            const row = searchResultsBody.insertRow();
+            row.dataset.index = index;
+            
+            // Aggiungi celle con i dati
+            const cellJob = row.insertCell();
+            cellJob.textContent = result.job;
+            
+            const cellMono = row.insertCell();
+            cellMono.textContent = result.mono;
+            
+            const cellCreationDate = row.insertCell();
+            cellCreationDate.textContent = result.creationDate;
+            
+            const cellUM = row.insertCell();
+            cellUM.textContent = result.um;
+            
+            const cellResQty = row.insertCell();
+            cellResQty.textContent = result.resQty;
+            
+            const cellBOM = row.insertCell();
+            cellBOM.textContent = result.bom;
+            
+            const cellItemDesc = row.insertCell();
+            cellItemDesc.textContent = result.itemDesc;
+            
+            const cellOperation = row.insertCell();
+            cellOperation.textContent = result.operation;
+            
+            const cellOperDesc = row.insertCell();
+            cellOperDesc.textContent = result.operDesc;
+
+            
+            
+            // Event listener per la selezione della riga
+            row.addEventListener("click", function() {
+                // Rimuovi la selezione precedente
+                document.querySelectorAll("#search-results-body tr.selected").forEach(tr => {
+                    tr.classList.remove("selected");
+                });
+                
+                // Seleziona questa riga
+                row.classList.add("selected");
+                selectedSearchRow = results[index];
+            });
+            
+            // Doppio click per selezionare e confermare
+            row.addEventListener("dblclick", function() {
+                selectedSearchRow = results[index];
+                selectSearchResultButton.click(); 
+            });
+        });
+    }
+
+    // SaveButton: chiamata all'API passando dataResultList per salvare i dati.
+    // Chiama la rimozione di tutti gli elementi dalla lista temporanea
+    saveButton.addEventListener("click", async function() {
+        if (dataResultList.length > 0) {
+            // Recupera il workerid dai cookies
+            const cookie = getCookie("userInfo");
+            const workerId = cookie.workerId;
+            console.log("Worker ID:", workerId);
+            if (!workerId) {
+                console.error("Worker ID non trovato nei cookie.");
                 return;
             }
-            
-            // Pulisci i campi successivi
-            odpInput.value = "";
-            lavorazioneInput.value = "";
-            selectedOdp = null;
-            selectedLavorazione = null;
-            
-            // Sposta il focus sul campo ODP
-            odpInput.focus();
+            // Aggiungi il workerId a ogni oggetto nella lista
+            dataResultList.forEach(item => {
+                item.workerId = workerId;
+            });
+            try {
+                const response = await fetchWithAuth("http://localhost:5245/api/job/regore", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dataResultList)
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log("Dati salvati con successo:", result);
+                    // Pulisci la lista temporanea
+                    const list = document.getElementById("reg-ore-lista-temp");
+                    while (list.firstChild) {
+                        list.removeChild(list.firstChild);
+                    }
+                    dataResultList = []; // Resetta la lista dei risultati
+                    commessaInput.value ??  "";
+                    odlInput.value ?? "";
+                    lavorazioneInput.value ?? "";
+                    oreInput.value ?? "";
+                    noContent.classList.remove("hidden");
+                } else {
+                    console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Errore durante la richiesta di salvataggio:", error);
+            }
+        } else {
+            alert("Nessun dato da salvare. Aggiungi prima un elemento.");
+        }
+    }); 
+
+    // Event listener per il pulsante Aggiungi
+    addButton.addEventListener("click", async function() {
+        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+        const selectedOdp = findSelectedItem(odlInput.value, odpList);
+        const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
+        const ore = document.getElementById("reg-ore-ore").value;
+    
+        console.log("Dati selezionati:", {
+            selectedCommessa,
+            selectedOdp,
+            selectedLavorazione,
+            ore
+        });
+    
+        if (selectedCommessa && selectedOdp && selectedLavorazione && ore) {
+            const result = await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
+            console.log("Risultato di loadAllData:", result);
+            if (result) {
+                var data = {
+                    job: result.job,
+                    rtgStep: result.rtgStep,
+                    alternate: result.alternate,
+                    altRtgStep: result.altRtgStep,
+                    operation: result.operation,
+                    operDesc: result.operDesc,
+                    bom: result.bom,
+                    variant: result.variant,
+                    itemDesc: result.itemDesc,
+                    moid: result.moid,
+                    mono: result.mono,
+                    creationDate: result.creationDate,
+                    uom: result.uom,
+                    productionQty: result.productionQty,
+                    producedQty: result.producedQty,
+                    resQty: result.resQty,
+                    storage: result.storage,
+                    workingTime: ore
+                }
+                dataResultList.push(data);
+                console.log("Lista di risultati:", dataResultList);
+                addToTemporaryList(data);
+                // Reset campo ore
+                commessaInput.value = "";
+                odlInput.value = "";
+                lavorazioneInput.value = "";
+                oreInput.value = "";
+            } else {
+                alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
+            }
+        } else {
+            alert("Compilare tutti i campi richiesti");
         }
     });
 
-    setupDeleteButtons();
+    // Funzione per trovare l'elemento selezionato in base al valore dell'input
+    function findSelectedItem(inputValue, list) {
+        if (!inputValue || !list || list.length === 0) return null;
+        
+        return list.find(item => item.display === inputValue);
+    }
+
+    // Funzione per caricare i dati dell'ODP in base alla commessa selezionata
+    async function loadOdpData(jobId) {
+        if (!jobId) return;
+        
+        try {
+            const odpResult = await fetchJobMostep(jobId);
+            odpList = odpResult
+                .filter(odp => odp && odp.mono && odp.creationDate)
+                .map(odp => ({
+                    odp: odp.mono,
+                    creationDate: odp.creationDate,
+                    display: `${odp.mono} - ${odp.creationDate}`
+                }));
+
+            console.log("Lista di ODP:", odpList);
+            setupAutocomplete(odlInput, odlAutocompleteList, odpList);
+        } catch (error) {
+            console.error("Errore nel caricamento dei dati ODP:", error);
+        }
+    }
+
+    // Funzione per caricare i dati della lavorazione
+    async function loadLavorazioneData(jobId, mono, creationDate) {
+        if (!jobId || !mono || !creationDate) return;
+        
+        try {
+            const lavorazioneResult = await fetchJobsByOdp(jobId, mono, creationDate);
+            lavorazioneList = lavorazioneResult
+                .filter(lav => lav && lav.operation && lav.operDesc)
+                .map(lav => ({
+                    operation: lav.operation,
+                    operDesc: lav.operDesc,
+                    display: `${lav.operation} - ${lav.operDesc}`
+                }));
+
+            console.log("Lista di lavorazioni:", lavorazioneList);
+            setupAutocomplete(lavorazioneInput, lavorazioneAutocompleteList, lavorazioneList);
+        } catch (error) {
+            console.error("Errore nel caricamento dei dati lavorazione:", error);
+        }
+    }
+
+    async function loadAllData(jobId, mono, creationDate, operation) {
+        if (!jobId || !mono || !creationDate || !operation) return null;
+        
+        try {
+            const allDataResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
+            console.log("Lista di tutti i dati:", allDataResult);
+    
+            // Restituisci il primo elemento o un oggetto vuoto
+            return allDataResult.length > 0 ? allDataResult[0] : null;
+        } catch (error) {
+            console.error("Errore nel caricamento dei dati:", error);
+            return null;
+        }
+    }
 });
 
-// Funzione per mostrare immediatamente la lista di autocompletamento
-function showAutocompleteList(inputElement, listElement, itemList) {
-    // Svuota la lista e rendila visibile
-    listElement.innerHTML = "";
-    listElement.classList.remove("hidden");
-    
-    // Aggiungi tutti gli elementi alla lista
-    itemList.forEach((item) => {
-        if (item && item.display) {
+// Funzione per l'autocompletamento
+function setupAutocomplete(inputElement, listElement, list) {
+    let currentFocus = -1;
+
+    // Gestisci il focus sull'input
+    inputElement.addEventListener("focus", function() {
+        showAllItems();
+    });
+
+    // Event listener per l'input
+    inputElement.addEventListener("input", function() {
+        const value = this.value.toString().toUpperCase();
+        
+        // Chiudi la lista esistente
+        listElement.innerHTML = "";
+        
+        if (!value) {
+            showAllItems();
+            return;
+        }
+        
+        // Filtra gli elementi che corrispondono all'input
+        const matchingItems = list.filter(item => 
+            item && item.display && item.display.toString().toUpperCase().includes(value)
+        );
+
+        // Resetta l'indice del focus
+        currentFocus = -1;
+        listElement.classList.remove("hidden");
+
+        // Aggiungi gli elementi alla lista
+        matchingItems.forEach((item) => {
+            const itemDiv = document.createElement("div");
+            const itemStr = item.display.toString();
+
+            // Evidenzia la parte corrispondente
+            const index = itemStr.toUpperCase().indexOf(value);
+            if (index !== -1) {
+                itemDiv.innerHTML = itemStr.substring(0, index);
+                itemDiv.innerHTML += "<strong>" + itemStr.substring(index, index + value.length) + "</strong>";
+                itemDiv.innerHTML += itemStr.substring(index + value.length);
+            } else {
+                itemDiv.textContent = itemStr;
+            }
+
+            // Event listener per il click sull'elemento
+            itemDiv.addEventListener("click", function() {
+                inputElement.value = itemStr;
+                closeAutocompleteList();
+                
+                // Attiva manualmente l'evento change
+                const event = new Event('change', { bubbles: true });
+                inputElement.dispatchEvent(event);
+            });
+
+            listElement.appendChild(itemDiv);
+        });
+        
+        if (listElement.children.length > 3) {
+            listElement.classList.add("scrollable");
+        }
+    });
+
+    // Funzione per mostrare tutti gli elementi
+    function showAllItems() {
+        listElement.innerHTML = "";
+        listElement.classList.remove("hidden");
+        
+        list.forEach((item) => {
             const itemDiv = document.createElement("div");
             itemDiv.textContent = item.display;
             
-            // Event listener per il click sull'elemento
             itemDiv.addEventListener("click", function() {
-                // Imposta il valore dell'input come il display dell'elemento
                 inputElement.value = item.display;
-                // Chiudi la lista
-                listElement.classList.add("hidden");
+                closeAutocompleteList();
+                
+                // Attiva manualmente l'evento change
+                const event = new Event('change', { bubbles: true });
+                inputElement.dispatchEvent(event);
             });
             
             listElement.appendChild(itemDiv);
+        });
+        
+        if (listElement.children.length > 3) {
+            listElement.classList.add("scrollable");
+        }
+    }
+
+    // Event listener per la navigazione con tastiera
+    inputElement.addEventListener("keydown", function(e) {
+        const items = listElement.getElementsByTagName("div");
+
+        // Freccia giù
+        if (e.key === "ArrowDown") {
+            currentFocus++;
+            addActive(items);
+            e.preventDefault();
+        } 
+        // Freccia su
+        else if (e.key === "ArrowUp") {
+            currentFocus--;
+            addActive(items);
+            e.preventDefault();
+        } 
+        // Invio
+        else if (e.key === "Enter") {
+            e.preventDefault();
+            if (currentFocus > -1 && items.length > 0) {
+                items[currentFocus].click();
+            }
+        } 
+        // Esc
+        else if (e.key === "Escape") {
+            closeAutocompleteList();
         }
     });
-    
-    // Aggiungi la classe scrollable se ci sono più di 3 elementi
-    if (listElement.children.length > 3) {
-        listElement.classList.add("scrollable");
+
+    // Focus out: chiudi la lista quando l'utente clicca altrove
+    document.addEventListener("click", function(e) {
+        if (e.target !== inputElement) {
+            closeAutocompleteList();
+        }
+    });
+
+    // Funzione per evidenziare l'elemento attivo
+    function addActive(items) {
+        if (!items || items.length === 0) return;
+
+        // Rimuovi prima la classe active da tutti gli elementi
+        removeActive(items);
+
+        // Correggi l'indice se necessario
+        if (currentFocus >= items.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+
+        // Aggiungi la classe active all'elemento corrente
+        items[currentFocus].classList.add("autocomplete-active");
+
+        // Assicurati che l'elemento sia visibile (scroll)
+        items[currentFocus].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Rimuovi la classe active da tutti gli elementi
+    function removeActive(items) {
+        for (let i = 0; i < items.length; i++) {
+            items[i].classList.remove("autocomplete-active");
+        }
+    }
+
+    // Chiudi la lista di autocompletamento
+    function closeAutocompleteList() {
+        listElement.classList.add("hidden");
     }
 }
 
-async function fetchJobMostep(job)
-{
+// Funzioni di fetch
+async function fetchJobMostep(job) {
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/job/mostep", {
             method: "POST",
@@ -254,15 +654,13 @@ async function fetchJobMostep(job)
 
         const jobInfo = await request.json();
         return jobInfo;
-        
     } catch (error) {
         console.error("Errore durante la fetch:", error);
         return [];
     }
 }
 
-async function fetchJobMostepWithOdp(job, mono, creationDate)
-{
+async function fetchJobsByOdp(job, mono, creationDate) {
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/job/mostep/odp", {
             method: "POST",
@@ -275,11 +673,12 @@ async function fetchJobMostepWithOdp(job, mono, creationDate)
                 "creationDate": creationDate
             }),
         });
-
+        
         if (!request || !request.ok) {
             console.error("Errore nella richiesta:", request.status, request.statusText);
             return [];
         }
+        
         const jobInfo = await request.json();
         return jobInfo;
     }
@@ -305,162 +704,69 @@ async function fetchAllJobs() {
 
         const jobs = await request.json();
         return jobs;
-        
     } catch (error) {
         console.error("Errore durante la fetch:", error);
         return [];
     }
 }
 
-function setupAutocomplete(inputElement, listElement, fieldList, onSelectCallback) {
-    let currentFocus = -1;
-
-    // Quando l'input riceve il focus, mostra tutti gli elementi
-    inputElement.addEventListener("focus", function() {
-        // Mostra immediatamente tutti gli elementi disponibili
-        showAutocompleteList(inputElement, listElement, fieldList);
-    });
-    
-    // Event listener per l'input
-    inputElement.addEventListener("input", function() {
-        const value = this.value;
-        
-        // Chiudi la lista se è già aperta
-        listElement.classList.add("hidden");
-        
-        // Se l'input è vuoto, mostra tutti gli elementi
-        if (!value) {
-            showAutocompleteList(inputElement, listElement, fieldList);
-            return;
-        }
-        
-        // Filtra gli elementi che corrispondono all'input
-        const valueStr = value.toString().toUpperCase();
-        const matchingItems = fieldList.filter(item => {
-            if (!item || !item.display) return false;
-            return item.display.toString().toUpperCase().includes(valueStr);
+async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
+    try {
+        const request = await fetchWithAuth("http://localhost:5245/api/job/mostep/lavorazioni", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "job": job,
+                "mono": mono,
+                "creationDate": creationDate,
+                "operation": operation
+            }),
         });
-        
-        // Se non ci sono elementi corrispondenti, non mostrare la lista
-        if (matchingItems.length === 0) {
-            return;
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return [];
         }
-        
-        // Resetta l'indice del focus
-        currentFocus = -1;
-        
-        // Svuota la lista e rendila visibile
-        listElement.innerHTML = "";
-        listElement.classList.remove("hidden");
-        
-        // Aggiungi gli elementi corrispondenti alla lista
-        matchingItems.forEach((item) => {
-            const itemDiv = document.createElement("div");
-            const itemStr = item.display;
-            
-            // Evidenzia la parte corrispondente
-            const index = itemStr.toUpperCase().indexOf(valueStr);
-            if (index !== -1) {
-                itemDiv.innerHTML = itemStr.substring(0, index);
-                itemDiv.innerHTML += "<strong>" + itemStr.substring(index, index + valueStr.length) + "</strong>";
-                itemDiv.innerHTML += itemStr.substring(index + valueStr.length);
-            } else {
-                itemDiv.innerHTML = itemStr;
-            }
-            
-            // Event listener per il click sull'elemento
-            itemDiv.addEventListener("click", function() {
-                // Imposta il valore dell'input come il display dell'elemento
-                inputElement.value = item.display;
-                // Esegui il callback passando l'oggetto completo
-                if (typeof onSelectCallback === 'function') {
-                    onSelectCallback(item);
-                }
-                console.log("Elemento selezionato:", item);
-                // Chiudi la lista
-                listElement.classList.add("hidden");
-            });
-            
-            listElement.appendChild(itemDiv);
-        });
-        
-        // Aggiungi la classe scrollable se ci sono più di 3 elementi
-        if (listElement.children.length > 3) {
-            listElement.classList.add("scrollable");
-        }
-    });
-    
-    // Event listener per la navigazione con tastiera
-    inputElement.addEventListener("keydown", function(e) {
-        const items = listElement.getElementsByTagName("div");
-        
-        // Freccia giù
-        if (e.key === "ArrowDown") {
-            currentFocus++;
-            addActive(items);
-            e.preventDefault(); // Previene lo scorrimento della pagina
-        } 
-        // Freccia su
-        else if (e.key === "ArrowUp") {
-            currentFocus--;
-            addActive(items);
-            e.preventDefault(); // Previene lo scorrimento della pagina
-        } 
-        // Invio
-        else if (e.key === "Enter") {
-            e.preventDefault(); // Previene l'invio del form
-            if (currentFocus > -1 && items.length > 0) {
-                items[currentFocus].click();
-            }
-        } 
-        // Esc
-        else if (e.key === "Escape") {
-            listElement.classList.add("hidden");
-        }
-    });
-    
-    // Focus out: chiudi la lista quando l'utente clicca altrove
-    document.addEventListener("click", function(e) {
-        if (e.target !== inputElement) {
-            listElement.classList.add("hidden");
-        }
-    });
-    
-    // Funzione per evidenziare l'elemento attivo
-    function addActive(items) {
-        if (!items || items.length === 0) return;
-        
-        // Rimuovi prima la classe active da tutti gli elementi
-        removeActive(items);
-        
-        // Correggi l'indice se necessario
-        if (currentFocus >= items.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = items.length - 1;
-        
-        // Aggiungi la classe active all'elemento corrente
-        items[currentFocus].classList.add("autocomplete-active");
-        
-        // Assicurati che l'elemento sia visibile (scroll)
-        items[currentFocus].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const data = await request.json();
+        return data;
     }
-    
-    // Rimuovi la classe active da tutti gli elementi
-    function removeActive(items) {
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove("autocomplete-active");
-        }
+    catch (error) {
+        console.error("Errore durante la fetch:", error);
     }
 }
 
-function setupDeleteButtons() {
-    // Configura i pulsanti di eliminazione esistenti nella lista temporanea
-    const deleteButtons = document.querySelectorAll("#reg-ore-lista-temp .delete");
-    deleteButtons.forEach(button => {
-        button.addEventListener("click", function() {
-            const listItem = this.closest("li");
-            if (listItem) {
-                listItem.remove();
-            }
-        });
+function addToTemporaryList(data) {
+    const list = document.getElementById("reg-ore-lista-temp");
+    const noContent = document.getElementById("nocontent");
+    const newItem = document.createElement("li");
+    newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
+
+    newItem.innerHTML = `
+        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc} - </p><strong>${data.workingTime} ore</strong></div>
+        <div class="item-actions">
+            <button class="button-icon delete option-button" title="Rimuovi">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
+    `;
+
+    list.appendChild(newItem);
+
+    if(list.childElementCount > 0) {
+        noContent.classList.add("hidden");
+    }
+
+    // Aggiungi event listener per il pulsante di eliminazione
+    const deleteButton = newItem.querySelector(".delete");
+    deleteButton.addEventListener("click", function() {
+        list.removeChild(newItem);
+        if(list.childElementCount > 0) {
+            noContent.classList.add("hidden");
+        }
+        else if (list.childElementCount === 0) 
+        {
+            noContent.classList.remove("hidden");
+        }
     });
 }
