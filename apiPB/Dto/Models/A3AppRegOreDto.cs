@@ -7,6 +7,8 @@ namespace apiPB.Dto.Models
 {
     public class A3AppRegOreDto
     {
+        public int RegOreId { get; set; }
+
         public string? WorkerId { get; set; }
 
         public DateTime? SavedDate { get; set; }
@@ -48,5 +50,12 @@ namespace apiPB.Dto.Models
         public string? Wc { get; set; }
 
         public long? WorkingTime { get; set; }
+
+        public bool Imported { get; set; }
+
+        public string? UserImp { get; set; }
+
+        public DateTime? DataImp { get; set; }
+
     }
 }

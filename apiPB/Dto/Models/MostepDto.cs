@@ -40,5 +40,7 @@ namespace apiPB.Dto.Models
         public double? ResQty { get; set; }
 
         public string Storage { get; set; } = null!;
+
+        public string? Wc { get; set; }
     }
 }

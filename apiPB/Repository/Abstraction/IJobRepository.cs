@@ -64,5 +64,14 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre
         IEnumerable<A3AppRegOre> PostRegOreList(IEnumerable<A3AppRegOreFilter> filterList);
+
+        /// <summary>
+        /// Restituisce le informazioni della tabella A3_app_reg_ore filtrate per in base ai parametri opzionali inseriti
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: FromDateTime, ToDateTime, Job, Operation, Mono</param>
+        /// <returns>
+        /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre
+        /// </returns>
+        IEnumerable<A3AppRegOre> GetAppViewOre(A3AppViewOreRequestFilter filter);
     }
 }

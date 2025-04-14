@@ -38,4 +38,6 @@ public partial class VwApiMostep
     public double? ResQty { get; set; }
 
     public string Storage { get; set; } = null!;
+
+    public string? Wc { get; set; }
 }

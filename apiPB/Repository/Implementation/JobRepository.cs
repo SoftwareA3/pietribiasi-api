@@ -98,6 +98,7 @@ namespace apiPB.Repository.Implementation
 
             foreach (var filter in filterList)
             {
+                // Creazione dell'oggetto da inserire nel database
                 var regOre = new A3AppRegOre
                 {
                     WorkerId = filter.WorkerId,
@@ -112,11 +113,14 @@ namespace apiPB.Repository.Implementation
                     Variant = filter.Variant,
                     ItemDesc = filter.ItemDesc,
                     Moid = filter.Moid,
+                    Mono = filter.Mono,
                     Uom = filter.Uom,
+                    CreationDate = filter.CreationDate,
                     ProductionQty = filter.ProductionQty,
                     ProducedQty = filter.ProducedQty,
                     ResQty = filter.ResQty,
                     Storage = filter.Storage,
+                    Wc = filter.Wc,
                     WorkingTime = filter.WorkingTime
                 };
 
@@ -126,6 +130,34 @@ namespace apiPB.Repository.Implementation
             _context.A3AppRegOres.AddRange(list);
             _context.SaveChanges();
 
+            return list;
+        }
+
+        public IEnumerable<A3AppRegOre> GetAppViewOre(A3AppViewOreRequestFilter filter)
+        {
+            var query = _context.A3AppRegOres.AsNoTracking();
+
+            if(filter.FromDateTime != null && filter.ToDateTime != null)
+            {
+                query = query.Where(m => m.CreationDate >= filter.FromDateTime && m.CreationDate <= filter.ToDateTime);
+            }
+
+            if (filter.Job != null)
+            {
+                query = query.Where(m => m.Job == filter.Job);
+            }
+
+            if (filter.Operation != null)
+            {
+                query = query.Where(m => m.Operation == filter.Operation);
+            }
+
+            if (filter.Mono != null)
+            {
+                query = query.Where(m => m.Mono == filter.Mono);
+            }
+
+            var list = query.ToList();
             return list;
         }
     }

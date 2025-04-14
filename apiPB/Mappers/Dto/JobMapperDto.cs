@@ -36,7 +36,8 @@ namespace apiPB.Mappers.Dto
                 ProductionQty = mostepModel.ProductionQty,
                 ProducedQty = mostepModel.ProducedQty,
                 ResQty = mostepModel.ResQty,
-                Storage = mostepModel.Storage ?? string.Empty
+                Storage = mostepModel.Storage ?? string.Empty,
+                Wc = mostepModel.Wc ?? string.Empty
             };
         }
 
@@ -57,7 +58,9 @@ namespace apiPB.Mappers.Dto
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
                 Uom = mostepsMocomponentModel.Uom ?? string.Empty,
                 ProductionQty = mostepsMocomponentModel.ProductionQty,
-                ProducedQty = mostepsMocomponentModel.ProducedQty
+                ProducedQty = mostepsMocomponentModel.ProducedQty,
+                ResQty = mostepsMocomponentModel.ResQty,
+                Storage = mostepsMocomponentModel.Storage ?? string.Empty
             };
         }
 
@@ -65,6 +68,7 @@ namespace apiPB.Mappers.Dto
         {
             return new A3AppRegOreDto
             {
+                RegOreId = a3AppRegOreModel.RegOreId,
                 WorkerId = a3AppRegOreModel.WorkerId ?? string.Empty,
                 SavedDate = a3AppRegOreModel.SavedDate,
                 Job = a3AppRegOreModel.Job ?? string.Empty,
@@ -84,8 +88,20 @@ namespace apiPB.Mappers.Dto
                 ProducedQty = a3AppRegOreModel.ProducedQty,
                 ResQty = a3AppRegOreModel.ResQty,
                 Storage = a3AppRegOreModel.Storage ?? string.Empty,
-                Wc = a3AppRegOreModel.Wc ?? string.Empty
+                Wc = a3AppRegOreModel.Wc ?? string.Empty,
+                WorkingTime = a3AppRegOreModel.WorkingTime,
+                Imported = a3AppRegOreModel.Imported,
+                UserImp = a3AppRegOreModel.UserImp ?? string.Empty,
+                DataImp = a3AppRegOreModel.DataImp
             };
+        }
+
+        public static IEnumerable<A3AppRegOreDto> ToA3AppRegOreListDto(this IEnumerable<A3AppRegOre> a3AppRegOreModelList)
+        {
+            foreach (var a3AppRegOreModel in a3AppRegOreModelList)
+            {
+                yield return a3AppRegOreModel.ToA3AppRegOreDto();
+            }
         }
 
         // Dto Richieste
@@ -131,6 +147,7 @@ namespace apiPB.Mappers.Dto
                 ProducedQty = a3AppRegOreModel.ProducedQty,
                 ResQty = a3AppRegOreModel.ResQty,
                 Storage = a3AppRegOreModel.Storage ?? string.Empty,
+                Wc = a3AppRegOreModel.Wc ?? string.Empty,
                 WorkingTime = a3AppRegOreModel.WorkingTime
             };
         }

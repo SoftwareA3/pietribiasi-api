@@ -40,9 +40,9 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<A3AppRegOre>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("A3_app_reg_ore");
+            entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D9345C347F33");
+
+            entity.ToTable("A3_app_reg_ore");
 
             entity.Property(e => e.Alternate)
                 .HasMaxLength(8)
@@ -51,6 +51,7 @@ public partial class ApplicationDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("BOM");
             entity.Property(e => e.CreationDate).HasColumnType("datetime");
+            entity.Property(e => e.DataImp).HasColumnType("datetime");
             entity.Property(e => e.Job)
                 .HasMaxLength(10)
                 .IsUnicode(false);
@@ -71,6 +72,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("uom");
+            entity.Property(e => e.UserImp)
+                .HasMaxLength(1)
+                .IsUnicode(false);
             entity.Property(e => e.Variant)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -722,6 +726,10 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Variant)
                 .HasMaxLength(21)
                 .IsUnicode(false);
+            entity.Property(e => e.Wc)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .HasColumnName("WC");
         });
 
         modelBuilder.Entity<VwApiMostepsMocomponent>(entity =>

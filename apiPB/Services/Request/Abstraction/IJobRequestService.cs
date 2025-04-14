@@ -66,5 +66,12 @@ namespace apiPB.Services.Request.Abstraction
         /// <returns>Enumerable di A3AppRegOreDto: restituisce una collezione generica di Dto A3AppRegOreDto</returns>
         IEnumerable<A3AppRegOreDto> PostAppRegOre(IEnumerable<A3AppRegOreRequestDto> requestList);
 
+        /// <summary>
+        /// Ritorna tutte le informazioni salvate nella tabella A3_app_reg_ore, dato A3AppViewOreRequestDto
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>Enumerable di A3AppRegOreDto: restituisce una collezione generica di Dto A3AppViewOreDto</returns>
+        IEnumerable<A3AppRegOreDto> GetAppViewOre(A3AppViewOreRequestDto request);
+
     }
 }

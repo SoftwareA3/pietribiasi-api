@@ -96,5 +96,20 @@ namespace apiPB.Services.Request.Implementation
 
             return resultList;
         }
+
+        public IEnumerable<A3AppRegOreDto> GetAppViewOre(A3AppViewOreRequestDto request)
+        {
+            var filter = _mapper.Map<A3AppViewOreRequestFilter>(request);
+            var result = _jobRepository.GetAppViewOre(filter);
+
+            var resultList = new List<A3AppRegOreDto>();
+            foreach (var item in result)
+            {
+                var dto = item.ToA3AppRegOreDto();
+                resultList.Add(dto);
+            }
+
+            return resultList;
+        }
     }
 }

@@ -174,14 +174,14 @@ namespace apiPB.Controllers
             return Ok(mostepDto);
         }
 
-        [HttpPost("regore")]
+        [HttpPost("reg_ore")]
         /// <summary>
         /// Invia la lista di A3AppRegOre al database
         /// </summary>
         /// <param name="IEnumerable<a3AppRegOreRequestDto>">Oggetto contenente i parametri di ricerca</param>
         /// <response code="201">Crea delle entry nel database</response>
         /// <response code="404">Non trovato</response>
-        IActionResult PostRegOreList([FromBody] IEnumerable<A3AppRegOreRequestDto> a3AppRegOreRequestDto)
+        public IActionResult PostRegOreList([FromBody] IEnumerable<A3AppRegOreRequestDto> a3AppRegOreRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
@@ -198,6 +198,31 @@ namespace apiPB.Controllers
             _logService.AppendMessageAndListToLog(requestPath, createdResult.StatusCode, "Created", a3AppRegOreDto);
 
             return CreatedAtAction(nameof(PostRegOreList), a3AppRegOreDto);
+        }
+
+        [HttpGet("view_ore")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista A3_app_reg_ore filtrate in base ai parametri del Dto di richiesta
+        /// </summary>
+        /// <param name="A3AppViewOreRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista A3_app_reg_ore filtrate</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetA3AppRegOre([FromBody] A3AppViewOreRequestDto a3AppViewOreRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var a3AppRegOreDto = _jobRequestService.GetAppViewOre(a3AppViewOreRequestDto).ToList();
+
+            if (a3AppRegOreDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto);
+
+            return Ok(a3AppRegOreDto);
         }
     }    
 }

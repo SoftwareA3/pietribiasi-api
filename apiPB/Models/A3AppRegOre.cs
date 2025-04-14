@@ -5,6 +5,8 @@ namespace apiPB.Models;
 
 public partial class A3AppRegOre
 {
+    public int RegOreId { get; set; }
+
     public string? WorkerId { get; set; }
 
     public DateTime? SavedDate { get; set; }
@@ -46,4 +48,10 @@ public partial class A3AppRegOre
     public string? Wc { get; set; }
 
     public long? WorkingTime { get; set; }
+
+    public bool Imported { get; set; }
+
+    public string? UserImp { get; set; }
+
+    public DateTime? DataImp { get; set; }
 }
