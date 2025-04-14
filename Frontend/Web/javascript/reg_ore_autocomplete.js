@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 description: job.description,
                 display: `${job.job} - ${job.description}`
             }));
-
         console.log("Lista di lavori:", jobList);
         setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
     } catch (error) {
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener per il cambio di commessa
     commessaInput.addEventListener("change", async function() {
-        // Resetta i campi dipendenti
+        // Resetta i campi dipendenti Ordine di Lavoro e Lavorazione
         odlInput.value = "";
         lavorazioneInput.value = "";
         odpList = [];
@@ -63,16 +62,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
     
+        // Resetta il campo lavorazione se i dati non sono validi
         if (!selectedCommessa || !selectedOdp) {
-            lavorazioneInput.value = ""; // Resetta solo se i dati non sono validi
+            lavorazioneInput.value = ""; 
             lavorazioneList = [];
             return;
         }
     
         // Carica i dati della lavorazione solo se necessario
+        // Serve in caso di selezione dalla tabella in overlay
         await loadLavorazioneData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate);
     });
 
+    // Event listener per il cambio di lavorazione
     lavorazioneInput.addEventListener("change", async function() {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
@@ -113,44 +115,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     operDesc: item.operDesc || ''
                 })));
             }
-            
-            // Obsoleto: carica troppi dati inutili
-            // // Prepara i dati per la ricerca dettagliata
-            // for (const job of jobSearchResults) {
-            //     try {
-            //         // Ottieni ODP per questo job
-            //         const odpResults = await fetchJobMostep(job.job);
-                    
-            //         // Per ogni ODP ottieni le operazioni
-            //         for (const odp of odpResults) {
-            //             if (odp && odp.mono && odp.creationDate) {
-            //                 try {
-            //                     const operazioni = await fetchJobsByOdp(job.job, odp.mono, odp.creationDate);
-                                
-            //                     // Aggiungi ogni operazione ai risultati
-            //                     operazioni.forEach(op => {
-            //                         filteredResults.push({
-            //                             job: job.job,
-            //                             mono: odp.mono,
-            //                             creationDate: odp.creationDate,
-            //                             um: op.um || '',
-            //                             resQty: op.resQty || '',
-            //                             bom: op.bom || '',
-            //                             itemDesc: op.itemDesc || '',
-            //                             operation: op.operation || '',
-            //                             operDesc: op.operDesc || ''
-            //                         });
-            //                     });
-            //                 } catch (error) {
-            //                     console.error("Errore nel recupero delle operazioni:", error);
-            //                 }
-            //             }
-            //         }
-            //     } catch (error) {
-            //         console.error("Errore nel recupero degli ODP:", error);
-            //     }
-            // }
-
         } else {
             // Se il campo commessa è vuoto, mostra tutti i lavori disponibili con struttura semplificata
             filteredResults = jobList.map(job => ({
@@ -316,9 +280,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Chiama la rimozione di tutti gli elementi dalla lista temporanea
     saveButton.addEventListener("click", async function() {
         if (dataResultList.length > 0) {
+            console.log("Dati da salvare:", dataResultList);
             // Recupera il workerid dai cookies
-            const cookie = getCookie("userInfo");
-            const workerId = cookie.workerId;
+            const cookie = JSON.parse(getCookie("userInfo"));
+            console.log(typeof(cookie));
+            console.log("Cookie:", cookie);
+            const workerId = cookie.workerId.toString();
             console.log("Worker ID:", workerId);
             if (!workerId) {
                 console.error("Worker ID non trovato nei cookie.");
@@ -328,13 +295,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             dataResultList.forEach(item => {
                 item.workerId = workerId;
             });
+            console.log("Lista con Worker ID:", dataResultList);
+            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
+            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
             try {
-                const response = await fetchWithAuth("http://localhost:5245/api/job/regore", {
+                const response = await fetchWithAuth("http://localhost:5245/api/job/reg_ore", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(dataResultList)
+                    body: JSON.stringify(dataResultList),
                 });
                 if (response.ok) {
                     const result = await response.json();
@@ -345,10 +315,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                         list.removeChild(list.firstChild);
                     }
                     dataResultList = []; // Resetta la lista dei risultati
-                    commessaInput.value ??  "";
-                    odlInput.value ?? "";
-                    lavorazioneInput.value ?? "";
-                    oreInput.value ?? "";
+                    commessaInput.value =  "";
+                    odlInput.value = "";
+                    lavorazioneInput.value = "";
+                    oreInput.value = "";
                     noContent.classList.remove("hidden");
                 } else {
                     console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
@@ -397,11 +367,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     producedQty: result.producedQty,
                     resQty: result.resQty,
                     storage: result.storage,
-                    workingTime: ore
+                    workingTime: ore,
+                    wc: result.wc,
                 }
                 dataResultList.push(data);
                 console.log("Lista di risultati:", dataResultList);
-                addToTemporaryList(data);
+                addToTemporaryList(data, dataResultList);
                 // Reset campo ore
                 commessaInput.value = "";
                 odlInput.value = "";
@@ -416,6 +387,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     // Funzione per trovare l'elemento selezionato in base al valore dell'input
+    // Si può esportare
     function findSelectedItem(inputValue, list) {
         if (!inputValue || !list || list.length === 0) return null;
         
@@ -481,6 +453,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 // Funzione per l'autocompletamento
+// Si può esportare
 function setupAutocomplete(inputElement, listElement, list) {
     let currentFocus = -1;
 
@@ -736,14 +709,15 @@ async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     }
 }
 
-function addToTemporaryList(data) {
+// Si può esportare a patto di mantenere gli id invariati nel file html
+function addToTemporaryList(data, dataResultList) {
     const list = document.getElementById("reg-ore-lista-temp");
     const noContent = document.getElementById("nocontent");
     const newItem = document.createElement("li");
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc} - </p><strong>${data.workingTime} ore</strong></div>
+        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc}</p><strong>${data.workingTime} ore</strong></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>
@@ -760,6 +734,7 @@ function addToTemporaryList(data) {
     // Aggiungi event listener per il pulsante di eliminazione
     const deleteButton = newItem.querySelector(".delete");
     deleteButton.addEventListener("click", function() {
+        dataResultList.splice(dataResultList.indexOf(data), 1);
         list.removeChild(newItem);
         if(list.childElementCount > 0) {
             noContent.classList.add("hidden");

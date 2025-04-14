@@ -1,4 +1,3 @@
-/* Stile per l'overlay di ricerca */
 .search-overlay {
     position: fixed;
     top: 0;
@@ -24,9 +23,13 @@
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    overflow-y: auto;
     padding: 20px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    max-width: 90vw;
+    overflow: hidden;
 }
 
 .search-results-header {
@@ -56,6 +59,11 @@
     color: #333;
 }
 
+#search-results-content {
+    overflow: auto;
+    flex: 1;
+}
+
 .search-results-table {
     width: 100%;
     border-collapse: collapse;
@@ -72,6 +80,9 @@
     background-color: var(--light-bg-color, #f5f7fa);
     font-weight: 600;
     color: var(--primary-color, #2c3e50);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .search-results-table tr:hover {
@@ -104,12 +115,27 @@
 @media (max-width: 768px) {
     .search-results {
         width: 95%;
+        height: 80vh;
         padding: 15px;
+        max-width: 95vw;
+        max-height: 80vh;
+    }
+    
+    #search-results-content {
+        max-height: calc(80vh - 120px);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .search-results-table th,
     .search-results-table td {
         padding: 8px 5px;
-        font-size: 0.9rem;
+        font-size: 1rem;
+        white-space: nowrap;
+        height: 3rem;
+    }
+    
+    .search-results-header h2 {
+        font-size: 1.2rem;
     }
 }
