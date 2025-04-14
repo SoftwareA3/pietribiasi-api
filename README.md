@@ -8,6 +8,17 @@ Inserita questa password, viene inoltrata una richiesta all'API per il recupero 
 Queste due credenziali verranno poi validate attraverso una ricerca di corrispondenza nel database e utilizzate come username(Id) e password(password) per la validazione in Basic Authentication. Queste variabili vengono salvate nella parte FrontEnd in localStorage e rimosse una volta effettuato il Logout. 
 Questo viene fatto per permettere l'inoltro di altre richieste all'API che richiedono l'autorizzazione tramite Basic Authentication. 
 
+## Registrazione Ore Commessa
+La pagina per la registrazione delle ore di una commessa si presenta come una serie di campi: 
+- Al click sul primo campo, vengono rese visibili in un elenco sotto l’input, tutte le commesse disponibili. Inserendo parte del codice della commessa, vengono filtrate quelle disponibili nell’elenco in modo da restringere il campo.
+- Selezionata la commessa, si può inserire l’**Ordine di Lavoro** nella stessa maniera e di conseguenza anche la **Lavorazione**.
+- Ogni campo richiede che il precedente sia inserito o selezionato correttamente. Se viene modificato uno dei campi precedenti, quelli successivi, essendone dipendenti, vengono resettati.
+- Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
+- Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”** vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
+- Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
+- Ogni informazione salvata nella lista temporanea, è eliminabile tramite un’icona apposita. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_reg_ore**.
+
 # Backend
 
 ## Controllers
@@ -42,7 +53,7 @@ Filters è la directory che contiene i filtri, ossia classi che simulano i file 
 Models è una directory che contiene i modelli generati automaticamente da EntityFramework. Ogni proprietà del modello rappresenta una colonna della tabella. I modelli sono fissi e per tanto vengono usati solo per essere letti dalla logica dell'applicazione quando necessario.
 
 ## Repository
-Il pattern Repository rappresenta un pattern che recupera le informazioni dal database (Gli si passano dei Filters per le query ad esempio) e si occupa di eseguire la logica (chiamate a altri metodi, query ecc...) per ritornare specifiche informazioni dal database (Models).
+Il pattern Repository rappresenta un pattern che si occupa delle interazioni tra l'API e il database. In questo senso, si occupa di reucperare o inserire inserire infomrazioni nel database attraverso, ad esempio, creazione di oggetti da salvare nel database (crea modelli dalle informazioni ricevute in JSON), recupero di informazioni dal database (esecuzione di query tramite i filters passati) o occupandosi della logica (chiamate ad altri metodi, invocazione di stored procedure ecc...).
 
 ### Dipendenze
 - Filters: di solito ricevono dei filters come parametri per eseguire query su dati specifici
@@ -80,6 +91,19 @@ Nel controller, alla richiesta di un POST all'API, viene richiesto all'utente da
 - Viene fatto un controllo di esistenza sulla lista o l'elemento ritornato;
 - Nel caso di "null" o "List.Empty()", viene ritornato un messaggio "NotFound()" all'utente e viene inserito l'errore nel file di log API.log;
 - In caso di successo, verrà ritornato un messaggio "Ok()" o "Created()" che ritorerà le informazioni richieste, lo stato di successo e il rispettivo messaggio. Verrà prima aggiunta la richiesta sul file API.log con le informazioni restituite all'utente.
+
+## Aggiunta di nuove richieste per il Back End:
+Per aggiungere una nuova richiesta al Back End, io farei così:
+- Aggiornamento delle tabelle del database interessate dalla richiesta tramite lo scaffolding, in modo da aggiornare il contesto del database nell'applicazione e i modelli
+- Sistemazione di eventuali dipendenze dalla modifica del contesto del database (ad esempio se la tabella viene aggiornata con nuovi campi o campi rimossi, che richiedono probabilmente modifiche ad altre richieste, mappers, repository ecc...)
+- Creazione del Dto del modello in modo da separare il modello dalle informazioni richieste e/o ritornate 
+- Creazione di un file Dto di richiesta
+- Creazione del rispettivo filtro
+- Creazione dei mappers (dto - filtro; modello - dto, viceversa, ecc...)
+- Creazione dei metodi nei repository
+- Creazione dei metodi nei servizi
+- Creazione della richiesta nel controller
+- Eventuali modifiche in Program.cs (ad esempio se viene creato un nuovo file Mapper, Controller ecc...), cioè files che richiedono configurazioni in Program.cs
 
 ## Comandi
 
