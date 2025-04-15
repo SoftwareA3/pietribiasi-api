@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     throw new Error("ID lavoratore non trovato nella risposta");
                 }
                 
-                console.log("WorkerId ottenuto:", workerId);
+                // console.log("WorkerId ottenuto:", workerId);
                 
                 // Pulizia preventiva dei cookie
                 deleteCookie("basicAuthCredentials");

@@ -6,7 +6,7 @@
 export function setupAutocomplete(inputElement, listElement, list) {
     let currentFocus = -1;
 
-    // Gestisci il focus sull'input
+    // Gestisce il focus sull'input
     inputElement.addEventListener("focus", function() {
         showAllItems();
     });
@@ -15,7 +15,7 @@ export function setupAutocomplete(inputElement, listElement, list) {
     inputElement.addEventListener("input", function() {
         const value = this.value.toString().toUpperCase();
         
-        // Chiudi la lista esistente
+        // Chiude la lista esistente
         listElement.innerHTML = "";
         
         if (!value) {
@@ -32,7 +32,7 @@ export function setupAutocomplete(inputElement, listElement, list) {
         currentFocus = -1;
         listElement.classList.remove("hidden");
 
-        // Aggiungi gli elementi alla lista
+        // Aggiunge gli elementi alla lista
         matchingItems.forEach((item) => {
             const itemDiv = document.createElement("div");
             const itemStr = item.display.toString();
@@ -120,7 +120,7 @@ export function setupAutocomplete(inputElement, listElement, list) {
         }
     });
 
-    // Focus out: chiudi la lista quando l'utente clicca altrove
+    // Focus out: chiude la lista quando l'utente clicca altrove
     document.addEventListener("click", function(e) {
         if (e.target !== inputElement) {
             closeAutocompleteList();
@@ -134,25 +134,25 @@ export function setupAutocomplete(inputElement, listElement, list) {
         // Rimuovi prima la classe active da tutti gli elementi
         removeActive(items);
 
-        // Correggi l'indice se necessario
+        // Corregge l'indice se necessario
         if (currentFocus >= items.length) currentFocus = 0;
         if (currentFocus < 0) currentFocus = items.length - 1;
 
-        // Aggiungi la classe active all'elemento corrente
+        // Aggiunge la classe active all'elemento corrente
         items[currentFocus].classList.add("autocomplete-active");
 
-        // Assicurati che l'elemento sia visibile (scroll)
+        // Assicura che l'elemento sia visibile (scroll)
         items[currentFocus].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // Rimuovi la classe active da tutti gli elementi
+    // Rimuove la classe active da tutti gli elementi
     function removeActive(items) {
         for (let i = 0; i < items.length; i++) {
             items[i].classList.remove("autocomplete-active");
         }
     }
 
-    // Chiudi la lista di autocompletamento
+    // Chiude la lista di autocompletamento
     function closeAutocompleteList() {
         listElement.classList.add("hidden");
     }

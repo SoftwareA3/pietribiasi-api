@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 description: job.description,
                 display: `${job.job} - ${job.description}`
             }));
-        console.log("Lista di lavori:", jobList);
+        // console.log("Lista di lavori:", jobList);
         setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
     } catch (error) {
         console.error("Errore nel caricamento iniziale dei lavori:", error);
@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     const odpEvent = new Event('change', { bubbles: true });
                     odlInput.dispatchEvent(odpEvent);
-                    console.log("Evento change per ODP dispatchato");
+                    console.log("Evento change per ODP dispatched");
                 }, 300); // Piccolo ritardo per permettere al primo evento di completarsi
             }
 
@@ -189,19 +189,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     const lavorazioneEvent = new Event('change', { bubbles: true });
                     lavorazioneInput.dispatchEvent(lavorazioneEvent);
-                    console.log("Evento change per lavorazione dispatchato");
+                    console.log("Evento change per lavorazione dispatched");
                 }, 600);
             }
 
 
-            // Chiudi l'overlay
+            // Chiude l'overlay
             searchOverlay.classList.remove("active");
-            
-            // Trigger eventi change per caricare dati correlati
-            
-            
-            // Se abbiamo un valore in odlInput, triggeriamo anche l'evento change
-            
             
             // Azzera la selezione alla fine
             selectedSearchRow = null;
@@ -227,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const row = searchResultsBody.insertRow();
             row.dataset.index = index;
             
-            // Aggiungi celle con i dati
+            // Aggiunge celle con i dati
             const cellJob = row.insertCell();
             cellJob.textContent = result.job;
             
@@ -281,7 +275,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Chiama la rimozione di tutti gli elementi dalla lista temporanea
     saveButton.addEventListener("click", async function() {
         if (dataResultList.length > 0) {
-            console.log("Dati da salvare:", dataResultList);
+            // console.log("Dati da salvare:", dataResultList);
             // Recupera il workerid dai cookies
             const cookie = JSON.parse(getCookie("userInfo"));
             console.log(typeof(cookie));
@@ -292,14 +286,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.error("Worker ID non trovato nei cookie.");
                 return;
             }
-            // Aggiungi il workerId a ogni oggetto nella lista
+            // Aggiunge il workerId a ogni oggetto nella lista
             dataResultList.forEach(item => {
                 item.workerId = workerId;
-                item.workingTime = (item.workingTime * 3600); // Converti ore in secondi
+                item.workingTime = (item.workingTime * 3600); // Converte ore in secondi
             });
-            console.log("Lista con Worker ID:", dataResultList);
-            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
-            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
+            // console.log("Lista con Worker ID:", dataResultList);
+            // console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
+            // console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
             try {
                 const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/post_reg_ore", {
                     method: "POST",
@@ -311,7 +305,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (response.ok) {
                     const result = await response.json();
                     console.log("Dati salvati con successo:", result);
-                    // Pulisci la lista temporanea
+                    // Pulisce la lista temporanea
                     const list = document.getElementById("reg-ore-lista-temp");
                     while (list.firstChild) {
                         list.removeChild(list.firstChild);
@@ -349,7 +343,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
         if (selectedCommessa && selectedOdp && selectedLavorazione && ore) {
             const result = await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
-            console.log("Risultato di loadAllData:", result);
+            // console.log("Risultato di loadAllData:", result);
             if (result) {
                 var data = {
                     job: result.job,
@@ -373,7 +367,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     wc: result.wc,
                 }
                 dataResultList.push(data);
-                console.log("Lista di risultati:", dataResultList);
+                // console.log("Lista di risultati:", dataResultList);
                 addToTemporaryList(data, dataResultList);
                 // Reset campo ore
                 commessaInput.value = "";
@@ -443,9 +437,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         try {
             const allDataResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
-            console.log("Lista di tutti i dati:", allDataResult);
+            // console.log("Lista di tutti i dati:", allDataResult);
     
-            // Restituisci il primo elemento o un oggetto vuoto
+            // Restituisce il primo elemento o un oggetto vuoto
             return allDataResult.length > 0 ? allDataResult[0] : null;
         } catch (error) {
             console.error("Errore nel caricamento dei dati:", error);
@@ -576,7 +570,7 @@ function addToTemporaryList(data, dataResultList) {
         noContent.classList.add("hidden");
     }
 
-    // Aggiungi event listener per il pulsante di eliminazione
+    // Aggiunge event listener per il pulsante di eliminazione
     const deleteButton = newItem.querySelector(".delete");
     deleteButton.addEventListener("click", function() {
         dataResultList.splice(dataResultList.indexOf(data), 1);

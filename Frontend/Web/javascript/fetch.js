@@ -11,7 +11,7 @@ export async function fetchWithAuth(url, options = {}) {
         throw new Error("Credenziali non presenti. Effettua il login prima di chiamare l'API.");
     }
 
-    // Create the headers object
+    // Crea gli headers per l'autenticazione
     const headers = {
         "Authorization": "Basic " + credentials,
         ...options.headers
@@ -23,7 +23,7 @@ export async function fetchWithAuth(url, options = {}) {
     try {
         const response = await fetch(url, {
             ...options,
-            headers: headers, // Pass the headers object directly
+            headers: headers, 
             mode: "cors"
         });
 

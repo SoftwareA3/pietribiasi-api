@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             const filteredObject = createFilterObject();
             console.log("Filtro applicato:", filteredObject);
             
-            // Esegui la chiamata API con i filtri
+            // Esegue la chiamata API con i filtri
             const results = await fetchViewOre(filteredObject);
             console.log("Risultati ricevuti:", results);
             
@@ -93,7 +93,7 @@ function createFilterObject() {
     if (filterDataDa.value) {
         const fromDate = new Date(filterDataDa.value);
         fromDate.setHours(0, 0, 0, 0); // Imposta l'ora a mezzanotte
-        filteredObject.fromDateTime = fromDate.toISOString().slice(0, -1); // Rimuove la "Z"
+        filteredObject.fromDateTime = fromDate.toISOString().slice(0, -1); // Rimuove la "Z" che crea problemi con le chiamate all'API
     }
     
     if (filterDataA.value) {
@@ -117,11 +117,11 @@ async function refreshAutocompleteData() {
     const lavorazioneAutocompleteList = document.getElementById("filter-ore-lavorazione-autocomplete-list");
     const odpAutocompleteList = document.getElementById("filter-ore-odp-autocomplete-list");
     
-    // Ottieni i dati per l'autocomplete
+    // Ottiene i dati per l'autocomplete
     const filteredObject = createFilterObject();
     const tempData = await fetchViewOre(filteredObject);
     
-    // Estrai i valori unici per ciascuna lista
+    // Estrae i valori unici per ciascuna lista
     commessaList = extractUniqueValues(tempData, 'job');
     lavorazioneList = extractUniqueValues(tempData, 'operation');
     odpList = extractUniqueValues(tempData, 'mono');
@@ -181,7 +181,7 @@ async function fetchAllViewOre() {
 }
 
 async function fetchViewOre(filteredObject) {
-    console.log("Chiamata API con filtri:", filteredObject);
+    // console.log("Chiamata API con filtri:", filteredObject);
 
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/reg_ore/view_ore", {
@@ -209,7 +209,7 @@ function populateOreList(data) {
     const oreList = document.getElementById("ore-list");
     const noContent = document.getElementById("nocontent");
     
-    // Pulisci la lista attuale
+    // Pulisce la lista attuale
     oreList.innerHTML = "";
     
     // Controlla se la lista è vuota
@@ -226,7 +226,7 @@ function populateOreList(data) {
     // Popola la lista con gli elementi
     data.forEach(item => {
         const li = document.createElement("li");
-        li.dataset.id = item.regOreId; // Aggiungiamo un data attribute per identificare l'elemento
+        li.dataset.id = item.regOreId; // Aggiunge un data attribute per identificare l'elemento
         
         // Formatta la data in un formato leggibile
         const savedDate = new Date(item.savedDate);
@@ -245,7 +245,7 @@ function populateOreList(data) {
 
         const convertedTime = (item.workingTime / 3600);
         
-        // Aggiungi le informazioni dell'elemento
+        // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
             <strong>Comm:</strong> ${item.job} | 
             <strong>Lav:</strong> ${item.operation} | 
@@ -256,7 +256,7 @@ function populateOreList(data) {
         
         li.appendChild(itemContent);
         
-        // Aggiungi i pulsanti di azione solo se imported è 0
+        // Aggiunge i pulsanti di azione solo se imported è 0
         if (!isImported) {
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
@@ -336,7 +336,7 @@ function editOre(item) {
     const editButton = document.getElementById(`edit-button-${item.regOreId}`);
     const editInput = document.getElementById(`edit-ore-input-${item.regOreId}`);
     
-    // Nascondi il pulsante di modifica
+    // Nasconde il pulsante di modifica
     if (editButton) editButton.classList.add("hidden");
     
     // Mostra il container di modifica
@@ -353,7 +353,7 @@ function editOre(item) {
 
 // Funzione per salvare le modifiche alle ore
 async function saveOreEdit(item) {
-    // Ottieni il nuovo valore dall'input
+    // Ottiene il nuovo valore dall'input
     const editInput = document.getElementById(`edit-ore-input-${item.regOreId}`);
     const newWorkingTime = parseFloat(editInput.value);
     
@@ -362,7 +362,7 @@ async function saveOreEdit(item) {
         alert("Inserisci un valore numerico positivo.");
         return;
     }
-    
+
     // Prepara i dati per l'aggiornamento
     const updateData = {
         regOreId: item.regOreId,
@@ -383,7 +383,7 @@ async function saveOreEdit(item) {
         }
         
         // Aggiorna l'elemento nella lista
-        item.workingTime = newWorkingTime;
+        item.workingTime = newWorkingTime * 3600; // Converti in secondi
         
         // Aggiorna la visualizzazione
         const oreValueSpan = document.getElementById(`ore-value-${item.regOreId}`);
@@ -413,7 +413,7 @@ function cancelOreEdit(item) {
     // Mostra il pulsante di modifica
     if (editButton) editButton.classList.remove("hidden");
     
-    // Nascondi il container di modifica
+    // Nasconde il container di modifica
     if (editContainer) editContainer.classList.add("hidden");
 }
 
@@ -422,7 +422,7 @@ async function deleteOre(item) {
     const deleteData = {
         regOreId: item.regOreId
     }
-    // Chiedi conferma all'utente
+    // Chiede conferma all'utente
     if (!confirm("Sei sicuro di voler eliminare questa registrazione?")) {
         return;
     }
@@ -441,7 +441,7 @@ async function deleteOre(item) {
             throw new Error("Errore durante l'eliminazione della registrazione");
         }
         
-        // Rimuovi l'elemento dalla lista filtrata
+        // Rimuove l'elemento dalla lista filtrata
         filteredList = filteredList.filter(ore => ore.regOreId !== item.regOreId);
         
         // Aggiorna la vista

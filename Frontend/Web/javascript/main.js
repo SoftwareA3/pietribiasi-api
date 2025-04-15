@@ -1,16 +1,16 @@
 import { deleteCookie, getCookie } from "./cookies.js";
 
 document.addEventListener("DOMContentLoaded", async function() {
-    // Check if user is not authenticated
+    // Controlla se l'utente è autenticato
     if (sessionStorage.getItem("login") !== "true") {
-        // Only redirect if we're not already on the login page
+        // Reindirizza se l'utente non è autenticato e non è già nella pagina di login
         if (!window.location.href.includes("login.html")) {
             window.location.href = "../html/login.html";
             return;
         }
     }
     
-    // Continue with normal page loading if authenticated
+    // Carica l'header
     await fetch("../html/header.html")
         .then(response => response.text())
         .then(data => {
@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     await loadWorkerInfo();
 });
 
+// Setup del pulsante di logout con l'eliminazione dei cookie
 function setupLogoutButton() {
     const logoutButton = document.getElementById("logout");
     if (logoutButton) {
@@ -37,6 +38,7 @@ function setupLogoutButton() {
     }
 }
 
+// Funzione che carica le inofrmazioni del lavoratore che si è autenticato e popola l'header
 async function loadWorkerInfo() {
     const workerInformations = document.getElementById("current-user");
     if (!workerInformations) {
@@ -46,7 +48,7 @@ async function loadWorkerInfo() {
     
     // Verifica se ci sono credenziali salvate
     const encodedCredentials = getCookie("basicAuthCredentials");
-    console.log("Credenziali salvate:", encodedCredentials);
+    //console.log("Credenziali salvate:", encodedCredentials);
     if (!encodedCredentials) {
         displayError(workerInformations, "Credenziali non trovate");
         return;
@@ -72,6 +74,7 @@ async function loadWorkerInfo() {
     }
 }
 
+// Popola l'header con le informazioni del lavoratore
 function displayWorkerInfo(container, cookie) {
     try {
         cookie = JSON.parse(cookie);
@@ -91,6 +94,7 @@ function displayError(container, message) {
     container.innerHTML = `<p class="error">${message}</p>`;
 }
 
+// Funzione per formattare la data corrente
 function displayCurrentDate() {
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
