@@ -46,6 +46,7 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 - **ODP**: l'ordine di produzione
 - **Ore**: le ore registrate
 - **Data**: la data nella quale sono state salvate le ore
+
 È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata dal gestionale MAGO (rosso) o se è stata registrata utilizzando l'applicazione (verde).
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
