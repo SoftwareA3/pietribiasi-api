@@ -1,5 +1,32 @@
 # Pietribiasi API
 
+# Indice 
+1. [FrontEnd](#frontend)
+   - [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
+   - [Registrazione Ore Commessa](#registrazione-ore-commessa)
+   - [Visualizza Ore Registrate](#visualizza-ore-registrate)
+2. [Backend](#backend)
+   - [Divisione](#divisione)
+   - [Controllers](#controllers)
+   - [Authentication](#authentication)
+   - [Data](#data)
+   - [Dto](#dto)
+     - [Dto Models](#dto-models)
+     - [Dto Request](#dto-request)
+   - [Filters](#filters)
+   - [Models](#models)
+   - [Repository](#repository)
+   - [Services](#services)
+   - [Sequenza di esecuzione](#sequenza-di-esecuzione)
+     - [Richieste GET](#richieste-get)
+     - [Richieste POST](#richieste-post)
+     - [Richieste DELETE](#richieste-delete)
+     - [Richieste PUT](#richieste-put)
+3. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
+4. [Comandi](#comandi)
+   - [Avvio API](#avvio-api)
+   - [Scaffolding](#scaffolding)
+
 # FrontEnd
 
 ## Accesso e validazione delle credenziali
