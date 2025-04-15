@@ -45,7 +45,7 @@ namespace apiPB.Controllers
             return Ok(mostepDto);
         }
 
-        [HttpPost("mostep/odp")]
+        [HttpPost("odp")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mostep
         /// </summary>
@@ -70,7 +70,7 @@ namespace apiPB.Controllers
             return Ok(mostepDto);
         }
 
-        [HttpPost("mostep/lavorazioni")]
+        [HttpPost("lavorazioni")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mostep
         /// /// </summary>
