@@ -61,44 +61,5 @@ namespace apiPB.Mappers.Dto
                 Password = worker.Password ?? string.Empty
             };
         }
-
-        public static MostepOdpRequestDto ToMostepOdpRequestDto(this VwApiMostep mostepOdpModel)
-        {
-            return new MostepOdpRequestDto
-            {
-                Job = mostepOdpModel.Job ?? string.Empty,
-                Mono = mostepOdpModel.Mono ?? string.Empty,
-                CreationDate = mostepOdpModel.CreationDate
-            };
-        }
-
-        public static MostepLavorazioniRequestDto ToMostepLavorazioniRequestDto(this VwApiMostep mostepLavorazioniModel)
-        {
-            return new MostepLavorazioniRequestDto
-            {
-                Job = mostepLavorazioniModel.Job ?? string.Empty,
-                Mono = mostepLavorazioniModel.Mono ?? string.Empty,
-                CreationDate = mostepLavorazioniModel.CreationDate,
-                Operation = mostepLavorazioniModel.Operation ?? string.Empty
-            };
-        }
-
-        // Metodo che mappa il Dto in Model
-        // public static RmWorkersField ToWorkersFieldFromCreateDto(this RmWorkersFieldDto workersFieldRequestDto)
-        // {
-        //     return new RmWorkersField
-        //     {
-        //         WorkerId = workersFieldRequestDto.WorkerId,
-        //         Line = workersFieldRequestDto.Line,
-        //         FieldName = workersFieldRequestDto.FieldName,
-        //         FieldValue = workersFieldRequestDto.FieldValue,
-        //         Notes = workersFieldRequestDto.Notes,
-        //         HideOnLayout = workersFieldRequestDto.HideOnLayout,
-        //         Tbcreated = workersFieldRequestDto.Tbcreated,
-        //         Tbmodified = workersFieldRequestDto.Tbmodified,
-        //         TbcreatedId = workersFieldRequestDto.TbcreatedId,
-        //         TbmodifiedId = workersFieldRequestDto.TbmodifiedId
-        //     };
-        // }
     }
 }

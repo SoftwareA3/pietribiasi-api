@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
-    public class A3AppRegOreDto
+    public class RegOreDto
     {
         public int RegOreId { get; set; }
 

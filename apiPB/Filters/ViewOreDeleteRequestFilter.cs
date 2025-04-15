@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Dto.Request
+namespace apiPB.Filters
 {
-    public class A3AppViewOrePutRequestDto
+    public class ViewOreDeleteRequestFilter
     {
         public int RegOreId { get; set; }
-        public long? WorkingTime { get; set; }
     }
 }

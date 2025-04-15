@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Filters
+namespace apiPB.Dto.Request
 {
-    public class A3AppViewOreRequestFilter
+    public class ViewOreRequestDto
     {
         public DateTime? FromDateTime { get; set; }
         public DateTime? ToDateTime { get; set; }

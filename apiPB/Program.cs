@@ -32,11 +32,17 @@ var builder = WebApplication.CreateBuilder(args);
     // Repositories
     builder.Services.AddScoped<IWorkerRepository, WorkerRepository>();
     builder.Services.AddScoped<IJobRepository, JobRepository>();
+    builder.Services.AddScoped<IMoStepRepository, MoStepRepository>();
+    builder.Services.AddScoped<IMostepsMocomponentRepository, MostepsMocomponentRepository>();
+    builder.Services.AddScoped<IRegOreRepository, RegOreRepository>();
     
     // Services
     builder.Services.AddScoped<LogService>();
     builder.Services.AddScoped<IWorkersRequestService, WorkersRequestService>();
     builder.Services.AddScoped<IJobRequestService, JobRequestService>();
+    builder.Services.AddScoped<IMoStepRequestService, MoStepRequestService>();
+    builder.Services.AddScoped<IMostepsMocomponentRequestService, MostepsMocomponentRequestService>();
+    builder.Services.AddScoped<IRegOreRequestService, RegOreRequestService>();
 
     builder.Services.AddCors(options =>
     {
@@ -50,8 +56,11 @@ var builder = WebApplication.CreateBuilder(args);
     
     
     // AutoMappers
-    builder.Services.AddAutoMapper(typeof(WorkerFiltersMapper));
-    builder.Services.AddAutoMapper(typeof(JobFiltersMapper));
+    builder.Services.AddAutoMapper(typeof(WorkerMapperFilters));
+    builder.Services.AddAutoMapper(typeof(JobMapperFilters));
+    builder.Services.AddAutoMapper(typeof(MoStepMapperFilters));
+    builder.Services.AddAutoMapper(typeof(MostepsMocomponentMapperFilters));
+    builder.Services.AddAutoMapper(typeof(RegOreMapperFilters));
 }
 
 var app = builder.Build();
