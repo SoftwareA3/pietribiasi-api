@@ -13,13 +13,48 @@ La pagina per la registrazione delle ore di una commessa si presenta come una se
 - Al click sul primo campo, vengono rese visibili in un elenco sotto l’input, tutte le commesse disponibili. Inserendo parte del codice della commessa, vengono filtrate quelle disponibili nell’elenco in modo da restringere il campo.
 - Selezionata la commessa, si può inserire l’**Ordine di Lavoro** nella stessa maniera e di conseguenza anche la **Lavorazione**.
 - Ogni campo richiede che il precedente sia inserito o selezionato correttamente. Se viene modificato uno dei campi precedenti, quelli successivi, essendone dipendenti, vengono resettati.
-- Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
-- Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”** vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
+- Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**, indicato anche tramite l'icona <i class="fa-solid fa-magnifying-glass"></i>. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
+- Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona <i class="fa-solid fa-plus"></i>,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
-- Ogni informazione salvata nella lista temporanea, è eliminabile tramite un’icona apposita. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_reg_ore**.
+- Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona <i class="fa-solid fa-trash"></i>. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona <i class="fa-solid fa-plus"></i>. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_reg_ore**.
+In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona <i class="fa-solid fa-xmark"></i>. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
+
+## Visualizza Ore Registrate
+La pagina per la visualizzazione delle ore registrate, si presenta con una serie di campi:
+- **Data Da**: rappresenta il filtro per la data dalla quale cercare le ore registrate. L'ora del campo parte dalla mezzanotte del giorno indicato.
+- **Data A**: rappresenta il filtro per la data fino alla quale cercare le ore registrate. L'ora del campo arriva fino alle 23 e 59 del giorno indicato.
+- **Commessa**: rappresenta il filtro per il codice della commessa con il quale cercare le ore registrate.
+- **Lavorazione**: rappresenta il filtro per il tipo di lavorazione eseguito, con il quale cercare le ore registrate.
+- **Ordine di Produzione**: rappresenta il filtro per il codice dell'ordine di lavoro con il quale cercare le ore registrate.
+
+Ogni campo nel quale è possibile inserire un testo, è dotato di un **autocomplete**: le informazioni vengono caricate preventivamente e vengono filtrate quelle disponibili (eliminando i doppioni) per fornire una lista di selezione che mostra gli elementi disponibili in base alla porzione di input inserita. 
+
+I campi che possiedono un autocomplete sono:
+- **Commessa**
+- **Ordine di Produzione**
+- **Lavorazione**
+I campi **Data Da** e **Data A** filtrano in base alla data di salvataggio dell'ora registrata.
+
+Ad ogni campo compilato, è possibile premere il pulsante **Filtra**, indicato tramite l'icona <i class="fa-solid fa-filter"></i> per mostrare la lista delle Ore Registrate disponibili.
+
+Quando si cambia campo, viene inviato un segnale che permette allo script di ricevere le informazioni preventivamente e creare la lista di autocompletamento degli altri campi, prima che questi vengano selezionati, eliminando i doppioni in modo da mantenere una lista con elementi tutti diversi.
+
+La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Queste informazioni sono:
+- **Comm**: il codice della commessa
+- **Lav**: la lavorazione
+- **ODP**: l'ordine di produzione
+- **Ore**: le ore registrate
+- **Data**: la data nella quale sono state salvate le ore
+È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata dal gestionale MAGO (rosso) o se è stata registrata utilizzando l'applicazione (verde).
+In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
+- **Modifica**: indicata tramite l'icona <i class="fa-solid fa-pencil"></i> permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
+- **Elimina**: indicata tramite l'icona <i class="fa-solid fa-trash"></i> permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione
 
 # Backend
+
+## Divisione
+Per il BackEnd, la maggior parte delle directory hanno una divisione dei file che dipende dalle tabelle del database che vanno ad interrogare. Per Controllers, Repositories, Services e Mappers esiste un file per ogni tabella/vista interrogata.
 
 ## Controllers
 I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT, DELETE)
@@ -81,6 +116,12 @@ Nel controller, alla richiesta di un GET all'API, non vengono passati argomenti 
 
 ### Richieste POST
 Nel controller, alla richiesta di un POST all'API, viene richiesto all'utente dall'interfaccia, di inserire dei parametri specifici. Questi parametri saranno salvati in formato JSON e presi come parametro dal metodo che si occuperà di gestire la richiesta.
+
+## Richieste DELETE
+Nel controller, alla richiesta di una DELETE all'API, viene richiesto all'utente dall'interfaccia di inserire dei parametri specifici. Questi parametri saranno salvati in formato JSON e presi come parametro dal metodo che si occuperà di utilizzare la richiesta per eliminare una o più righe nella tabella.
+
+## Richieste PUT
+Nel controller, alla richiesta di una DELETE all'API, viene richiesto all'utente dall'interfaccia di inserire dei parametri specifici. Questi parametri saranno salvati in formato JSON e presi come parametro dal metodo che si occuperà di utilizzare la richiesta per modificare uno o più campi una o più righe nella tabella.
 
 ### Di seguito:
 - Nel service viene invocato un mapper che si occuperà di mappare il Dto passato (se presente) nel rispettivo Filter;
