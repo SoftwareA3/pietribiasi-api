@@ -301,7 +301,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
             console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
             try {
-                const response = await fetchWithAuth("http://localhost:5245/api/job/reg_ore", {
+                const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/post_reg_ore", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -457,7 +457,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 // Funzioni di fetch
 async function fetchJobMostep(job) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/job/mostep", {
+        const request = await fetchWithAuth("http://localhost:5245/api/mostep/post_mostep", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -480,7 +480,7 @@ async function fetchJobMostep(job) {
 
 async function fetchJobsByOdp(job, mono, creationDate) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/job/mostep/odp", {
+        const request = await fetchWithAuth("http://localhost:5245/api/mostep/odp", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -530,7 +530,7 @@ async function fetchAllJobs() {
 
 async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/job/mostep/lavorazioni", {
+        const request = await fetchWithAuth("http://localhost:5245/api/mostep/lavorazioni", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

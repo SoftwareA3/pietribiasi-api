@@ -160,7 +160,7 @@ function extractUniqueValues(data, field) {
 
 async function fetchAllViewOre() {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/job/get_all_reg_ore", {
+        const request = await fetchWithAuth("http://localhost:5245/api/reg_ore/get_all", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -184,7 +184,7 @@ async function fetchViewOre(filteredObject) {
     console.log("Chiamata API con filtri:", filteredObject);
 
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/job/view_ore", {
+        const request = await fetchWithAuth("http://localhost:5245/api/reg_ore/view_ore", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -370,7 +370,7 @@ async function saveOreEdit(item) {
     };
     
     try {
-        const response = await fetchWithAuth("http://localhost:5245/api/job/view_ore/edit_working_time", {
+        const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/view_ore/edit_working_time", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -429,7 +429,7 @@ async function deleteOre(item) {
     // Inserire body e non ID
     
     try {
-        const response = await fetchWithAuth(`http://localhost:5245/api/job/view_ore/delete_reg_ore_id`, {
+        const response = await fetchWithAuth(`http://localhost:5245/api/reg_ore/view_ore/delete_reg_ore_id`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
