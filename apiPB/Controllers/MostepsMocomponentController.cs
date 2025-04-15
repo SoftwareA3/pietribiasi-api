@@ -21,7 +21,7 @@ namespace apiPB.Controllers
             _mostepsMocomponentRequestService = mostepsMocomponentRequestService;
         }
 
-        [HttpPost("post_mostepmocomponent")]
+        [HttpPost("post_mostepsmocomponent")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components
         /// </summary>
