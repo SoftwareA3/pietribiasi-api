@@ -1,5 +1,3 @@
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
 # Pietribiasi API
 
 # FrontEnd
@@ -15,12 +13,12 @@ La pagina per la registrazione delle ore di una commessa si presenta come una se
 - Al click sul primo campo, vengono rese visibili in un elenco sotto l’input, tutte le commesse disponibili. Inserendo parte del codice della commessa, vengono filtrate quelle disponibili nell’elenco in modo da restringere il campo.
 - Selezionata la commessa, si può inserire l’**Ordine di Lavoro** nella stessa maniera e di conseguenza anche la **Lavorazione**.
 - Ogni campo richiede che il precedente sia inserito o selezionato correttamente. Se viene modificato uno dei campi precedenti, quelli successivi, essendone dipendenti, vengono resettati.
-- Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**, indicato anche tramite l'icona <i class="fa-solid fa-magnifying-glass"></i>. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
-- Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona <i class="fa-solid fa-plus"></i>,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
+- Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**, indicato anche tramite l'icona 🔎. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
+- Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
-- Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona <i class="fa-solid fa-trash"></i>. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona <i class="fa-solid fa-plus"></i>. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_reg_ore**.
-In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona <i class="fa-solid fa-xmark"></i>. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
+- Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_reg_ore**.
+In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
 ## Visualizza Ore Registrate
 La pagina per la visualizzazione delle ore registrate, si presenta con una serie di campi:
@@ -38,7 +36,7 @@ I campi che possiedono un autocomplete sono:
 - **Lavorazione**
 I campi **Data Da** e **Data A** filtrano in base alla data di salvataggio dell'ora registrata.
 
-Ad ogni campo compilato, è possibile premere il pulsante **Filtra**, indicato tramite l'icona <i class="fa-solid fa-filter"></i> per mostrare la lista delle Ore Registrate disponibili.
+Ad ogni campo compilato, è possibile premere il pulsante **Filtra**, indicato tramite l'icona di un imbuto per mostrare la lista delle Ore Registrate disponibili.
 
 Quando si cambia campo, viene inviato un segnale che permette allo script di ricevere le informazioni preventivamente e creare la lista di autocompletamento degli altri campi, prima che questi vengano selezionati, eliminando i doppioni in modo da mantenere una lista con elementi tutti diversi.
 
@@ -50,8 +48,8 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 - **Data**: la data nella quale sono state salvate le ore
 È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata dal gestionale MAGO (rosso) o se è stata registrata utilizzando l'applicazione (verde).
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
-- **Modifica**: indicata tramite l'icona <i class="fa-solid fa-pencil"></i> permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
-- **Elimina**: indicata tramite l'icona <i class="fa-solid fa-trash"></i> permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione
+- **Modifica**: indicata tramite l'icona ✏️ permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
+- **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione
 
 # Backend
 
