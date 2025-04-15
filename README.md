@@ -26,6 +26,7 @@
 4. [Comandi](#comandi)
    - [Avvio API](#avvio-api)
    - [Scaffolding](#scaffolding)
+   - [Avvio FrontEnd con NodeJs](#avvio-frontend-con-nodejs)
 
 # FrontEnd
 
@@ -190,3 +191,7 @@ dotnet ef dbcontext scaffold "Data Source=SERVERNAME\SQLEXPRESS;Initial Catalog=
 - "--context" con il nome che si vuole dare al file che genererà in automatico la classe derivata da DbContext, classe che descriverà i modelli e si occuperà di interrogare il database. Alla creazione del file, scriverà anche la stringa di connessione al database sul codice, che andrà poi tolta, ma mantenuto un riferimento
 - "--table" indica il nome delle tabelle che si vogliono recuperare e "simulare" dal database. Si possono inserire tabelle e viste indifferentemente e basta indicare il nome (ad esempio dbo.User diventa User)
 - "--force" è una direttiva che permette di sovrascrivere dati o file già creati, in modo da non doverli rimuovere a mano.
+
+### Avvio FrontEnd con NodeJs
+Per avviare il FrontEnd, bisogna posizionarsi con terminale nella cartella dov'è situato il FrontEnd e avviarlo tramite il comando ```npx serve .``` che avvia un server statico per testare il FrontEnd.
+Comando per installare ```npx```: ```npm install -g serve``` 
