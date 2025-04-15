@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class A3AppRegOreFilter
+    public class RegOreFilter
     {
         public string? WorkerId { get; set; }
 

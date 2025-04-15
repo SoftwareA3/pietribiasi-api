@@ -1,22 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using apiPB.Dto.Request;
 using apiPB.Filters;
-using apiPB.Dto.Models;
 using apiPB.Models;
 
-namespace apiPB.Mappers.Filter
+namespace apiPB.Mappers.Filters
 {
-    public class JobFiltersMapper : Profile
+    public class RegOreMapperFilters : Profile
     {
-        public JobFiltersMapper()
+        public RegOreMapperFilters()
         {
-            //Mappa automaticamente i Dto nei Filters
-            CreateMap<MostepRequestDto, MostepRequestFilter>();
-            CreateMap<MostepsMocomponentRequestDto, MostepsMocomponentRequestFilter>();
-            CreateMap<MostepLavorazioniRequestDto, MostepLavorazioniRequestFilter>();
-            CreateMap<MostepOdpRequestDto, MostepOdpRequestFilter>();
-            CreateMap<A3AppRegOreRequestDto, A3AppRegOreFilter>();
-            CreateMap<A3AppRegOreFilter, A3AppRegOre>()
+            CreateMap<RegOreRequestDto, RegOreFilter>();
+            CreateMap<RegOreFilter, A3AppRegOre>()
                 .ForMember(dest => dest.RegOreId, opt => opt.Ignore())
                 .ForMember(dest => dest.SavedDate, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductionQty, opt => opt.Ignore())
@@ -42,9 +40,9 @@ namespace apiPB.Mappers.Filter
                 .ForMember(dest => dest.Uom, opt => opt.MapFrom(src => src.Uom))
                 .ForMember(dest => dest.Storage, opt => opt.MapFrom(src => src.Storage))
                 .ForMember(dest => dest.Wc, opt => opt.MapFrom(src => src.Wc));
-            CreateMap<A3AppViewOreRequestDto, A3AppViewOreRequestFilter>();
-            CreateMap<A3AppViewOrePutRequestDto, A3AppViewOrePutFilter>();
-            CreateMap<A3AppDeleteRequestDto, A3AppDeleteRequestFilter>();
+            CreateMap<ViewOreRequestDto, ViewOreRequestFilter>();
+            CreateMap<ViewOrePutRequestDto, ViewOrePutFilter>();
+            CreateMap<ViewOreDeleteRequestDto, ViewOreDeleteRequestFilter>();
         }
     }
 }

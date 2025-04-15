@@ -6,9 +6,9 @@ using apiPB.Models;
 
 namespace apiPB.Mappers.Filters
 {
-    public class WorkerFiltersMapper : Profile
+    public class WorkerMapperFilters : Profile
     {
-        public WorkerFiltersMapper()
+        public WorkerMapperFilters()
         {
             CreateMap<PasswordWorkersRequestDto, PasswordWorkersRequestFilter>();
             CreateMap<WorkerDto, PasswordWorkersRequestFilter>()

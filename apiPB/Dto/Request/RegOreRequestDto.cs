@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class A3AppRegOreRequestDto
+    public class RegOreRequestDto
     {
         public string? WorkerId { get; set; }
 
