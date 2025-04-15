@@ -257,3 +257,48 @@ input[type="number"] {
 .menu-button.secondary:hover {
     background-color: var(--gray-300);
 }
+
+/* Autocomplete styles */
+.autocomplete-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid var(--gray-300);
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+}
+
+.autocomplete-items div {
+    padding: var(--spacing-2) var(--spacing-3);
+    cursor: pointer;
+    background-color: var(--white);
+    border-bottom: 1px solid var(--gray-300);
+    transition: var(--transition-fast);
+}
+
+.autocomplete-items div:hover {
+    background-color: var(--gray-100);
+}
+
+.autocomplete-active {
+    background-color: var(--primary-color) !important;
+    color: var(--white);
+}
+
+/* Nascondi la tendina quando non serve */
+.hidden {
+    display: none;
+}

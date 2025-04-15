@@ -59,3 +59,53 @@
     font-family: monospace;
     letter-spacing: 0.5px;
 }
+
+#ore-list {
+    max-height: 500px; 
+    overflow-y: auto; 
+}
+
+/* Stili per il modulo di modifica delle ore */
+.edit-ore-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-right: var(--spacing-2);
+}
+
+.edit-ore-input {
+    width: 70px;
+    padding: var(--spacing-1);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-sm);
+    text-align: center;
+    font-weight: var(--font-weight-bold);
+}
+
+.option-button.confirm {
+    color: var(--success);
+}
+
+.option-button.confirm:hover {
+    background-color: var(--success);
+    color: var(--white);
+}
+
+.option-button.cancel {
+    color: var(--error);
+}
+
+.option-button.cancel:hover {
+    background-color: var(--error);
+    color: var(--white);
+}
+
+/* Animazione per evidenziare la modifica */
+.just-updated {
+    animation: highlight-update 2s ease-out;
+}
+
+@keyframes highlight-update {
+    0% { color: var(--success); font-weight: bold; }
+    100% { color: var(--primary-color); }
+}

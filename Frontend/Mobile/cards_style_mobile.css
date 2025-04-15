@@ -29,10 +29,10 @@
     font-size: 0.9rem;
 }
 
-.button-icon
+/* .button-icon
 {
     color: var(--white);
-}
+} */
 
 .input-group {
     flex-direction: column;

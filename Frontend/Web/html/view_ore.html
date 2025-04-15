@@ -23,6 +23,8 @@
         <!-- Script (caricati in modo asincrono) -->
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
+        <script src="../javascript/autocomplete.js" type="module"></script>
+        <script src="../javascript/view_ore.js" type="module"></script>
     </head>
     <body>
         <div class="header"></div>
@@ -40,15 +42,24 @@
                     </div>
                     <div class="form-group">
                         <label for="filter-ore-commessa">Commessa:</label>
-                        <input type="text" id="filter-ore-commessa" name="filter-ore-commessa">
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-ore-commessa" name="filter-ore-commessa">
+                            <div id="filter-ore-commessa-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="filter-ore-lavorazione">Lavorazione:</label>
-                        <input type="text" id="filter-ore-lavorazione" name="filter-ore-lavorazione">
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-ore-lavorazione" name="filter-ore-lavorazione">
+                            <div id="filter-ore-lavorazione-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="filter-ore-odp">Ordine Produzione:</label>
-                        <input type="text" id="filter-ore-odp" name="filter-ore-odp">
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-ore-odp" name="filter-ore-odp">
+                            <div id="filter-ore-odp-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                         <button type="button" id="filter-ore-submit" class="button button-primary">Filtra 
                             <i class="fa-solid fa-filter button-icon"></i>
@@ -56,25 +67,28 @@
                 </form>
 
                 <ul id="ore-list" class="item-list" style="margin-top: 20px;">
-                <li> <div class="item-content">
-                            <span class="status-indicator status-open" title="Aperto"></span>
-                        <strong>Comm:</strong> COMM001 | <strong>Lav:</strong> LAV002 | <strong>ODP:</strong> ODP12345 | <strong>Ore:</strong> 2.5 | <strong>Data:</strong> 01/04/2025
-                    </div>
-                    <div class="item-actions">
-                        <button class="button-icon edit option-button" title="Modifica Ore">
-                            <i class="fa-solid fa-pencil"></i>
-                        </button>
-                        <button class="button-icon delete option-button" title="Elimina Registrazione">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </li>
-                    <li> <div class="item-content">
-                            <span class="status-indicator status-closed" title="Chiuso"></span>
-                        <strong>Comm:</strong> COMM003 | <strong>Lav:</strong> LAV001 | <strong>ODP:</strong> ODP11223 | <strong>Ore:</strong> 8 | <strong>Data:</strong> 30/03/2025
-                    </div>
-                </li>
+                    <!-- <li> <div class="item-content">
+                                <span class="status-indicator status-open" title="Aperto"></span>
+                            <strong>Comm:</strong> COMM001 | <strong>Lav:</strong> LAV002 | <strong>ODP:</strong> ODP12345 | <strong>Ore:</strong> 2.5 | <strong>Data:</strong> 01/04/2025
+                        </div>
+                        <div class="item-actions">
+                            <button class="button-icon edit option-button" title="Modifica Ore">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                            <button class="button-icon delete option-button" title="Elimina Registrazione">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </li>
+                        <li> <div class="item-content">
+                                <span class="status-indicator status-closed" title="Chiuso"></span>
+                            <strong>Comm:</strong> COMM003 | <strong>Lav:</strong> LAV001 | <strong>ODP:</strong> ODP11223 | <strong>Ore:</strong> 8 | <strong>Data:</strong> 30/03/2025
+                        </div>
+                    </li> -->
                 </ul>
+                <div id="nocontent" class="nocontent">
+                    Nessun elemento da visualizzare
+                </div>
                 <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro 
                     <i class="fa-solid fa-arrow-left button-icon"></i>
                 </button>
