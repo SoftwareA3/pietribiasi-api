@@ -174,6 +174,30 @@ namespace apiPB.Controllers
             return Ok(mostepDto);
         }
 
+        [HttpGet("get_all_reg_ore")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista A3_app_reg_ore
+        /// </summary>
+        /// <response code="200">Ritorna tutte le informazioni della vista A3_app_reg_ore</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult getAllRegOre()
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+                
+            var a3AppRegOreDto = _jobRequestService.GetAppRegOre().ToList();
+
+            if (a3AppRegOreDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto);
+
+            return Ok(a3AppRegOreDto);
+        }
+
         [HttpPost("reg_ore")]
         /// <summary>
         /// Invia la lista di A3AppRegOre al database
@@ -200,7 +224,7 @@ namespace apiPB.Controllers
             return CreatedAtAction(nameof(PostRegOreList), a3AppRegOreDto);
         }
 
-        [HttpGet("view_ore")]
+        [HttpPost("view_ore")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista A3_app_reg_ore filtrate in base ai parametri del Dto di richiesta
         /// </summary>
@@ -221,6 +245,56 @@ namespace apiPB.Controllers
             }
 
             _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto);
+
+            return Ok(a3AppRegOreDto);
+        }
+
+        [HttpPut("view_ore/edit_working_time")]
+        /// <summary>
+        /// Aggiorna il tempo di lavoro della riga della tabella A3_app_reg_ore in base al filtro passato
+        /// </summary>
+        /// <param name="A3AppViewOrePutRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna il record modificato della tabella A3_app_reg_ore</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult PutA3AppRegOre([FromBody] A3AppViewOrePutRequestDto a3AppViewOrePutRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var a3AppRegOreDto = _jobRequestService.PutAppViewOre(a3AppViewOrePutRequestDto);
+
+            if (a3AppRegOreDto == null)
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto);
+
+            return Ok(a3AppRegOreDto);
+        }
+
+        [HttpDelete("view_ore/delete_reg_ore_id")]
+        /// <summary>
+        /// Elimina la riga della tabella A3_app_reg_ore in base al filtro passato
+        /// </summary>
+        /// <param name="A3AppDeleteRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna il record eliminato della tabella A3_app_reg_ore</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult DeleteRegOreId([FromBody] A3AppDeleteRequestDto a3AppDeleteRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var a3AppRegOreDto = _jobRequestService.DeleteRegOreId(a3AppDeleteRequestDto);
+
+            if (a3AppRegOreDto == null)
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "Deleted", a3AppRegOreDto);
 
             return Ok(a3AppRegOreDto);
         }

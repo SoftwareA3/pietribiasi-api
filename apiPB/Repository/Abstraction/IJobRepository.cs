@@ -58,6 +58,14 @@ namespace apiPB.Repository.Abstraction
         IEnumerable<VwApiMostep> GetMostepWithLavorazione(MostepLavorazioniRequestFilter filter);
 
         /// <summary>
+        /// Restituisce tutte le informazioni dalla tabella A3_app_reg_ore
+        /// </summary>
+        /// <returns>
+        /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre
+        /// </returns>
+        IEnumerable<A3AppRegOre> GetAppRegOre();
+
+        /// <summary>
         /// Inserisce la lista di A3AppRegOre nel database
         /// </summary>
         /// <param name="IEnumerable<a3AppRegOreList>">Lista di A3AppRegOre da inserire</param>
@@ -73,5 +81,23 @@ namespace apiPB.Repository.Abstraction
         /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre
         /// </returns>
         IEnumerable<A3AppRegOre> GetAppViewOre(A3AppViewOreRequestFilter filter);
+
+        /// <summary>
+        /// Aggiorna la riga della tabella A3_app_reg_ore in base al filtro passato
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: RegOreId, WorkingTime</param>
+        /// <returns>
+        /// A3AppRegOre: restituisce l'elemento modificato
+        /// </returns>
+        A3AppRegOre PutAppViewOre(A3AppViewOrePutFilter filter);
+
+        /// <summary>
+        /// Elimina la riga della tabella A3_app_reg_ore in base al filtro passato
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: RegOreId</param>
+        /// <returns>
+        /// A3AppRegOre: restituisce l'elemento eliminato
+        /// </returns>
+        A3AppRegOre DeleteRegOreId(A3AppDeleteRequestFilter filter);
     }
 }

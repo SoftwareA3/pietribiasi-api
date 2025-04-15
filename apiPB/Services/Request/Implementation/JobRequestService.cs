@@ -77,6 +77,14 @@ namespace apiPB.Services.Request.Implementation
             .Select(m => m.ToMostepDto());
         }
 
+        public IEnumerable<A3AppRegOreDto> GetAppRegOre()
+        {
+            var result = _jobRepository.GetAppRegOre()
+            .Select(m => m.ToA3AppRegOreDto());
+
+            return result;
+        }
+
         public IEnumerable<A3AppRegOreDto> PostAppRegOre(IEnumerable<A3AppRegOreRequestDto> requestList)
         {
             var filterList = new List<A3AppRegOreFilter>();
@@ -110,6 +118,34 @@ namespace apiPB.Services.Request.Implementation
             }
 
             return resultList;
+        }
+
+        public A3AppRegOreDto? PutAppViewOre(A3AppViewOrePutRequestDto request)
+        {
+            var filter = _mapper.Map<A3AppViewOrePutFilter>(request);
+            var result = _jobRepository.PutAppViewOre(filter);
+            if (result != null)
+            {
+                return result.ToA3AppRegOreDto();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public A3AppRegOreDto DeleteRegOreId(A3AppDeleteRequestDto request)
+        {
+            var filter = _mapper.Map<A3AppDeleteRequestFilter>(request);
+            var result = _jobRepository.DeleteRegOreId(filter);
+            if (result != null)
+            {
+                return result.ToA3AppRegOreDto();
+            }
+            else
+            {
+                throw new InvalidOperationException("Record not found.");
+            }
         }
     }
 }

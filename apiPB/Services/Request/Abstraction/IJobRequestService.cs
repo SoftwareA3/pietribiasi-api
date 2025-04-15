@@ -60,6 +60,12 @@ namespace apiPB.Services.Request.Abstraction
         IEnumerable<MostepDto> GetMostepWithLavorazione(MostepLavorazioniRequestDto request);
 
         /// <summary>
+        /// Ritorna tutte le informazioni salvate nella tabella A3_app_reg_ore
+        /// </summary>
+        /// <returns>Enumerable di A3AppRegOreDto: restituisce una collezione generica di Dto A3AppRegOreDto</returns>
+        IEnumerable<A3AppRegOreDto> GetAppRegOre();
+
+        /// <summary>
         /// Ritorna tutte le informazioni salvate nella tabella A3_app_reg_ore, dato A3AppRegOreRequestDto
         /// </summary>
         /// <param name="request">Dto di richiesta</param>
@@ -73,5 +79,18 @@ namespace apiPB.Services.Request.Abstraction
         /// <returns>Enumerable di A3AppRegOreDto: restituisce una collezione generica di Dto A3AppViewOreDto</returns>
         IEnumerable<A3AppRegOreDto> GetAppViewOre(A3AppViewOreRequestDto request);
 
+        /// <summary>
+        /// Ritorna il record modificato della tabella A3_app_reg_ore, dato A3AppViewOrePutRequestDto
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>A3AppRegOreDto: restituisce il record modificato della tabella A3_app_reg_ore</returns>
+        A3AppRegOreDto? PutAppViewOre(A3AppViewOrePutRequestDto request);
+
+        /// <summary>
+        /// Elimina il record della tabella A3_app_reg_ore, dato A3AppDeleteRequestDto
+        /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>Ritorna il Dto dell'elemento eliminato</returns>
+        A3AppRegOreDto DeleteRegOreId(A3AppDeleteRequestDto request);
     }
 }

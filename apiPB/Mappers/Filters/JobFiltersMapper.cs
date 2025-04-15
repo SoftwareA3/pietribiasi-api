@@ -43,6 +43,8 @@ namespace apiPB.Mappers.Filter
                 .ForMember(dest => dest.Storage, opt => opt.MapFrom(src => src.Storage))
                 .ForMember(dest => dest.Wc, opt => opt.MapFrom(src => src.Wc));
             CreateMap<A3AppViewOreRequestDto, A3AppViewOreRequestFilter>();
+            CreateMap<A3AppViewOrePutRequestDto, A3AppViewOrePutFilter>();
+            CreateMap<A3AppDeleteRequestDto, A3AppDeleteRequestFilter>();
         }
     }
 }

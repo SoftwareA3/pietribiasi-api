@@ -92,6 +92,11 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
+        public IEnumerable<A3AppRegOre> GetAppRegOre()
+        {
+            return _context.A3AppRegOres.AsNoTracking().ToList();
+        }
+
         public IEnumerable<A3AppRegOre> PostRegOreList(IEnumerable<A3AppRegOreFilter> filterList)
         {
             var list = new List<A3AppRegOre>();
@@ -139,7 +144,15 @@ namespace apiPB.Repository.Implementation
 
             if(filter.FromDateTime != null && filter.ToDateTime != null)
             {
-                query = query.Where(m => m.CreationDate >= filter.FromDateTime && m.CreationDate <= filter.ToDateTime);
+                query = query.Where(m => m.SavedDate >= filter.FromDateTime && m.SavedDate <= filter.ToDateTime);
+            }
+            else if(filter.FromDateTime != null && filter.ToDateTime == null)
+            {
+                query = query.Where(m => m.SavedDate >= filter.FromDateTime);
+            }
+            else if(filter.FromDateTime == null && filter.ToDateTime != null)
+            {
+                query = query.Where(m => m.SavedDate <= filter.ToDateTime);
             }
 
             if (filter.Job != null)
@@ -159,6 +172,32 @@ namespace apiPB.Repository.Implementation
 
             var list = query.ToList();
             return list;
+        }
+
+        public A3AppRegOre PutAppViewOre(A3AppViewOrePutFilter filter)
+        {
+            var editRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId);
+
+            if (editRegOre != null)
+            {
+                editRegOre.WorkingTime = filter.WorkingTime;
+                _context.SaveChanges();
+            }
+
+            return editRegOre ?? throw new InvalidOperationException("Record not found.");
+        }
+
+        public A3AppRegOre DeleteRegOreId(A3AppDeleteRequestFilter filter)
+        {
+            var deleteRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId);
+
+            if (deleteRegOre != null)
+            {
+                _context.A3AppRegOres.Remove(deleteRegOre);
+                _context.SaveChanges();
+            }
+
+            return deleteRegOre ?? throw new InvalidOperationException("Record not found.");
         }
     }
 }
