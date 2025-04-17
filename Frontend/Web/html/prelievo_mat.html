@@ -63,13 +63,13 @@
                         <div class="input-group">
                             <div class="autocomplete-container">
                                 <input type="text" id="prel-mat-barcode" name="prel-mat-barcode" required="" autocomplete="off">
-                                <div id="prel-mat-lavorazione-autocomplete-list" class="autocomplete-items hidden"></div>
+                                <div id="prel-mat-barcode-autocomplete-list" class="autocomplete-items hidden"></div>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="prel-mat-quantita">Quantità:</label>
-                        <input type="number" id="prel-mat-quantita" name="prel-mat-quantita" value="1" min="1" required="" style="max-width: 150px;">
+                        <input type="number" id="prel-mat-quantita" name="prel-mat-quantita" value="1" min="1" required="">
                     </div>
                     <p><strong>Tipo Movimento: Prelievo</strong></p>
                     <div class="button-group">
@@ -89,13 +89,10 @@
             <div class="card">
                 <div class="card-header">Prelievi da Salvare</div>
                 <ul id="prel-mat-lista-temp" class="item-list">
-                <li>
-                        <div class="item-content">COMM001 / ART001 - Tubo Inox / LAV001 / ODP12345 - <strong>Qta: 5</strong></div>
-                        <div class="item-actions"><button class="button-icon delete option-button" title="Rimuovi">
-                            <i class="fa-solid fa-trash"></i>
-                        </button></div>
-                    </li>
                 </ul>
+                <div id="nocontent" class="nocontent">
+                    Nessun elemento da visualizzare
+                </div>
             </div>
         </main>
         <div id="search-overlay" class="search-overlay">
@@ -119,6 +116,7 @@
                                 <th>OperDesc</th>
                                 <th>Component</th>
                                 <th>Position</th>
+                                <th>BarCode</th>
                             </tr>
                         </thead>
                         <tbody id="search-results-body">

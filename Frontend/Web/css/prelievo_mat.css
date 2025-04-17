@@ -8,6 +8,7 @@
 }
 
 #prel-mat-quantita {
+    max-width: 150px;
     font-size: 1.2rem;
     background-color: var(--gray-100);
     border: 2px solid var(--gray-300);
@@ -30,12 +31,25 @@ form p strong {
 
 /* Stile lista prelievi */
 #prel-mat-lista-temp .item-content {
-    font-size: 0.95rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1);
+    align-items: center;
+}
+
+#prel-mat-lista-temp .item-content p {
+    margin-right: 1rem;
+    max-width: 80%;
 }
 
 #prel-mat-lista-temp strong {
     font-size: 1.05rem;
-    padding: var(--spacing-1) var(--spacing-2);
+    margin-left: auto;
+    padding: var(--spacing-1) var(--spacing-3);
+    width: 100%;
+    max-width: 8rem;
+    max-height: 2rem;
+    min-width: var(--spacing-3);
     background-color: rgba(255, 183, 0, 0.1);
     border-radius: var(--border-radius-sm);
     color: var(--secondary-dark);

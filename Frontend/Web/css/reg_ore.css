@@ -4,6 +4,7 @@
 }
 
 #reg-ore-ore {
+    max-width: 150px;
     font-size: 1.1rem;
     color: var(--primary-color);
     background-color: var(--gray-100);

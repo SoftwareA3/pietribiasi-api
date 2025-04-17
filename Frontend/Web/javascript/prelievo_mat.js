@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const lavorazioneAutocompleteList = document.getElementById("prel-mat-lavorazione-autocomplete-list");
     const odlInput = document.getElementById("prel-mat-odp");
     const odlAutocompleteList = document.getElementById("prel-mat-odp-autocomplete-list");
+    const barcodeInput = document.getElementById("prel-mat-barcode");
+    const barcodeAutocompleteList = document.getElementById("prel-mat-barcode-autocomplete-list");
     const addButton = document.getElementById("inv-add-list");
     const cercaButton = document.getElementById("prel-mat-cerca");
     const searchOverlay = document.getElementById("search-overlay");
@@ -29,12 +31,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     const searchResultsBody = document.getElementById("search-results-body");
     const quantitaInput = document.getElementById("prel-mat-quantita");
     const saveButton = document.getElementById("inv-save");
+    // Aggiunto quando viene salvata la lista e viene svuotata. Pezzo commentato di script
     const noContent = document.getElementById("nocontent");
 
     // Liste di dati
     let jobList = [];
     let odpList = [];
     let lavorazioneList = [];
+    let barcodeList = [];
     let searchResults = [];
     let selectedSearchRow = null;
     let dataResultList = [];
@@ -90,12 +94,51 @@ document.addEventListener("DOMContentLoaded", async function () {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
         const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-        if (selectedCommessa && selectedOdp && selectedLavorazione) {
+        
+        if (!selectedCommessa || !selectedOdp || !selectedLavorazione) {
+            barcodeInput.value = "";
+            barcodeList = [];
+            return;
+        }
+
+        await loadBarCodeData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation);
+        console.log("Lista barcode:", barcodeList);
+    });
+
+    // Event listener per il cambio di barcode
+    barcodeInput.addEventListener("change", async function() {
+        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+        const selectedOdp = findSelectedItem(odlInput.value, odpList);
+        const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
+        const selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
+        if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode) {
             console.log("Commessa selezionata:", selectedCommessa);
             console.log("ODP selezionato:", selectedOdp);
             console.log("Lavorazione selezionata:", selectedLavorazione);
-            quantitaInput.focus
-            await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation);
+            console.log("Barcode selezionato:", selectedBarcode);
+            await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+            quantitaInput.focus();
+        }
+    });
+
+    barcodeInput.addEventListener("keydown", async function(event) {
+        if (event.key === "Enter") { 
+            event.preventDefault(); 
+    
+            const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+            const selectedOdp = findSelectedItem(odlInput.value, odpList);
+            const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
+            const selectedBarcode = barcodeList.find(item => item.barCode === barcodeInput.value);
+            barcodeInput.value = selectedBarcode ? selectedBarcode.display : "";
+    
+            if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode) {
+                console.log("Commessa selezionata:", selectedCommessa);
+                console.log("ODP selezionato:", selectedOdp);
+                console.log("Lavorazione selezionata:", selectedLavorazione);
+                console.log("Barcode selezionato:", selectedBarcode);
+                await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+                quantitaInput.focus();
+            }
         }
     });
         
@@ -125,7 +168,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     operation: item.operation || '',
                     operDesc: item.operDesc || '',
                     component: item.component || '',
-                    position: item.position || ''
+                    position: item.position || '',
+                    barCode: item.barCode || ''
                 })));
             }
         } else {
@@ -142,7 +186,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 operation: '',
                 operDesc: '',
                 component: '',
-                position: ''
+                position: '', 
+                barCode: ''
             }));
         }
         
@@ -207,7 +252,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }, 600);
             }
 
-            //TODO: Inserire codice per il popolamento del campo barcode
+            if(selectedSearchRow.barCode) {
+                barcodeInput.value = `${selectedSearchRow.barCode} - ${selectedSearchRow.itemDesc}`;
+            }
+
+            // Trigger per barcode
+            if (barcodeInput.value) {
+                setTimeout(() => {
+                    const barcodeEvent = new Event('change', { bubbles: true });
+                    barcodeInput.dispatchEvent(barcodeEvent);
+                    console.log("Evento change per barcode dispatched");
+                }, 900);
+            }
 
 
             // Chiude l'overlay
@@ -269,7 +325,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             cellComponent.textContent = result.component;
 
             const cellPosition = row.insertCell();
-            cellPosition.textContent = result.position;            
+            cellPosition.textContent = result.position;       
+            
+            const cellBarCode = row.insertCell();
+            cellBarCode.textContent = result.barCode;
             
             // Event listener per la selezione della riga
             row.addEventListener("click", function() {
@@ -357,17 +416,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
         const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-        const ore = document.getElementById("reg-ore-ore").value;
+        const selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
+        const selectedQta = document.getElementById("prel-mat-quantita").value;
     
         console.log("Dati selezionati:", {
             selectedCommessa,
             selectedOdp,
             selectedLavorazione,
-            ore
+            selectedBarcode,
+            selectedQta
         });
     
-        if (selectedCommessa && selectedOdp && selectedLavorazione && ore) {
-            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation);
+        if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode && selectedQta) {
+            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
             console.log("Risultato di loadAllData:", result);
             if (result) {
                 var data = {
@@ -390,6 +451,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     producedQty: result.producedQty,
                     resQty: result.resQty,
                     storage: result.storage,
+                    barCode: result.barCode,
+                    quantita: selectedQta
                     //wc: result.wc,
                 }
                 dataResultList.push(data);
@@ -399,6 +462,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 commessaInput.value = "";
                 odlInput.value = "";
                 lavorazioneInput.value = "";
+                barcodeInput.value = "";
                 quantitaInput.value = "";
             } else {
                 alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
@@ -461,12 +525,34 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    async function loadAllData(jobId, mono, creationDate, operation) {
-        if (!jobId || !mono || !creationDate || !operation) return null;
+    async function loadBarCodeData(jobId, mono, creationDate, operation) {
+        console.log("Caricamento barcode per jobId:", jobId, ", mono:", mono, " e operation:", operation);
+        if (!jobId || !mono || !creationDate || !operation) return;
         
         try {
-            const allDataResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
-            // console.log("Lista di tutti i dati:", allDataResult);
+            const barCodeResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
+            console.log("Risultato barcode:", barCodeResult);
+            barcodeList = barCodeResult
+                .filter(barCode => barCode && barCode.barCode && barCode.itemDesc)
+                .map(barCode => ({
+                    barCode: barCode.barCode,
+                    itemDesc: barCode.itemDesc,
+                    display: `${barCode.barCode} - ${barCode.itemDesc}`
+                }));
+
+            console.log("Lista di lavorazioni:", barcodeList);
+            setupAutocomplete(barcodeInput, barcodeAutocompleteList, barcodeList);
+        } catch (error) {
+            console.error("Errore nel caricamento dei dati lavorazione:", error);
+        }
+    }
+
+    async function loadAllData(jobId, mono, creationDate, operation, barCode) {
+        if (!jobId || !mono || !creationDate || !operation || !barCode) return null;
+        
+        try {
+            const allDataResult = await fetchJobsByBarCode(jobId, mono, creationDate, operation, barCode);
+            console.log("Lista di tutti i dati:", allDataResult);
     
             // Restituisce il primo elemento o un oggetto vuoto
             return allDataResult.length > 0 ? allDataResult[0] : null;
@@ -512,6 +598,36 @@ async function fetchJobsByOdp(job, mono, creationDate) {
                 "job": job,
                 "mono": mono,
                 "creationDate": creationDate
+            }),
+        });
+        
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return [];
+        }
+        
+        const jobInfo = await request.json();
+        return jobInfo;
+    }
+    catch (error) {
+        console.error("Errore durante la fetch:", error);
+        return [];
+    }
+}
+
+async function fetchJobsByBarCode(job, mono, creationDate, operation, barCode) {
+    try {
+        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/barcode", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "job": job,
+                "mono": mono,
+                "creationDate": creationDate,
+                "operation": operation,
+                "barCode": barCode
             }),
         });
         
@@ -579,13 +695,13 @@ async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
 
 // Si può esportare a patto di mantenere gli id invariati nel file html
 function addToTemporaryList(data, dataResultList) {
-    const list = document.getElementById("reg-ore-lista-temp");
+    const list = document.getElementById("prel-mat-lista-temp");
     const noContent = document.getElementById("nocontent");
     const newItem = document.createElement("li");
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc} / ${data.component}</p><strong>Qta: quantità</strong></div>
+        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc} / ${data.component}</p><strong>Qta: ${data.quantita}</strong></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>

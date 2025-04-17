@@ -6,6 +6,11 @@
 export function setupAutocomplete(inputElement, listElement, list) {
     let currentFocus = -1;
 
+    
+    list = list.filter((item, index, self) =>
+        index === self.findIndex((t) => t.display === item.display)
+    );
+
     // Gestisce il focus sull'input
     inputElement.addEventListener("focus", function() {
         showAllItems();
