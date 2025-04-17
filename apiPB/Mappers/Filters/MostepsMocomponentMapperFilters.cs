@@ -13,6 +13,9 @@ namespace apiPB.Mappers.Filters
         public MostepsMocomponentMapperFilters()
         {
             CreateMap<MostepsMocomponentRequestDto, MostepsMocomponentRequestFilter>();
+            CreateMap<MostepsMocomponentMonoRequestDto, MostepsMocomponentMonoFilter>();
+            CreateMap<MostepsMocomponentJobRequestDto, MostepsMocomponentJobFilter>();
+            CreateMap<MostepsMocomponentOperationRequestDto, MostepsMocomponentOperationFilter>();
         }
     }
 }

@@ -36,14 +36,25 @@ namespace apiPB.Services.Request.Implementation
             .Select(m => m.ToMostepsMocomponentDto());
         }
 
-        public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentForRegOre(MostepRequestDto request)
+        public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentJobDistinct(MostepsMocomponentJobRequestDto request)
         {
-            // FIXME controllo su filtro e su metodo di repository
-            var moStepDto = _moStepRequestService.GetMostepByMoId(request)
-            .FirstOrDefault();
-            var MostepsMocomponentDto = _mapper.Map<MostepsMocomponentRequestDto>(moStepDto);
-            var filter = _mapper.Map<MostepsMocomponentRequestFilter>(MostepsMocomponentDto);
-            return GetMostepsMocomponentDistinct(MostepsMocomponentDto);
+            var filter = _mapper.Map<MostepsMocomponentJobFilter>(request);
+            return _repository.GetMostepsMocomponentJobDistinct(filter)
+            .Select(m => m.ToMostepsMocomponentDto());
+        }
+
+        public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentMonoDistinct(MostepsMocomponentMonoRequestDto request)
+        {
+            var filter = _mapper.Map<MostepsMocomponentMonoFilter>(request);
+            return _repository.GetMostepsMocomponentMonoDistinct(filter)
+            .Select(m => m.ToMostepsMocomponentDto());
+        }
+
+        public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentOperationDistinct(MostepsMocomponentOperationRequestDto request)
+        {
+            var filter = _mapper.Map<MostepsMocomponentOperationFilter>(request);
+            return _repository.GetMostepsMocomponentOperationDistinct(filter)
+            .Select(m => m.ToMostepsMocomponentDto());
         }
     }
 }

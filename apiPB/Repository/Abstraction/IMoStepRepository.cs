@@ -12,7 +12,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostep: restituisce una collezione generica di modelli VwApiMostep
         /// </returns>
-        IEnumerable<VwApiMostep> GetMostep(MostepRequestFilter filter);
+        IEnumerable<VwApiMostep> GetMostepWithJob(MostepJobFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mostep filtrate per MostepOdpRequestFilter
@@ -21,7 +21,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostep: restituisce una collezione generica di modelli VwApiMostep
         /// </returns>
-        IEnumerable<VwApiMostep> GetMostepWithOdp(MostepOdpRequestFilter filter);
+        IEnumerable<VwApiMostep> GetMostepWithMono(MostepMonoFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mostep filtrate per MostepLavorazioniRequestFilter
@@ -30,6 +30,6 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostep: restituisce una collezione generica di modelli VwApiMostep
         /// </returns>
-        IEnumerable<VwApiMostep> GetMostepWithLavorazione(MostepLavorazioniRequestFilter filter);
+        IEnumerable<VwApiMostep> GetMostepWithOperation(MostepOperationFilter filter);
     }
 }

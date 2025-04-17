@@ -59,5 +59,32 @@ namespace apiPB.Repository.Implementation
 
             return list;
         }
+
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(MostepsMocomponentJobFilter filter)
+        {
+            return _context.VwApiMostepsMocomponents
+            .AsNoTracking()
+            .Where(m => m.Job == filter.Job)
+            .Distinct()
+            .ToList();
+        }
+
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MostepsMocomponentMonoFilter filter)
+        {
+            return _context.VwApiMostepsMocomponents
+            .AsNoTracking()
+            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate)
+            .Distinct()
+            .ToList();
+        }
+
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(MostepsMocomponentOperationFilter filter)
+        {
+            return _context.VwApiMostepsMocomponents
+            .AsNoTracking()
+            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation)
+            .Distinct()
+            .ToList();
+        }
     }
 }

@@ -46,18 +46,68 @@ namespace apiPB.Controllers
             return Ok(mostepComponentDto);
         }
 
-        [HttpPost("regore")]
-        /// <summary>  
-        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components
+        [HttpPost("job")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per Job
         /// </summary>
-        /// <param name="mostepRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <param name="mostepsMocomponentJobRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetMostepsMocomponentForRegOreDistinct([FromBody] MostepRequestDto mostepRequestDto)
+        public IActionResult GetMostepsMocomponentWithJob([FromBody] MostepsMocomponentJobRequestDto mostepsMocomponentJobRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentForRegOre(mostepRequestDto).ToList();
+            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentJobDistinct(mostepsMocomponentJobRequestDto).ToList();
+
+            if(mostepComponentDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+
+            return Ok(mostepComponentDto);
+        }
+
+        [HttpPost("mono")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per Mono
+        /// </summary>
+        /// <param name="mostepsMocomponentMonoRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetMostepsMocomponentWithMono([FromBody] MostepsMocomponentMonoRequestDto mostepsMocomponentMonoRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentMonoDistinct(mostepsMocomponentMonoRequestDto).ToList();
+
+            if(mostepComponentDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+
+            return Ok(mostepComponentDto);
+        }
+
+        [HttpPost("operation")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per Operation
+        /// /// </summary>
+        /// <param name="mostepsMocomponentOperationRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetMostepsMocomponentWithOperation([FromBody] MostepsMocomponentOperationRequestDto mostepsMocomponentOperationRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentOperationDistinct(mostepsMocomponentOperationRequestDto).ToList();
 
             if(mostepComponentDto.IsNullOrEmpty())
             {

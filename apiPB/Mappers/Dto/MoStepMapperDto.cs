@@ -37,17 +37,17 @@ namespace apiPB.Mappers.Dto
         }
 
         // Dto Richieste
-        public static MostepRequestDto ToMostepRequestDto(this VwApiMostep mostepModel)
+        public static MostepJobRequestDto ToMostepRequestDto(this VwApiMostep mostepModel)
         {
-            return new MostepRequestDto
+            return new MostepJobRequestDto
             {
                 Job = mostepModel.Job ?? string.Empty
             };
         }
 
-        public static MostepOdpRequestDto ToMostepOdpRequestDto(this VwApiMostep mostepOdpModel)
+        public static MostepMonoRequestDto ToMostepOdpRequestDto(this VwApiMostep mostepOdpModel)
         {
-            return new MostepOdpRequestDto
+            return new MostepMonoRequestDto
             {
                 Job = mostepOdpModel.Job ?? string.Empty,
                 Mono = mostepOdpModel.Mono ?? string.Empty,
@@ -55,9 +55,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static MostepLavorazioniRequestDto ToMostepLavorazioniRequestDto(this VwApiMostep mostepLavorazioniModel)
+        public static MostepOperationRequestDto ToMostepLavorazioniRequestDto(this VwApiMostep mostepLavorazioniModel)
         {
-            return new MostepLavorazioniRequestDto
+            return new MostepOperationRequestDto
             {
                 Job = mostepLavorazioniModel.Job ?? string.Empty,
                 Mono = mostepLavorazioniModel.Mono ?? string.Empty,

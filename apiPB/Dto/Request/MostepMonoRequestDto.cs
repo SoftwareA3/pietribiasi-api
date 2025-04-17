@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class MostepOdpRequestDto
+    public class MostepMonoRequestDto
     {
         public string Job { get; set; } = null!;
         

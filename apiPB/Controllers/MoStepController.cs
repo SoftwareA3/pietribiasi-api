@@ -20,18 +20,18 @@ namespace apiPB.Controllers
             _moStepRequestService = moStepRequestService;
         }
 
-        [HttpPost("post_mostep")]
+        [HttpPost("job")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mostep
         /// </summary>
         /// <param name="mostepRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetVwApiMostepFromBody([FromBody] MostepRequestDto mostepRequestDto)
+        public IActionResult GetVwApiMostepWithJob([FromBody] MostepJobRequestDto mostepRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepDto = _moStepRequestService.GetMostepByMoId(mostepRequestDto).ToList();
+            var mostepDto = _moStepRequestService.GetMostepWithJob(mostepRequestDto).ToList();
 
             if(mostepDto.IsNullOrEmpty())
             {
@@ -49,14 +49,14 @@ namespace apiPB.Controllers
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mostep
         /// </summary>
-        /// <param name="mostepOdpRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <param name="mostepMonoRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetMostepWithOdp([FromBody] MostepOdpRequestDto mostepOdpRequestDto)
+        public IActionResult GetMostepWithMono([FromBody] MostepMonoRequestDto mostepMonoRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepDto = _moStepRequestService.GetMostepWithOdp(mostepOdpRequestDto).ToList();
+            var mostepDto = _moStepRequestService.GetMostepWithMono(mostepMonoRequestDto).ToList();
 
             if(mostepDto.IsNullOrEmpty())
             {
@@ -77,11 +77,11 @@ namespace apiPB.Controllers
         /// <param name="mostepLavorazioniRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetMostepWithLavorazione([FromBody] MostepLavorazioniRequestDto mostepLavorazioniRequestDto)
+        public IActionResult GetMostepWithOperation([FromBody] MostepOperationRequestDto mostepOperationRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var mostepDto = _moStepRequestService.GetMostepWithLavorazione(mostepLavorazioniRequestDto).ToList();
+            var mostepDto = _moStepRequestService.GetMostepWithOperation(mostepOperationRequestDto).ToList();
 
             if(mostepDto.IsNullOrEmpty())
             {

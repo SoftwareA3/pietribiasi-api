@@ -19,6 +19,8 @@ namespace apiPB.Mappers.Dto
                 RtgStep = mostepsMocomponentModel.RtgStep,
                 Alternate = mostepsMocomponentModel.Alternate ?? string.Empty,
                 AltRtgStep = mostepsMocomponentModel.AltRtgStep,
+                Operation = mostepsMocomponentModel.Operation ?? string.Empty,
+                OperDesc = mostepsMocomponentModel.OperDesc ?? string.Empty,
                 Position = mostepsMocomponentModel.Position,
                 Component = mostepsMocomponentModel.Component ?? string.Empty,
                 Bom = mostepsMocomponentModel.Bom ?? string.Empty,
@@ -26,6 +28,7 @@ namespace apiPB.Mappers.Dto
                 ItemDesc = mostepsMocomponentModel.ItemDesc ?? string.Empty,
                 Moid = mostepsMocomponentModel.Moid,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+                CreationDate = mostepsMocomponentModel.CreationDate,
                 Uom = mostepsMocomponentModel.Uom ?? string.Empty,
                 ProductionQty = mostepsMocomponentModel.ProductionQty,
                 ProducedQty = mostepsMocomponentModel.ProducedQty,
@@ -44,6 +47,34 @@ namespace apiPB.Mappers.Dto
                 AltRtgStep = mostepsMocomponentModel.AltRtgStep,
                 Position = mostepsMocomponentModel.Position,
                 Component = mostepsMocomponentModel.Component ?? string.Empty
+            };
+        }
+
+        public static MostepsMocomponentJobRequestDto ToMostepsMocomponentJobRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        {
+            return new MostepsMocomponentJobRequestDto
+            {
+                Job = mostepsMocomponentModel.Job ?? string.Empty
+            };
+        }
+        public static MostepsMocomponentMonoRequestDto ToMostepsMocomponentMonoRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        {
+            return new MostepsMocomponentMonoRequestDto
+            {
+                Job = mostepsMocomponentModel.Job ?? string.Empty,
+                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+                CreationDate = mostepsMocomponentModel.CreationDate
+            };
+        }
+
+        public static MostepsMocomponentOperationRequestDto ToMostepsMocomponentOperationRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        {
+            return new MostepsMocomponentOperationRequestDto
+            {
+                Job = mostepsMocomponentModel.Job ?? string.Empty,
+                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+                CreationDate = mostepsMocomponentModel.CreationDate,
+                Operation = mostepsMocomponentModel.Operation ?? string.Empty
             };
         }
     }

@@ -18,25 +18,25 @@ namespace apiPB.Services.Request.Implementation
             _repository = repository;
         }
 
-        public IEnumerable<MostepDto> GetMostepByMoId(MostepRequestDto request)
+        public IEnumerable<MostepDto> GetMostepWithJob(MostepJobRequestDto request)
         {
             // FIXME controllo su filtro e su metodo di repository
-            var filter = _mapper.Map<MostepRequestFilter>(request);
-            return _repository.GetMostep(filter)
+            var filter = _mapper.Map<MostepJobFilter>(request);
+            return _repository.GetMostepWithJob(filter)
             .Select(m => m.ToMostepDto());
         }
 
-        public IEnumerable<MostepDto> GetMostepWithOdp(MostepOdpRequestDto request)
+        public IEnumerable<MostepDto> GetMostepWithMono(MostepMonoRequestDto request)
         {
-            var filter = _mapper.Map<MostepOdpRequestFilter>(request);
-            return _repository.GetMostepWithOdp(filter)
+            var filter = _mapper.Map<MostepMonoFilter>(request);
+            return _repository.GetMostepWithMono(filter)
             .Select(m => m.ToMostepDto());
         }
 
-        public IEnumerable<MostepDto> GetMostepWithLavorazione(MostepLavorazioniRequestDto request)
+        public IEnumerable<MostepDto> GetMostepWithOperation(MostepOperationRequestDto request)
         {
-            var filter = _mapper.Map<MostepLavorazioniRequestFilter>(request);
-            return _repository.GetMostepWithLavorazione(filter)
+            var filter = _mapper.Map<MostepOperationFilter>(request);
+            return _repository.GetMostepWithOperation(filter)
             .Select(m => m.ToMostepDto());
         }
     }

@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class MostepLavorazioniRequestDto
+    public class MostepsMocomponentOperationRequestDto
     {
         public string Job { get; set; } = null!;
-
         public string? Mono { get; set; }
-
         public DateTime? CreationDate { get; set; }
-
         public string? Operation { get; set; }
     }
 }

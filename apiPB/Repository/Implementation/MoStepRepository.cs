@@ -15,16 +15,17 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
-        public IEnumerable<VwApiMostep> GetMostep(MostepRequestFilter filter)
+        public IEnumerable<VwApiMostep> GetMostepWithJob(MostepJobFilter filter)
         {
             // FIXME: controllo sui parametri e sulla richiesta
             return _context.VwApiMosteps
-            .Where(m => m.Job == filter.Job)
             .AsNoTracking()
+            .Where(m => m.Job == filter.Job)
+            .Distinct()
             .ToList();
         }
 
-        public IEnumerable<VwApiMostep> GetMostepWithOdp(MostepOdpRequestFilter filter)
+        public IEnumerable<VwApiMostep> GetMostepWithMono(MostepMonoFilter filter)
         {
             return _context.VwApiMosteps
             .AsNoTracking()
@@ -33,7 +34,7 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
-        public IEnumerable<VwApiMostep> GetMostepWithLavorazione(MostepLavorazioniRequestFilter filter)
+        public IEnumerable<VwApiMostep> GetMostepWithOperation(MostepOperationFilter filter)
         {
             return _context.VwApiMosteps
             .AsNoTracking()

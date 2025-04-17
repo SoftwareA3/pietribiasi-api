@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class MostepRequestFilter
+    public class MostepMonoFilter
     {
         public string Job { get; set; } = null!;
+        
+        public string? Mono { get; set; }
+
+        public DateTime? CreationDate { get; set; }
     }
 }

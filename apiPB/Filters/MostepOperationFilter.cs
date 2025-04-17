@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class MostepLavorazioniRequestFilter
+    public class MostepOperationFilter
     {
         public string Job { get; set; } = null!;
 
