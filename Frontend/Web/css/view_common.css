@@ -9,11 +9,21 @@
     gap: var(--spacing-3);
 }
 
-/* Button allineato correttamente in grid */
-.filter-form button {
+.filter-form .buttons-container {
     grid-column: 1 / -1;
-    justify-self: start;
+    display: flex;
+    justify-content: space-between;
+    column-gap: 20%;
     margin-top: var(--spacing-2);
+}
+
+.filter-form .button-primary {
+    margin-top: var(--spacing-2);
+}
+
+.filter-form .button-secondary {
+    margin-top: var(--spacing-2);
+    margin-right: auto;
 }
 
 /* Miglioramenti per il layout delle liste di elementi */

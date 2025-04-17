@@ -9,6 +9,7 @@
         <!-- Stili desktop -->
         <link rel="stylesheet" href="../css/cards_style.css">
         <link rel="stylesheet" href="../css/prelievo_mat.css">
+        <link rel="stylesheet" href="../css/overlay.css">
         <!-- Stili mobile comuni-->
         <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
         <link rel="stylesheet" href="../../Mobile/cards_style_mobile.css" media="screen and (max-width: 768px)">
@@ -19,6 +20,8 @@
         <!-- Script (caricati in modo asincrono) -->
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
+        <script src="../javascript/autocomplete.js" type="module"></script>
+        <script src="../javascript/prelievo_mat.js" type="module"></script>
     </head>
     <body>
         <div class="header"></div>
@@ -27,42 +30,47 @@
                 <div class="card-header">Prelievo Materiali per Produzione</div>
                 <form id="prel-mat-form">
                     <div class="form-group">
-                    <label for="prel-mat-commessa">Codice Commessa:</label>
-                    <div class="input-group">
-                        <input type="text" id="prel-mat-commessa" name="prel-mat-commessa" required="">
-                        <button type="button" class="button button-secondary button-inline">Cerca 
-                            <i class="fa-solid fa-magnifying-glass button-icon"></i>
-                        </span></button>
-                    </div>
-                        <div id="prel-mat-commessa-desc" class="field-description" style="display: none;">
+                        <label for="prel-mat-commessa">Codice Commessa:</label>
+                        <div class="input-group">
+                            <div class="autocomplete-container">
+                                <input type="text" id="prel-mat-commessa" name="prel-mat-commessa" required="" autocomplete="off">
+                                <div id="prel-mat-commessa-autocomplete-list" class="autocomplete-items hidden"></div>
+                            </div>
+                            <button type="button" id="prel-mat-cerca" class="button button-secondary button-inline">Cerca 
+                                <i class="fa-solid fa-magnifying-glass button-icon"></i>
+                            </button>
+                        </div>
+                        <!-- <div id="prel-mat-commessa-desc" class="field-description" style="display: none;">
                             <strong>Descrizione:</strong> <span>Caricamento...</span>
-                        </div>
-                </div>
-                    <div class="form-group">
-                    <label for="prel-mat-barcode">Barcode Articolo:</label>
-                    <div class="input-group">
-                        <input type="text" id="prel-mat-barcode" name="prel-mat-barcode" required="">
-                        <button type="button" class="button button-secondary button-inline">Scan 
-                            <i class="fa-solid fa-barcode button-icon"></i>
-                        </button>
+                        </div> -->
                     </div>
-                        <div id="prel-mat-articolo-desc" class="field-description" style="display: none;">
-                            <strong>Codice:</strong> <span id="prel-mat-cod-art">...</span><br>
-                            <strong>Descrizione:</strong> <span id="prel-mat-desc-art">Caricamento...</span>
-                        </div>
-                </div>
                     <div class="form-group">
-                    <label for="prel-mat-lavorazione">Lavorazione:</label>
-                    <input type="text" id="prel-mat-lavorazione" name="prel-mat-lavorazione" list="lavorazioni-datalist" required="">
-                </div>
-                <div class="form-group">
-                    <label for="prel-mat-odp">Ordine di Produzione:</label>
-                    <input type="text" id="prel-mat-odp" name="prel-mat-odp" list="odp-datalist" required="">
-                </div>
-                <div class="form-group">
-                    <label for="prel-mat-quantita">Quantità:</label>
-                    <input type="number" id="prel-mat-quantita" name="prel-mat-quantita" value="1" min="1" required="" style="max-width: 150px;">
-                </div>
+                        <label for="prel-mat-odp">Ordine di Produzione:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="prel-mat-odp" name="prel-mat-odp" required="" autocomplete="off">
+                            <div id="prel-mat-odp-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prel-mat-lavorazione">Lavorazione:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="prel-mat-lavorazione" name="prel-mat-lavorazione" required="" autocomplete="off">
+                            <div id="prel-mat-lavorazione-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prel-mat-barcode">Barcode Articolo:</label>
+                        <div class="input-group">
+                            <div class="autocomplete-container">
+                                <input type="text" id="prel-mat-barcode" name="prel-mat-barcode" required="" autocomplete="off">
+                                <div id="prel-mat-lavorazione-autocomplete-list" class="autocomplete-items hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prel-mat-quantita">Quantità:</label>
+                        <input type="number" id="prel-mat-quantita" name="prel-mat-quantita" value="1" min="1" required="" style="max-width: 150px;">
+                    </div>
                     <p><strong>Tipo Movimento: Prelievo</strong></p>
                     <div class="button-group">
                         <button type="button" id="inv-add-list" class="button button-primary">Aggiungi 
@@ -74,7 +82,7 @@
                             <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla
                                 <i class="fa-solid fa-xmark button-icon"></i>
                         </button>
-                </div>
+                    </div>
                 </form>
             </div>
 
@@ -90,6 +98,39 @@
                 </ul>
             </div>
         </main>
+        <div id="search-overlay" class="search-overlay">
+            <div class="search-results">
+                <div class="search-results-header">
+                    <h2>Risultati Ricerca Commesse</h2>
+                    <button class="close-btn" id="close-search-overlay">&times;</button>
+                </div>
+                <div id="search-results-content">
+                    <table class="search-results-table">
+                        <thead>
+                            <tr>
+                                <th>Job</th>
+                                <th>Mono</th>
+                                <th>Data di Creazione</th>
+                                <th>UM</th>
+                                <th>ResQty</th>
+                                <th>BOM</th>
+                                <th>ItemDesc</th>
+                                <th>Operation</th>
+                                <th>OperDesc</th>
+                                <th>Component</th>
+                                <th>Position</th>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results-body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="search-results-actions">
+                    <button id="cancel-search" class="button button-danger">Annulla</button>
+                    <button id="select-search-result" class="button button-primary">Seleziona</button>
+                </div>
+            </div>
+        </div>
         <footer class="app-footer" id="app-main-footer">
             <p>Pietribiasi Michelangelo S.r.l.</p>
             <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>

@@ -53,9 +53,14 @@
                         <label for="filter-prel-odp">Ordine Produzione:</label>
                         <input type="text" id="filter-prel-odp" name="filter-prel-odp">
                     </div>
-                    <button type="button" id="filter-prel-submit" class="button button-primary">Filtra 
-                        <i class="fa-solid fa-filter button-icon"></i>
-                    </button>
+                    <div class="buttons-container">
+                        <button type="button" id="filter-prel-submit" class="button button-primary">Filtra 
+                            <i class="fa-solid fa-filter button-icon"></i>
+                        </button>
+                        <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro
+                            <i class="fa-solid fa-arrow-left button-icon"></i>
+                        </button>
+                    </div>
                 </form>
 
                 <ul id="prelievi-list" class="item-list" style="margin-top: 20px;">
@@ -70,9 +75,6 @@
                         </div>
                     </li>
                 </ul>
-                <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro
-                    <i class="fa-solid fa-arrow-left button-icon"></i>
-                </button>
             </div>
         </main>
         <footer class="app-footer" id="app-main-footer">

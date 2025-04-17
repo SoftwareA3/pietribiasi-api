@@ -40,9 +40,14 @@
                         <label for="filter-inv-barcode">Barcode Articolo:</label>
                         <input type="text" id="filter-inv-barcode" name="filter-inv-barcode">
                     </div>
-                    <button type="button" id="filter-inv-submit" class="button button-primary">Filtra 
-                        <i class="fa-solid fa-filter button-icon"></i>
-                    </button>
+                    <div class="buttons-container">
+                        <button type="button" id="filter-inv-submit" class="button button-primary">Filtra 
+                            <i class="fa-solid fa-filter button-icon"></i>
+                        </button>
+                        <button type="button" class="button button-secondary" onclick="location.href='home.html'" >Indietro 
+                            <i class="fa-solid fa-arrow-left button-icon"></i>
+                        </button>
+                    </div>
                 </form>
 
                     <ul id="inventario-list" class="item-list" style="margin-top: 20px;">
@@ -57,9 +62,6 @@
                         </div>
                     </li>
                     </ul>
-                    <button type="button" class="button button-secondary" onclick="location.href='home.html'" >Indietro 
-                        <i class="fa-solid fa-arrow-left button-icon"></i>
-                    </button>
             </div>
         </main>
         <footer class="app-footer" id="app-main-footer">

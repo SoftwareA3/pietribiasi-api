@@ -2,22 +2,32 @@ import { fetchWithAuth } from "./fetch.js";
 import { getCookie } from "./cookies.js";
 import { setupAutocomplete } from "./autocomplete.js";
 
+// Codice preso da reg_ore.js
+// Funzione per gestire l'autocompletamento
+
+// TODO:
+// 1. Modificare gli id degli input recuperati e delle liste di autocomplete
+// 2. Modificare il popolamento della tabella di ricerca
+// 3. Modificare il salvataggio dei dati
+// 4. Modificare il salvataggio dei dati temporanei
+// 5. Modificare le richieste all'API, sostituendole con le richieste all'endpoint mostepsmocomponent
+
 document.addEventListener("DOMContentLoaded", async function () {
     // Recupera elementi DOM
-    const commessaInput = document.getElementById("reg-ore-commessa");
-    const commessaAutocompleteList = document.getElementById("reg-ore-commessa-autocomplete-list");
-    const lavorazioneInput = document.getElementById("reg-ore-lavorazione");
-    const lavorazioneAutocompleteList = document.getElementById("reg-ore-lavorazione-autocomplete-list");
-    const odlInput = document.getElementById("reg-ore-odp");
-    const odlAutocompleteList = document.getElementById("reg-ore-odp-autocomplete-list");
+    const commessaInput = document.getElementById("prel-mat-commessa");
+    const commessaAutocompleteList = document.getElementById("prel-mat-commessa-autocomplete-list");
+    const lavorazioneInput = document.getElementById("prel-mat-lavorazione");
+    const lavorazioneAutocompleteList = document.getElementById("prel-mat-lavorazione-autocomplete-list");
+    const odlInput = document.getElementById("prel-mat-odp");
+    const odlAutocompleteList = document.getElementById("prel-mat-odp-autocomplete-list");
     const addButton = document.getElementById("inv-add-list");
-    const cercaButton = document.getElementById("reg-ore-cerca");
+    const cercaButton = document.getElementById("prel-mat-cerca");
     const searchOverlay = document.getElementById("search-overlay");
     const closeSearchButton = document.getElementById("close-search-overlay");
     const cancelSearchButton = document.getElementById("cancel-search");
     const selectSearchResultButton = document.getElementById("select-search-result");
     const searchResultsBody = document.getElementById("search-results-body");
-    const oreInput = document.getElementById("reg-ore-ore");
+    const quantitaInput = document.getElementById("prel-mat-quantita");
     const saveButton = document.getElementById("inv-save");
     const noContent = document.getElementById("nocontent");
 
@@ -72,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
         // Carica i dati della lavorazione solo se necessario
         // Serve in caso di selezione dalla tabella in overlay
-        await loadLavorazioneData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate);
+        await loadLavorazioneData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate);
     });
 
     // Event listener per il cambio di lavorazione
@@ -84,8 +94,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Commessa selezionata:", selectedCommessa);
             console.log("ODP selezionato:", selectedOdp);
             console.log("Lavorazione selezionata:", selectedLavorazione);
-            oreInput.focus
-            await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
+            quantitaInput.focus
+            await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation);
         }
     });
         
@@ -113,7 +123,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     bom: item.bom || '',
                     itemDesc: item.itemDesc || '',
                     operation: item.operation || '',
-                    operDesc: item.operDesc || ''
+                    operDesc: item.operDesc || '',
+                    component: item.component || '',
+                    position: item.position || ''
                 })));
             }
         } else {
@@ -128,7 +140,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 bom: '',
                 itemDesc: job.description || '',
                 operation: '',
-                operDesc: ''
+                operDesc: '',
+                component: '',
+                position: ''
             }));
         }
         
@@ -193,6 +207,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }, 600);
             }
 
+            //TODO: Inserire codice per il popolamento del campo barcode
+
 
             // Chiude l'overlay
             searchOverlay.classList.remove("active");
@@ -249,7 +265,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             const cellOperDesc = row.insertCell();
             cellOperDesc.textContent = result.operDesc;
 
-            
+            const cellComponent = row.insertCell();
+            cellComponent.textContent = result.component;
+
+            const cellPosition = row.insertCell();
+            cellPosition.textContent = result.position;            
             
             // Event listener per la selezione della riga
             row.addEventListener("click", function() {
@@ -271,11 +291,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
+    // DA CAPIRE SE VA MANTENUTO IL RECUPERO DELL'ID DEL LAVORATORE
+
     // SaveButton: chiamata all'API passando dataResultList per salvare i dati.
     // Chiama la rimozione di tutti gli elementi dalla lista temporanea
     saveButton.addEventListener("click", async function() {
         if (dataResultList.length > 0) {
-            // console.log("Dati da salvare:", dataResultList);
+            console.log("Dati da salvare:", dataResultList);
             // Recupera il workerid dai cookies
             const cookie = JSON.parse(getCookie("userInfo"));
             console.log(typeof(cookie));
@@ -291,37 +313,40 @@ document.addEventListener("DOMContentLoaded", async function () {
                 item.workerId = workerId;
                 item.workingTime = (item.workingTime * 3600); // Converte ore in secondi
             });
-            // console.log("Lista con Worker ID:", dataResultList);
-            // console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
-            // console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
-            try {
-                const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/post_reg_ore", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(dataResultList),
-                });
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log("Dati salvati con successo:", result);
-                    // Pulisce la lista temporanea
-                    const list = document.getElementById("reg-ore-lista-temp");
-                    while (list.firstChild) {
-                        list.removeChild(list.firstChild);
-                    }
-                    dataResultList = []; // Resetta la lista dei risultati
-                    commessaInput.value =  "";
-                    odlInput.value = "";
-                    lavorazioneInput.value = "";
-                    oreInput.value = "";
-                    noContent.classList.remove("hidden");
-                } else {
-                    console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
-                }
-            } catch (error) {
-                console.error("Errore durante la richiesta di salvataggio:", error);
-            }
+            console.log("Lista con Worker ID:", dataResultList);
+            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
+            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
+
+            // CAPIRE DOVE VANNO CARICATI I DATI
+
+            // try {
+            //     const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/post_reg_ore", {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json"
+            //         },
+            //         body: JSON.stringify(dataResultList),
+            //     });
+            //     if (response.ok) {
+            //         const result = await response.json();
+            //         console.log("Dati salvati con successo:", result);
+            //         // Pulisce la lista temporanea
+            //         const list = document.getElementById("reg-ore-lista-temp");
+            //         while (list.firstChild) {
+            //             list.removeChild(list.firstChild);
+            //         }
+            //         dataResultList = []; // Resetta la lista dei risultati
+            //         commessaInput.value =  "";
+            //         odlInput.value = "";
+            //         lavorazioneInput.value = "";
+            //         oreInput.value = "";
+            //         noContent.classList.remove("hidden");
+            //     } else {
+            //         console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
+            //     }
+            // } catch (error) {
+            //     console.error("Errore durante la richiesta di salvataggio:", error);
+            // }
         } else {
             alert("Nessun dato da salvare. Aggiungi prima un elemento.");
         }
@@ -342,8 +367,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     
         if (selectedCommessa && selectedOdp && selectedLavorazione && ore) {
-            const result = await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
-            // console.log("Risultato di loadAllData:", result);
+            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation);
+            console.log("Risultato di loadAllData:", result);
             if (result) {
                 var data = {
                     job: result.job,
@@ -352,6 +377,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     altRtgStep: result.altRtgStep,
                     operation: result.operation,
                     operDesc: result.operDesc,
+                    position: result.position,
+                    component: result.component,
                     bom: result.bom,
                     variant: result.variant,
                     itemDesc: result.itemDesc,
@@ -363,8 +390,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     producedQty: result.producedQty,
                     resQty: result.resQty,
                     storage: result.storage,
-                    workingTime: ore,
-                    wc: result.wc,
+                    //wc: result.wc,
                 }
                 dataResultList.push(data);
                 // console.log("Lista di risultati:", dataResultList);
@@ -373,7 +399,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 commessaInput.value = "";
                 odlInput.value = "";
                 lavorazioneInput.value = "";
-                oreInput.value = "";
+                quantitaInput.value = "";
             } else {
                 alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
             }
@@ -396,10 +422,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         try {
             const odpResult = await fetchJobMostep(jobId);
+            console.log("Risultato ODP:", odpResult);
             odpList = odpResult
                 .filter(odp => odp && odp.mono && odp.creationDate)
                 .map(odp => ({
-                    odp: odp.mono,
+                    mono: odp.mono,
                     creationDate: odp.creationDate,
                     display: `${odp.mono} - ${odp.creationDate}`
                 }));
@@ -413,10 +440,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Funzione per caricare i dati della lavorazione
     async function loadLavorazioneData(jobId, mono, creationDate) {
+        console.log("Caricamento lavorazione per jobId:", jobId, "e mono:", mono);
         if (!jobId || !mono || !creationDate) return;
         
         try {
             const lavorazioneResult = await fetchJobsByOdp(jobId, mono, creationDate);
+            console.log("Risultato lavorazione:", lavorazioneResult);
             lavorazioneList = lavorazioneResult
                 .filter(lav => lav && lav.operation && lav.operDesc)
                 .map(lav => ({
@@ -451,7 +480,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 // Funzioni di fetch
 async function fetchJobMostep(job) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/mostep/job", {
+        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/job", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -474,7 +503,7 @@ async function fetchJobMostep(job) {
 
 async function fetchJobsByOdp(job, mono, creationDate) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/mostep/odp", {
+        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/mono", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -524,7 +553,7 @@ async function fetchAllJobs() {
 
 async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/mostep/lavorazioni", {
+        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/operation", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -556,7 +585,7 @@ function addToTemporaryList(data, dataResultList) {
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc}</p><strong>${data.workingTime} ore</strong></div>
+        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc} / ${data.component}</p><strong>Qta: quantità</strong></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>
