@@ -86,5 +86,14 @@ namespace apiPB.Repository.Implementation
             .Distinct()
             .ToList();
         }
+
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentBarCodeFilter filter)
+        {
+            return _context.VwApiMostepsMocomponents
+            .AsNoTracking()
+            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode)
+            .Distinct()
+            .ToList();
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace apiPB.Mappers.Filters
             CreateMap<MostepsMocomponentMonoRequestDto, MostepsMocomponentMonoFilter>();
             CreateMap<MostepsMocomponentJobRequestDto, MostepsMocomponentJobFilter>();
             CreateMap<MostepsMocomponentOperationRequestDto, MostepsMocomponentOperationFilter>();
+            CreateMap<MostepsMocomponentBarCodeRequestDto, MostepsMocomponentBarCodeFilter>();
         }
     }
 }

@@ -41,5 +41,12 @@ namespace apiPB.Services.Request.Abstraction
         /// <param name="request">Dto di richiesta</param>
         /// <returns>IEnumerable di MostepsMocomponentDto: restituisce una collezione generica di Dto MostepsMocomponentDto</returns>
         IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentOperationDistinct(MostepsMocomponentOperationRequestDto request);
+
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentBarCodeRequestDto
+        /// /// </summary>
+        /// <param name="request">Dto di richiesta</param>
+        /// <returns>IEnumerable di MostepsMocomponentDto: restituisce una collezione generica di Dto MostepsMocomponentDto</returns>
+        IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentBarCodeRequestDto request);
     }
 }

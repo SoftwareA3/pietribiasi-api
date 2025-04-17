@@ -29,11 +29,12 @@ namespace apiPB.Mappers.Dto
                 Moid = mostepsMocomponentModel.Moid,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
                 CreationDate = mostepsMocomponentModel.CreationDate,
-                Uom = mostepsMocomponentModel.Uom ?? string.Empty,
+                UoM = mostepsMocomponentModel.UoM ?? string.Empty,
                 ProductionQty = mostepsMocomponentModel.ProductionQty,
                 ProducedQty = mostepsMocomponentModel.ProducedQty,
                 ResQty = mostepsMocomponentModel.ResQty,
-                Storage = mostepsMocomponentModel.Storage ?? string.Empty
+                Storage = mostepsMocomponentModel.Storage ?? string.Empty,
+                BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
             };
         }
         // Dto Richieste
@@ -75,6 +76,18 @@ namespace apiPB.Mappers.Dto
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
                 CreationDate = mostepsMocomponentModel.CreationDate,
                 Operation = mostepsMocomponentModel.Operation ?? string.Empty
+            };
+        }
+
+        public static MostepsMocomponentBarCodeRequestDto ToMostepsMocomponentBarCodeRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        {
+            return new MostepsMocomponentBarCodeRequestDto
+            {
+                Job = mostepsMocomponentModel.Job ?? string.Empty,
+                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+                CreationDate = mostepsMocomponentModel.CreationDate,
+                Operation = mostepsMocomponentModel.Operation ?? string.Empty,
+                BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
             };
         }
     }

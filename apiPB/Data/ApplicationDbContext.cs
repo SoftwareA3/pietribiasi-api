@@ -40,7 +40,7 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<A3AppRegOre>(entity =>
         {
-            entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D9345C347F33");
+            entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D93438267709");
 
             entity.ToTable("A3_app_reg_ore");
 
@@ -741,6 +741,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Alternate)
                 .HasMaxLength(8)
                 .IsUnicode(false);
+            entity.Property(e => e.BarCode)
+                .HasMaxLength(21)
+                .IsUnicode(false);
             entity.Property(e => e.Bom)
                 .HasMaxLength(21)
                 .IsUnicode(false)
@@ -769,10 +772,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Storage)
                 .HasMaxLength(4)
                 .IsUnicode(false);
-            entity.Property(e => e.Uom)
+            entity.Property(e => e.UoM)
                 .HasMaxLength(8)
-                .IsUnicode(false)
-                .HasColumnName("uom");
+                .IsUnicode(false);
             entity.Property(e => e.Variant)
                 .HasMaxLength(21)
                 .IsUnicode(false);

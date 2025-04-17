@@ -120,5 +120,30 @@ namespace apiPB.Controllers
 
             return Ok(mostepComponentDto);
         }
+
+        [HttpPost("barcode")]
+        /// <summary>
+        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per BarCode
+        /// </summary>
+        /// <param name="mostepsMocomponentBarCodeRequestDto">Oggetto contenente i parametri di ricerca</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetMostepsMocomponentWithBarCode([FromBody] MostepsMocomponentBarCodeRequestDto mostepsMocomponentBarCodeRequestDto)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentBarCodeDistinct(mostepsMocomponentBarCodeRequestDto).ToList();
+
+            if(mostepComponentDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+
+            return Ok(mostepComponentDto);
+        }
     }
 }

@@ -56,5 +56,12 @@ namespace apiPB.Services.Request.Implementation
             return _repository.GetMostepsMocomponentOperationDistinct(filter)
             .Select(m => m.ToMostepsMocomponentDto());
         }
+
+        public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentBarCodeRequestDto request)
+        {
+            var filter = _mapper.Map<MostepsMocomponentBarCodeFilter>(request);
+            return _repository.GetMostepsMocomponentBarCodeDistinct(filter)
+            .Select(m => m.ToMostepsMocomponentDto());
+        }
     }
 }

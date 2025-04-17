@@ -51,5 +51,15 @@ namespace apiPB.Repository.Abstraction
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
         IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(MostepsMocomponentOperationFilter filter);
+
+        /// <summary>
+        /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentBarCodeFilter
+        /// Viene applicato il filtro Distinct per evitare duplicati
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Job, Mono, CreationDate, Operation, BarCode</param>
+        /// <returns>
+        /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
+        /// </returns>
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentBarCodeFilter filter);
     }
 }

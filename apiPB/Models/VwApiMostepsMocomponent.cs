@@ -33,7 +33,7 @@ public partial class VwApiMostepsMocomponent
 
     public DateTime? CreationDate { get; set; }
 
-    public string? Uom { get; set; }
+    public string? UoM { get; set; }
 
     public double? ProductionQty { get; set; }
 
@@ -42,4 +42,6 @@ public partial class VwApiMostepsMocomponent
     public double? ResQty { get; set; }
 
     public string Storage { get; set; } = null!;
+
+    public string? BarCode { get; set; }
 }
