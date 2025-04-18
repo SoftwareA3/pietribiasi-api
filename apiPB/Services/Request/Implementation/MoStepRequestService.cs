@@ -5,6 +5,7 @@ using apiPB.Mappers.Dto;
 using apiPB.Dto.Models;
 using AutoMapper;
 using apiPB.Services.Request.Abstraction;
+using apiPB.Validation;
 
 namespace apiPB.Services.Request.Implementation
 {
@@ -18,26 +19,28 @@ namespace apiPB.Services.Request.Implementation
             _repository = repository;
         }
 
-        public IEnumerable<MostepDto> GetMostepWithJob(MostepJobRequestDto request)
+        public IEnumerable<MostepDto> GetMostepWithJob(MostepRequestDto request)
         {
-            // FIXME controllo su filtro e su metodo di repository
-            var filter = _mapper.Map<MostepJobFilter>(request);
+            request.ValidateJobRequestDto();
+            var filter = _mapper.Map<MostepRequestFilter>(request);
             return _repository.GetMostepWithJob(filter)
-            .Select(m => m.ToMostepDto());
+            .Select(m => m.ToMostepDtoFromModel());
         }
 
-        public IEnumerable<MostepDto> GetMostepWithMono(MostepMonoRequestDto request)
+        public IEnumerable<MostepDto> GetMostepWithMono(MostepRequestDto request)
         {
-            var filter = _mapper.Map<MostepMonoFilter>(request);
+            request.ValidateMonoRequestDto();
+            var filter = _mapper.Map<MostepRequestFilter>(request);
             return _repository.GetMostepWithMono(filter)
-            .Select(m => m.ToMostepDto());
+            .Select(m => m.ToMostepDtoFromModel());
         }
 
-        public IEnumerable<MostepDto> GetMostepWithOperation(MostepOperationRequestDto request)
+        public IEnumerable<MostepDto> GetMostepWithOperation(MostepRequestDto request)
         {
-            var filter = _mapper.Map<MostepOperationFilter>(request);
+            request.ValidateOperationRequestDto();
+            var filter = _mapper.Map<MostepRequestFilter>(request);
             return _repository.GetMostepWithOperation(filter)
-            .Select(m => m.ToMostepDto());
+            .Select(m => m.ToMostepDtoFromModel());
         }
     }
 }

@@ -140,7 +140,7 @@ namespace apiPB.Authentication
         private bool ValidateCredentials(string username, string password)
         {
             // Usando la password, il servizio recupera Password e WorkerId e le usa come credenziali
-            var credentials = _workerRequestService.GetWorkerByPassword(new PasswordWorkersRequestDto { Password = password });
+            var credentials = _workerRequestService.GetWorkerByPassword(new WorkersRequestDto { Password = password });
             string expectedUsername = credentials?.WorkerId.ToString() ?? string.Empty;
             string expectedPassword = credentials?.Password ?? string.Empty;
             return username == expectedUsername && password == expectedPassword; 

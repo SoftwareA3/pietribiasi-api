@@ -31,26 +31,29 @@ namespace apiPB.Repository.Implementation
                 var regOre = new A3AppRegOre
                 {
                     WorkerId = filter.WorkerId,
-                    SavedDate = DateTime.Now,
+                    SavedDate = filter.SavedDate,
                     Job = filter.Job,
                     RtgStep = filter.RtgStep,
                     Alternate = filter.Alternate,
                     AltRtgStep = filter.AltRtgStep,
-                    Operation = filter.Operation,
-                    OperDesc = filter.OperDesc,
-                    Bom = filter.Bom,
-                    Variant = filter.Variant,
+                    Operation = filter.Operation ?? string.Empty,
+                    OperDesc = filter.OperDesc ?? string.Empty,
+                    Bom = filter.Bom ?? string.Empty,
+                    Variant = filter.Variant ?? string.Empty,
                     ItemDesc = filter.ItemDesc,
                     Moid = filter.Moid,
                     Mono = filter.Mono,
-                    Uom = filter.Uom,
                     CreationDate = filter.CreationDate,
-                    ProductionQty = filter.ProductionQty,
-                    ProducedQty = filter.ProducedQty,
-                    ResQty = filter.ResQty,
+                    Uom = filter.Uom,
+                    ProductionQty = filter.ProductionQty ?? 0.0,
+                    ProducedQty = filter.ProducedQty ?? 0.0,
+                    ResQty = filter.ResQty ?? 0.0,
                     Storage = filter.Storage,
                     Wc = filter.Wc,
-                    WorkingTime = filter.WorkingTime
+                    WorkingTime = filter.WorkingTime,
+                    Imported = filter.Imported ?? false,
+                    UserImp = filter.UserImp,
+                    DataImp = filter.DataImp
                 };
 
                 list.Add(regOre);

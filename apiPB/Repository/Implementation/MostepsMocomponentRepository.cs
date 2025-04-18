@@ -3,16 +3,27 @@ using apiPB.Models;
 using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Filters;
+using System.Linq.Expressions;
 
 namespace apiPB.Repository.Implementation
 {
-    public class MostepsMocomponentRepository : IMostepsMocomponentRepository
+    public class MostepsMocomponentRepository : IMostepsMocomponentRepository, IGenericRepository<VwApiMostepsMocomponent>
     {
         private readonly ApplicationDbContext _context;
 
         public MostepsMocomponentRepository(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public IEnumerable<VwApiMostepsMocomponent> GetFiltered(Expression<Func<VwApiMostepsMocomponent, bool>> predicate, bool distinct = false)
+        {
+            var query = _context.VwApiMostepsMocomponents.AsNoTracking().Where(predicate);
+            
+            if (distinct)
+                query = query.Distinct();
+            
+            return query.ToList();
         }
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponent(MostepsMocomponentRequestFilter filter)
@@ -60,40 +71,28 @@ namespace apiPB.Repository.Implementation
             return list;
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(MostepsMocomponentJobFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(MostepsMocomponentRequestFilter filter)
         {
-            return _context.VwApiMostepsMocomponents
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job)
-            .Distinct()
-            .ToList();
+            GetFiltered(m => m.Job == filter.Job, true);
+            return _context.VwApiMostepsMocomponents;
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MostepsMocomponentMonoFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MostepsMocomponentRequestFilter filter)
         {
-            return _context.VwApiMostepsMocomponents
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate)
-            .Distinct()
-            .ToList();
+            GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate, true);
+            return _context.VwApiMostepsMocomponents;
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(MostepsMocomponentOperationFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(MostepsMocomponentRequestFilter filter)
         {
-            return _context.VwApiMostepsMocomponents
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation)
-            .Distinct()
-            .ToList();
+            GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation, true);
+            return _context.VwApiMostepsMocomponents;
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentBarCodeFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentRequestFilter filter)
         {
-            return _context.VwApiMostepsMocomponents
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode)
-            .Distinct()
-            .ToList();
+            GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode, true);
+            return _context.VwApiMostepsMocomponents;
         }
     }
 }

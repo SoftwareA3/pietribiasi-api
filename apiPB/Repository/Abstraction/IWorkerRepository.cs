@@ -20,14 +20,14 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiWorker: restituisce un oggetto del modello VwApiWorker
         /// </returns>
-        VwApiWorker? GetWorkerByPassword(PasswordWorkersRequestFilter filter);
+        VwApiWorker? GetWorkerByPassword(WorkersFilter filter);
 
         /// <summary>
         /// Invoca la stored procedure dbo.InsertWorkersFields passando workerId e la dataora corrente
         /// </summary>
         /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId, FieldValue</param>
         /// <returns></returns>
-        Task CallStoredProcedure(WorkerIdAndValueRequestFilter filter);
+        Task CallStoredProcedure(WorkersFieldFilter filter);
 
         /// <summary>
         /// Recupera il lavoratore tramite la password. Tramite il lavoratore recupera il workerId e lo passa alla stored procedure dbo.InsertWorkersFields
@@ -36,7 +36,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// Task: restituisce un task che rappresenta l'operazione asincrona. Aggiorna il campo LastLogin della tabella RmWorkersFields o inserisce un nuovo record se non esiste
         /// </returns>
-        Task CreateOrUpdateLastLogin (PasswordWorkersRequestFilter filter);
+        Task CreateOrUpdateLastLogin (WorkersFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della tabella RmWorkersField, filtrate per WorkerId
@@ -45,7 +45,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di RmWorkersField: restituisce una collezione generica di modelli RmWorkersField
         /// </returns>
-        IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter);
+        IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkersFieldFilter filter);
 
         /// <summary>
         /// Esegue la query per ottenere il record con linea massima, dato il WorkerId
@@ -54,7 +54,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// RmWorkersField: restituisce il record con linea massima della tabella RmWorkersField
         /// </returns>
-        RmWorkersField? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter);
+        RmWorkersField? GetLastWorkerFieldLine(WorkersFieldFilter filter);
 
         /// <summary>
         /// /// Esegue una query su id e password per trovare un lavoratore
@@ -63,6 +63,6 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// VwApiWorker: restituisce un oggetto del modello VwApiWorker
         /// </returns>
-        VwApiWorker GetWorkerByIdAndPassword(WorkerIdAndPasswordFilter filter);
+        VwApiWorker GetWorkerByIdAndPassword(WorkersFilter filter);
     }
 }

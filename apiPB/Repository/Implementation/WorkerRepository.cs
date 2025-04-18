@@ -21,30 +21,35 @@ namespace apiPB.Repository.Implementation
             return _context.VwApiWorkers.AsNoTracking().ToList();
         }
 
-        public VwApiWorker? GetWorkerByPassword(PasswordWorkersRequestFilter filter)
+        public VwApiWorker? GetWorkerByPassword(WorkersFilter filter)
         {
             return _context.VwApiWorkers.AsNoTracking().FirstOrDefault(w => w.Password == filter.Password);
         }
 
-        public Task CallStoredProcedure(WorkerIdAndValueRequestFilter filter)
+        public Task CallStoredProcedure(WorkersFieldFilter filter)
         {
             Console.WriteLine("Calling stored procedure dbo.InsertWorkersFields: {0}, {1}", filter.WorkerId, filter.FieldValue);
+            if (filter.WorkerId == null || filter.FieldValue == null)
+            {
+                throw new ArgumentNullException("WorkerId or FieldValue cannot be null.");
+            }
+
             return _context.Database.ExecuteSqlRawAsync("EXEC dbo.InsertWorkersFields @WorkerId = {0}, @FieldValue = {1}", 
-            filter.WorkerId, filter.FieldValue);
+                filter.WorkerId, filter.FieldValue);
         }
 
-        public async Task CreateOrUpdateLastLogin (PasswordWorkersRequestFilter filter)
+        public async Task CreateOrUpdateLastLogin (WorkersFilter filter)
         {
             var vwApiWorker = GetWorkerByPassword(filter);
-            var workerIdRequestFilter = new WorkerIdAndValueRequestFilter
+            var workersFieldFilter = new WorkersFieldFilter
             {
                 WorkerId = vwApiWorker?.WorkerId ?? throw new InvalidOperationException("Worker not found."),
                 FieldValue = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
             }; 
-            await CallStoredProcedure(workerIdRequestFilter);
+            await CallStoredProcedure(workersFieldFilter);
         }
 
-        public IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter)
+        public IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkersFieldFilter filter)
         {
             return _context.RmWorkersFields
             .Where(w => w.WorkerId == filter.WorkerId)
@@ -52,7 +57,7 @@ namespace apiPB.Repository.Implementation
             .ToList();
         }
 
-        public RmWorkersField? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter)
+        public RmWorkersField? GetLastWorkerFieldLine(WorkersFieldFilter filter)
         {
             // SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC
             return _context.RmWorkersFields
@@ -62,7 +67,7 @@ namespace apiPB.Repository.Implementation
             .FirstOrDefault();
         }
 
-        public VwApiWorker GetWorkerByIdAndPassword(WorkerIdAndPasswordFilter filter)
+        public VwApiWorker GetWorkerByIdAndPassword(WorkersFilter filter)
         {
             return _context.VwApiWorkers
             .Where(w => w.WorkerId == filter.WorkerId && w.Password == filter.Password)

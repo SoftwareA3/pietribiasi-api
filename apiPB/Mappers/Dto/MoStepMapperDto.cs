@@ -10,8 +10,8 @@ namespace apiPB.Mappers.Dto
 {
     public static class MoStepMapperDto
     {
-        // Dto Modelli
-        public static MostepDto ToMostepDto(this VwApiMostep mostepModel)
+        // Da Model a Dto
+        public static MostepDto ToMostepDtoFromModel(this VwApiMostep mostepModel)
         {
             return new MostepDto
             {
@@ -36,33 +36,55 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        // Dto Richieste
-        public static MostepJobRequestDto ToMostepRequestDto(this VwApiMostep mostepModel)
+        // Da Dto a Request
+        public static MostepRequestDto ToMostepRequestDtoFromDto(this MostepDto mostepDto)
         {
-            return new MostepJobRequestDto
+            return new MostepRequestDto
             {
-                Job = mostepModel.Job ?? string.Empty
+                Job = mostepDto.Job,
+                RtgStep = mostepDto.RtgStep,
+                Alternate = mostepDto.Alternate,
+                AltRtgStep = mostepDto.AltRtgStep,
+                Operation = mostepDto.Operation,
+                OperDesc = mostepDto.OperDesc,
+                Bom = mostepDto.Bom,
+                Variant = mostepDto.Variant,
+                ItemDesc = mostepDto.ItemDesc,
+                Moid = mostepDto.Moid,
+                Mono = mostepDto.Mono,
+                CreationDate = mostepDto.CreationDate,
+                Uom = mostepDto.Uom,
+                ProductionQty = mostepDto.ProductionQty,
+                ProducedQty = mostepDto.ProducedQty,
+                ResQty = mostepDto.ResQty,
+                Storage = mostepDto.Storage,
+                Wc = mostepDto.Wc
             };
         }
 
-        public static MostepMonoRequestDto ToMostepOdpRequestDto(this VwApiMostep mostepOdpModel)
+        // Da Request a Dto
+        public static MostepDto ToMostepDtoFromRequest(this MostepRequestDto requestDto)
         {
-            return new MostepMonoRequestDto
+            return new MostepDto
             {
-                Job = mostepOdpModel.Job ?? string.Empty,
-                Mono = mostepOdpModel.Mono ?? string.Empty,
-                CreationDate = mostepOdpModel.CreationDate
-            };
-        }
-
-        public static MostepOperationRequestDto ToMostepLavorazioniRequestDto(this VwApiMostep mostepLavorazioniModel)
-        {
-            return new MostepOperationRequestDto
-            {
-                Job = mostepLavorazioniModel.Job ?? string.Empty,
-                Mono = mostepLavorazioniModel.Mono ?? string.Empty,
-                CreationDate = mostepLavorazioniModel.CreationDate,
-                Operation = mostepLavorazioniModel.Operation ?? string.Empty
+                Job = requestDto.Job ?? string.Empty,
+                RtgStep = requestDto.RtgStep ?? 0,
+                Alternate = requestDto.Alternate ?? string.Empty,
+                AltRtgStep = requestDto.AltRtgStep ?? 0,
+                Operation = requestDto.Operation ?? string.Empty,
+                OperDesc = requestDto.OperDesc ?? string.Empty,
+                Bom = requestDto.Bom ?? string.Empty,
+                Variant = requestDto.Variant ?? string.Empty,
+                ItemDesc = requestDto.ItemDesc ?? string.Empty,
+                Moid = requestDto.Moid ?? 0,
+                Mono = requestDto.Mono ?? string.Empty,
+                CreationDate = requestDto.CreationDate,
+                Uom = requestDto.Uom ?? string.Empty,
+                ProductionQty = requestDto.ProductionQty ?? 0,
+                ProducedQty = requestDto.ProducedQty ?? 0,
+                ResQty = requestDto.ResQty ?? 0,
+                Storage = requestDto.Storage ?? string.Empty,
+                Wc = requestDto.Wc ?? string.Empty
             };
         }
     }

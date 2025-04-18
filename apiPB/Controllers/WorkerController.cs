@@ -80,13 +80,13 @@ namespace apiPB.Controllers
         /// <summary>
         /// Ritorna Alcune informazioni della tabella RmWorkersField con Last Login aggiornato o inserito con un nuovo record
         /// /// </summary>
-        /// <param name="passwordWorkersRequestDto">Oggetto PasswordWorkersRequestDto: richiede la password dell'utente</param>
+        /// <param name="workersRequestDto">Oggetto PasswordWorkersRequestDto: richiede la password dell'utente</param>
         /// <response code="201">Creato</response>
         /// <response code="404">Non trovato</response>
-        public async Task<IActionResult> UpdateOrCreateLastLogin([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
+        public async Task<IActionResult> UpdateOrCreateLastLogin([FromBody] WorkersRequestDto workersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-            var lastWorkerField = await _workerRequestService.UpdateOrCreateLastLogin(passwordWorkersRequestDto);
+            var lastWorkerField = await _workerRequestService.UpdateOrCreateLastLogin(workersRequestDto);
 
             if(lastWorkerField == null)
             {
@@ -108,14 +108,14 @@ namespace apiPB.Controllers
         /// </summary>
         /// <returns>WorkerDto; 200 OK se le credenziali sono corrette, altrimenti 404 Not Found.</returns>
         [HttpPost("login")]
-        public IActionResult LoginWithPassword([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
+        public IActionResult LoginWithPassword([FromBody] WorkersRequestDto workersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
-            var workerDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
+            var workerDto = _workerRequestService.LoginWithPassword(workersRequestDto);
             if(workerDto == null)
             {
-                _logService.AppendMessageAndItemToLog(requestPath, NotFound().StatusCode, "Not Found", passwordWorkersRequestDto);
+                _logService.AppendMessageAndItemToLog(requestPath, NotFound().StatusCode, "Not Found", workersRequestDto);
                 return NotFound();
             }
             

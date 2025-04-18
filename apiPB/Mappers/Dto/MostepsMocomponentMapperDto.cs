@@ -10,8 +10,8 @@ namespace apiPB.Mappers.Dto
 {
     public static class MostepsMocomponentMapperDto
     {
-        // Dto Modelli
-        public static MostepsMocomponentDto ToMostepsMocomponentDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        // Da Model a Dto
+        public static MostepsMocomponentDto ToMostepsMocomponentDtoFromModel(this VwApiMostepsMocomponent mostepsMocomponentModel)
         {
             return new MostepsMocomponentDto
             {
@@ -37,57 +37,60 @@ namespace apiPB.Mappers.Dto
                 BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
             };
         }
-        // Dto Richieste
-        public static MostepsMocomponentRequestDto ToMostepsMocomponentRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+
+        // Da Dto a Request
+        public static MostepsMocomponentRequestDto ToMostepsMocomponentRequestDtoFromDto(this MostepsMocomponentDto mostepsMocomponentDto)
         {
             return new MostepsMocomponentRequestDto
             {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                RtgStep = mostepsMocomponentModel.RtgStep,
-                Alternate = mostepsMocomponentModel.Alternate ?? string.Empty,
-                AltRtgStep = mostepsMocomponentModel.AltRtgStep,
-                Position = mostepsMocomponentModel.Position,
-                Component = mostepsMocomponentModel.Component ?? string.Empty
+                Job = mostepsMocomponentDto.Job,
+                RtgStep = mostepsMocomponentDto.RtgStep,
+                Alternate = mostepsMocomponentDto.Alternate,
+                AltRtgStep = mostepsMocomponentDto.AltRtgStep,
+                Operation = mostepsMocomponentDto.Operation,
+                OperDesc = mostepsMocomponentDto.OperDesc,
+                Position = mostepsMocomponentDto.Position,
+                Component = mostepsMocomponentDto.Component,
+                Bom = mostepsMocomponentDto.Bom,
+                Variant = mostepsMocomponentDto.Variant,
+                ItemDesc = mostepsMocomponentDto.ItemDesc,
+                Moid = mostepsMocomponentDto.Moid,
+                Mono = mostepsMocomponentDto.Mono,
+                CreationDate = mostepsMocomponentDto.CreationDate,
+                UoM = mostepsMocomponentDto.UoM,
+                ProductionQty = mostepsMocomponentDto.ProductionQty,
+                ProducedQty = mostepsMocomponentDto.ProducedQty,
+                ResQty = mostepsMocomponentDto.ResQty,
+                Storage = mostepsMocomponentDto.Storage,
+                BarCode = mostepsMocomponentDto.BarCode
             };
         }
 
-        public static MostepsMocomponentJobRequestDto ToMostepsMocomponentJobRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        // Da Request a Dto
+        public static MostepsMocomponentDto ToMostepsMocomponentDtoFromRequest(this MostepsMocomponentRequestDto mostepsMocomponentRequestDto)
         {
-            return new MostepsMocomponentJobRequestDto
+            return new MostepsMocomponentDto
             {
-                Job = mostepsMocomponentModel.Job ?? string.Empty
-            };
-        }
-        public static MostepsMocomponentMonoRequestDto ToMostepsMocomponentMonoRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new MostepsMocomponentMonoRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate
-            };
-        }
-
-        public static MostepsMocomponentOperationRequestDto ToMostepsMocomponentOperationRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new MostepsMocomponentOperationRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate,
-                Operation = mostepsMocomponentModel.Operation ?? string.Empty
-            };
-        }
-
-        public static MostepsMocomponentBarCodeRequestDto ToMostepsMocomponentBarCodeRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new MostepsMocomponentBarCodeRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate,
-                Operation = mostepsMocomponentModel.Operation ?? string.Empty,
-                BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
+                Job = mostepsMocomponentRequestDto.Job ?? string.Empty,
+                RtgStep = mostepsMocomponentRequestDto.RtgStep ?? 0,
+                Alternate = mostepsMocomponentRequestDto.Alternate ?? string.Empty,
+                AltRtgStep = mostepsMocomponentRequestDto.AltRtgStep ?? 0,
+                Operation = mostepsMocomponentRequestDto.Operation ?? string.Empty,
+                OperDesc = mostepsMocomponentRequestDto.OperDesc ?? string.Empty,
+                Position = mostepsMocomponentRequestDto.Position ?? 0,
+                Component = mostepsMocomponentRequestDto.Component ?? string.Empty,
+                Bom = mostepsMocomponentRequestDto.Bom ?? string.Empty,
+                Variant = mostepsMocomponentRequestDto.Variant ?? string.Empty,
+                ItemDesc = mostepsMocomponentRequestDto.ItemDesc ?? string.Empty,
+                Moid = mostepsMocomponentRequestDto.Moid ?? 0,
+                Mono = mostepsMocomponentRequestDto.Mono ?? string.Empty,
+                CreationDate = mostepsMocomponentRequestDto.CreationDate,
+                UoM = mostepsMocomponentRequestDto.UoM ?? string.Empty,
+                ProductionQty = mostepsMocomponentRequestDto.ProductionQty ?? 0.0,
+                ProducedQty = mostepsMocomponentRequestDto.ProducedQty ?? 0.0,
+                ResQty = mostepsMocomponentRequestDto.ResQty ?? 0.0,
+                Storage = mostepsMocomponentRequestDto.Storage ?? string.Empty,
+                BarCode = mostepsMocomponentRequestDto.BarCode
             };
         }
     }

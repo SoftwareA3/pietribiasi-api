@@ -41,24 +41,19 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        // Request
-        public static WorkersFieldRequestDto ToWorkersFieldRequestDto(this RmWorkersField workersField)
+        public static WorkersRequestDto ToWorkersRequestDtoFromDto(this WorkerDto workerDto)
         {
-            return new WorkersFieldRequestDto
+            return new WorkersRequestDto
             {
-                WorkerId = workersField.WorkerId,
-                Line = workersField.Line,
-                FieldName = workersField.FieldName,
-                FieldValue = workersField.FieldValue
-            };
-        }
-
-        public static WorkerIdAndPasswordRequestDto ToWorkerIdAndPasswordRequestDto(this WorkerDto worker)
-        {
-            return new WorkerIdAndPasswordRequestDto
-            {
-                WorkerId = worker.WorkerId,
-                Password = worker.Password ?? string.Empty
+                WorkerId = workerDto.WorkerId,
+                Name = workerDto.Name,
+                LastName = workerDto.LastName,
+                Pin = workerDto.Pin,
+                Password = workerDto.Password,
+                TipoUtente = workerDto.TipoUtente,
+                StorageVersamenti = workerDto.StorageVersamenti,
+                Storage = workerDto.Storage,
+                LastLogin = workerDto.LastLogin
             };
         }
     }

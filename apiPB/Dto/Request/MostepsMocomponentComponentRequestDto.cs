@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Filters
+namespace apiPB.Dto.Request
 {
-    public class MostepsMocomponentRequestFilter
+    public class MostepsMocomponentComponentRequestDto
     {
         public string Job { get; set; } = null!;
 

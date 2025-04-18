@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Dto.Request
+namespace apiPB.Filters
 {
-    public class WorkersFieldRequestDto
+    public class WorkersFieldFilter
     {
         public int? WorkerId { get; set; }
         public short? Line { get; set; }

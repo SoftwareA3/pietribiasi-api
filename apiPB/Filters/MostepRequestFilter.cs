@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Dto.Request
+namespace apiPB.Filters
 {
-    public class MostepsMocomponentRequestDto
+    public class MostepRequestFilter
     {
         public string? Job { get; set; } = null!;
 
@@ -19,10 +19,6 @@ namespace apiPB.Dto.Request
 
         public string? OperDesc { get; set; }
 
-        public short? Position { get; set; }
-
-        public string? Component { get; set; }
-
         public string? Bom { get; set; }
 
         public string? Variant { get; set; }
@@ -35,7 +31,7 @@ namespace apiPB.Dto.Request
 
         public DateTime? CreationDate { get; set; }
 
-        public string? UoM { get; set; }
+        public string? Uom { get; set; }
 
         public double? ProductionQty { get; set; }
 
@@ -45,6 +41,6 @@ namespace apiPB.Dto.Request
 
         public string? Storage { get; set; } = null!;
 
-        public string? BarCode { get; set; }
+        public string? Wc { get; set; }
     }
 }
