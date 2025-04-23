@@ -21,10 +21,8 @@ namespace apiPB.Services.Request.Implementation
 
         public IEnumerable<RegOreDto> GetAppRegOre()
         {
-            var result = _repository.GetAppRegOre()
+            return _repository.GetAppRegOre()
             .Select(m => m.ToA3AppRegOreDto());
-
-            return result;
         }
 
         public IEnumerable<RegOreDto> PostAppRegOre(IEnumerable<RegOreRequestDto> requestList)

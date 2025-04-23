@@ -9,12 +9,12 @@ namespace apiPB.Dto.Request
     {
         public string Job { get; set; } = null!;
 
-        public string? Mono { get; set; }
+        public required string Mono { get; set; }
 
-        public DateTime? CreationDate { get; set; }
+        public required DateTime CreationDate { get; set; }
 
-        public string? Operation { get; set; }
+        public required string Operation { get; set; }
         
-        public string? BarCode { get; set; }
+        public required string BarCode { get; set; }
     }
 }

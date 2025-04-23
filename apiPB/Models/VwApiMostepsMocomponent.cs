@@ -44,4 +44,6 @@ public partial class VwApiMostepsMocomponent
     public string Storage { get; set; } = null!;
 
     public string? BarCode { get; set; }
+
+    public string? Wc { get; set; }
 }

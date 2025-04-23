@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class ViewOrePutFilter
+    public class ViewPrelMatDeleteFilter
     {
-        public int RegOreId { get; set; }
-        public long WorkingTime { get; set; }
+        public int PrelMatId { get; set; }
     }
 }

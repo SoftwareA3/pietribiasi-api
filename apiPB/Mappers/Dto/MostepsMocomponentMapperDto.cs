@@ -34,7 +34,8 @@ namespace apiPB.Mappers.Dto
                 ProducedQty = mostepsMocomponentModel.ProducedQty,
                 ResQty = mostepsMocomponentModel.ResQty,
                 Storage = mostepsMocomponentModel.Storage ?? string.Empty,
-                BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
+                BarCode = mostepsMocomponentModel.BarCode ?? string.Empty,
+                Wc = mostepsMocomponentModel.Wc ?? string.Empty
             };
         }
         // Dto Richieste
@@ -64,7 +65,7 @@ namespace apiPB.Mappers.Dto
             {
                 Job = mostepsMocomponentModel.Job ?? string.Empty,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate
+                CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue
             };
         }
 
@@ -74,7 +75,7 @@ namespace apiPB.Mappers.Dto
             {
                 Job = mostepsMocomponentModel.Job ?? string.Empty,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate,
+                CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue,
                 Operation = mostepsMocomponentModel.Operation ?? string.Empty
             };
         }
@@ -85,7 +86,7 @@ namespace apiPB.Mappers.Dto
             {
                 Job = mostepsMocomponentModel.Job ?? string.Empty,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate,
+                CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue,
                 Operation = mostepsMocomponentModel.Operation ?? string.Empty,
                 BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
             };

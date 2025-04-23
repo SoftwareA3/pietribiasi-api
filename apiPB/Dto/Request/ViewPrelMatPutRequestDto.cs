@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class ViewOrePutRequestDto
+    public class ViewPrelMatPutRequestDto
     {
-        public int RegOreId { get; set; }
-        public long WorkingTime { get; set; }
+        public int PrelMatId { get; set; }
+        public int PrelQty { get; set; }
     }
 }

@@ -35,6 +35,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IMoStepRepository, MoStepRepository>();
     builder.Services.AddScoped<IMostepsMocomponentRepository, MostepsMocomponentRepository>();
     builder.Services.AddScoped<IRegOreRepository, RegOreRepository>();
+    builder.Services.AddScoped<IPrelMatRepository, PrelMatRepository>();
     
     // Services
     builder.Services.AddScoped<LogService>();
@@ -43,6 +44,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IMoStepRequestService, MoStepRequestService>();
     builder.Services.AddScoped<IMostepsMocomponentRequestService, MostepsMocomponentRequestService>();
     builder.Services.AddScoped<IRegOreRequestService, RegOreRequestService>();
+    builder.Services.AddScoped<IPrelMatRequestService, PrelMatRequestService>();
 
     builder.Services.AddCors(options =>
     {
@@ -61,6 +63,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAutoMapper(typeof(MoStepMapperFilters));
     builder.Services.AddAutoMapper(typeof(MostepsMocomponentMapperFilters));
     builder.Services.AddAutoMapper(typeof(RegOreMapperFilters));
+    builder.Services.AddAutoMapper(typeof(PrelMatMapperFilters));
 }
 
 var app = builder.Build();

@@ -3,10 +3,11 @@ using apiPB.Models;
 using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Filters;
+using System.Linq.Expressions;
 
 namespace apiPB.Repository.Implementation
 {
-    public class MoStepRepository : IMoStepRepository
+    public class MoStepRepository : IMoStepRepository, IGenericRepository<VwApiMostep>
     {
         private readonly ApplicationDbContext _context;
 
@@ -15,32 +16,30 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
+        public IEnumerable<VwApiMostep> GetFiltered(Expression<Func<VwApiMostep, bool>> predicate, bool distinct = false)
+        {
+            var query = _context.VwApiMosteps.AsNoTracking().Where(predicate);
+            
+            if (distinct)
+                query = query.Distinct();
+            
+            return query.ToList();
+        }
+
         public IEnumerable<VwApiMostep> GetMostepWithJob(MostepJobFilter filter)
         {
-            // FIXME: controllo sui parametri e sulla richiesta
-            return _context.VwApiMosteps
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job)
-            .Distinct()
-            .ToList();
+            
+            return GetFiltered(m => m.Job == filter.Job, true);
         }
 
         public IEnumerable<VwApiMostep> GetMostepWithMono(MostepMonoFilter filter)
         {
-            return _context.VwApiMosteps
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate)
-            .Distinct()
-            .ToList();
+            return GetFiltered(m =>  m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate, true);
         }
 
         public IEnumerable<VwApiMostep> GetMostepWithOperation(MostepOperationFilter filter)
         {
-            return _context.VwApiMosteps
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation)
-            .Distinct()
-            .ToList();
+            return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.CreationDate == filter.CreationDate, true);
         }
     }
 }

@@ -16,6 +16,8 @@ public partial class ApplicationDbContext : DbContext
     {
     }
 
+    public virtual DbSet<A3AppPrelMat> A3AppPrelMats { get; set; }
+
     public virtual DbSet<A3AppRegOre> A3AppRegOres { get; set; }
 
     public virtual DbSet<MaStorage> MaStorages { get; set; }
@@ -38,6 +40,58 @@ public partial class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<A3AppPrelMat>(entity =>
+        {
+            entity.HasKey(e => e.PrelMatId).HasName("PK__A3_app_p__60B8A8DCA3FFA42A");
+
+            entity.ToTable("A3_app_prel_mat");
+
+            entity.Property(e => e.Alternate)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.BarCode)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Bom)
+                .IsUnicode(false)
+                .HasColumnName("BOM");
+            entity.Property(e => e.Component).IsUnicode(false);
+            entity.Property(e => e.CreationDate).HasColumnType("datetime");
+            entity.Property(e => e.DataImp).HasColumnType("datetime");
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Moid).HasColumnName("MOId");
+            entity.Property(e => e.Mono)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("MONo");
+            entity.Property(e => e.OperDesc).IsUnicode(false);
+            entity.Property(e => e.Operation)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.SavedDate).HasColumnType("datetime");
+            entity.Property(e => e.Storage)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.UoM)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.UserImp)
+                .HasMaxLength(1)
+                .IsUnicode(false);
+            entity.Property(e => e.Variant)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Wc)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("WC");
+            entity.Property(e => e.WorkerId)
+                .HasMaxLength(10)
+                .IsFixedLength();
+        });
+
         modelBuilder.Entity<A3AppRegOre>(entity =>
         {
             entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D93438267709");
@@ -778,6 +832,10 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Variant)
                 .HasMaxLength(21)
                 .IsUnicode(false);
+            entity.Property(e => e.Wc)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .HasColumnName("WC");
         });
 
         modelBuilder.Entity<VwApiWorker>(entity =>

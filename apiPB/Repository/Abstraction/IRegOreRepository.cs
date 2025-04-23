@@ -33,7 +33,7 @@ namespace apiPB.Repository.Abstraction
         /// <summary>
         /// Aggiorna la riga della tabella A3_app_reg_ore in base al filtro passato
         /// </summary>
-        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: RegOreId, WorkingTime</param>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: FromDate, ToDate, Job, Mono, Operation</param>
         /// <returns>
         /// A3AppRegOre: restituisce l'elemento modificato
         /// </returns>

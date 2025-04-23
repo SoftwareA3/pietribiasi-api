@@ -8,7 +8,9 @@ namespace apiPB.Filters
     public class MostepsMocomponentMonoFilter
     {
         public string Job { get; set; } = null!;
-        public string? Mono { get; set; }
-        public DateTime? CreationDate { get; set; }
+
+        public required string Mono { get; set; }
+
+        public required DateTime CreationDate { get; set; }
     }
 }

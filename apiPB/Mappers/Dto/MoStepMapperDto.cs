@@ -51,7 +51,7 @@ namespace apiPB.Mappers.Dto
             {
                 Job = mostepOdpModel.Job ?? string.Empty,
                 Mono = mostepOdpModel.Mono ?? string.Empty,
-                CreationDate = mostepOdpModel.CreationDate
+                CreationDate = mostepOdpModel.CreationDate ?? DateTime.MinValue
             };
         }
 
@@ -61,7 +61,7 @@ namespace apiPB.Mappers.Dto
             {
                 Job = mostepLavorazioniModel.Job ?? string.Empty,
                 Mono = mostepLavorazioniModel.Mono ?? string.Empty,
-                CreationDate = mostepLavorazioniModel.CreationDate,
+                CreationDate = mostepLavorazioniModel.CreationDate ?? DateTime.MinValue,
                 Operation = mostepLavorazioniModel.Operation ?? string.Empty
             };
         }
