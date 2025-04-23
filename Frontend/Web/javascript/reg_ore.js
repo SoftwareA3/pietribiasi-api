@@ -316,6 +316,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     lavorazioneInput.value = "";
                     oreInput.value = "";
                     noContent.classList.remove("hidden");
+                    alert("Dati salvati con successo!");
                 } else {
                     console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
                 }

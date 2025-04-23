@@ -28,6 +28,10 @@
 
 /* Miglioramenti per il layout delle liste di elementi */
 .item-list {
+    min-height: 390px; 
+    max-height: 390px; 
+    padding: 10px;
+    box-sizing: border-box; 
     border: 1px solid var(--gray-200);
     border-radius: var(--border-radius-sm);
     margin-top: var(--spacing-4);
@@ -147,6 +151,35 @@
 
 .icon-button.delete {
     color: var(--error);
+}
+
+
+.option-button.confirm {
+    color: var(--success);
+}
+
+.option-button.confirm:hover {
+    background-color: var(--success);
+    color: var(--white);
+}
+
+.option-button.cancel {
+    color: var(--error);
+}
+
+.option-button.cancel:hover {
+    background-color: var(--error);
+    color: var(--white);
+}
+
+/* Animazione per evidenziare la modifica */
+.just-updated {
+    animation: highlight-update 2s ease-out;
+}
+
+@keyframes highlight-update {
+    0% { color: var(--success); font-weight: bold; }
+    100% { color: var(--primary-color); }
 }
 
 /* Stile per loader durante la ricerca */

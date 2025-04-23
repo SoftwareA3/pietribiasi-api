@@ -1,5 +1,6 @@
 import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
+import {createPagination} from "./pagination.js";
 
 // Variabili globali per mantenere lo stato
 let filteredList = [];
@@ -319,13 +320,28 @@ function populateOreList(data) {
         oreList.appendChild(li);
     });
     
-    if (data.length > 10) {
-        oreList.style.maxHeight = '500px';
-        oreList.style.overflowY = 'auto';
-    } else {
-        oreList.style.maxHeight = '';
-        oreList.style.overflowY = '';
+    var pagination = createPagination("#ore-list");
+    if(pagination)
+    {
+        pagination.updatePaginationControls();
     }
+
+    if(data.length < 6)
+    {
+        const paginationContainer = document.querySelector('.pagination-controls');
+        if (paginationContainer) {
+            paginationContainer.classList.add('hidden');
+        }
+    }
+
+    // // Gestisce lo scroll della lista se ci sono più di 10 elementi
+    // if (data.length > 10) {
+    //     oreList.style.maxHeight = '500px';
+    //     oreList.style.overflowY = 'auto';
+    // } else {
+    //     oreList.style.maxHeight = '';
+    //     oreList.style.overflowY = '';
+    // }
 }
 
 // Funzione per gestire la modifica delle ore

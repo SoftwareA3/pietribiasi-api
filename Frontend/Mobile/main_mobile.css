@@ -80,6 +80,18 @@
     display: none; /* Nascondi testo bottone su mobile */
 }
 
+/* Pagination */
+.pagination-controls {
+    gap: var(--spacing-1);
+}
+
+.pagination-button {
+    min-width: 32px;
+    height: 32px;
+    padding: var(--spacing-1);
+    font-size: 0.9rem;
+}
+
 /* Footer */
 .app-footer {
     text-align: center;

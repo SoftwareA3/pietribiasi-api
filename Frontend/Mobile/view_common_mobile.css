@@ -12,6 +12,11 @@
     margin-bottom: var(--spacing-2);
 }
 
+.item-list {
+    min-height: auto;
+    max-height: none;
+}
+
 /* Sistemazione elementi lista */
 .item-list li {
     padding: var(--spacing-2);

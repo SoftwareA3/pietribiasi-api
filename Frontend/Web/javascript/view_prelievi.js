@@ -1,5 +1,6 @@
 import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
+import { createPagination } from "./pagination.js";
 
 // Variabili globali per mantenere lo stato
 let filteredList = [];
@@ -128,7 +129,7 @@ async function refreshAutocompleteData() {
     const filteredObject = createFilterObject();
     const tempData = await fetchViewPrelievi(filteredObject);
     
-    // Estrae i valori unici per ciascuna lista
+    // Estrae i valori unici per ciascuna lista se necessario
     commessaList = extractUniqueValues(tempData, 'job');
     lavorazioneList = extractUniqueValues(tempData, 'operation');
     odpList = extractUniqueValues(tempData, 'mono');
@@ -168,6 +169,7 @@ function extractUniqueValues(data, field) {
     return uniqueValues;
 }
 
+// Recupera tutti i prelievi dalla tabella A3_app_prel_mat
 async function fetchAllViewPrelievi() {
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/prel_mat/get_all", {
@@ -190,6 +192,7 @@ async function fetchAllViewPrelievi() {
     }
 }
 
+// Funzione per recuperare i prelievi filtrati
 async function fetchViewPrelievi(filteredObject) {
     // console.log("Chiamata API con filtri:", filteredObject);
 
@@ -238,7 +241,7 @@ function populatePrelieviList(data) {
         const li = document.createElement("li");
         li.dataset.id = item.prelMatId; // Aggiunge un data attribute per identificare l'elemento
         
-        // Formatta la data in un formato leggibile
+        // Formatta la data in un formato più leggibile
         const savedDate = new Date(item.savedDate);
         const formattedDate = savedDate.toLocaleDateString("it-IT");
         
@@ -328,16 +331,31 @@ function populatePrelieviList(data) {
         prelieviList.appendChild(li);
     });
     
-    if (data.length > 10) {
-        prelieviList.style.maxHeight = '500px';
-        prelieviList.style.overflowY = 'auto';
-    } else {
-        prelieviList.style.maxHeight = '';
-        prelieviList.style.overflowY = '';
+    var pagination = createPagination("#prelievi-list");
+    if(pagination)
+    {
+        pagination.updatePaginationControls();
     }
+
+    if(data.length < 6)
+    {
+        const paginationContainer = document.querySelector('.pagination-controls');
+        if (paginationContainer) {
+            paginationContainer.classList.add('hidden');
+        }
+    }
+
+    // // Aggiunge la classe per lo scroll se ci sono più di 10 elementi
+    // if (data.length > 10) {
+    //     prelieviList.style.maxHeight = '500px';
+    //     prelieviList.style.overflowY = 'auto';
+    // } else {
+    //     prelieviList.style.maxHeight = '';
+    //     prelieviList.style.overflowY = '';
+    // }
 }
 
-// Funzione per gestire la modifica delle ore
+// Funzione per gestire la modifica delle quantità
 function editPrelievi(item) {
     // Identifica gli elementi DOM necessari
     const prelieviValueSpan = document.getElementById(`prel-value-${item.prelMatId}`);
@@ -358,7 +376,7 @@ function editPrelievi(item) {
     }
 }
 
-// Funzione per salvare le modifiche alle ore
+// Funzione per salvare le modifiche alle quantità prelevate
 async function savePrelieviEdit(item) {
     // Ottiene il nuovo valore dall'input
     const editInput = document.getElementById(`edit-prel-input-${item.prelMatId}`);
@@ -421,7 +439,7 @@ function cancelPrelieviEdit(item) {
     if (editContainer) editContainer.classList.add("hidden");
 }
 
-// Funzione per gestire l'eliminazione delle ore
+// Funzione per gestire l'eliminazione di un prelievo
 async function deletePrelievi(item) {
     const deleteData = {
         prelMatId: item.prelMatId
@@ -430,7 +448,6 @@ async function deletePrelievi(item) {
     if (!confirm("Sei sicuro di voler eliminare questa registrazione?")) {
         return;
     }
-    // Inserire body e non ID
     
     try {
         const response = await fetchWithAuth(`http://localhost:5245/api/prel_mat/view_prel_mat/delete_prel_mat_id`, {

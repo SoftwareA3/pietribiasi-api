@@ -63,6 +63,10 @@
     margin-left: 5px;
 }
 
+.item-list li{
+    gap: var(--spacing-3);
+}
+
 .item-info-tooltip:hover::after {
     content: attr(data-tooltip);
     position: absolute;
@@ -76,4 +80,13 @@
     width: 250px;
     font-size: 0.8rem;
     box-shadow: var(--shadow);
+}
+
+.edit-prel-input{
+    width: 70px;
+    padding: var(--spacing-1);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-sm);
+    text-align: center;
+    font-weight: var(--font-weight-bold);
 }

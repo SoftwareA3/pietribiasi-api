@@ -393,6 +393,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     barcodeInput.value = "";
                     quantitaInput.value = "1";
                     noContent.classList.remove("hidden");
+                    alert("Dati salvati con successo");
                 } else {
                     console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
                 }
