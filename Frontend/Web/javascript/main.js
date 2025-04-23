@@ -11,16 +11,15 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
     
     // Carica l'header
-    await fetch("../html/header.html")
-        .then(response => response.text())
-        .then(data => {
-            const headerElement = document.getElementsByClassName("header")[0];
-            if (headerElement) {
-                headerElement.innerHTML = data;
-            }
-        })
-        .catch(error => console.error("Error loading header:", error));
+    // await fetch("../html/header.html")
+    //     .then(response => response.text())
+    //     .then(data => {
+            
+    //     })
+    //     .catch(error => console.error("Error loading header:", error));
     
+    const headerElement = document.getElementsByClassName("app-header")[0]; 
+
     setupLogoutButton();
     await loadWorkerInfo();
 });
@@ -33,7 +32,6 @@ function setupLogoutButton() {
             deleteCookie("basicAuthCredentials");
             deleteCookie("userInfo");
             sessionStorage.removeItem("login");
-            window.location.href = "../html/login.html";
         });
     }
 }
@@ -101,6 +99,6 @@ function displayCurrentDate() {
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
 
-    today = mm + '/' + dd + '/' + yyyy;
+    today = dd + '/' + mm + '/' + yyyy;
     return today;
 }

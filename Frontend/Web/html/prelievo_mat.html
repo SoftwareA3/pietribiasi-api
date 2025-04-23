@@ -24,7 +24,23 @@
         <script src="../javascript/prelievo_mat.js" type="module"></script>
     </head>
     <body>
-        <div class="header"></div>
+        <header class="app-header" id="main-app-header">
+            <div class="header-left">
+                <div id="logo" class="logo">P</div>
+                <h1 id="header-title">Pietribiasi App</h1>
+            </div>
+            
+            <div class="user-info">
+                <span id="current-user">
+                    <span class="username-text"></span>
+                </span>
+                <i class="fa-solid fa-user"></i>
+                <button onclick="location.href = '../html/login.html';" id="logout" class="btn btn-secondary">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                    <span class="btn-text">Logout</span>
+                </button>
+            </div>
+        </header>
         <main class="container">
             <div class="card">
                 <div class="card-header">Prelievo Materiali per Produzione</div>
@@ -76,7 +92,7 @@
                         <button type="button" id="inv-add-list" class="button button-primary">Aggiungi 
                             <i class="fa-solid fa-plus button-icon"></i>
                         </button>
-                        <button type="submit" id="inv-save" class="button button-secondary">Salva 
+                        <button type="button" id="inv-save" class="button button-secondary">Salva 
                             <i class="fa-solid fa-floppy-disk button-icon"></i>
                         </button>
                             <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla

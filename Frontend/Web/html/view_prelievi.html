@@ -23,9 +23,27 @@
         <!-- Script (caricati in modo asincrono) -->
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
+        <script src="../javascript/autocomplete.js" type="module"></script>
+        <script src="../javascript/view_prelievi.js" type="module" defer></script>
     </head>
     <body>
-        <div class="header"></div>
+        <header class="app-header" id="main-app-header">
+            <div class="header-left">
+                <div id="logo" class="logo">P</div>
+                <h1 id="header-title">Pietribiasi App</h1>
+            </div>
+            
+            <div class="user-info">
+                <span id="current-user">
+                    <span class="username-text"></span>
+                </span>
+                <i class="fa-solid fa-user"></i>
+                <button onclick="location.href = '../html/login.html';" id="logout" class="btn btn-secondary">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                    <span class="btn-text">Logout</span>
+                </button>
+            </div>
+        </header>
         <main class="container">
             <div class="card">
                 <div class="card-header">Visualizza Prelievi Effettuati</div>
@@ -39,19 +57,31 @@
                     </div>
                     <div class="form-group">
                         <label for="filter-prel-commessa">Commessa:</label>
-                        <input type="text" id="filter-prel-commessa" name="filter-prel-commessa">
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-commessa" name="filter-prel-commessa" autocomplete="off">
+                            <div id="filter-prel-commessa-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="filter-prel-barcode">Barcode Articolo:</label>
-                        <input type="text" id="filter-prel-barcode" name="filter-prel-barcode">
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-barcode" name="filter-prel-barcode" autocomplete="off">
+                            <div id="filter-prel-barcode-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="filter-prel-lavorazione">Lavorazione:</label>
-                        <input type="text" id="filter-prel-lavorazione" name="filter-prel-lavorazione">
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-lavorazione" name="filter-prel-lavorazione" autocomplete="off">
+                            <div id="filter-prel-lavorazione-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="filter-prel-odp">Ordine Produzione:</label>
-                        <input type="text" id="filter-prel-odp" name="filter-prel-odp">
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-odp" name="filter-prel-odp" autocomplete="off">
+                            <div id="filter-prel-odp-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
                     </div>
                     <div class="buttons-container">
                         <button type="button" id="filter-prel-submit" class="button button-primary">Filtra 
@@ -64,17 +94,10 @@
                 </form>
 
                 <ul id="prelievi-list" class="item-list" style="margin-top: 20px;">
-                    <li>
-                        <div class="item-content">
-                            <strong>Commessa:</strong> COMM001 | <strong>Articolo:</strong> ART001 - Tubo Inox 50mm | <strong>Lav:</strong> LAV001 | <strong>ODP:</strong> ODP12345 | <strong>Q.tà:</strong> 5 | <strong>Data:</strong> 01/04/2025
-                        </div>
-                    </li>
-                    <li>
-                        <div class="item-content">
-                            <strong>Commessa:</strong> COMM002 | <strong>Articolo:</strong> ART007 - Valvola XYZ | <strong>Lav:</strong> LAV003 | <strong>ODP:</strong> ODP67890 | <strong>Q.tà:</strong> 1 | <strong>Data:</strong> 31/03/2025
-                        </div>
-                    </li>
                 </ul>
+                <div id="nocontent" class="nocontent">
+                    Nessun elemento da visualizzare
+                </div>
             </div>
         </main>
         <footer class="app-footer" id="app-main-footer">

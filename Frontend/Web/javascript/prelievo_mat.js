@@ -2,16 +2,6 @@ import { fetchWithAuth } from "./fetch.js";
 import { getCookie } from "./cookies.js";
 import { setupAutocomplete } from "./autocomplete.js";
 
-// Codice preso da reg_ore.js
-// Funzione per gestire l'autocompletamento
-
-// TODO:
-// 1. Modificare gli id degli input recuperati e delle liste di autocomplete
-// 2. Modificare il popolamento della tabella di ricerca
-// 3. Modificare il salvataggio dei dati
-// 4. Modificare il salvataggio dei dati temporanei
-// 5. Modificare le richieste all'API, sostituendole con le richieste all'endpoint mostepsmocomponent
-
 document.addEventListener("DOMContentLoaded", async function () {
     // Recupera elementi DOM
     const commessaInput = document.getElementById("prel-mat-commessa");
@@ -128,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
             const selectedOdp = findSelectedItem(odlInput.value, odpList);
             const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-            const selectedBarcode = barcodeList.find(item => item.barCode === barcodeInput.value);
+            const selectedBarcode = barcodeList.find(item => item.barCode === barcodeInput.value.toUpperCase());
             barcodeInput.value = selectedBarcode ? selectedBarcode.display : "";
     
             if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode) {
@@ -137,11 +127,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log("Lavorazione selezionata:", selectedLavorazione);
                 console.log("Barcode selezionato:", selectedBarcode);
                 await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+                barcodeAutocompleteList.classList.add("hidden");
                 quantitaInput.focus();
             }
         }
     });
-        
+
+    quantitaInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            addButton.click();
+        }
+    });
 
     // Event listener per il pulsante Cerca - Ora apre la tabella overlay
     cercaButton.addEventListener("click", async function() {
@@ -253,7 +250,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             if(selectedSearchRow.barCode) {
-                barcodeInput.value = `${selectedSearchRow.barCode} - ${selectedSearchRow.itemDesc}`;
+                barcodeInput.value = `Item: ${selectedSearchRow.component} - Code: ${selectedSearchRow.barCode} - ${selectedSearchRow.itemDesc}`;
             }
 
             // Trigger per barcode
@@ -284,7 +281,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (results.length === 0) {
             const row = searchResultsBody.insertRow();
             const cell = row.insertCell();
-            cell.colSpan = 9;
+            cell.colSpan = 12;
             cell.textContent = "Nessun risultato trovato";
             return;
         }
@@ -304,7 +301,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             cellCreationDate.textContent = result.creationDate;
             
             const cellUM = row.insertCell();
-            cellUM.textContent = result.um;
+            cellUM.textContent = result.uom;
             
             const cellResQty = row.insertCell();
             cellResQty.textContent = result.resQty;
@@ -350,8 +347,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    // DA CAPIRE SE VA MANTENUTO IL RECUPERO DELL'ID DEL LAVORATORE
-
     // SaveButton: chiamata all'API passando dataResultList per salvare i dati.
     // Chiama la rimozione di tutti gli elementi dalla lista temporanea
     saveButton.addEventListener("click", async function() {
@@ -370,42 +365,40 @@ document.addEventListener("DOMContentLoaded", async function () {
             // Aggiunge il workerId a ogni oggetto nella lista
             dataResultList.forEach(item => {
                 item.workerId = workerId;
-                item.workingTime = (item.workingTime * 3600); // Converte ore in secondi
             });
             console.log("Lista con Worker ID:", dataResultList);
             console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
             console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
 
-            // CAPIRE DOVE VANNO CARICATI I DATI
-
-            // try {
-            //     const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/post_reg_ore", {
-            //         method: "POST",
-            //         headers: {
-            //             "Content-Type": "application/json"
-            //         },
-            //         body: JSON.stringify(dataResultList),
-            //     });
-            //     if (response.ok) {
-            //         const result = await response.json();
-            //         console.log("Dati salvati con successo:", result);
-            //         // Pulisce la lista temporanea
-            //         const list = document.getElementById("reg-ore-lista-temp");
-            //         while (list.firstChild) {
-            //             list.removeChild(list.firstChild);
-            //         }
-            //         dataResultList = []; // Resetta la lista dei risultati
-            //         commessaInput.value =  "";
-            //         odlInput.value = "";
-            //         lavorazioneInput.value = "";
-            //         oreInput.value = "";
-            //         noContent.classList.remove("hidden");
-            //     } else {
-            //         console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
-            //     }
-            // } catch (error) {
-            //     console.error("Errore durante la richiesta di salvataggio:", error);
-            // }
+            try {
+                const response = await fetchWithAuth("http://localhost:5245/api/prel_mat/post_prel_mat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dataResultList),
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log("Dati salvati con successo:", result);
+                    // Pulisce la lista temporanea
+                    const list = document.getElementById("prel-mat-lista-temp");
+                    while (list.firstChild) {
+                        list.removeChild(list.firstChild);
+                    }
+                    dataResultList = []; // Resetta la lista dei risultati
+                    commessaInput.value =  "";
+                    odlInput.value = "";
+                    lavorazioneInput.value = "";
+                    barcodeInput.value = "";
+                    quantitaInput.value = "1";
+                    noContent.classList.remove("hidden");
+                } else {
+                    console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Errore durante la richiesta di salvataggio:", error);
+            }
         } else {
             alert("Nessun dato da salvare. Aggiungi prima un elemento.");
         }
@@ -446,24 +439,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                     moid: result.moid,
                     mono: result.mono,
                     creationDate: result.creationDate,
-                    uom: result.uom,
+                    uoM: result.uoM,
                     productionQty: result.productionQty,
                     producedQty: result.producedQty,
                     resQty: result.resQty,
                     storage: result.storage,
                     barCode: result.barCode,
-                    quantita: selectedQta
-                    //wc: result.wc,
+                    wc: result.wc,
+                    prelQty: selectedQta
                 }
                 dataResultList.push(data);
-                // console.log("Lista di risultati:", dataResultList);
+                console.log("Lista di risultati:", dataResultList);
                 addToTemporaryList(data, dataResultList);
-                // Reset campo ore
+                // Reset campo quantità
                 commessaInput.value = "";
                 odlInput.value = "";
                 lavorazioneInput.value = "";
                 barcodeInput.value = "";
-                quantitaInput.value = "";
+                quantitaInput.value = "1";
             } else {
                 alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
             }
@@ -533,17 +526,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             const barCodeResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
             console.log("Risultato barcode:", barCodeResult);
             barcodeList = barCodeResult
-                .filter(barCode => barCode && barCode.barCode && barCode.itemDesc)
+                .filter(barCode => barCode && barCode.barCode && barCode.itemDesc && barCode.component)
                 .map(barCode => ({
+                    component: barCode.component,
                     barCode: barCode.barCode,
                     itemDesc: barCode.itemDesc,
-                    display: `${barCode.barCode} - ${barCode.itemDesc}`
+                    display: `Item: ${barCode.component} - Code: ${barCode.barCode} - ${barCode.itemDesc}`
                 }));
 
-            console.log("Lista di lavorazioni:", barcodeList);
+            console.log("Lista di barcode:", barcodeList);
             setupAutocomplete(barcodeInput, barcodeAutocompleteList, barcodeList);
         } catch (error) {
-            console.error("Errore nel caricamento dei dati lavorazione:", error);
+            console.error("Errore nel caricamento dei dati barcode:", error);
         }
     }
 
@@ -701,7 +695,7 @@ function addToTemporaryList(data, dataResultList) {
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc} / ${data.component}</p><strong>Qta: ${data.quantita}</strong></div>
+        <div class="item-content"><p>Comm: ${data.job} / MoId ${data.moid} - MoNo ${data.mono} / Lav: ${data.operation} / Desc: ${data.operDesc} / Item: ${data.component} / Code: ${data.barCode}</p><strong>Qta: ${data.prelQty}</strong></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>

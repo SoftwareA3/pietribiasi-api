@@ -8,6 +8,7 @@
 }
 
 #prel-mat-quantita {
+    color: var(--secondary-color);
     max-width: 150px;
     font-size: 1.2rem;
     background-color: var(--gray-100);
