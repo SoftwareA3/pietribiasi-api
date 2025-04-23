@@ -5,6 +5,8 @@
    - [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
    - [Registrazione Ore Commessa](#registrazione-ore-commessa)
    - [Visualizza Ore Registrate](#visualizza-ore-registrate)
+   - [Prelievo Materiali Produzione](#prelievo-materiali-produzione)
+   - [Visualizza Prelievi Effettuati](#visualizza-prelievi-effettuati) 
 2. [Backend](#backend)
    - [Divisione](#divisione)
    - [Controllers](#controllers)
@@ -33,13 +35,17 @@
 ## Accesso e validazione delle credenziali
 Per l'accesso alla pagina principale dell'applicazione, è necessario l'inserimento di un Codice Addetto. 
 Inserita questa password, viene inoltrata una richiesta all'API per il recupero dell'ID del lavoratore. 
-Queste due credenziali verranno poi validate attraverso una ricerca di corrispondenza nel database e utilizzate come username(Id) e password(password) per la validazione in Basic Authentication. Queste variabili vengono salvate nella parte FrontEnd in localStorage e rimosse una volta effettuato il Logout. 
-Questo viene fatto per permettere l'inoltro di altre richieste all'API che richiedono l'autorizzazione tramite Basic Authentication. 
+Queste due credenziali verranno poi validate attraverso una ricerca di corrispondenza nel database e utilizzate come username(Id) e password(password) per la validazione in Basic Authentication. Queste variabili vengono salvate nella parte FrontEnd tramite dei cookies e rimosse una volta effettuato il Logout.
+Questo viene fatto per permettere l'inoltro di altre richieste all'API che richiedono l'autorizzazione tramite Basic Authentication.
+I cookies hanno durata massima di 24 ore, di conseguenza dopo un giorno, è necessario rieffettuare l'accesso se la sessione è stata lasciata aperta. 
+
+## Viste
+Ogni vista è dotata di campi compilabili e liste con gli elementi selezionati tramite gli input. Le liste sono dotate di paginazione. È possibile cambiare pagina premendo il tasto **Successiva** per la pagina successiva e **Precedente** per quella precedente. In alternativa è possibile premere uno dei numeri di pagina per viaggiare rapidamente ad una delle pagine.
 
 ## Registrazione Ore Commessa
 La pagina per la registrazione delle ore di una commessa si presenta come una serie di campi: 
 - Al click sul primo campo, vengono rese visibili in un elenco sotto l’input, tutte le commesse disponibili. Inserendo parte del codice della commessa, vengono filtrate quelle disponibili nell’elenco in modo da restringere il campo.
-- Selezionata la commessa, si può inserire l’**Ordine di Lavoro** nella stessa maniera e di conseguenza anche la **Lavorazione**.
+- Selezionata la commessa, si può inserire l’**Ordine di Produzione** nella stessa maniera e di conseguenza anche la **Lavorazione**.
 - Ogni campo richiede che il precedente sia inserito o selezionato correttamente. Se viene modificato uno dei campi precedenti, quelli successivi, essendone dipendenti, vengono resettati.
 - Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**, indicato anche tramite l'icona 🔎. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
 - Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
@@ -79,6 +85,54 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
 - **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione
+
+## Prelievo Materiali Produzione
+La pagina per il Prelievo di Materiali per Produzione si presenta come una serie di campi: 
+- Al click sul primo campo, vengono rese visibili in un elenco sotto l’input, tutte le commesse disponibili. Inserendo parte del codice della commessa, vengono filtrate quelle disponibili nell’elenco in modo da restringere il campo.
+- Selezionata la commessa, si può inserire l’**Ordine di Produzione** nella stessa maniera e di conseguenza anche la **Lavorazione**.
+- Selezionati tutti i campi, è disponibile un ultimo campo prima dell'inserimento della quantità: questo campo, denominato **Barcode Articolo**, rappresenta il codice dell'articolo e il barcode dell'articolo. Essendo che un articolo può avere più barcode, è possibile inserire porzione del barcode o dell'articolo e visualizzare la lista di autocompletamento dalla quale selezionare l'articolo e il barcode necessari. Inoltre è possibile inserire il barcode completo nell'input e premere "Invio" per compilare in automatico barcode e articolo associato. Quest'operazione garantisce che l'imput di una pistola barcode possa incollare il codice di un barcode nell'input e inviarlo in automatico. Selezionando il campo dalla lista di autocompletamento o premento invio con un barcode, il focus si sposta nell'input della selezione delle quantità
+- Ogni campo richiede che il precedente sia inserito o selezionato correttamente. Se viene modificato uno dei campi precedenti, quelli successivi, essendone dipendenti, vengono resettati.
+- Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**, indicato anche tramite l'icona 🔎. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
+- Quando tutti i campi sono completi, sono da inserire le **Quantità**. Inserite anche le quantità, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
+- Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
+- Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_prel_mat**.
+In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
+
+## Visualizza Prelievi Effettuati
+La pagina per la visualizzazione dei prelievi effettuati, si presenta con una serie di campi:
+- **Data Da**: rappresenta il filtro per la data dalla quale cercare i prelievi effettuati. L'ora del campo parte dalla mezzanotte del giorno indicato.
+- **Data A**: rappresenta il filtro per la data fino alla quale cercare i prelievi effettuati. L'ora del campo arriva fino alle 23 e 59 del giorno indicato.
+- **Commessa**: rappresenta il filtro per il codice della commessa con il quale cercare i prelievi effettuati.
+- **Barcode Articolo**: rappresenta il filtro per il codice barcode tramite il quale cercare i prelievi effettuati
+- **Lavorazione**: rappresenta il filtro per il tipo di lavorazione eseguito, con il quale cercare i prelievi effettuati.
+- **Ordine di Produzione**: rappresenta il filtro per il codice dell'ordine di lavoro con il quale cercare i prelievi effettuati.
+
+Ogni campo nel quale è possibile inserire un testo, è dotato di un **autocomplete**: le informazioni vengono caricate preventivamente e vengono filtrate quelle disponibili (eliminando i doppioni) per fornire una lista di selezione che mostra gli elementi disponibili in base alla porzione di input inserita. 
+
+I campi che possiedono un autocomplete sono:
+- **Commessa**
+- **Barcode Articolo**
+- **Ordine di Produzione**
+- **Lavorazione**
+I campi **Data Da** e **Data A** filtrano in base alla data di salvataggio della quantità prelevata.
+
+Ad ogni campo compilato, è possibile premere il pulsante **Filtra**, indicato tramite l'icona di un imbuto per mostrare la lista delle Ore Registrate disponibili.
+
+Quando si cambia campo, viene inviato un segnale che permette allo script di ricevere le informazioni preventivamente e creare la lista di autocompletamento degli altri campi, prima che questi vengano selezionati, eliminando i doppioni in modo da mantenere una lista con elementi tutti diversi.
+
+La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Queste informazioni sono:
+- **Comm**: il codice della commessa
+- **Lav**: la lavorazione
+- **ODP**: l'ordine di produzione
+- **Barcode**: il codice barcode
+- **Qta**: la quantità prelevata
+- **Data**: la data nella quale è stata salvata la quantità prelevata
+
+È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata dal gestionale MAGO (rosso) o se è stata registrata utilizzando l'applicazione (verde).
+In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
+- **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database
+- **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare la quantità prelevata tramite la pressione del pulsante e la successiva conferma dell'operazione
 
 # Backend
 
