@@ -9,7 +9,7 @@ namespace apiPB.Dto.Models
     {
         public int RegOreId { get; set; }
 
-        public string? WorkerId { get; set; }
+        public int WorkerId { get; set; }
 
         public DateTime? SavedDate { get; set; }
 

@@ -42,7 +42,7 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<A3AppPrelMat>(entity =>
         {
-            entity.HasKey(e => e.PrelMatId).HasName("PK__A3_app_p__60B8A8DCA3FFA42A");
+            entity.HasKey(e => e.PrelMatId).HasName("PK__A3_app_p__60B8A8DC9287EC21");
 
             entity.ToTable("A3_app_prel_mat");
 
@@ -87,14 +87,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("WC");
-            entity.Property(e => e.WorkerId)
-                .HasMaxLength(10)
-                .IsFixedLength();
         });
 
         modelBuilder.Entity<A3AppRegOre>(entity =>
         {
-            entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D93438267709");
+            entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D9343703AF1E");
 
             entity.ToTable("A3_app_reg_ore");
 
@@ -136,9 +133,6 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("WC");
-            entity.Property(e => e.WorkerId)
-                .HasMaxLength(10)
-                .IsFixedLength();
         });
 
         modelBuilder.Entity<MaStorage>(entity =>

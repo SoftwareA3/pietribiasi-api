@@ -7,7 +7,7 @@ namespace apiPB.Dto.Request
 {
     public class PrelMatRequestDto
     {
-        public string? WorkerId { get; set; }
+        public int WorkerId { get; set; }
 
         public DateTime? SavedDate { get; set; }
 

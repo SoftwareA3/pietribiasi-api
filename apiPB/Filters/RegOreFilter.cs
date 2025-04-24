@@ -7,7 +7,7 @@ namespace apiPB.Filters
 {
     public class RegOreFilter
     {
-        public string? WorkerId { get; set; }
+        public int WorkerId { get; set; }
 
         public string? Job { get; set; }
 

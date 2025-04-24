@@ -15,7 +15,7 @@ namespace apiPB.Mappers.Dto
         {
             return new RegOreRequestDto
             {
-                WorkerId = a3AppRegOreModel.WorkerId ?? string.Empty,
+                WorkerId = a3AppRegOreModel.WorkerId,
                 Job = a3AppRegOreModel.Job ?? string.Empty,
                 RtgStep = a3AppRegOreModel.RtgStep,
                 Alternate = a3AppRegOreModel.Alternate ?? string.Empty,

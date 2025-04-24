@@ -7,7 +7,7 @@ public partial class A3AppPrelMat
 {
     public int PrelMatId { get; set; }
 
-    public string? WorkerId { get; set; }
+    public int WorkerId { get; set; }
 
     public DateTime? SavedDate { get; set; }
 
