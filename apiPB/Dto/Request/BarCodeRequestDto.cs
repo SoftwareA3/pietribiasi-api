@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class MostepsMocomponentJobRequestDto
-    {
-        public string Job { get; set; } = null!;
+    public class BarCodeRequestDto : OperationRequestDto
+    {   
+        public required string BarCode { get; set; }
     }
 }

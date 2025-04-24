@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class MostepJobFilter
+    public class BarCodeFilter : OperationFilter
     {
-        public string Job { get; set; } = null!;
+        public required string BarCode { get; set; }
     }
 }

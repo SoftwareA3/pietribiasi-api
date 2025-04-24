@@ -26,67 +26,67 @@ namespace apiPB.Repository.Implementation
             return query.ToList();
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponent(MostepsMocomponentRequestFilter filter)
-        {
-            // FIXME
-            var query = _context.VwApiMostepsMocomponents
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep);
+        // public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponent(MostepsMocomponentRequestFilter filter)
+        // {
+        //     // FIXME
+        //     var query = _context.VwApiMostepsMocomponents
+        //     .AsNoTracking()
+        //     .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep);
 
-            if (filter.Position != null)
-            {
-                query = query.Where(m => m.Position == filter.Position);
-            }
+        //     if (filter.Position != null)
+        //     {
+        //         query = query.Where(m => m.Position == filter.Position);
+        //     }
 
-            if (filter.Component != null)
-            {
-                query = query.Where(m => m.Component == filter.Component);
-            }
+        //     if (filter.Component != null)
+        //     {
+        //         query = query.Where(m => m.Component == filter.Component);
+        //     }
 
-            var list = query.ToList();
+        //     var list = query.ToList();
 
-            return list;
-        }
+        //     return list;
+        // }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentDistinct(MostepsMocomponentRequestFilter filter)
-        {
-            // FIXME
-            var query = _context.VwApiMostepsMocomponents
-            .AsNoTracking()
-            .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep)
-            .Distinct();
+        // public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentDistinct(MostepsMocomponentRequestFilter filter)
+        // {
+        //     // FIXME
+        //     var query = _context.VwApiMostepsMocomponents
+        //     .AsNoTracking()
+        //     .Where(m => m.Job == filter.Job && m.RtgStep == filter.RtgStep && m.Alternate == filter.Alternate && m.AltRtgStep == filter.AltRtgStep)
+        //     .Distinct();
 
-            if (filter.Position != null)
-            {
-                query = query.Where(m => m.Position == filter.Position);
-            }
+        //     if (filter.Position != null)
+        //     {
+        //         query = query.Where(m => m.Position == filter.Position);
+        //     }
 
-            if (filter.Component != null)
-            {
-                query = query.Where(m => m.Component == filter.Component);
-            }
+        //     if (filter.Component != null)
+        //     {
+        //         query = query.Where(m => m.Component == filter.Component);
+        //     }
 
-            var list = query.ToList();
+        //     var list = query.ToList();
 
-            return list;
-        }
+        //     return list;
+        // }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(MostepsMocomponentJobFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(JobFilter filter)
         {
             return GetFiltered(m => m.Job == filter.Job, true);
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MostepsMocomponentMonoFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MonoFilter filter)
         {
             return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate, true);
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(MostepsMocomponentOperationFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(OperationFilter filter)
         {
             return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.CreationDate == filter.CreationDate, true);
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentBarCodeFilter filter)
+        public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(BarCodeFilter filter)
         {
             return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode, true);
         }
