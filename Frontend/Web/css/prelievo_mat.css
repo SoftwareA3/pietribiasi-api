@@ -51,7 +51,7 @@ form p strong {
 #prel-mat-lista-temp strong {
     font-size: 1.05rem;
     margin-left: auto;
-    padding: var(--spacing-1) var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-2);
     width: 100%;
     max-width: 8rem;
     max-height: 2rem;

@@ -298,9 +298,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 item.workerId = workerId;
                 item.workingTime = (item.workingTime * 3600); // Converte ore in secondi
             });
-            // console.log("Lista con Worker ID:", dataResultList);
-            // console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
-            // console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
+            console.log("Lista con Worker ID:", dataResultList);
+            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
+            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
             try {
                 const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/post_reg_ore", {
                     method: "POST",

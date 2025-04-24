@@ -46,7 +46,7 @@ input[list] {
 
 #reg-ore-lista-temp strong {
     margin-left: auto;
-    padding: var(--spacing-1) var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-2);
     width: 100%;
     text-align: center;
     max-width: 8rem;
