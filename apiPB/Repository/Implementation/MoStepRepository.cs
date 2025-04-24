@@ -26,18 +26,18 @@ namespace apiPB.Repository.Implementation
             return query.ToList();
         }
 
-        public IEnumerable<VwApiMostep> GetMostepWithJob(MostepJobFilter filter)
+        public IEnumerable<VwApiMostep> GetMostepWithJob(JobFilter filter)
         {
             
             return GetFiltered(m => m.Job == filter.Job, true);
         }
 
-        public IEnumerable<VwApiMostep> GetMostepWithMono(MostepMonoFilter filter)
+        public IEnumerable<VwApiMostep> GetMostepWithMono(MonoFilter filter)
         {
             return GetFiltered(m =>  m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate, true);
         }
 
-        public IEnumerable<VwApiMostep> GetMostepWithOperation(MostepOperationFilter filter)
+        public IEnumerable<VwApiMostep> GetMostepWithOperation(OperationFilter filter)
         {
             return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.CreationDate == filter.CreationDate, true);
         }

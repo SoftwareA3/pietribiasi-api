@@ -12,7 +12,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponent(MostepsMocomponentRequestFilter filter); 
+        //IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponent(MostepsMocomponentRequestFilter filter); 
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentRequestFilter
@@ -20,7 +20,7 @@ namespace apiPB.Repository.Abstraction
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentDistinct(MostepsMocomponentRequestFilter filter);
+        //IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentDistinct(MostepsMocomponentRequestFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentJobFilter
@@ -30,7 +30,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(MostepsMocomponentJobFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(JobFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentMonoFilter
@@ -40,7 +40,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MostepsMocomponentMonoFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MonoFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentOperationFilter
@@ -50,7 +50,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(MostepsMocomponentOperationFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(OperationFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentBarCodeFilter
@@ -60,6 +60,6 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(MostepsMocomponentBarCodeFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(BarCodeFilter filter);
     }
 }

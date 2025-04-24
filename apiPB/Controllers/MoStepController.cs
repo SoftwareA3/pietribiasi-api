@@ -27,7 +27,7 @@ namespace apiPB.Controllers
         /// <param name="mostepRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetVwApiMostepWithJob([FromBody] MostepJobRequestDto mostepRequestDto)
+        public IActionResult GetVwApiMostepWithJob([FromBody] JobRequestDto mostepRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
@@ -52,7 +52,7 @@ namespace apiPB.Controllers
         /// <param name="mostepMonoRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetMostepWithMono([FromBody] MostepMonoRequestDto mostepMonoRequestDto)
+        public IActionResult GetMostepWithMono([FromBody] MonoRequestDto mostepMonoRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
@@ -77,7 +77,7 @@ namespace apiPB.Controllers
         /// <param name="mostepLavorazioniRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mostep</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetMostepWithOperation([FromBody] MostepOperationRequestDto mostepOperationRequestDto)
+        public IActionResult GetMostepWithOperation([FromBody] OperationRequestDto mostepOperationRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 

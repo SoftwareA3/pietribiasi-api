@@ -12,11 +12,11 @@ namespace apiPB.Mappers.Filters
     {
         public MostepsMocomponentMapperFilters()
         {
-            CreateMap<MostepsMocomponentRequestDto, MostepsMocomponentRequestFilter>();
-            CreateMap<MostepsMocomponentMonoRequestDto, MostepsMocomponentMonoFilter>();
-            CreateMap<MostepsMocomponentJobRequestDto, MostepsMocomponentJobFilter>();
-            CreateMap<MostepsMocomponentOperationRequestDto, MostepsMocomponentOperationFilter>();
-            CreateMap<MostepsMocomponentBarCodeRequestDto, MostepsMocomponentBarCodeFilter>();
+            //CreateMap<MostepsMocomponentRequestDto, MostepsMocomponentRequestFilter>();
+            CreateMap<MonoRequestDto, MonoFilter>();
+            CreateMap<JobRequestDto, JobFilter>();
+            CreateMap<OperationRequestDto, OperationFilter>();
+            CreateMap<BarCodeRequestDto, BarCodeFilter>();
         }
     }
 }

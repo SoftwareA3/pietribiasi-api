@@ -39,29 +39,29 @@ namespace apiPB.Mappers.Dto
             };
         }
         // Dto Richieste
-        public static MostepsMocomponentRequestDto ToMostepsMocomponentRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new MostepsMocomponentRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                RtgStep = mostepsMocomponentModel.RtgStep,
-                Alternate = mostepsMocomponentModel.Alternate ?? string.Empty,
-                AltRtgStep = mostepsMocomponentModel.AltRtgStep,
-                Position = mostepsMocomponentModel.Position,
-                Component = mostepsMocomponentModel.Component ?? string.Empty
-            };
-        }
+        // public static MostepsMocomponentRequestDto ToMostepsMocomponentRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        // {
+        //     return new MostepsMocomponentRequestDto
+        //     {
+        //         Job = mostepsMocomponentModel.Job ?? string.Empty,
+        //         RtgStep = mostepsMocomponentModel.RtgStep,
+        //         Alternate = mostepsMocomponentModel.Alternate ?? string.Empty,
+        //         AltRtgStep = mostepsMocomponentModel.AltRtgStep,
+        //         Position = mostepsMocomponentModel.Position,
+        //         Component = mostepsMocomponentModel.Component ?? string.Empty
+        //     };
+        // }
 
-        public static MostepsMocomponentJobRequestDto ToMostepsMocomponentJobRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        public static JobRequestDto ToMostepsMocomponentJobRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
         {
-            return new MostepsMocomponentJobRequestDto
+            return new JobRequestDto
             {
                 Job = mostepsMocomponentModel.Job ?? string.Empty
             };
         }
-        public static MostepsMocomponentMonoRequestDto ToMostepsMocomponentMonoRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        public static MonoRequestDto ToMostepsMocomponentMonoRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
         {
-            return new MostepsMocomponentMonoRequestDto
+            return new MonoRequestDto
             {
                 Job = mostepsMocomponentModel.Job ?? string.Empty,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
@@ -69,9 +69,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static MostepsMocomponentOperationRequestDto ToMostepsMocomponentOperationRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        public static OperationRequestDto ToMostepsMocomponentOperationRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
         {
-            return new MostepsMocomponentOperationRequestDto
+            return new OperationRequestDto
             {
                 Job = mostepsMocomponentModel.Job ?? string.Empty,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,
@@ -80,9 +80,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static MostepsMocomponentBarCodeRequestDto ToMostepsMocomponentBarCodeRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        public static BarCodeRequestDto ToMostepsMocomponentBarCodeRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
         {
-            return new MostepsMocomponentBarCodeRequestDto
+            return new BarCodeRequestDto
             {
                 Job = mostepsMocomponentModel.Job ?? string.Empty,
                 Mono = mostepsMocomponentModel.Mono ?? string.Empty,

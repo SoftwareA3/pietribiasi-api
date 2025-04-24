@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class WorkerIdAndPasswordRequestDto
+    public class WorkerIdAndPasswordRequestDto : PasswordWorkersRequestDto
     {
         public int WorkerId { get; set; }
-        public string Password { get; set; } = string.Empty;
     }
 }
