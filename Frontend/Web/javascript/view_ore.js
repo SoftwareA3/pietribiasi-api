@@ -248,11 +248,11 @@ function populateOreList(data) {
         
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
-            <strong>Comm:</strong> ${item.job} | 
-            <strong>Lav:</strong> ${item.operation} | 
-            <strong>ODP:</strong> ${item.mono} | 
-            <strong>Ore:</strong> <span class="ore-value" id="ore-value-${item.regOreId}">${convertedTime}</span>
-            <strong>Data:</strong> ${formattedDate}
+            <div><strong>Comm:</strong> ${item.job} </div>
+            <div><strong>Lav:</strong> ${item.operation} </div> 
+            <div><strong>ODP:</strong> ${item.mono} </div>
+            <div><strong>Data:</strong> ${formattedDate} </div>
+            <div><strong>Ore:</strong> <span class="ore-value" id="ore-value-${item.regOreId}">${convertedTime}</span> </div>
         `;
         
         li.appendChild(itemContent);
@@ -319,6 +319,12 @@ function populateOreList(data) {
         
         oreList.appendChild(li);
     });
+
+    var paginationControls = document.querySelector('.pagination-controls');
+    if(paginationControls)
+    {
+        paginationControls.remove();
+    }
     
     var pagination = createPagination("#ore-list");
     if(pagination)

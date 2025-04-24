@@ -84,8 +84,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Commessa selezionata:", selectedCommessa);
             console.log("ODP selezionato:", selectedOdp);
             console.log("Lavorazione selezionata:", selectedLavorazione);
-            oreInput.focus
             await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
+            oreInput.focus();
+        }
+    });
+
+    oreInput.addEventListener("keydown", function(event) {
+        if(event.key === "Enter") {
+            event.preventDefault(); // Previene il comportamento predefinito del tasto Invio
+            addButton.click(); // Simula il click sul pulsante Aggiungi
         }
     });
         
@@ -557,7 +564,9 @@ function addToTemporaryList(data, dataResultList) {
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><p>${data.job} / ${data.moid} - ${data.mono} / ${data.operation} / ${data.operDesc}</p><strong>${data.workingTime} ore</strong></div>
+        <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono} </div>
+        <div><spam class="item-content-heading">Operation:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc}</div>
+        <div><strong>Ore: ${data.workingTime}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>

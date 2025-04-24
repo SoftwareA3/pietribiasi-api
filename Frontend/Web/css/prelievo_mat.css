@@ -32,10 +32,15 @@ form p strong {
 
 /* Stile lista prelievi */
 #prel-mat-lista-temp .item-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-1);
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--spacing-2);
+    align-items: start;
+}
+
+.item-content-heading {
+    color: var(--secondary-color);
+    font-weight: bold;
 }
 
 #prel-mat-lista-temp .item-content p {

@@ -23,8 +23,9 @@
 }
 
 .item-content {
-    margin-bottom: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
     width: 100%;
+    max-width: 90%;
 }
 
 /* Organizzazione pulsanti azione */
@@ -32,6 +33,7 @@
     width: 100%;
     justify-content: flex-end;
     margin-left: 0;
+    margin-bottom: var(--spacing-1);
 }
 
 /* Adattamento status indicator */
@@ -71,6 +73,13 @@
 @media screen and (max-width: 360px) {
     .item-list li {
         padding: var(--spacing-1);
+    }
+
+    .item-content {
+        column-gap: 10px;
+        row-gap: 5px;
+        margin-bottom: var(--spacing-3);
+        align-items: end;
     }
     
     .status-indicator {

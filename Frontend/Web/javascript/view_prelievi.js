@@ -258,12 +258,13 @@ function populatePrelieviList(data) {
         
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
-            <strong>Comm:</strong> ${item.job} | 
-            <strong>Lav:</strong> ${item.operation} | 
-            <strong>ODP:</strong> ${item.mono} | 
-            <strong>Barcode:</strong> ${item.barCode} |
-            <strong>Qta:</strong> <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</span>
-            <strong>Data:</strong> ${formattedDate}
+            <div><strong>Comm:</strong> ${item.job} </div>
+            <div><strong>Lav:</strong> ${item.operation} </div> 
+            <div><strong>ODP:</strong> ${item.mono} </div>
+            <div><strong>Barcode:</strong> ${item.barCode} </div>
+            <div><strong>Item:</strong> ${item.component} </div>
+            <div><strong>Data:</strong> ${formattedDate} </div>
+            <div><strong>Qta: <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</strong></span> </div>
         `;
         
         li.appendChild(itemContent);
@@ -330,6 +331,12 @@ function populatePrelieviList(data) {
         
         prelieviList.appendChild(li);
     });
+
+    var paginationControls = document.querySelector('.pagination-controls');
+    if(paginationControls)
+    {
+        paginationControls.remove();
+    }
     
     var pagination = createPagination("#prelievi-list");
     if(pagination)

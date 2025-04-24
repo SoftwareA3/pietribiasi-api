@@ -1,12 +1,12 @@
 /* Stili mobile specifici per pagina ore */
 
-.item-content {
+/* .item-content {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-1);
     white-space: nowrap;
     flex-wrap: nowrap;
-}
+} */
 
 /* Gruppo principale info */
 .ore-main-info {

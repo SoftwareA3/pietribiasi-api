@@ -13,8 +13,6 @@
     height: 14px;
 }
 
-
-
 /* Badge per valori particolari */
 .ore-extra {
     background-color: rgba(255, 183, 0, 0.1);
@@ -74,7 +72,8 @@
 }
 
 .edit-ore-input {
-    width: 70px;
+    width: 90px;
+    font-size: 1rem;
     padding: var(--spacing-1);
     border: 1px solid var(--primary-color);
     border-radius: var(--border-radius-sm);

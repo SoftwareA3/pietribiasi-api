@@ -696,7 +696,10 @@ function addToTemporaryList(data, dataResultList) {
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><p>Comm: ${data.job} / MoId ${data.moid} - MoNo ${data.mono} / Lav: ${data.operation} / Desc: ${data.operDesc} / Item: ${data.component} / Code: ${data.barCode}</p><strong>Qta: ${data.prelQty}</strong></div>
+        <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono}</div>
+        <div><spam class="item-content-heading">Lav:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc} </div>
+        <div><spam class="item-content-heading">Item:</spam> ${data.component} - <spam class="item-content-heading">Code:</spam> ${data.barCode} </div>
+        <div><strong>Qta: ${data.prelQty}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>

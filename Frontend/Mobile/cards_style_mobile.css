@@ -61,10 +61,10 @@ input[type="number"] {
     align-items: flex-start;
 }
 
-.item-content {
+/* .item-content {
     margin-bottom: var(--spacing-2);
     width: 100%;
-}
+} */
 
 .item-actions {
     width: 100%;

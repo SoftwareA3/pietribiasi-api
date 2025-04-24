@@ -82,8 +82,16 @@
     box-shadow: var(--shadow);
 }
 
+.edit-prel-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-right: var(--spacing-2);
+}
+
 .edit-prel-input{
-    width: 70px;
+    width: 90px;
+    font-size: 1rem;
     padding: var(--spacing-1);
     border: 1px solid var(--primary-color);
     border-radius: var(--border-radius-sm);
