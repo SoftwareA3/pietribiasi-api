@@ -153,7 +153,7 @@ I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT,
 Classe che implementa Basic Authentication, un sistema di autenticazione che chiede allo user di inserire le credenziali "username" e "password", le codifica e le invia al BackEnd per la validazione. La classe si occupa di inviare la richiesta di autenticazione prima di una chiamata all'API e di validare questa richiesta. La validazione viene fatta su un controllo del formato della richiesta e sulla compatibilità tra le stinghe inserite e quelle salvate in appsettings.json.
 
 ## Data
-In data è salvata la classe che descrive il contesto del database. Tramite questa classe, si può accedere ai modelli e usarli per le interrogazioni/richieste al database, senza dover direttamente recuperare le tabelle ad ogni richiesta. La classe che descrive il database è generata automaticamente tramite scaffolding dal database (vedi la sezione [Comandi](#comandi)).
+In data è salvata la classe che descrive il contesto del database. Tramite questa classe, si può accedere ai modelli e usarli per le interrogazioni/richieste al database, senza dover direttamente recuperare le tabelle ad ogni richiesta. La classe che descrive il database è generata automaticamente tramite scaffolding dal database (vedi la sezione [Scaffolding](#scaffolding)).
 
 ## Dto
 Directory che contiene i file Dto (Data Transfer Object), ossia file di richiesta e risposta all'utente. Questi file sono i contenitori di informazioni che vengono inserite dall'utente (convertite dal JSON del corpo della richiesta) e ritornate dall'applicazione (convertite dal Dto al JSON) all'utente.
@@ -172,7 +172,7 @@ Filters è la directory che contiene i filtri, ossia classi che simulano i file 
 È stata implementata l'ereditarietà tra Dto di richiesta e Filtri in modo da ridurre il numero di Dto e filtri. L'idea è che attributi comuni a più Dto o Filtri, possono essere ereditate da Dto/Filtri generici e a quelli specifici spetta solo implementare gli attributi mancanti. Questo fa sì che modifiche alle singole classi richiedono più attenzioni in quanto alcune di queste strutture vengono adesso condivise da più classi. In caso è necessario creare Dto/Filtri ulteriori che implementano attributi specifici o ereditano da altri Dto/Filtri e poi si specializzano.
 
 ## Models
-Models è una directory che contiene i modelli generati automaticamente da EntityFramework, tramite scaffolding dal database (vedi sezione [Comandi](#comandi)). Ogni proprietà del modello rappresenta una colonna della tabella. I modelli sono fissi e per tanto vengono usati solo per essere letti dalla logica dell'applicazione quando necessario.
+Models è una directory che contiene i modelli generati automaticamente da EntityFramework, tramite scaffolding dal database (vedi sezione [Scaffolding](#scaffolding)). Ogni proprietà del modello rappresenta una colonna della tabella. I modelli sono fissi e per tanto vengono usati solo per essere letti dalla logica dell'applicazione quando necessario.
 
 ## Repository
 Il pattern Repository rappresenta un pattern che si occupa delle interazioni tra l'API e il database. In questo senso, si occupa di reucperare o inserire inserire infomrazioni nel database attraverso, ad esempio, creazione di oggetti da salvare nel database (crea modelli dalle informazioni ricevute in JSON), recupero di informazioni dal database (esecuzione di query tramite i filters passati) o occupandosi della logica (chiamate ad altri metodi, invocazione di stored procedure ecc...).
