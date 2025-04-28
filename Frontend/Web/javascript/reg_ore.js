@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     let selectedSearchRow = null;
     let dataResultList = [];
 
+    let isFillingFromOverlay = false;
+
     // Inizializza l'autocompletamento per la commessa e carica i dati iniziali
     try {
         const jobResult = await fetchAllJobs();
@@ -47,15 +49,34 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener per il cambio di commessa
     commessaInput.addEventListener("change", async function() {
-        // Resetta i campi dipendenti Ordine di Lavoro e Lavorazione
-        odlInput.value = "";
-        lavorazioneInput.value = "";
-        odpList = [];
-        lavorazioneList = [];
+
+        if (!isFillingFromOverlay)
+        {
+            // Resetta i campi dipendenti Ordine di Lavoro e Lavorazione
+            odlInput.value = "";
+            odlInput.disabled = true;
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            oreInput.disabled = true;
+            oreInput.value = "";
+            odpList = [];
+            lavorazioneList = [];
+        }
         
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         if (selectedCommessa) {
             await loadOdpData(selectedCommessa.job);
+        }
+        else {
+            // Se non viene trovata la commessa, resetta i campi
+            odlInput.value = "";
+            odlInput.disabled = true;
+            odpList = [];
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            lavorazioneList = [];
+            oreInput.disabled = true;
+            oreInput.value = "";
         }
     });
 
@@ -79,19 +100,30 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     odlInput.addEventListener("change", async function() {
+
+        if (!isFillingFromOverlay)
+            {
+                lavorazioneInput.value = "";
+                lavorazioneInput.disabled = true; 
+                lavorazioneList = [];
+                oreInput.disabled = true;
+                oreInput.value = "";
+            }
+
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
-    
-        // Resetta il campo lavorazione se i dati non sono validi
-        if (!selectedCommessa || !selectedOdp) {
-            lavorazioneInput.value = ""; 
-            lavorazioneList = [];
-            return;
+        if( selectedCommessa && selectedOdp) {
+            await loadLavorazioneData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate);
         }
-    
-        // Carica i dati della lavorazione solo se necessario
-        // Serve in caso di selezione dalla tabella in overlay
-        await loadLavorazioneData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate);
+        else
+        {
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true; 
+            lavorazioneList = [];
+            oreInput.disabled = true;
+            oreInput.value = "";
+        }
+
     });
 
     odlInput.addEventListener("focusout", function() {
@@ -120,6 +152,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
             oreInput.disabled = false;
             oreInput.focus();
+        }
+        else {
+            oreInput.disabled = true;
+            oreInput.value = "";
         }
     });
 
@@ -167,19 +203,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                 })));
             }
         } else {
-            // Se il campo commessa è vuoto, mostra tutti i lavori disponibili con struttura semplificata
-            filteredResults = jobList.map(job => ({
-                job: job.job,
-                description: job.description,
-                mono: '',
-                creationDate: '',
-                um: '',
-                resQty: '',
-                bom: '',
-                itemDesc: job.description || '',
-                operation: '',
-                operDesc: ''
-            }));
+            for(const job of jobList) {
+                const results = await fetchJobMostep(job.job);
+                console.log("Risultati della ricerca:", results);
+                filteredResults.push(...results.map(item => ({
+                    job: job.job,
+                    mono: item.mono || '',
+                    creationDate: item.creationDate || '',
+                    um: item.um || '',
+                    resQty: item.resQty || '',
+                    bom: item.bom || '',
+                    itemDesc: item.itemDesc || '',
+                    operation: item.operation || '',
+                    operDesc: item.operDesc || ''
+                })));
+            }
         }
         
         searchResults = filteredResults;
@@ -201,6 +239,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Event listener per il pulsante Seleziona
     selectSearchResultButton.addEventListener("click", function() {
         if (selectedSearchRow) {
+
+            isFillingFromOverlay = true; // Imposta il flag per evitare conflitti con gli eventi di input
+
             // Cerca il job corrispondente nella lista originale per ottenere la description
             const jobItem = jobList.find(job => job.job === selectedSearchRow.job);
             const description = jobItem ? jobItem.description : selectedSearchRow.itemDesc;
@@ -243,6 +284,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }, 600);
             }
 
+            setTimeout(() => {
+                console.log("isFillingFromOverlay:", isFillingFromOverlay);
+                isFillingFromOverlay = false; // Ripristina il flag
+            }, 900);
 
             // Chiude l'overlay
             searchOverlay.classList.remove("active");
@@ -423,8 +468,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // Reset campo ore
                 commessaInput.value = "";
                 odlInput.value = "";
+                odlInput.disabled = true;
                 lavorazioneInput.value = "";
+                lavorazioneInput.disabled = true;
                 oreInput.value = "";
+                oreInput.disabled = true;
             } else {
                 alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
             }
@@ -461,11 +509,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             const odpDistinctList = odpList.filter((item, index, self) =>
                 index === self.findIndex((t) => t.odp === item.odp && t.creationDate === item.creationDate));
             // console.log("Lista di ODP Distinti:", odpDistinctList);
-            if(odpDistinctList.length === 1) {
-                odlInput.value = odpDistinctList[0].display;
-                const event = new Event('change', { bubbles: true });
-                odlInput.dispatchEvent(event);
-                odlInput.disabled = true;
+            if (odpDistinctList.length === 1) {
+                setTimeout(() => {
+                    odlInput.value = odpDistinctList[0].display;
+                    const event = new Event('change', { bubbles: true });
+                    odlInput.dispatchEvent(event);
+                    odlInput.disabled = true;
+                }, 100);
             }
         } catch (error) {
             console.error("Errore nel caricamento dei dati ODP:", error);

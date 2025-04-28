@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     let selectedSearchRow = null;
     let dataResultList = [];
 
+    let isFillingFromOverlay = false;
+
     // Inizializza l'autocompletamento per la commessa e carica i dati iniziali
     try {
         const jobResult = await fetchAllJobs();
@@ -52,14 +54,30 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Event listener per il cambio di commessa
     commessaInput.addEventListener("change", async function() {
         // Resetta i campi dipendenti Ordine di Lavoro e Lavorazione
-        odlInput.value = "";
-        lavorazioneInput.value = "";
-        odpList = [];
-        lavorazioneList = [];
+        
+        if (isFillingFromOverlay)
+        {
+            odlInput.value = "";
+            odlInput.disabled = true;
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            quantitaInput.disabled = true;
+        }
         
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         if (selectedCommessa) {
             await loadOdpData(selectedCommessa.job);
+        }
+        else {
+            odlInput.value = "";
+            odlInput.disabled = true;
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            quantitaInput.disabled = true;
         }
     });
 
@@ -87,19 +105,33 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     odlInput.addEventListener("change", async function() {
-        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
-        const selectedOdp = findSelectedItem(odlInput.value, odpList);
     
-        // Resetta il campo lavorazione se i dati non sono validi
-        if (!selectedCommessa || !selectedOdp) {
-            lavorazioneInput.value = ""; 
-            lavorazioneList = [];
-            return;
+        if (!isFillingFromOverlay)
+        {
+            // Resetta il campo lavorazione se i dati non sono validi
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true; 
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            quantitaInput.disabled = true;
         }
     
         // Carica i dati della lavorazione solo se necessario
         // Serve in caso di selezione dalla tabella in overlay
-        await loadLavorazioneData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate);
+        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+        const selectedOdp = findSelectedItem(odlInput.value, odpList);
+        if (selectedCommessa && selectedOdp) {
+            await loadLavorazioneData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate);
+        }
+        else {
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true; 
+            lavorazioneList = [];
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            barcodeList = [];
+            quantitaInput.disabled = true;
+        }
     });
 
     odlInput.addEventListener("focusout", function() {
@@ -122,18 +154,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener per il cambio di lavorazione
     lavorazioneInput.addEventListener("change", async function() {
+    
+        if (!isFillingFromOverlay)
+        {
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            quantitaInput.disabled = true;
+        }
+
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
         const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-        
-        if (!selectedCommessa || !selectedOdp || !selectedLavorazione) {
-            barcodeInput.value = "";
-            barcodeList = [];
-            return;
-        }
 
-        await loadBarCodeData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation);
-        console.log("Lista barcode:", barcodeList);
+        if (selectedCommessa && selectedOdp && selectedLavorazione) {
+            await loadBarCodeData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation);
+            console.log("Lista barcode:", barcodeList);
+        }
     });
 
     lavorazioneInput.addEventListener("focusout", function() {
@@ -231,22 +267,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                 })));
             }
         } else {
-            // Se il campo commessa è vuoto, mostra tutti i lavori disponibili con struttura semplificata
-            filteredResults = jobList.map(job => ({
-                job: job.job,
-                description: job.description,
-                mono: '',
-                creationDate: '',
-                um: '',
-                resQty: '',
-                bom: '',
-                itemDesc: job.description || '',
-                operation: '',
-                operDesc: '',
-                component: '',
-                position: '', 
-                barCode: ''
-            }));
+            for(const job of jobList) {
+                const results = await fetchJobMostep(job.job);
+                console.log("Risultati della ricerca:", results);
+                filteredResults.push(...results.map(item => ({
+                    job: job.job,
+                    mono: item.mono || '',
+                    creationDate: item.creationDate || '',
+                    um: item.um || '',
+                    resQty: item.resQty || '',
+                    bom: item.bom || '',
+                    itemDesc: item.itemDesc || '',
+                    operation: item.operation || '',
+                    operDesc: item.operDesc || '',
+                    component: item.component || '',
+                    position: item.position || '',
+                    barCode: item.barCode || ''
+                })));
+            }
         }
         
         searchResults = filteredResults;
@@ -268,6 +306,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Event listener per il pulsante Seleziona
     selectSearchResultButton.addEventListener("click", function() {
         if (selectedSearchRow) {
+            
+            isFillingFromOverlay = true; // Imposta il flag per evitare conflitti con gli eventi di input
+
             // Cerca il job corrispondente nella lista originale per ottenere la description
             const jobItem = jobList.find(job => job.job === selectedSearchRow.job);
             const description = jobItem ? jobItem.description : selectedSearchRow.itemDesc;
@@ -285,24 +326,23 @@ document.addEventListener("DOMContentLoaded", async function () {
                 odlInput.value = ""; // Resetta il campo se non c'è un mono
             }
 
-            if (odlInput.value) {
+            if(odlInput.value) {
                 setTimeout(() => {
                     const odpEvent = new Event('change', { bubbles: true });
                     odlInput.dispatchEvent(odpEvent);
                     console.log("Evento change per ODP dispatched");
                 }, 300); // Piccolo ritardo per permettere al primo evento di completarsi
             }
-
             
             // Compila il campo lavorazione
             if (selectedSearchRow.operation) {
+                console.log("Lavorazione trovata in overlay:", selectedSearchRow.operation);
                 lavorazioneInput.value = `${selectedSearchRow.operation} - ${selectedSearchRow.operDesc}`;
             } else {
                 lavorazioneInput.value = ""; // Resetta il campo se non c'è un'operazione
             }
 
-            // Trigger per lavorazione
-            if (lavorazioneInput.value) {
+            if(lavorazioneInput.value) {
                 setTimeout(() => {
                     const lavorazioneEvent = new Event('change', { bubbles: true });
                     lavorazioneInput.dispatchEvent(lavorazioneEvent);
@@ -311,11 +351,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             if(selectedSearchRow.barCode) {
+                console.log("Barcode trovato in overlay:", selectedSearchRow.barCode);
                 barcodeInput.value = `Item: ${selectedSearchRow.component} - Code: ${selectedSearchRow.barCode} - ${selectedSearchRow.itemDesc}`;
             }
+            else {
+                barcodeInput.value = ""; // Resetta il campo se non c'è un barcode
+            }
 
-            // Trigger per barcode
-            if (barcodeInput.value) {
+            if(barcodeInput.value) {
                 setTimeout(() => {
                     const barcodeEvent = new Event('change', { bubbles: true });
                     barcodeInput.dispatchEvent(barcodeEvent);
@@ -323,6 +366,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }, 900);
             }
 
+            setTimeout(() => {
+                console.log("isFillingFromOverlay:", isFillingFromOverlay);
+                isFillingFromOverlay = false; // Ripristina il flag
+            }, 1000);
 
             // Chiude l'overlay
             searchOverlay.classList.remove("active");
@@ -450,9 +497,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                     dataResultList = []; // Resetta la lista dei risultati
                     commessaInput.value =  "";
                     odlInput.value = "";
+                    odlInput.disabled = true;
                     lavorazioneInput.value = "";
+                    lavorazioneInput.disabled = true;
                     barcodeInput.value = "";
+                    barcodeInput.disabled = true;
                     quantitaInput.value = "1";
+                    quantitaInput.disabled = true;
                     noContent.classList.remove("hidden");
                     alert("Dati salvati con successo");
                 } else {
@@ -516,9 +567,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // Reset campo quantità
                 commessaInput.value = "";
                 odlInput.value = "";
+                odlInput.disabled = true;
                 lavorazioneInput.value = "";
+                lavorazioneInput.disabled = true;
                 barcodeInput.value = "";
+                barcodeInput.disabled = true;
                 quantitaInput.value = "1";
+                quantitaInput.disabled = true;
             } else {
                 alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
             }
@@ -555,12 +610,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             setupAutocomplete(odlInput, odlAutocompleteList, odpList);
             const odpDistinctList = odpList.filter((item, index, self) =>
                 index === self.findIndex((t) => t.odp === item.odp && t.creationDate === item.creationDate));
-            // console.log("Lista di ODP Distinti:", odpDistinctList);
+            console.log("Lista di ODP Distinti:", odpDistinctList);
             if(odpDistinctList.length === 1) {
-                odlInput.value = odpDistinctList[0].display;
-                const event = new Event('change', { bubbles: true });
-                odlInput.dispatchEvent(event);
-                odlInput.disabled = true;
+                setTimeout(() => {
+                    odlInput.value = odpDistinctList[0].display;
+                    const event = new Event('change', { bubbles: true });
+                    odlInput.dispatchEvent(event);
+                    odlInput.disabled = true;
+                }, 100);
             }
         } catch (error) {
             console.error("Errore nel caricamento dei dati ODP:", error);
