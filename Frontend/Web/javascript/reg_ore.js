@@ -59,6 +59,25 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
+    commessaInput.addEventListener("focusout", function() {
+        // Resetta i campi successivi se il campo commessa è vuoto
+        if (commessaInput.value === "") {
+            odlInput.value = "";
+            odlInput.disabled = true;
+            odlInput.value = "";
+            odlAutocompleteList.innerHTML = "";
+            odlAutocompleteList.classList.add("hidden");
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            lavorazioneList = [];
+            lavorazioneAutocompleteList.innerHTML = ""; 
+            lavorazioneAutocompleteList.classList.add("hidden");
+            oreInput.disabled = true;
+            oreInput.value = "";
+            return;
+        }
+    });
+
     odlInput.addEventListener("change", async function() {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
@@ -75,6 +94,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         await loadLavorazioneData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate);
     });
 
+    odlInput.addEventListener("focusout", function() {
+        // Resetta i campi successivi se il campo ordine di produzione è vuoto
+        if (odlInput.value === "") {
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            lavorazioneList = [];
+            lavorazioneAutocompleteList.innerHTML = ""; 
+            lavorazioneAutocompleteList.classList.add("hidden");
+            oreInput.disabled = true;
+            oreInput.value = "";
+            return;
+        }
+    });
+
     // Event listener per il cambio di lavorazione
     lavorazioneInput.addEventListener("change", async function() {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -85,7 +118,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("ODP selezionato:", selectedOdp);
             console.log("Lavorazione selezionata:", selectedLavorazione);
             await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
+            oreInput.disabled = false;
             oreInput.focus();
+        }
+    });
+
+    lavorazioneInput.addEventListener("focusout", function() {
+        // Resetta i campi successivi se il campo commessa è vuoto
+        if (lavorazioneInput.value === "") {
+            oreInput.disabled = true;
+            oreInput.value = "";
+            return;
         }
     });
 
@@ -403,6 +446,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!jobId) return;
         
         try {
+            odlInput.disabled = false;
             const odpResult = await fetchJobMostep(jobId);
             odpList = odpResult
                 .filter(odp => odp && odp.mono && odp.creationDate)
@@ -414,6 +458,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             console.log("Lista di ODP:", odpList);
             setupAutocomplete(odlInput, odlAutocompleteList, odpList);
+            const odpDistinctList = odpList.filter((item, index, self) =>
+                index === self.findIndex((t) => t.odp === item.odp && t.creationDate === item.creationDate));
+            // console.log("Lista di ODP Distinti:", odpDistinctList);
+            if(odpDistinctList.length === 1) {
+                odlInput.value = odpDistinctList[0].display;
+                const event = new Event('change', { bubbles: true });
+                odlInput.dispatchEvent(event);
+                odlInput.disabled = true;
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati ODP:", error);
         }
@@ -424,6 +477,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!jobId || !mono || !creationDate) return;
         
         try {
+            lavorazioneInput.disabled = false;
             const lavorazioneResult = await fetchJobsByOdp(jobId, mono, creationDate);
             lavorazioneList = lavorazioneResult
                 .filter(lav => lav && lav.operation && lav.operDesc)

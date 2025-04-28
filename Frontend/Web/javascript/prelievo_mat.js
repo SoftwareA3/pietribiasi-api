@@ -63,6 +63,29 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
+    commessaInput.addEventListener("focusout", function() {
+        // Resetta i campi successivi se il campo commessa è vuoto
+        if (commessaInput.value === "") {
+            odlInput.value = "";
+            odlInput.disabled = true;
+            odlInput.value = "";
+            odlAutocompleteList.innerHTML = "";
+            odlAutocompleteList.classList.add("hidden");
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            lavorazioneList = [];
+            lavorazioneAutocompleteList.innerHTML = ""; 
+            lavorazioneAutocompleteList.classList.add("hidden");
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            barcodeList = [];
+            barcodeAutocompleteList.innerHTML = "";
+            barcodeAutocompleteList.classList.add("hidden"); 
+            quantitaInput.disabled = true; 
+            return;
+        }
+    });
+
     odlInput.addEventListener("change", async function() {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
@@ -77,6 +100,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Carica i dati della lavorazione solo se necessario
         // Serve in caso di selezione dalla tabella in overlay
         await loadLavorazioneData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate);
+    });
+
+    odlInput.addEventListener("focusout", function() {
+        // Resetta i campi successivi se il campo ordine di produzione è vuoto
+        if (odlInput.value === "") {
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            lavorazioneList = [];
+            lavorazioneAutocompleteList.innerHTML = ""; 
+            lavorazioneAutocompleteList.classList.add("hidden");
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            barcodeList = [];
+            barcodeAutocompleteList.innerHTML = "";
+            barcodeAutocompleteList.classList.add("hidden"); 
+            quantitaInput.disabled = true; 
+            return;
+        }
     });
 
     // Event listener per il cambio di lavorazione
@@ -95,6 +136,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("Lista barcode:", barcodeList);
     });
 
+    lavorazioneInput.addEventListener("focusout", function() {
+        // Resetta il campo barcode se il campo lavorazione è vuoto
+        if (lavorazioneInput.value === "") {
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            barcodeList = [];
+            barcodeAutocompleteList.innerHTML = ""; // Svuota la lista di autocompletamento
+            barcodeAutocompleteList.classList.add("hidden"); // Nasconde la lista di autocompletamento
+            quantitaInput.disabled = true; // Disabilita il campo quantità
+            return;
+        }
+    });
+
     // Event listener per il cambio di barcode
     barcodeInput.addEventListener("change", async function() {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -107,7 +161,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Lavorazione selezionata:", selectedLavorazione);
             console.log("Barcode selezionato:", selectedBarcode);
             await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+            quantitaInput.disabled = false;
             quantitaInput.focus();
+        }
+    });
+
+    barcodeInput.addEventListener("focusout", function() {
+        if (barcodeInput.value === "") {
+            quantitaInput.disabled = true; 
         }
     });
 
@@ -479,6 +540,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!jobId) return;
         
         try {
+            odlInput.disabled = false;
             const odpResult = await fetchJobMostep(jobId);
             console.log("Risultato ODP:", odpResult);
             odpList = odpResult
@@ -491,6 +553,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             console.log("Lista di ODP:", odpList);
             setupAutocomplete(odlInput, odlAutocompleteList, odpList);
+            const odpDistinctList = odpList.filter((item, index, self) =>
+                index === self.findIndex((t) => t.odp === item.odp && t.creationDate === item.creationDate));
+            // console.log("Lista di ODP Distinti:", odpDistinctList);
+            if(odpDistinctList.length === 1) {
+                odlInput.value = odpDistinctList[0].display;
+                const event = new Event('change', { bubbles: true });
+                odlInput.dispatchEvent(event);
+                odlInput.disabled = true;
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati ODP:", error);
         }
@@ -502,6 +573,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!jobId || !mono || !creationDate) return;
         
         try {
+            lavorazioneInput.disabled = false;
             const lavorazioneResult = await fetchJobsByOdp(jobId, mono, creationDate);
             console.log("Risultato lavorazione:", lavorazioneResult);
             lavorazioneList = lavorazioneResult
@@ -524,6 +596,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!jobId || !mono || !creationDate || !operation) return;
         
         try {
+            barcodeInput.disabled = false;
             const barCodeResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
             console.log("Risultato barcode:", barCodeResult);
             barcodeList = barCodeResult
