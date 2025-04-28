@@ -293,7 +293,7 @@ function populatePrelieviList(data) {
             confirmButton.className = "button-icon confirm option-button";
             confirmButton.title = "Conferma modifica";
             confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
-            confirmButton.addEventListener("click", () => savePrelieviEdit(item));
+            confirmButton.addEventListener("click", () => savePrelieviEdit(item, data));
             
             // Pulsante di annullamento modifica
             const cancelButton = document.createElement("button");
@@ -384,7 +384,7 @@ function editPrelievi(item) {
 }
 
 // Funzione per salvare le modifiche alle quantità prelevate
-async function savePrelieviEdit(item) {
+async function savePrelieviEdit(item, data) {
     // Ottiene il nuovo valore dall'input
     const editInput = document.getElementById(`edit-prel-input-${item.prelMatId}`);
     const newPrelQty = parseInt(editInput.value);
@@ -413,6 +413,13 @@ async function savePrelieviEdit(item) {
         if (!response.ok) {
             throw new Error("Errore durante l'aggiornamento delle ore");
         }
+
+        item.prelQty = newPrelQty;
+
+        const dataItem = data.find(d => d.prelMatId === item.prelMatId);
+        if (dataItem) {
+            dataItem.prelQty = item.prelQty;
+        }
         
         // Aggiorna la visualizzazione
         const prelieviValueSpan = document.getElementById(`prel-value-${item.prelMatId}`);
@@ -426,6 +433,8 @@ async function savePrelieviEdit(item) {
         setTimeout(() => {
             prelieviValueSpan.classList.remove("just-updated");
         }, 2000);
+
+        populatePrelieviList(data);
         
     } catch (error) {
         console.error("Errore durante l'aggiornamento:", error);

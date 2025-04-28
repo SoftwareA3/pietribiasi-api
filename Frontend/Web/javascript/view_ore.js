@@ -281,7 +281,7 @@ function populateOreList(data) {
             confirmButton.className = "button-icon confirm option-button";
             confirmButton.title = "Conferma modifica";
             confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
-            confirmButton.addEventListener("click", () => saveOreEdit(item));
+            confirmButton.addEventListener("click", () => saveOreEdit(item, data));
             
             // Pulsante di annullamento modifica
             const cancelButton = document.createElement("button");
@@ -374,7 +374,7 @@ function editOre(item) {
 }
 
 // Funzione per salvare le modifiche alle ore
-async function saveOreEdit(item) {
+async function saveOreEdit(item, data) {
     // Ottiene il nuovo valore dall'input
     const editInput = document.getElementById(`edit-ore-input-${item.regOreId}`);
     const newWorkingTime = parseFloat(editInput.value);
@@ -406,6 +406,11 @@ async function saveOreEdit(item) {
         
         // Aggiorna l'elemento nella lista
         item.workingTime = newWorkingTime * 3600; // Converti in secondi
+
+        const dataItem = data.find(d => d.regOreId === item.regOreId);
+        if (dataItem) {
+            dataItem.workingTime = item.workingTime;
+        }
         
         // Aggiorna la visualizzazione
         const oreValueSpan = document.getElementById(`ore-value-${item.regOreId}`);
@@ -419,6 +424,8 @@ async function saveOreEdit(item) {
         setTimeout(() => {
             oreValueSpan.classList.remove("just-updated");
         }, 2000);
+
+        populateOreList(data);
         
     } catch (error) {
         console.error("Errore durante l'aggiornamento:", error);
