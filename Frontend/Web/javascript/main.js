@@ -10,14 +10,6 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     }
     
-    // Carica l'header
-    // await fetch("../html/header.html")
-    //     .then(response => response.text())
-    //     .then(data => {
-            
-    //     })
-    //     .catch(error => console.error("Error loading header:", error));
-    
     const headerElement = document.getElementsByClassName("app-header")[0]; 
 
     setupLogoutButton();
@@ -29,6 +21,11 @@ function setupLogoutButton() {
     const logoutButton = document.getElementById("logout");
     if (logoutButton) {
         logoutButton.addEventListener("click", function() {
+            const pu = JSON.parse(getCookie("pu-User"));
+            if(pu)
+            {
+                deleteCookie("pu-User");
+            }
             deleteCookie("basicAuthCredentials");
             deleteCookie("userInfo");
             sessionStorage.removeItem("login");
@@ -64,8 +61,15 @@ async function loadWorkerInfo() {
         // Recupero informazioni worker dall'API
         const workerInfo = getCookie("userInfo");
         
-        // Visualizzazione delle informazioni
-        displayWorkerInfo(workerInformations, workerInfo);
+        const puUser = getCookie("pu-User");
+        if (puUser) {
+            displayWorkerAndPuInfo(workerInformations, workerInfo, puUser);
+        }
+        else
+        {
+            displayWorkerInfo(workerInformations, workerInfo);
+        }
+
     } catch (error) {
         console.error("Errore nel caricamento delle informazioni:", error);
         displayError(workerInformations, "Errore nel caricamento delle informazioni");
@@ -82,6 +86,24 @@ function displayWorkerInfo(container, cookie) {
         }
         container.innerHTML = `
             ${cookie.tipoUtente || 'N/A'}: ${cookie.password || 'N/A'} - ${cookie.name || 'N/A'} ${cookie.lastName || 'N/A'} ${displayCurrentDate()}`;
+    } catch (error) {
+        console.error("Errore nel parsing del cookie:", error);
+        displayError(container, "Errore nel formato del cookie");
+    }
+}
+
+function displayWorkerAndPuInfo(container, worker, pu) {
+    try {
+        worker = JSON.parse(worker);
+        pu = JSON.parse(pu);
+        if (!worker || !pu) {
+            displayError(container, "Cookie non valido o vuoto");
+            return;
+        }
+        container.innerHTML = `
+        Stai usanto l'utente: ${pu.workerId || 'N/A'} ${pu.name || 'N/A'} ${pu.lastName || 'N/A'}
+        <br> 
+        ${worker.tipoUtente || 'N/A'}: ${worker.password || 'N/A'} - ${worker.name || 'N/A'} ${worker.lastName || 'N/A'} ${displayCurrentDate()}`;
     } catch (error) {
         console.error("Errore nel parsing del cookie:", error);
         displayError(container, "Errore nel formato del cookie");

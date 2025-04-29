@@ -370,14 +370,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Chiama la rimozione di tutti gli elementi dalla lista temporanea
     saveButton.addEventListener("click", async function() {
         if (dataResultList.length > 0) {
-            // console.log("Dati da salvare:", dataResultList);
-            // Recupera il workerid dai cookies
-            const cookie = JSON.parse(getCookie("userInfo"));
-            console.log(typeof(cookie));
-            console.log("Cookie:", cookie);
-            const workerId = cookie.workerId.toString();
-            console.log("Worker ID:", workerId);
-            if (!workerId) {
+            console.log("Dati da salvare:", dataResultList);
+            var workerId = "";
+            const puCookie = JSON.parse(getCookie("pu-User"));
+            if(puCookie) {
+                console.log("cookie pu-User:", puCookie);
+                workerId = puCookie.workerId.toString();
+                console.log("L'operazione viene salvata con l'utente:", workerId);
+            }
+            else {
+                // Recupera il workerid dai cookies
+                const cookie = JSON.parse(getCookie("userInfo"));
+                console.log(typeof(cookie));
+                console.log("Cookie:", cookie);
+                workerId = cookie.workerId.toString();
+                console.log("Worker ID:", workerId);
+            }
+
+            if (!workerId || workerId === "") {
                 console.error("Worker ID non trovato nei cookie.");
                 return;
             }

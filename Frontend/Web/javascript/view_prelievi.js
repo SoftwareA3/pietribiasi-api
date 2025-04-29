@@ -1,6 +1,7 @@
 import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import { createPagination } from "./pagination.js";
+import { getCookie } from "./cookies.js";
 
 // Variabili globali per mantenere lo stato
 let filteredList = [];
@@ -18,16 +19,59 @@ document.addEventListener("DOMContentLoaded", async function() {
     const filterOrdineDiProduzione = document.getElementById("filter-prel-odp");
     const filterBarcode = document.getElementById("filter-prel-barcode");
     const filterPrelieviSubmit = document.getElementById("filter-prel-submit");
+    const prelieviList = document.getElementById("prelievi-list");
+    const noContent = document.getElementById("nocontent");
+
+    prelieviList.classList.add("hidden");
+    noContent.classList.remove("hidden");
 
     // Carica i dati iniziali
     try {
-        filteredList = await fetchAllViewPrelievi();
-        // Popola la lista con i risultati ottenuti
-        populatePrelieviList(filteredList);
-        console.log("Dati iniziali caricati:", filteredList);
-
-        // Inizializza le liste per l'autocomplete
-        await refreshAutocompleteData();
+        const user = JSON.parse(getCookie("userInfo"));
+                const puUser = JSON.parse(getCookie("pu-User"));
+                //console.log("user:", user.tipoUtente);
+                if(user && user.tipoUtente === "Amministrazione" && !puUser) 
+                {
+                    filteredList = await fetchAllViewPrelievi();
+                    populatePrelieviList(filteredList);
+                    console.log("Dati iniziali caricati:", filteredList);
+                }
+                else if(user && user.tipoUtente === "Amministrazione" && puUser)
+                {
+                    // Se l'utente è un amministratore e ha effettuato il login come addetto, mostra i dati dell'addetto
+                    const workerId = {
+                        workerId: puUser.workerId
+                    };
+                    console.log("ID utente:", workerId);
+                    const response = await fetchViewPrelievi(workerId);
+                    if (response && response.length > 0) {
+                        filteredList = response;
+                        populatePrelieviList(filteredList);
+                        console.log("Dati iniziali caricati:", filteredList);
+                    } else {
+                        console.error("Nessun dato trovato per l'utente:", workerId);
+                        alert("Nessun dato trovato per l'utente.");
+                    }
+                }
+                else {
+                    // Il tipo è un addetto: filtro in base al codice utente
+                    const userId = {
+                        workerId: user.workerId
+                    };
+                    console.log("ID utente:", userId);
+                    const response = await fetchAllViewPrelievi(userId);
+                    if (response && response.length > 0) {
+                        filteredList = response;
+                        populatePrelieviList(filteredList);
+                        console.log("Dati iniziali caricati:", filteredList);
+                    } else {
+                        console.error("Nessun dato trovato per l'utente:", userId);
+                        alert("Nessun dato trovato per l'utente.");
+                    }
+                }
+        
+                // Inizializza le liste per l'autocomplete
+                await refreshAutocompleteData();
     } catch (error) {
         console.error("Errore durante il caricamento iniziale:", error);
         alert("Si è verificato un errore durante il recupero dei dati.");
@@ -92,8 +136,21 @@ function createFilterObject() {
     const filterLavorazione = document.getElementById("filter-prel-lavorazione");
     const filterOrdineDiProduzione = document.getElementById("filter-prel-odp");
     const filterBarcode = document.getElementById("filter-prel-barcode");
+
     
     const filteredObject = {};
+
+    const user = JSON.parse(getCookie("userInfo"));
+    if(user && user.tipoUtente === "Addetto")
+    {
+        filteredObject.workerId = user.workerId;
+    }
+
+    const puUser = JSON.parse(getCookie("pu-User"));
+    if(puUser && puUser.workerId)
+    {
+        filteredObject.workerId = puUser.workerId;
+    }
     
     if (filterDataDa.value) {
         const fromDate = new Date(filterDataDa.value);
@@ -224,10 +281,10 @@ function populatePrelieviList(data) {
     
     // Pulisce la lista attuale
     prelieviList.innerHTML = "";
+    prelieviList.classList.add("hidden");
     
     // Controlla se la lista è vuota
     if (!data || data.length === 0) {
-        prelieviList.classList.add("hidden");
         noContent.classList.remove("hidden");
         return;
     }
@@ -251,7 +308,7 @@ function populatePrelieviList(data) {
 
         const isImported = item.imported === 0 || item.imported === "0";
         
-        const statusIndicator = document.createElement("span");
+        const statusIndicator = document.createElement("div");
         statusIndicator.className = `status-indicator ${isImported ? 'status-closed' : 'status-open'}`;
         statusIndicator.title = isImported ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
@@ -263,6 +320,7 @@ function populatePrelieviList(data) {
             <div><strong>ODP:</strong> ${item.mono} </div>
             <div><strong>Barcode:</strong> ${item.barCode} </div>
             <div><strong>Item:</strong> ${item.component} </div>
+            <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Qta: <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</strong></span> </div>
         `;

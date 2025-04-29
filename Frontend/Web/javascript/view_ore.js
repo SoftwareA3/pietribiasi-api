@@ -1,6 +1,7 @@
 import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import {createPagination} from "./pagination.js";
+import { getCookie } from "./cookies.js";
 
 // Variabili globali per mantenere lo stato
 let filteredList = [];
@@ -19,13 +20,56 @@ document.addEventListener("DOMContentLoaded", async function() {
     const commessaAutocompleteList = document.getElementById("filter-ore-commessa-autocomplete-list");
     const lavorazioneAutocompleteList = document.getElementById("filter-ore-lavorazione-autocomplete-list");
     const odpAutocompleteList = document.getElementById("filter-ore-odp-autocomplete-list");
+    const oreList = document.getElementById("ore-list");
+    const noContent = document.getElementById("nocontent");
+
+    oreList.classList.add("hidden");
+    noContent.classList.remove("hidden");
 
     // Carica i dati iniziali
     try {
-        filteredList = await fetchAllViewOre();
-        // Popola la lista con i risultati ottenuti
-        populateOreList(filteredList);
-        console.log("Dati iniziali caricati:", filteredList);
+        const user = JSON.parse(getCookie("userInfo"));
+        const puUser = JSON.parse(getCookie("pu-User"));
+        //console.log("user:", user.tipoUtente);
+        if(user && user.tipoUtente === "Amministrazione" && !puUser) 
+        {
+            filteredList = await fetchAllViewOre();
+            populateOreList(filteredList);
+            console.log("Dati iniziali caricati:", filteredList);
+        }
+        else if(user && user.tipoUtente === "Amministrazione" && puUser)
+        {
+            // Se l'utente è un amministratore e ha effettuato il login come addetto, mostra i dati dell'addetto
+            const workerId = {
+                workerId: puUser.workerId
+            };
+            console.log("ID utente:", workerId);
+            const response = await fetchViewOre(workerId);
+            if (response && response.length > 0) {
+                filteredList = response;
+                populateOreList(filteredList);
+                console.log("Dati iniziali caricati:", filteredList);
+            } else {
+                console.error("Nessun dato trovato per l'utente:", workerId);
+                alert("Nessun dato trovato per l'utente.");
+            }
+        }
+        else {
+            // Il tipo è un addetto: filtro in base al codice utente
+            const userId = {
+                workerId: user.workerId
+            };
+            console.log("ID utente:", userId);
+            const response = await fetchViewOre(userId);
+            if (response && response.length > 0) {
+                filteredList = response;
+                populateOreList(filteredList);
+                console.log("Dati iniziali caricati:", filteredList);
+            } else {
+                console.error("Nessun dato trovato per l'utente:", userId);
+                alert("Nessun dato trovato per l'utente.");
+            }
+        }
 
         // Inizializza le liste per l'autocomplete
         await refreshAutocompleteData();
@@ -90,6 +134,18 @@ function createFilterObject() {
     const filterOrdineDiProduzione = document.getElementById("filter-ore-odp");
     
     const filteredObject = {};
+
+    const user = JSON.parse(getCookie("userInfo"));
+    if(user && user.tipoUtente === "Addetto")
+    {
+        filteredObject.workerId = user.workerId;
+    }
+
+    const puUser = JSON.parse(getCookie("pu-User"));
+    if(puUser && puUser.workerId)
+    {
+        filteredObject.workerId = puUser.workerId;
+    }
     
     if (filterDataDa.value) {
         const fromDate = new Date(filterDataDa.value);
@@ -212,10 +268,10 @@ function populateOreList(data) {
     
     // Pulisce la lista attuale
     oreList.innerHTML = "";
-    
+    oreList.classList.add("hidden");
+
     // Controlla se la lista è vuota
     if (!data || data.length === 0) {
-        oreList.classList.add("hidden");
         noContent.classList.remove("hidden");
         return;
     }
@@ -239,7 +295,7 @@ function populateOreList(data) {
 
         const isImported = item.imported === 0 || item.imported === "0";
         
-        const statusIndicator = document.createElement("span");
+        const statusIndicator = document.createElement("div");
         statusIndicator.className = `status-indicator ${isImported ? 'status-closed' : 'status-open'}`;
         statusIndicator.title = isImported ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
@@ -251,6 +307,7 @@ function populateOreList(data) {
             <div><strong>Comm:</strong> ${item.job} </div>
             <div><strong>Lav:</strong> ${item.operation} </div> 
             <div><strong>ODP:</strong> ${item.mono} </div>
+            <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Ore:</strong> <span class="ore-value" id="ore-value-${item.regOreId}">${convertedTime}</span> </div>
         `;
