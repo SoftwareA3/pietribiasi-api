@@ -7,6 +7,7 @@ namespace apiPB.Dto.Request
 {
     public class ViewOreRequestDto
     {
+        public int? WorkerId { get; set; }
         public DateTime? FromDateTime { get; set; }
         public DateTime? ToDateTime { get; set; }
         public string? Job { get; set; }

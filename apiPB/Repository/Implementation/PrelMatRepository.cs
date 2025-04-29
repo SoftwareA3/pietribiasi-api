@@ -107,6 +107,11 @@ namespace apiPB.Repository.Implementation
                 query = query.Where(m => m.BarCode == filter.BarCode);
             }
 
+            if(filter.WorkerId != null)
+            {
+                query = query.Where(m => m.WorkerId == filter.WorkerId);
+            }
+
             var list = query.ToList();
             return list;
         }

@@ -94,6 +94,11 @@ namespace apiPB.Repository.Implementation
                 query = query.Where(m => m.Mono == filter.Mono);
             }
 
+            if(filter.WorkerId != null)
+            {
+                query = query.Where(m => m.WorkerId == filter.WorkerId);
+            }
+
             var list = query.ToList();
             return list;
         }
