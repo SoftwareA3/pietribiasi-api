@@ -26,6 +26,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<RmWorkersField> RmWorkersFields { get; set; }
 
+    public virtual DbSet<VwApiGiacenze> VwApiGiacenzes { get; set; }
+
     public virtual DbSet<VwApiJob> VwApiJobs { get; set; }
 
     public virtual DbSet<VwApiMostep> VwApiMosteps { get; set; }
@@ -716,6 +718,26 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.WorkerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_RM_WorkersFields_00");
+        });
+
+        modelBuilder.Entity<VwApiGiacenze>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_api_giacenze");
+
+            entity.Property(e => e.BarCode)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.Description)
+                .HasMaxLength(128)
+                .IsUnicode(false);
+            entity.Property(e => e.Item)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.Storage)
+                .HasMaxLength(8)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<VwApiJob>(entity =>

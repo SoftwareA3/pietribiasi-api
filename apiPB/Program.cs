@@ -36,6 +36,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IMostepsMocomponentRepository, MostepsMocomponentRepository>();
     builder.Services.AddScoped<IRegOreRepository, RegOreRepository>();
     builder.Services.AddScoped<IPrelMatRepository, PrelMatRepository>();
+    builder.Services.AddScoped<IGiacenzeRepository, GiacenzeRepository>();
     
     // Services
     builder.Services.AddScoped<LogService>();
@@ -45,6 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IMostepsMocomponentRequestService, MostepsMocomponentRequestService>();
     builder.Services.AddScoped<IRegOreRequestService, RegOreRequestService>();
     builder.Services.AddScoped<IPrelMatRequestService, PrelMatRequestService>();
+    builder.Services.AddScoped<IGiacenzeRequestService, GiacenzeRequestService>();
 
     builder.Services.AddCors(options =>
     {
@@ -64,6 +66,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAutoMapper(typeof(MostepsMocomponentMapperFilters));
     builder.Services.AddAutoMapper(typeof(RegOreMapperFilters));
     builder.Services.AddAutoMapper(typeof(PrelMatMapperFilters));
+    builder.Services.AddAutoMapper(typeof(GiacenzeMapperFilters));
 }
 
 var app = builder.Build();
