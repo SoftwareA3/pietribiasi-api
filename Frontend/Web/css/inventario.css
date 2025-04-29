@@ -5,6 +5,11 @@
     margin-top: var(--spacing-3);
 }
 
+.item-content-heading {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
 #inv-articolo-desc {
     background-color: var(--gray-100);
     padding: var(--spacing-2);

@@ -9,6 +9,7 @@
         <!-- Stili desktop -->
         <link rel="stylesheet" href="../css/cards_style.css">
         <link rel="stylesheet" href="../css/inventario.css">
+        <link rel="stylesheet" href="../css/overlay.css">
         <!-- Stili mobile -->
         <!-- Stili mobile comuni-->
         <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
@@ -21,6 +22,8 @@
         <!-- Script (caricati in modo asincrono) -->
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
+        <script src="../javascript/autocomplete.js" type="module" defer></script>
+        <script src="../javascript/inventario.js" type="module" defer></script>
     </head>
     <body>
         <header class="app-header" id="main-app-header">
@@ -53,13 +56,13 @@
                     </div>
                     <div class="form-group">
                         <label for="inv-quantita">Quantità Rilevata:</label>
-                        <input type="number" id="inv-quantita" name="inv-quantita" min="0" required="">
+                        <input type="number" id="inv-quantita" name="inv-quantita" min="0" required="" disabled="true">
                     </div>
                     <div class="button-group">
                         <button type="button" id="inv-add-list" class="button button-primary">Aggiungi 
                             <i class="fa-solid fa-plus button-icon"></i>
                         </button>
-                        <button type="submit" id="inv-save" class="button button-secondary">Salva 
+                        <button type="button" id="inv-save" class="button button-secondary">Salva 
                             <i class="fa-solid fa-floppy-disk button-icon"></i>
                         </button>
                             <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla
@@ -71,14 +74,6 @@
             <div class="card">
                 <div class="card-header">Articoli Inventariati (Sessione Corrente)</div>
                 <ul id="inv-lista-temp" class="item-list">
-                    <li>
-                        <div class="item-content">ART001 - Tubo Inox 50mm - <strong>Qta: 120</strong></div>
-                        <div class="item-actions">
-                            <button class="button-icon delete option-button" title="Rimuovi">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </li>
                 </ul>
                 <div id="nocontent" class="nocontent">
                     Nessun elemento da visualizzare
