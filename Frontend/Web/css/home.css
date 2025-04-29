@@ -103,3 +103,7 @@
 .menu-button.poweruser:hover {
     background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
 }
+
+#goto-poweruser-login {
+    display: none;
+}

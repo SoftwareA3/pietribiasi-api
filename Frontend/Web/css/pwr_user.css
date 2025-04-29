@@ -12,9 +12,14 @@
     background-color: rgba(23, 162, 184, 0.05);
 }
 
+#pu-disconnetti {
+    display: none;
+}
+
 /* Stile per il menu delle azioni */
 .home-menu {
     margin-top: var(--spacing-2);
+    grid-template-columns: repeat(3, 1fr);
 }
 
 #poweruser-actions .card-header {

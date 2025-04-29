@@ -12,6 +12,7 @@
 }
 
 #inv-quantita {
+    max-width: 150px;
     text-align: right;
     font-weight: var(--font-weight-bold);
 }

@@ -49,14 +49,6 @@
     background-color: var(--gray-50);
 }
 
-.item-list li:nth-child(even) {
-    background-color: var(--gray-50);
-}
-
-.item-list li:nth-child(even):hover {
-    background-color: var(--gray-100);
-}
-
 .item-content {
     flex: 1;
     min-width: 0; /* Previene overflow */
@@ -157,6 +149,15 @@
     color: var(--error);
 }
 
+/* Even list elements */
+
+.item-list li:nth-child(even) {
+    background-color: var(--gray-50);
+}
+
+.item-list li:nth-child(even):hover {
+    background-color: var(--gray-100);
+}
 
 li:nth-child(even) .item-actions .option-button {
     background-color: inherit;
@@ -178,6 +179,33 @@ li:nth-child(even) .item-actions .option-button.confirm:hover {
 }
 
 li:nth-child(even) .item-actions .option-button.cancel:hover {
+    background-color: var(--error);
+    color: var(--white);
+}
+
+/* Odd list elements */ 
+
+.item-list li:nth-child(odd):hover .option-button {
+    background-color: inherit;
+}
+
+
+li:nth-child(odd) .item-actions .option-button.delete:hover {
+    background-color: var(--error);
+    color: var(--white);
+}
+
+li:nth-child(odd) .item-actions .option-button.edit:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+li:nth-child(odd) .item-actions .option-button.confirm:hover {
+    background-color: var(--success);
+    color: var(--white);
+}
+
+li:nth-child(odd) .item-actions .option-button.cancel:hover {
     background-color: var(--error);
     color: var(--white);
 }

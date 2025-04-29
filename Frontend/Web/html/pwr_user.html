@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="../css/home.css">
         <link rel="stylesheet" href="../css/cards_style.css">
         <link rel="stylesheet" href="../css/pwr_user.css">
+        <link rel="stylesheet" href="../css/overlay.css">
         <!-- Stili mobile comuni-->
         <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
         <link rel="stylesheet" href="../../Mobile/cards_style_mobile.css" media="screen and (max-width: 768px)">
@@ -21,6 +22,7 @@
         <!-- Script (caricati in modo asincrono) -->
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
+        <script src="../javascript/pwr_user.js" type="module"></script>
     </head>
     <body>
         <header class="app-header" id="main-app-header">
@@ -47,25 +49,24 @@
                     <div class="form-group">
                         <label for="pu-codice-addetto">Codice Addetto da impersonare:</label>
                         <div class="input-group">
-                            <input type="text" id="pu-codice-addetto" name="pu-codice-addetto" list="addetti-datalist" required="">
-                            <datalist id="addetti-datalist">
-                                <option value="001 - Mario Rossi">
-                                </option><option value="002 - Luigi Verdi">
-                            </option></datalist>
-                            <button type="button" class="button button-secondary button-inline">Cerca 
+                            <div class="autocomplete-container">
+                                <input type="text" id="pu-codice-addetto" name="pu-codice-addetto" required="" autocomplete="off">
+                                <div id="pu-codice-addetto-autocomplete-list" class="autocomplete-items hidden"></div>
+                            </div>
+                            <button type="button" id="pu-cerca" class="button button-secondary button-inline">Cerca 
                                 <i class="fa-solid fa-magnifying-glass button-icon"></i>
-                            </span></button>
-                        </div>
-                        <div id="pu-addetto-desc" class="field-description" style="display: none;">
-                            <strong>Nome:</strong> <span>...</span>
+                            </button>
                         </div>
                     </div>
                     <div class="button-group">
-                        <button type="submit" class="button button-primary">Accedi come Addetto 
+                        <button type="button" id="pu-accedi" class="button button-primary">Accedi come Addetto 
                             <i class="fa-solid fa-user button-icon"></i>
                         </button>
                         <button type="button" class="button button-danger" onclick="location.href='home.html'">Annulla
                             <i class="fa-solid fa-xmark button-icon"></i>
+                        </button>
+                        <button type="button" id="pu-disconnetti" class="button button-danger">Disconnetti
+                            <i class="fa-solid fa-user-slash button-icon"></i>
                         </button>
                     </div>
                 </form>
@@ -104,11 +105,6 @@
                             <i class="fa-solid fa-search menu-icon"></i>
                             <span class="menu-button-descr">Visualizza Inventario</span>
                         </button>
-                        
-                        <button onclick="location.href='pwr_user.html'" id="goto-poweruser-login" class="menu-button poweruser">
-                            <i class="fa-solid fa-gear menu-icon"></i>
-                            <span class="menu-button-descr">Modalità Power User</span>
-                        </button>
                     </div>  
                 </div>
             </div>
@@ -117,5 +113,31 @@
                 <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>
             </footer>
         </main>
+        <div id="search-overlay" class="search-overlay">
+            <div class="search-results">
+                <div class="search-results-header">
+                    <h2>Risultati Ricerca Utenti</h2>
+                    <button class="close-btn" id="close-search-overlay">&times;</button>
+                </div>
+                <div id="search-results-content">
+                    <table class="search-results-table">
+                        <thead>
+                            <tr>
+                                <th>Codice Addetto</th>
+                                <th>Nome</th>
+                                <th>Cognome</th>
+                                <th>Tipo Utente</th>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results-body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="search-results-actions">
+                    <button id="cancel-search" class="button button-danger">Annulla</button>
+                    <button id="select-search-result" class="button button-primary">Seleziona</button>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
