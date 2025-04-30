@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const addButton = document.getElementById("inv-add-list");
     const saveButton = document.getElementById("inv-save");
     const barcodeAutocompleteList = document.getElementById("inv-barcode-autocomplete-list");
+    const noContent = document.getElementById("nocontent");
     
     var barcodeList = [];
     var dataResultList = [];
@@ -18,9 +19,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (items) {
             barcodeList = items.filter(item => item && item.item).map(item => ({
                 item: item.item,
-                barCode: item.barCode ? item.barCode : "",
+                barCode: item.barCode ? item.barCode : null,
                 description: item.description,
                 bookInv: item.bookInv,
+                storage: item.storage,
+                fiscalYear: item.fiscalYear,
                 display: item.barCode ? `Item: ${item.item} - Code: ${item.barCode} - Descr: ${item.description}` : `Item: ${item.item} - Descr: ${item.description}`
             }));
             
@@ -111,17 +114,90 @@ document.addEventListener("DOMContentLoaded", async function () {
                 item: selectedBarcode.item,
                 barCode: selectedBarcode.barCode,
                 description: selectedBarcode.description,
+                fiscalYear: selectedBarcode.fiscalYear,
+                storage: selectedBarcode.storage,
                 bookInv: quantita
             };
+
+            dataResultList.push(data);
+            addToTemporaryList(data, dataResultList);
+            barCodeInput.value = "";
+            quantitaInput.value = "";
+            quantitaInput.disabled = true;
+            barcodeAutocompleteList.classList.add("hidden");
+            barCodeInput.focus();
         }
-        dataResultList.push(data);
-        addToTemporaryList(data, dataResultList);
-        barCodeInput.value = "";
-        quantitaInput.value = "";
-        quantitaInput.disabled = true;
-        barcodeAutocompleteList.classList.add("hidden");
-        barCodeInput.focus();
+        else {
+            alert("Compila tutti i campi richiesti.");
+        }
     });
+
+    // SaveButton: chiamata all'API passando dataResultList per salvare i dati.
+    // Chiama la rimozione di tutti gli elementi dalla lista temporanea
+    saveButton.addEventListener("click", async function() {
+        if (dataResultList.length > 0) {
+            console.log("Dati da salvare:", dataResultList);
+            var workerId = "";
+            const puCookie = JSON.parse(getCookie("pu-User"));
+            if(puCookie) {
+                console.log("cookie pu-User:", puCookie);
+                workerId = puCookie.workerId.toString();
+                console.log("L'operazione viene salvata con l'utente:", workerId);
+            }
+            else {
+                // Recupera il workerid dai cookies
+                const cookie = JSON.parse(getCookie("userInfo"));
+                console.log(typeof(cookie));
+                console.log("Cookie:", cookie);
+                workerId = cookie.workerId.toString();
+                console.log("Worker ID:", workerId);
+            }
+
+            if (!workerId || workerId === "") {
+                console.error("Worker ID non trovato nei cookie.");
+                return;
+            }
+            // Aggiunge il workerId a ogni oggetto nella lista
+            dataResultList.forEach(item => {
+                item.workerId = workerId;
+            });
+            console.log("Lista con Worker ID:", dataResultList);
+            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
+            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
+            try {
+                const response = await fetchWithAuth("http://localhost:5245/api/inventario/post_inventario", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dataResultList),
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log("Dati salvati con successo:", result);
+                    // Pulisce la lista temporanea
+                    const list = document.getElementById("inv-lista-temp");
+                    while (list.firstChild) {
+                        list.removeChild(list.firstChild);
+                    }
+                    dataResultList = []; // Resetta la lista dei risultati
+                    barCodeInput.value = "";
+                    quantitaInput.value = "";
+                    quantitaInput.disabled = true;
+                    barcodeAutocompleteList.classList.add("hidden");
+                    barCodeInput.focus();
+                    noContent.classList.remove("hidden");
+                    alert("Dati salvati con successo!");
+                } else {
+                    console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error("Errore durante la richiesta di salvataggio:", error);
+            }
+        } else {
+            alert("Nessun dato da salvare. Aggiungi prima un elemento.");
+        }
+    }); 
 });
 
 function addToTemporaryList(data, dataResultList) {
@@ -131,7 +207,7 @@ function addToTemporaryList(data, dataResultList) {
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><div><spam class="item-content-heading">Item:</spam> ${data.item} ${data.barCode === "" ? "" : "- <spam class='item-content-heading'>Code:</spam>" + data.barCode}</div>
+        <div class="item-content"><div><spam class="item-content-heading">Item:</spam> ${data.item} ${data.barCode === null ? "" : "- <spam class='item-content-heading'>Code:</spam>" + data.barCode}</div>
         <div><spam class="item-content-heading">Desc:</spam> ${data.description}</div>
         <div><strong>Qta: ${data.bookInv}</strong></div></div>
         <div class="item-actions">
