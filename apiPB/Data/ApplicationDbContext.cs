@@ -16,6 +16,8 @@ public partial class ApplicationDbContext : DbContext
     {
     }
 
+    public virtual DbSet<A3AppInventario> A3AppInventarios { get; set; }
+
     public virtual DbSet<A3AppPrelMat> A3AppPrelMats { get; set; }
 
     public virtual DbSet<A3AppRegOre> A3AppRegOres { get; set; }
@@ -42,6 +44,25 @@ public partial class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<A3AppInventario>(entity =>
+        {
+            entity.HasKey(e => e.InvId).HasName("PK__A3_app_i__9DC82C6AB67E814E");
+
+            entity.ToTable("A3_app_inventario");
+
+            entity.Property(e => e.BarCode).IsUnicode(false);
+            entity.Property(e => e.DataImp).HasColumnType("datetime");
+            entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.Item).IsUnicode(false);
+            entity.Property(e => e.SavedDate).HasColumnType("datetime");
+            entity.Property(e => e.Storage)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.UserImp)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<A3AppPrelMat>(entity =>
         {
             entity.HasKey(e => e.PrelMatId).HasName("PK__A3_app_p__60B8A8DC9287EC21");
