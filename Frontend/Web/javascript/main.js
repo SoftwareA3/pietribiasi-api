@@ -124,3 +124,23 @@ function displayCurrentDate() {
     today = dd + '/' + mm + '/' + yyyy;
     return today;
 }
+
+// Funzione per estrarre valori unici da un array di oggetti
+export function extractUniqueValues(data, field) {
+    const uniqueValues = [];
+    const valueSet = new Set();
+    
+    if (data && data.length > 0) {
+        data.forEach(item => {
+            if (item[field] && !valueSet.has(item[field])) {
+                valueSet.add(item[field]);
+                uniqueValues.push({
+                    [field]: item[field],
+                    display: item[field].toString()
+                });
+            }
+        });
+    }
+    
+    return uniqueValues;
+}

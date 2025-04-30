@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const selectSearchResultButton = document.getElementById("select-search-result");
     const searchResultsBody = document.getElementById("search-results-body");
     const userInfo = document.getElementById("pu-selected-user-name");
+    const puActions = document.getElementById("poweruser-actions");
 
     let userList = [];
 
@@ -21,12 +22,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if(getCookie("pu-User")) {
         const user = JSON.parse(getCookie("pu-User"));
+        puActions.style.display = "block";
         loginButton.style.display = "none";
         logoutButton.style.display = "block";
         puInput.value = user.display;
         puInput.disabled = true;
         userInfo.textContent = `${user.name} ${user.lastName}`;
     } else {
+        puActions.style.display = "none";
         loginButton.style.display = "block";
         logoutButton.style.display = "none";
         puInput.value = "";
@@ -106,10 +109,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (user) {
             setCookie("pu-User", JSON.stringify(user));
             console.log("User logged in:", user);
-            // Nasconde il pulsante di login e mostra il pulsante di logout
-            puInput.value = "";
-            puInput.disabled = true;
-            userInfo.textContent = `${user.name} ${user.lastName}`;
             alert("Login effettuato come " + user.tipoUtente + " " + user.display);
             window.location.reload();
         } else {
@@ -120,9 +119,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     logoutButton.addEventListener("click", function() {
         deleteCookie("pu-User");
         console.log("User logged out");
-        // Mostra il pulsante di login e nasconde il pulsante di logout
-        puInput.value = "";
-        puInput.disabled = false;
         window.location.reload();
     });
 

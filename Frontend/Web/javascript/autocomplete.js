@@ -57,9 +57,11 @@ export function setupAutocomplete(inputElement, listElement, list) {
                 inputElement.value = itemStr;
                 closeAutocompleteList();
                 
-                // Attiva manualmente l'evento change
-                const event = new Event('change', { bubbles: true });
-                inputElement.dispatchEvent(event);
+                setTimeout(() => {
+                    // Simula la pressione del tasto Enter
+                    const event = new KeyboardEvent("change", { bubbles: true });
+                    inputElement.dispatchEvent(event);
+                }, 100);
             });
 
             listElement.appendChild(itemDiv);
@@ -83,9 +85,11 @@ export function setupAutocomplete(inputElement, listElement, list) {
                 inputElement.value = item.display;
                 closeAutocompleteList();
                 
-                // Attiva manualmente l'evento change
-                const event = new Event('change', { bubbles: true });
-                inputElement.dispatchEvent(event);
+                setTimeout(() => {
+                    // Simula la pressione del tasto Enter
+                    const event = new KeyboardEvent("change", { bubbles: true });
+                    inputElement.dispatchEvent(event);
+                }, 100);
             });
             
             listElement.appendChild(itemDiv);
@@ -99,6 +103,12 @@ export function setupAutocomplete(inputElement, listElement, list) {
     // Event listener per la navigazione con tastiera
     inputElement.addEventListener("keydown", function(e) {
         const items = listElement.getElementsByTagName("div");
+
+        // Backspace
+        if (e.key === "Backspace") {
+            const event = new Event('input', { bubbles: true });
+            inputElement.dispatchEvent(event);
+        }
 
         // Freccia giù
         if (e.key === "ArrowDown") {
@@ -217,9 +227,11 @@ export function setupCustomAutocomplete(inputElement, listElement, list) {
 
                     inputElement.value = itemStr;
                     
-                    // Attiva manualmente l'evento change
-                    const event = new Event('change', { bubbles: true });
-                    inputElement.dispatchEvent(event);
+                    setTimeout(() => {
+                        // Simula la pressione del tasto Enter
+                        const event = new KeyboardEvent("change", { bubbles: true });
+                        inputElement.dispatchEvent(event);
+                    }, 300);
                 });
     
                 listElement.appendChild(itemDiv);
@@ -237,6 +249,12 @@ export function setupCustomAutocomplete(inputElement, listElement, list) {
     inputElement.addEventListener("keydown", function(e) {
         const items = listElement.getElementsByTagName("div");
         if (items.length === 0) return;
+
+        // Backspace
+        if (e.key === "Backspace") {
+            const event = new Event('input', { bubbles: true });
+            inputElement.dispatchEvent(event);
+        }
 
         // Freccia giù
         if (e.key === "ArrowDown") {

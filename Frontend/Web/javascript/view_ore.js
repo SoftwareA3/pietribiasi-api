@@ -88,15 +88,21 @@ document.addEventListener("DOMContentLoaded", async function() {
     });
 
     filterCommessa.addEventListener("change", async function() {
-        await refreshAutocompleteData();
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
     });
 
     filterLavorazione.addEventListener("change", async function() {
-        await refreshAutocompleteData();
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
     });
 
     filterOrdineDiProduzione.addEventListener("change", async function() {
-        await refreshAutocompleteData();
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
     });
 
     // Setup pulsante di filtro

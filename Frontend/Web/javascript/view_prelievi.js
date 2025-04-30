@@ -8,6 +8,7 @@ let filteredList = [];
 let commessaList = [];
 let lavorazioneList = [];
 let odpList = [];
+let itemList = [];
 let barcodeList = [];
 
 document.addEventListener("DOMContentLoaded", async function() {
@@ -17,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     const filterCommessa = document.getElementById("filter-prel-commessa");
     const filterLavorazione = document.getElementById("filter-prel-lavorazione");
     const filterOrdineDiProduzione = document.getElementById("filter-prel-odp");
+    const filterItem = document.getElementById("filter-prel-item");
     const filterBarcode = document.getElementById("filter-prel-barcode");
     const filterPrelieviSubmit = document.getElementById("filter-prel-submit");
     const prelieviList = document.getElementById("prelievi-list");
@@ -28,50 +30,50 @@ document.addEventListener("DOMContentLoaded", async function() {
     // Carica i dati iniziali
     try {
         const user = JSON.parse(getCookie("userInfo"));
-                const puUser = JSON.parse(getCookie("pu-User"));
-                //console.log("user:", user.tipoUtente);
-                if(user && user.tipoUtente === "Amministrazione" && !puUser) 
-                {
-                    filteredList = await fetchAllViewPrelievi();
-                    populatePrelieviList(filteredList);
-                    console.log("Dati iniziali caricati:", filteredList);
-                }
-                else if(user && user.tipoUtente === "Amministrazione" && puUser)
-                {
-                    // Se l'utente è un amministratore e ha effettuato il login come addetto, mostra i dati dell'addetto
-                    const workerId = {
-                        workerId: puUser.workerId
-                    };
-                    console.log("ID utente:", workerId);
-                    const response = await fetchViewPrelievi(workerId);
-                    if (response && response.length > 0) {
-                        filteredList = response;
-                        populatePrelieviList(filteredList);
-                        console.log("Dati iniziali caricati:", filteredList);
-                    } else {
-                        console.error("Nessun dato trovato per l'utente:", workerId);
-                        alert("Nessun dato trovato per l'utente.");
-                    }
-                }
-                else {
-                    // Il tipo è un addetto: filtro in base al codice utente
-                    const userId = {
-                        workerId: user.workerId
-                    };
-                    console.log("ID utente:", userId);
-                    const response = await fetchAllViewPrelievi(userId);
-                    if (response && response.length > 0) {
-                        filteredList = response;
-                        populatePrelieviList(filteredList);
-                        console.log("Dati iniziali caricati:", filteredList);
-                    } else {
-                        console.error("Nessun dato trovato per l'utente:", userId);
-                        alert("Nessun dato trovato per l'utente.");
-                    }
-                }
-        
-                // Inizializza le liste per l'autocomplete
-                await refreshAutocompleteData();
+        const puUser = JSON.parse(getCookie("pu-User"));
+        //console.log("user:", user.tipoUtente);
+        if(user && user.tipoUtente === "Amministrazione" && !puUser) 
+        {
+            filteredList = await fetchAllViewPrelievi();
+            populatePrelieviList(filteredList);
+            console.log("Dati iniziali caricati:", filteredList);
+        }
+        else if(user && user.tipoUtente === "Amministrazione" && puUser)
+        {
+            // Se l'utente è un amministratore e ha effettuato il login come addetto, mostra i dati dell'addetto
+            const workerId = {
+                workerId: puUser.workerId
+            };
+            console.log("ID utente:", workerId);
+            const response = await fetchViewPrelievi(workerId);
+            if (response && response.length > 0) {
+                filteredList = response;
+                populatePrelieviList(filteredList);
+                console.log("Dati iniziali caricati:", filteredList);
+            } else {
+                console.error("Nessun dato trovato per l'utente:", workerId);
+                alert("Nessun dato trovato per l'utente.");
+            }
+        }
+        else {
+            // Il tipo è un addetto: filtro in base al codice utente
+            const userId = {
+                workerId: user.workerId
+            };
+            console.log("ID utente:", userId);
+            const response = await fetchViewPrelievi(userId);
+            if (response && response.length > 0) {
+                filteredList = response;
+                populatePrelieviList(filteredList);
+                console.log("Dati iniziali caricati:", filteredList);
+            } else {
+                console.error("Nessun dato trovato per l'utente:", userId);
+                alert("Nessun dato trovato per l'utente.");
+            }
+        }
+
+        // Inizializza le liste per l'autocomplete
+        await refreshAutocompleteData();
     } catch (error) {
         console.error("Errore durante il caricamento iniziale:", error);
         alert("Si è verificato un errore durante il recupero dei dati.");
@@ -87,19 +89,39 @@ document.addEventListener("DOMContentLoaded", async function() {
     });
 
     filterCommessa.addEventListener("change", async function() {
-        await refreshAutocompleteData();
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
     });
 
     filterLavorazione.addEventListener("change", async function() {
-        await refreshAutocompleteData();
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
     });
 
     filterOrdineDiProduzione.addEventListener("change", async function() {
-        await refreshAutocompleteData();
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
+    });
+
+    filterItem.addEventListener("change", async function() {
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
+
+        if(barcodeList.length === 0) {
+            filterBarcode.disabled = true;
+            filterBarcode.value = "";
+            filterBarcode.placeholder = "Nessun barcode trovato";
+        }
     });
 
     filterBarcode.addEventListener("change", async function() {
-        await refreshAutocompleteData();
+        setTimeout(async () => {
+            await refreshAutocompleteData();
+        }, 200);
     });
 
     // Setup pulsante di filtro
@@ -135,6 +157,7 @@ function createFilterObject() {
     const filterCommessa = document.getElementById("filter-prel-commessa");
     const filterLavorazione = document.getElementById("filter-prel-lavorazione");
     const filterOrdineDiProduzione = document.getElementById("filter-prel-odp");
+    const filterItem = document.getElementById("filter-prel-item");
     const filterBarcode = document.getElementById("filter-prel-barcode");
 
     
@@ -166,6 +189,7 @@ function createFilterObject() {
     if(filterCommessa.value) filteredObject.job = filterCommessa.value;
     if(filterLavorazione.value) filteredObject.operation = filterLavorazione.value;
     if(filterOrdineDiProduzione.value) filteredObject.mono = filterOrdineDiProduzione.value;
+    if(filterItem.value) filteredObject.component = filterItem.value;
     if(filterBarcode.value) filteredObject.barCode = filterBarcode.value;
     
     return filteredObject;
@@ -177,9 +201,11 @@ async function refreshAutocompleteData() {
     const filterLavorazione = document.getElementById("filter-prel-lavorazione");
     const filterOrdineDiProduzione = document.getElementById("filter-prel-odp");
     const filterBarcode = document.getElementById("filter-prel-barcode");
+    const filterItem = document.getElementById("filter-prel-item");
     const commessaAutocompleteList = document.getElementById("filter-prel-commessa-autocomplete-list");
     const lavorazioneAutocompleteList = document.getElementById("filter-prel-lavorazione-autocomplete-list");
     const odpAutocompleteList = document.getElementById("filter-prel-odp-autocomplete-list");
+    const itemAutocompleteList = document.getElementById("filter-prel-item-autocomplete-list");
     const barcodeAutocompleteList = document.getElementById("filter-prel-barcode-autocomplete-list");
     
     // Ottiene i dati per l'autocomplete
@@ -191,18 +217,21 @@ async function refreshAutocompleteData() {
     lavorazioneList = extractUniqueValues(tempData, 'operation');
     odpList = extractUniqueValues(tempData, 'mono');
     barcodeList = extractUniqueValues(tempData, 'barCode');
+    itemList = extractUniqueValues(tempData, 'component');
     
     console.log("Liste per autocomplete aggiornate:", {
         commesse: commessaList,
         lavorazioni: lavorazioneList,
         odp: odpList,
-        barCodes: barcodeList
+        barCodes: barcodeList,
+        items: itemList
     });
     
     // Configura l'autocomplete per ciascun campo
     setupAutocomplete(filterCommessa, commessaAutocompleteList, commessaList);
     setupAutocomplete(filterLavorazione, lavorazioneAutocompleteList, lavorazioneList);
     setupAutocomplete(filterOrdineDiProduzione, odpAutocompleteList, odpList);
+    setupAutocomplete(filterItem, itemAutocompleteList, itemList);
     setupAutocomplete(filterBarcode, barcodeAutocompleteList, barcodeList);
 }
 
@@ -409,15 +438,6 @@ function populatePrelieviList(data) {
             paginationContainer.classList.add('hidden');
         }
     }
-
-    // // Aggiunge la classe per lo scroll se ci sono più di 10 elementi
-    // if (data.length > 10) {
-    //     prelieviList.style.maxHeight = '500px';
-    //     prelieviList.style.overflowY = 'auto';
-    // } else {
-    //     prelieviList.style.maxHeight = '';
-    //     prelieviList.style.overflowY = '';
-    // }
 }
 
 // Funzione per gestire la modifica delle quantità

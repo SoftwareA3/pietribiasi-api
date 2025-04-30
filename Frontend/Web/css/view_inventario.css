@@ -21,6 +21,20 @@
     animation: pulse 1s infinite;
 }
 
+#inventario-list {
+    margin-top: 20px;
+}
+
+.edit-inv-input {
+    width: 90px;
+    font-size: 1rem;
+    padding: var(--spacing-1);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-sm);
+    text-align: center;
+    font-weight: var(--font-weight-bold);
+}
+
 /* Destacare il barcode del prodotto */
 .barcode-prodotto {
     font-family: monospace;
