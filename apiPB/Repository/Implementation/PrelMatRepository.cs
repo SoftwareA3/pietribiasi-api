@@ -102,6 +102,11 @@ namespace apiPB.Repository.Implementation
                 query = query.Where(m => m.Mono == filter.Mono);
             }
 
+            if(filter.Component != null)
+            {
+                query = query.Where(m => m.Component == filter.Component);
+            }
+
             if (filter.BarCode != null)
             {
                 query = query.Where(m => m.BarCode == filter.BarCode);

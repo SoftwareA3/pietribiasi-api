@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Filters
+namespace apiPB.Dto.Request
 {
-    public class ViewPrelMatRequestFilter : ViewOreRequestFilter
+    public class ViewInventarioRequestDto : A3AppViewRequestBaseDto
     {
-        public string? Component { get; set; }
+        public string? Item { get; set; }
         public string? BarCode { get; set; }
     }
 }

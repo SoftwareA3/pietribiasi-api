@@ -11,7 +11,7 @@ namespace apiPB.Filters
 
         public int WorkerId { get; set; }
 
-        public DateTime SavedDate { get; set; }
+        public DateTime? SavedDate { get; set; }
 
         public string Item { get; set; } = null!;
 

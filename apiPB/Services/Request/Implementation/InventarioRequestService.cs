@@ -50,5 +50,28 @@ namespace apiPB.Services.Request.Implementation
 
             return resultList;
         }
+
+        public IEnumerable<InventarioDto> GetViewInventario(ViewInventarioRequestDto request)
+        {
+            var filter = _mapper.Map<ViewInventarioRequestFilter>(request);
+            var result = _repository.GetViewInventario(filter);
+
+            var resultList = new List<InventarioDto>();
+            foreach (var item in result)
+            {
+                var dto = item.ToInventarioDto();
+                resultList.Add(dto);
+            }
+
+            return resultList;
+        }
+
+        public InventarioDto PutViewInventario(ViewInventarioPutRequestDto request)
+        {
+            var filter = _mapper.Map<ViewInventarioPutFilter>(request);
+            var result = _repository.PutViewInventario(filter);
+
+            return result.ToInventarioDto();
+        }
     }
 }

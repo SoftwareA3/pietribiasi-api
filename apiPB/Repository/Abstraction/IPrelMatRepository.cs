@@ -29,7 +29,7 @@ namespace apiPB.Repository.Abstraction
         IEnumerable<A3AppPrelMat> PostPrelMatList(IEnumerable<PrelMatFilter> filterList);
 
         /// <summary>
-        /// Aggiorna la lista di A3AppPrelMat nel database
+        /// Ritorna la lista di A3AppPrelMat in base al filtro passato
         /// </summary>
         /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: FromDate, ToDate, Job, MoNo, Operation, BarCode</param>
         /// <returns>

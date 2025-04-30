@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class RegOreFilter : A3AppBaseFilter
+    public class ViewInventarioPutFilter
     {
-
-        public string? Uom { get; set; }
-        public long? WorkingTime { get; set; }
+        public int InvId { get; set; }
+        public double BookInv { get; set; }
     }
 }

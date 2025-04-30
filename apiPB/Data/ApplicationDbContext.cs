@@ -46,11 +46,13 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<A3AppInventario>(entity =>
         {
-            entity.HasKey(e => e.InvId).HasName("PK__A3_app_i__9DC82C6AB67E814E");
+            entity.HasKey(e => e.InvId).HasName("PK__A3_app_i__9DC82C6AFA723957");
 
             entity.ToTable("A3_app_inventario");
 
-            entity.Property(e => e.BarCode).IsUnicode(false);
+            entity.Property(e => e.BarCode)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.DataImp).HasColumnType("datetime");
             entity.Property(e => e.Description).IsUnicode(false);
             entity.Property(e => e.Item).IsUnicode(false);

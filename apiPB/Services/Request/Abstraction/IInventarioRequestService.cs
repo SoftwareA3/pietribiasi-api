@@ -25,5 +25,23 @@ namespace apiPB.Services.Request.Abstraction
         /// IEnumerable di InventarioDto: restituisce una collezione generica di InventarioDto
         /// </returns>
         IEnumerable<InventarioDto> PostInventarioList(IEnumerable<InventarioRequestDto> inventarioList);
+
+        /// <summary>
+        /// Ritorna la lista di InventarioDto in base al filtro passato
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: FromDate, ToDate, Item, BarCode</param>
+        /// <returns>
+        /// IEnumerable di InventarioDto: restituisce una collezione generica di InventarioDto
+        /// </returns>
+        IEnumerable<InventarioDto> GetViewInventario(ViewInventarioRequestDto request);
+
+        /// <summary>
+        /// Aggiorna il record di InventarioDto in base al filtro passato
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: InvId, BookInv</param>
+        /// <returns>
+        /// InventarioDto: restituisce l'elemento modificato
+        /// </returns>
+        InventarioDto PutViewInventario(ViewInventarioPutRequestDto request);
     }
 }

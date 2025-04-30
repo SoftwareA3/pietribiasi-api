@@ -70,5 +70,55 @@ namespace apiPB.Controllers
 
             return Ok(inventarioDto);
         }
+
+        [HttpPost("get_view_inventario")]
+        /// <summary>
+        /// Ritorna la lista di A3AppInventario in base al filtro passato
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: FromDate, ToDate, Item, BarCode</param>
+        /// <response code="200">Ritorna la lista di A3AppInventario in base al filtro passato</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetViewInventario([FromBody] ViewInventarioRequestDto request)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var inventarioDto = _inventarioRequestService.GetViewInventario(request).ToList();
+
+            if (inventarioDto.IsNullOrEmpty())
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", inventarioDto);
+
+            return Ok(inventarioDto);
+        }
+
+        [HttpPut("view_inventario/edit_book_inv")]
+        /// <summary>
+        /// Aggiorna il record di A3AppInventario in base al filtro passato
+        /// </summary>
+        /// <param name="ViewInventarioPutRequestDto">Filtro per l'esecuzione della query. Richiede le proprietà: InvId, BookInv</param>
+        /// <response code="200">Ritorna l'elemento modificato</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult PutViewInventario([FromBody] ViewInventarioPutRequestDto request)
+        {
+            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+
+            var inventarioDto = _inventarioRequestService.PutViewInventario(request);
+
+            if (inventarioDto == null)
+            {
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+
+                return NotFound();
+            }
+
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", inventarioDto);
+
+            return Ok(inventarioDto);
+        }
     }
 }

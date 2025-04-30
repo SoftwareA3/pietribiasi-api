@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class ViewPrelMatRequestFilter : ViewOreRequestFilter
+    public class ViewInventarioRequestFilter : A3AppViewBaseFilter
     {
-        public string? Component { get; set; }
+        public string? Item { get; set; }
         public string? BarCode { get; set; }
     }
 }

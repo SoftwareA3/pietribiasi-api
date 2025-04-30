@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class PrelMatFilter : A3AppFilter
+    public class PrelMatFilter : A3AppBaseFilter
     {   
         public short? Position { get; set; }
 
