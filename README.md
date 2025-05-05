@@ -7,6 +7,8 @@
    - [Visualizza Ore Registrate](#visualizza-ore-registrate)
    - [Prelievo Materiali Produzione](#prelievo-materiali-produzione)
    - [Visualizza Prelievi Effettuati](#visualizza-prelievi-effettuati) 
+   - [Gestione Inventario](#gestione-inventario)
+   - [Visualizza Registrazioni Inventario](#visualizza-registrazioni-inventario)
 2. [Backend](#backend)
    - [Divisione](#divisione)
    - [Controllers](#controllers)
@@ -29,6 +31,7 @@
 4. [Comandi](#comandi)
    - [Avvio API](#avvio-api)
    - [Scaffolding](#scaffolding)
+   - [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale)
    - [Avvio FrontEnd con NodeJs](#avvio-frontend-con-nodejs)
 
 # FrontEnd
@@ -79,6 +82,7 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 - **Comm**: il codice della commessa
 - **Lav**: la lavorazione
 - **ODP**: l'ordine di produzione
+- **Operatore**: il codice dell'operatore che ha effettuato la registrazione
 - **Ore**: le ore registrate
 - **Data**: la data nella quale sono state salvate le ore
 
@@ -91,7 +95,7 @@ In caso la commessa abbia il pallino verde, vengono rese disponibili due operazi
 La pagina per il Prelievo di Materiali per Produzione si presenta come una serie di campi: 
 - Al click sul primo campo, vengono rese visibili in un elenco sotto l’input, tutte le commesse disponibili. Inserendo parte del codice della commessa, vengono filtrate quelle disponibili nell’elenco in modo da restringere il campo.
 - Selezionata la commessa, si può inserire l’**Ordine di Produzione** nella stessa maniera e di conseguenza anche la **Lavorazione**.
-- Selezionati tutti i campi, è disponibile un ultimo campo prima dell'inserimento della quantità: questo campo, denominato **Barcode Articolo**, rappresenta il codice dell'articolo e il barcode dell'articolo. Essendo che un articolo può avere più barcode, è possibile inserire porzione del barcode o dell'articolo e visualizzare la lista di autocompletamento dalla quale selezionare l'articolo e il barcode necessari. Inoltre è possibile inserire il barcode completo nell'input e premere "Invio" per compilare in automatico barcode e articolo associato. Quest'operazione garantisce che l'imput di una pistola barcode possa incollare il codice di un barcode nell'input e inviarlo in automatico. Selezionando il campo dalla lista di autocompletamento o premento invio con un barcode, il focus si sposta nell'input della selezione delle quantità
+- Selezionati tutti i campi, è disponibile un ultimo campo prima dell'inserimento della quantità: questo campo, denominato **Barcode Articolo**, rappresenta il codice dell'articolo e il barcode dell'articolo. Essendo che un articolo può avere più barcode, è possibile inserire porzione del barcode o dell'articolo e visualizzare la lista di autocompletamento dalla quale selezionare l'articolo e il barcode necessari. Inoltre è possibile inserire il barcode completo nell'input e premere "Invio" per compilare in automatico barcode e articolo associato. Quest'operazione garantisce che l'input di una pistola barcode possa incollare il codice di un barcode nell'input e inviarlo in automatico. Selezionando il campo dalla lista di autocompletamento o premento invio con un barcode, il focus si sposta nell'input della selezione delle quantità
 - Ogni campo richiede che il precedente sia inserito o selezionato correttamente. Se viene modificato uno dei campi precedenti, quelli successivi, essendone dipendenti, vengono resettati.
 - Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**, indicato anche tramite l'icona 🔎. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
 - Quando tutti i campi sono completi, sono da inserire le **Quantità**. Inserite anche le quantità, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
@@ -118,7 +122,7 @@ I campi che possiedono un autocomplete sono:
 - **Lavorazione**
 I campi **Data Da** e **Data A** filtrano in base alla data di salvataggio della quantità prelevata.
 
-Ad ogni campo compilato, è possibile premere il pulsante **Filtra**, indicato tramite l'icona di un imbuto per mostrare la lista delle Ore Registrate disponibili.
+Ad ogni campo compilato, è possibile premere il pulsante **Filtra**, indicato tramite l'icona di un imbuto per mostrare la lista delle Quantità Prelevate disponibili.
 
 Quando si cambia campo, viene inviato un segnale che permette allo script di ricevere le informazioni preventivamente e creare la lista di autocompletamento degli altri campi, prima che questi vengano selezionati, eliminando i doppioni in modo da mantenere una lista con elementi tutti diversi.
 
@@ -127,6 +131,7 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 - **Lav**: la lavorazione
 - **ODP**: l'ordine di produzione
 - **Barcode**: il codice barcode
+- **Operatore**: il codice dell'operatore che ha effettuato la registrazione
 - **Qta**: la quantità prelevata
 - **Data**: la data nella quale è stata salvata la quantità prelevata
 
@@ -134,6 +139,60 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database
 - **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare la quantità prelevata tramite la pressione del pulsante e la successiva conferma dell'operazione
+
+## Gestione Inventario
+La pagina per la Gestione dell'Inventario si presenta con due campi: 
+- Inserendo caratteri nel primo campo **Barcode/Articolo**, vengono rese disponibili le prime 5 soluzioni che includono i caratteri digitati. L'input che verrà generato conterrà le informazioni riguardo: l'articolo, la sua descrizione e un barcode associato (se disponibile).
+- Inserendo interamente un articolo o un barcode validi e premendo "Invio", l'input verrà compilato in automatico e il focus si sposterà direttamente sulla selezione delle quantità.
+- Selezionato il campo, si può inserire la **Quantità Rilevata**. Se l'input **Barcode/Articolo** ha già una quantità precedentemente inventariata, viene inserita questa quantità nella **Quantità Rilevata** in modo da capire quale fosse quella precedente.
+- Quando tutti i campi sono completi, alla pressione del pulsante **“Aggiungi”** , indicato anche dall'icona ➕ (o alla pressione di "Invio" nel campo della **Quantità rilevata**), vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
+- Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
+- Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_inventario**.
+In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
+
+## Visualizza Registrazioni Inventario
+La pagina per la visualizzazione delle registrazioni nell'inventario, si presenta con una serie di campi:
+- **Data Da**: rappresenta il filtro per la data dalla quale cercare le registrazioni nell'inventario. L'ora del campo parte dalla mezzanotte del giorno indicato.
+- **Data A**: rappresenta il filtro per la data fino alla quale cercare le registrazioni nell'inventario. L'ora del campo arriva fino alle 23 e 59 del giorno indicato.
+- **Articolo**: rappresenta il filtro per l'articolo tramite il quale cercare le registrazioni nell'inventario.
+- **Barcode Articolo**: rappresenta il filtro per il codice barcode tramite il quale cercare le registrazioni nell'inventario.
+
+Ogni campo nel quale è possibile inserire un testo, è dotato di un **autocomplete**: le informazioni vengono caricate preventivamente e vengono filtrate quelle disponibili (eliminando i doppioni) per fornire una lista di selezione che mostra gli elementi disponibili in base alla porzione di input inserita. 
+
+I campi che possiedono un autocomplete sono:
+- **Articolo**
+- **Barcode Articolo** se disponibile
+I campi **Data Da** e **Data A** filtrano in base alla data di salvataggio della registrazione nell'inventario effettuata.
+
+Ad ogni campo compilato, è possibile premere il pulsante **Filtra**, indicato tramite l'icona di un imbuto per mostrare la lista delle Registrazioni disponibili.
+
+Quando si cambia campo, viene inviato un segnale che permette allo script di ricevere le informazioni preventivamente e creare la lista di autocompletamento degli altri campi, prima che questi vengano selezionati, eliminando i doppioni in modo da mantenere una lista con elementi tutti diversi.
+
+La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Queste informazioni sono:
+- **Item**: il codice dell'articolo
+- **Desc**: la descrizione dell'articolo
+- **BarCode**: il barcode. Questo viene visualizzato solo se disponibile
+- **Operatore**: il codice dell'operatore che ha effettuato la registrazione
+- **Data**: la data della registrazione effettuata
+- **Qta**: la quantità registrata
+
+È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata dal gestionale MAGO (rosso) o se è stata registrata utilizzando l'applicazione (verde).
+In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
+- **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database.
+
+## Power User
+La **Modalità Power User** è una modalità disponibile solamente per gli utenti di tipo "Amministrazione" ed è pertanto visibile come pulsante nella home solo da questi utenti. Per gli utenti di tipo "Addetto" viene invece nascosta. 
+Questa modalità consente ad un utente di tipo "Amministrazione" di effettuare l'accesso nei panni di un altro addetto. Questo fa sì che, una volta effettuato correttamente l'accesso, verranno salvati dei cookies con le informazioni dell'utente che si sta simulando. Queste informazioni verranno utilizzate per:
+- Modificare l'header: per rendere disponibili le informazioni dell'amministratore e dell'utente che sta simulando
+- Effettuare registrazioni che verranno fatte come se le stesse facendo l'addetto che si sta simulando.
+- Visualizzare le registrazioni effettuate: le informazioni caricate saranno quelle effettuate dall'utente che si sta simulando.
+La pagina della **Modalità Power User** si presenta nella seguente maniera:
+- Viene reso disponibile un input nel quale poter digitare parzialmente o interamente il codice dell'utente che si vuole simulare, oppure nome o cognome.
+- L'input è dotato di **autocomplete**, quindi all'inserimento di caratteri nell'input, vengono visualizzati i risultati simili che sono selezionabili per completare l'input in automatico.
+- È disponibile un pulsante **Cerca**, indicato anche tramite l'icona 🔎, che apre un overlay con una tabella di tutti gli utenti disponibili.
+- Una volta selezionato correttamente l'utente, è possibile premere il pulsante **Accedi come Addetto**, che salverà le informazioni e simulerà l'addetto. Verranno anche resi disponibili i pulsanti di navigazione che si trovano nella home, in modod da poter navigare più comodamente alla pagina interessata.
+- Una volta effettuato l'accesso come addetto, il pulsante **Accedi come Addetto** viene sostituito con il pulsante **Disconnetti**, che cancella i cookies contenenti le informazioni dell'utente che si sta simulando e ripristina le funzionalità dell'utente corrente. 
 
 # Backend
 
@@ -249,6 +308,36 @@ dotnet ef dbcontext scaffold "Data Source=SERVERNAME\SQLEXPRESS;Initial Catalog=
 - "--context" con il nome che si vuole dare al file che genererà in automatico la classe derivata da DbContext, classe che descriverà i modelli e si occuperà di interrogare il database. Alla creazione del file, scriverà anche la stringa di connessione al database sul codice, che andrà poi tolta, ma mantenuto un riferimento
 - "--table" indica il nome delle tabelle che si vogliono recuperare e "simulare" dal database. Si possono inserire tabelle e viste indifferentemente e basta indicare il nome (ad esempio dbo.User diventa User)
 - "--force" è una direttiva che permette di sovrascrivere dati o file già creati, in modo da non doverli rimuovere a mano.
+
+### Scaffolding con stringa di connessione in locale
+Essendo che col metodo precedente è necessario inserire la stringa di connessione e che questa viene poi salvata nel file del contesto del database, .NET mette a disposizione delle soluzioni per "censurare" la stringa di connessione.
+``` shell 
+dotnet user-secrets init
+``` 
+è un comando che configura l'applicazione in modo da dirle di cercare o scrivere specifiche informazioni in altri file. Un secret può essere creato attraverso il seguente comando:
+``` shell 
+dotnet user-secrets set ConnectionStrings:YourDatabaseAlias "Data Source=SERVERNAME\SQLEXPRESS;Initial Catalog=NOMEDATABASE;User ID=user_id;Password=password;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+``` 
+Questo comando specifica che esiste un oggetto JSON ConnectionStrings con attributo YourDatabaseAlias che contiene la stringa di connessione specificata. Ciò fa sì che, se l'applicazione trova l'alias specificato in qualche comando (ad esempio nello scaffolding) sostituisce la stringa di connessione con l'alias, mantenendo un riferimento per trovarlo.
+In questo caso, la stringa di connessione può essere scritta "a mano" all'interno del file `appsettings.json`.
+Il file quindi avrà questa composizione:
+```json
+{
+   "ConnectionStrings": {
+      "YourDatabaseAlias": "Data Source=SERVERNAME\\SQLEXPRESS;Initial Catalog=NOMEDATABASE;User ID=user_id;Password=password;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+   },
+   // Altre impostazioni
+}
+```
+Il comando per lo scaffolding andrà poi modificato e diventerà come segue:
+``` shell
+dotnet ef dbcontext scaffold Name=ConnectionStrings:YourDatabaseAlias Microsoft.EntityFrameworkCore.SqlServer --output-dir models_directory --context-dir db_context_directory --context nome_file_dbcontext --table table_1 --table table_2 --force
+```
+E nel file di contesto del database:
+``` C#
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:LocalA3Db");
+```
 
 ### Avvio FrontEnd con NodeJs
 Per avviare il FrontEnd, bisogna posizionarsi con terminale nella cartella dov'è situato il FrontEnd e avviarlo tramite il comando ```npx serve .``` che avvia un server statico per testare il FrontEnd.

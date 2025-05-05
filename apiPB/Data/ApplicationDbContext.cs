@@ -39,8 +39,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<VwApiWorker> VwApiWorkers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=SRV2022MES\\SQLEXPRESS;Initial Catalog=PIETRIBIASISRLM4;User ID=sa;Password=sa_2022;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:LocalA3Db");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
