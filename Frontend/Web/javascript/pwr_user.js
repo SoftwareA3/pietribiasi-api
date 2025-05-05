@@ -82,6 +82,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         selectedSearchRow = null;
     });
 
+    puInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            
+            if(puInput.value) {
+                const filter = userList.filter(user => {
+                    return user.display.toLowerCase().includes(puInput.value.toLowerCase());
+                });
+                console.log("filter", filter);
+
+                if(filter.length === 1) {
+                    puInput.value = filter[0].display;
+                    puAutocompleteList.classList.add("hidden");
+                }
+            }
+        }
+    });
+
     selectSearchResultButton.addEventListener("click", function() {
         if (selectedSearchRow) {
             puInput.value = selectedSearchRow.display;
@@ -99,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const puAddetto = puInput.value;
 
         if (!puAddetto) {
-            alert("Inserisci codice addetto e password");
+            alert("Inserire un addetto valido nel campo di ricerca");
             return;
         }
 

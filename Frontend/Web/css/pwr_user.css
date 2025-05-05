@@ -22,6 +22,10 @@
     grid-template-columns: repeat(3, 1fr);
 }
 
+#poweruser-actions {
+    display: none;
+}
+
 #poweruser-actions .card-header {
     background-color: rgba(0, 116, 217, 0.1);
     padding: var(--spacing-2) var(--spacing-3);

@@ -139,7 +139,7 @@ async function refreshAutocompleteData() {
     itemList = extractUniqueValues(tempData, 'item');
     barcodeList = extractUniqueValues(tempData, 'barCode');
 
-    if(barcodeList.length === 0) {
+    if(barcodeList.length === 0 && itemList.length > 0) {
         filteredBarcode.disabled = true;
         filteredBarcode.value = "";
         filteredBarcode.placeholder = "Nessun barcode trovato";
@@ -255,7 +255,7 @@ function populateInventarioList(data) {
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
             <div><strong>Item:</strong> ${item.item} </div>
-            ${data.barCode ? "<div><strong>BarCode:</strong>" + data.barCode + "</div>" : ""}
+            ${item.barCode ? "<div><strong>BarCode:</strong>" + item.barCode + "</div>" : ""}
             <div><strong>Desc:</strong> ${item.description} </div>
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>

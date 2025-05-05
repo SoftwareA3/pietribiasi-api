@@ -6,6 +6,6 @@ document.addEventListener("DOMContentLoaded", async function() {
     const userCookie = JSON.parse(getCookie("userInfo"));
 
     if(userCookie && userCookie.tipoUtente === "Amministrazione") {
-        puButton.style.display = "block";
+        puButton.style.display = "flex";
     }
 });

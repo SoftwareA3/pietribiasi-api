@@ -35,15 +35,72 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     barCodeInput.addEventListener("change", function() {
-        const selectedItem = barcodeList.find(item => item.display === barCodeInput.value);
-        if (selectedItem) {
-            quantitaInput.value = selectedItem.bookInv;
-            quantitaInput.disabled = false;
-            quantitaInput.focus();
-            barcodeAutocompleteList.classList.add("hidden");
-        } else {
-            quantitaInput.value = "";
-        }
+        setTimeout(() => {
+            const inputValue = barCodeInput.value.trim().toUpperCase();
+            
+            // Prima cerchiamo una corrispondenza esatta
+            let selectedItem = barcodeList.find(item => 
+                item.display.toUpperCase().trim() === inputValue);
+                
+            // Le altre ricerche come nel codice originale...
+            if (!selectedItem) {
+                selectedItem = barcodeList.find(item => 
+                    (item.item && item.item.toUpperCase() === inputValue) || 
+                    (item.barCode && item.barCode.toUpperCase() === inputValue));
+            }
+            
+            if (!selectedItem) {
+                selectedItem = barcodeList.find(item => 
+                    inputValue.includes(item.item) || 
+                    (item.barCode && inputValue.includes(item.barCode)));
+            }
+            
+            if (!selectedItem && inputValue.length > 5) {
+                selectedItem = barcodeList.find(item => 
+                    item.display.toUpperCase().includes(`ITEM: ${inputValue}`) || 
+                    (item.barCode && item.display.toUpperCase().includes(`CODE: ${inputValue}`)));
+            }
+    
+            if (selectedItem) {
+                // Aggiorniamo il valore dell'input con il display completo
+                barCodeInput.value = selectedItem.display;
+                
+                // Validazione e correzione del valore di bookInv
+                let bookInvValue = selectedItem.bookInv;
+                
+                // Verifica se bookInv è un numero valido
+                if (bookInvValue !== undefined && bookInvValue !== null) {
+                    // Converte in numero se è una stringa
+                    if (typeof bookInvValue === 'string') {
+                        bookInvValue = parseFloat(bookInvValue.replace(',', '.'));
+                    }
+                    
+                    // Verifica se è un numero finito e non NaN
+                    if (!isNaN(bookInvValue) && isFinite(bookInvValue)) {
+                        // Arrotonda a due decimali per evitare problemi di precisione
+                        bookInvValue = Math.round((bookInvValue + Number.EPSILON) * 100) / 100;
+                    } else {
+                        console.warn("bookInv non è un numero valido:", selectedItem.bookInv);
+                        bookInvValue = 0;
+                    }
+                } else {
+                    bookInvValue = 0;
+                }
+                
+                // Assicura che l'output sia una stringa formattata correttamente
+                quantitaInput.value = bookInvValue.toString();
+                quantitaInput.disabled = false;
+                quantitaInput.focus();
+                barcodeAutocompleteList.classList.add("hidden");
+                
+                console.log("Elemento selezionato:", selectedItem);
+                console.log("bookInv originale:", selectedItem.bookInv);
+                console.log("bookInv corretto:", bookInvValue);
+            } else {
+                quantitaInput.value = "";
+            }
+        }, 300);
+
     });
 
     barCodeInput.addEventListener("focusout", function() {
@@ -105,18 +162,83 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     addButton.addEventListener("click", function() {
-        const selectedBarcode = barcodeList.find(item => item.display === barCodeInput.value);
-        const quantita = quantitaInput.value;
+        // Ottieni il valore corrente dell'input barcode
+        const barCodeValue = barCodeInput.value.trim();
+        let quantitaStr = quantitaInput.value.trim().replace(',', '.');
+        let quantita;
+        
+        // Validazione della quantità
+        if (quantitaStr !== "") {
+            quantita = parseFloat(quantitaStr);
+            if (isNaN(quantita) || !isFinite(quantita) || quantita < 0) {
+                console.error("Quantità non valida:", quantitaInput.value);
+                alert("Inserisci una quantità valida.");
+                return;
+            }
+            
+            // Arrotonda a due decimali per evitare problemi di precisione
+            quantita = Math.round((quantita + Number.EPSILON) * 100) / 100;
+        } else {
+            alert("Inserisci una quantità.");
+            return;
+        }
+        
+        // Ricerca dell'elemento selezionato - come nel codice precedente
+        let selectedBarcode = barcodeList.find(item => item.display === barCodeValue);
+        
+        if (!selectedBarcode) {
+            const itemMatch = barCodeValue.match(/Item:\s*(\S+)/i);
+            const item = itemMatch ? itemMatch[1].trim() : null;
+            
+            const codeMatch = barCodeValue.match(/Code:\s*(\S+)/i);
+            const barCode = codeMatch ? codeMatch[1].trim() : null;
+            
+            selectedBarcode = barcodeList.find(b => 
+                (item && b.item === item) || 
+                (barCode && b.barCode === barCode) ||
+                (b.display && b.display.includes(barCodeValue))
+            );
+        }
 
-        if(selectedBarcode && quantita)
-        {
+        if (!selectedBarcode && barCodeValue.length > 0) {
+            const searchTerms = barCodeValue.toLowerCase().split(/\s+/).filter(term => term.length > 2);
+            
+            if (searchTerms.length > 0) {
+                let bestMatch = null;
+                let highestScore = 0;
+                
+                barcodeList.forEach(item => {
+                    if (!item.display) return;
+                    
+                    const displayLower = item.display.toLowerCase();
+                    let score = 0;
+                    
+                    searchTerms.forEach(term => {
+                        if (displayLower.includes(term)) score++;
+                    });
+                    
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestMatch = item;
+                    }
+                });
+                
+                if (bestMatch) {
+                    selectedBarcode = bestMatch;
+                }
+            }
+        }
+
+        if(selectedBarcode) {
+            console.log("Elemento trovato:", selectedBarcode);
+            
             var data = {
                 item: selectedBarcode.item,
                 barCode: selectedBarcode.barCode,
                 description: selectedBarcode.description,
                 fiscalYear: selectedBarcode.fiscalYear,
                 storage: selectedBarcode.storage,
-                bookInv: quantita
+                bookInv: quantita.toString() // Usa il valore arrotondato e convertito a stringa
             };
 
             dataResultList.push(data);
@@ -126,9 +248,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true;
             barcodeAutocompleteList.classList.add("hidden");
             barCodeInput.focus();
-        }
-        else {
-            alert("Compila tutti i campi richiesti.");
+        } else {
+            console.error("Selezione non valida:", {
+                barCodeValue: barCodeValue,
+                quantita: quantita
+            });
+            alert("Seleziona un elemento valido dall'elenco.");
         }
     });
 

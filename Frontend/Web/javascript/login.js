@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const credentials = getCookie("basicAuthCredentials");
         const userInfo = getCookie("userInfo");
         const loginStatus = sessionStorage.getItem("login");
+
+        const powerUserInfo = getCookie("pu-User");
+        if(powerUserInfo) {
+            deleteCookie("pu-User");
+        }
         
         if (credentials && userInfo && loginStatus === "true") {
             // L'utente è già autenticato, mostra successo e reindirizza
