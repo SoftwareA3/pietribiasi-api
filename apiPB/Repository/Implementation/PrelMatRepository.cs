@@ -127,6 +127,7 @@ namespace apiPB.Repository.Implementation
             
             if (editPrelMat != null)
             {
+                editPrelMat.SavedDate = DateTime.Now;
                 editPrelMat.PrelQty = filter.PrelQty;
                 _context.SaveChanges();
             }

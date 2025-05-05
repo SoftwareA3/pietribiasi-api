@@ -114,6 +114,7 @@ namespace apiPB.Repository.Implementation
 
             if (inventario != null)
             {
+                inventario.SavedDate = DateTime.Now;
                 inventario.BookInv = filter.BookInv;
                 _context.SaveChanges();
             }

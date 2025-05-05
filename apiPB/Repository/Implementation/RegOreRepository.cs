@@ -109,6 +109,7 @@ namespace apiPB.Repository.Implementation
 
             if (editRegOre != null)
             {
+                editRegOre.SavedDate = DateTime.Now;
                 editRegOre.WorkingTime = filter.WorkingTime;
                 _context.SaveChanges();
             }
