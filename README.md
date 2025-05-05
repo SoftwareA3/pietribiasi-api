@@ -336,7 +336,7 @@ dotnet ef dbcontext scaffold Name=ConnectionStrings:YourDatabaseAlias Microsoft.
 E nel file di contesto del database:
 ``` C#
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:LocalA3Db");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:YourDatabaseAlias");
 ```
 
 ### Avvio FrontEnd con NodeJs
