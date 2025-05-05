@@ -70,8 +70,14 @@ namespace apiPB.Services
         /// <param name="requestType">Tipo di richiesta e percorso di questa. Ad esempio: GET api/user</param>
         /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
         /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
-        public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage)
+        /// <param name="isActive">Controlla se il log è attivo o meno</param>
+        /// <remarks>Il log è attivo se isActive è true</remarks>
+        public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive = false)
         {
+            if(isActive == false)
+            {
+                return;
+            }
             CreateLogFile();
 
             using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
@@ -89,9 +95,17 @@ namespace apiPB.Services
         /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
         /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
         /// <param name="list">Lista di tipo generico</param>
-        public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list)
+        /// <param name="isActive">Controlla se il log è attivo o meno</param>
+        /// <remarks>Il log è attivo se isActive è true</remarks>
+        public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive = false)
         {
-            AppendMessageToLog(requestType, statusCode, statusMessage);
+            AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
+            // Se isActive è false, non eseguire AppendListToLog
+            // Necessario perché in AppendMessageToLog viene controllato, ma semplicemente ritorna senza eseguire
+            if(isActive == false)
+            {
+                return;
+            }
             if (list != null)
             {
                 AppendListToLog(list);
@@ -106,9 +120,15 @@ namespace apiPB.Services
         /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
         /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
         /// <param name="item">Oggetto generico</param>
-        public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item)
+        /// <param name="isActive">Controlla se il log è attivo o meno</param>
+        /// <remarks>Il log è attivo se isActive è true</remarks>
+        public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item, bool isActive = false)
         {
-            AppendMessageToLog(requestType, statusCode, statusMessage);
+            AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
+            if(isActive == false)
+            {
+                return;
+            }
             if (item != null)
             {
                 AppendItemToLog(item);
