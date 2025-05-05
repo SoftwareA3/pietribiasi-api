@@ -3,6 +3,7 @@ import { setupAutocomplete } from "./autocomplete.js";
 import {createPagination} from "./pagination.js";
 import { getCookie } from "./cookies.js";
 
+let globalAllData = null;
 let filteredList = [];
 let barcodeList = [];
 let itemList = [];  
@@ -106,13 +107,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             const results = await fetchViewInventario(filteredObject);
             console.log("Risultati ricevuti:", results);
             
-            if(results && results.length > 0) {
-                // Aggiorna la lista filtrata e popola la vista
-                filteredList = results;
-                populateInventarioList(filteredList);
-                // Aggiorna le liste per l'autocomplete con i nuovi dati
-                await refreshAutocompleteData();
-            } 
+            // Aggiorna la lista filtrata e popola la vista
+            filteredList = results;
+            populateInventarioList(filteredList);
+            // Aggiorna le liste per l'autocomplete con i nuovi dati
+            await refreshAutocompleteData();
         } catch (error) {
             console.error("Errore durante il filtraggio:", error);
             alert("Si è verificato un errore durante il recupero dei dati.");
@@ -130,12 +129,17 @@ async function refreshAutocompleteData() {
 
     // Ottiene i dati per l'autocomplete
     const filteredObject = createFilterObject();
-    var tempData = await fetchViewInventario(filteredObject);
-
-    if(tempData.length  === 0 || !tempData)
-    {
+    var tempData;
+    if(Object.keys(filteredObject).length === 0) {
         tempData = await fetchAllViewInventario();
     }
+    else {
+        tempData = await fetchViewInventario(filteredObject);
+    }
+    if (!tempData || tempData.length === 0) {
+        tempData = await fetchAllViewInventario();
+    }
+
     itemList = extractUniqueValues(tempData, 'item');
     barcodeList = extractUniqueValues(tempData, 'barCode');
 
@@ -218,6 +222,7 @@ function extractUniqueValues(data, field) {
 function populateInventarioList(data) {
     const inventarioList = document.getElementById("inventario-list");
     const noContent = document.getElementById("nocontent");
+    var paginationControls = document.querySelector('.pagination-controls');
 
     inventarioList.innerHTML = ""; // Pulisce la lista esistente
     noContent.classList.add("hidden");
@@ -225,6 +230,7 @@ function populateInventarioList(data) {
     if (data.length === 0) {
         inventarioList.classList.add("hidden");
         noContent.classList.remove("hidden");
+        paginationControls.classList.add("hidden");
         return;
     }
 
@@ -318,7 +324,6 @@ function populateInventarioList(data) {
         inventarioList.appendChild(li);
     });
 
-    var paginationControls = document.querySelector('.pagination-controls');
     if(paginationControls)
     {
         paginationControls.remove();
@@ -431,7 +436,12 @@ function cancelInvEdit(item) {
 }
 
 async function fetchAllViewInventario() {
+    if(globalAllData) {
+        console.log("Dati già caricati, restituisco i dati globali");
+        return globalAllData
+    };
     try {
+        console.log("CARICAMENTO DI TUTTI I DATI");
         const response = await fetchWithAuth("http://localhost:5245/api/inventario/get_all", {
             method: "GET",
             headers: {
@@ -441,8 +451,8 @@ async function fetchAllViewInventario() {
         if (!response.ok) {
             throw new Error("Errore nella risposta del server");
         }
-        const data = await response.json();
-        return data;
+        globalAllData = await response.json();
+        return globalAllData;
     } catch (error) {
         console.error("Errore durante il recupero dei dati:", error);
         alert("Si è verificato un errore durante il recupero dei dati.");

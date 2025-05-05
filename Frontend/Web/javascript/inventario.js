@@ -2,6 +2,8 @@ import { getCookie } from "./cookies.js";
 import { fetchWithAuth } from "./fetch.js";
 import { setupCustomAutocomplete } from "./autocomplete.js";
 
+let globalAllData = null;
+
 document.addEventListener("DOMContentLoaded", async function () {
     const barCodeInput = document.getElementById("inv-barcode");
     const quantitaInput = document.getElementById("inv-quantita");
@@ -364,6 +366,7 @@ function addToTemporaryList(data, dataResultList) {
 }
 
 async function getAllItems(){
+    if(globalAllData) return globalAllData;
     const response = await fetchWithAuth("http://localhost:5245/api/giacenze/get_all", {
         method: "GET",
         headers: {
@@ -375,6 +378,6 @@ async function getAllItems(){
         throw new Error("Failed to fetch items");
     }
 
-    const data = await response.json();
-    return data;
+    globalAllData = await response.json();
+    return globalAllData;
 }

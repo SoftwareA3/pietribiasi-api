@@ -4,6 +4,7 @@ import {createPagination} from "./pagination.js";
 import { getCookie } from "./cookies.js";
 
 // Variabili globali per mantenere lo stato
+let globalAllData = null;
 let filteredList = [];
 let commessaList = [];
 let lavorazioneList = [];
@@ -222,6 +223,7 @@ function extractUniqueValues(data, field) {
 }
 
 async function fetchAllViewOre() {
+    if(globalAllData) return globalAllData;
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/reg_ore/get_all", {
             method: "GET",
@@ -235,8 +237,8 @@ async function fetchAllViewOre() {
             return [];
         }
 
-        const info = await request.json();
-        return info;
+        globalAllData = await request.json();
+        return globalAllData;
     } catch (error) {
         console.error("Errore durante la fetch:", error);
         return [];
@@ -271,14 +273,17 @@ async function fetchViewOre(filteredObject) {
 function populateOreList(data) {
     const oreList = document.getElementById("ore-list");
     const noContent = document.getElementById("nocontent");
+    var paginationControls = document.querySelector('.pagination-controls');
     
     // Pulisce la lista attuale
     oreList.innerHTML = "";
-    oreList.classList.add("hidden");
+    noContent.classList.add("hidden");
 
     // Controlla se la lista è vuota
     if (!data || data.length === 0) {
+        oreList.classList.add("hidden");
         noContent.classList.remove("hidden");
+        paginationControls.classList.add("hidden");
         return;
     }
     
@@ -383,7 +388,6 @@ function populateOreList(data) {
         oreList.appendChild(li);
     });
 
-    var paginationControls = document.querySelector('.pagination-controls');
     if(paginationControls)
     {
         paginationControls.remove();

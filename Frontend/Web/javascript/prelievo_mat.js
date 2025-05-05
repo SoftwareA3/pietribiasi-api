@@ -2,6 +2,8 @@ import { fetchWithAuth } from "./fetch.js";
 import { getCookie } from "./cookies.js";
 import { setupAutocomplete } from "./autocomplete.js";
 
+let globalAllData = null;
+
 document.addEventListener("DOMContentLoaded", async function () {
     // Recupera elementi DOM
     const commessaInput = document.getElementById("prel-mat-commessa");
@@ -781,6 +783,7 @@ async function fetchJobsByBarCode(job, mono, creationDate, operation, barCode) {
 }
 
 async function fetchAllJobs() {
+    if(globalAllData) return globalAllData;
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/job", {
             method: "GET",
@@ -794,8 +797,8 @@ async function fetchAllJobs() {
             return [];
         }
 
-        const jobs = await request.json();
-        return jobs;
+        globalAllData = await request.json();
+        return globalAllData;
     } catch (error) {
         console.error("Errore durante la fetch:", error);
         return [];
