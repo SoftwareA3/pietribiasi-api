@@ -1,6 +1,0 @@
-@apiPB_HostAddress = http://localhost:5056
-
-GET {{apiPB_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
