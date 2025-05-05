@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     } catch (error) {
         console.error("Error fetching items:", error);
+        alert("Si è verificato un errore durante il caricamento iniziale dei dati.");
     }
 
     barCodeInput.addEventListener("change", function() {

@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     } catch (error) {
         console.error("Error fetching user list:", error);
+        alert("Si è verificato un errore durante il caricamento iniziale dei dati.");
     }
 
     // Ricerca tramite tabella

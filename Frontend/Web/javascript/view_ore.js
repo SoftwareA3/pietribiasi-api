@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         await refreshAutocompleteData();
     } catch (error) {
         console.error("Errore durante il caricamento iniziale:", error);
-        alert("Si è verificato un errore durante il recupero dei dati.");
+        alert("Si è verificato un errore durante il caricamento iniziale dei dati.");
     }
 
     // Eventi di modifica dei filtri

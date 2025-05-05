@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
     } catch (error) {
         console.error("Errore nel caricamento iniziale dei lavori:", error);
+        alert("Qualcosa è andato storto durante il caricamento iniziale dei dati.");
     }
 
     // Event listener per il cambio di commessa
