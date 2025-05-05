@@ -27,7 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddSwaggerGen();
     
     // DbContext
-    builder.Services.AddDbContext<ApplicationDbContext> (options => {options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));}); 
+    builder.Services.AddDbContext<ApplicationDbContext> (options => {options.UseSqlServer(builder.Configuration.GetConnectionString("LocalA3Db"));}); 
     
     // Repositories
     builder.Services.AddScoped<IWorkerRepository, WorkerRepository>();
