@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 display: item.barCode ? `Item: ${item.item} - Code: ${item.barCode} - Descr: ${item.description}` : `Item: ${item.item} - Descr: ${item.description}`
             }));
             
-            // Modifica: modifichiamo l'autocomplete per limitare i risultati
+            // Autocompletamento personalizzato per evitare di visualizzare troppi elementi
             setupCustomAutocomplete(barCodeInput, barcodeAutocompleteList, barcodeList);
         }
     } catch (error) {
@@ -38,14 +38,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     barCodeInput.addEventListener("change", function() {
+        // Controlli maggiori a causa di input di grandi dimensioni.
+        // La descrizione causava problemi di formattazione del testo e per tanto la ricerca
+        // non dava i risultati attesi.
         setTimeout(() => {
             const inputValue = barCodeInput.value.trim().toUpperCase();
             
-            // Prima cerchiamo una corrispondenza esatta
+            // Cerca una corrispondenza esatta con il display
             let selectedItem = barcodeList.find(item => 
                 item.display.toUpperCase().trim() === inputValue);
-                
-            // Le altre ricerche come nel codice originale...
+            
+            // Cerca una compatibilità con item o barcode
             if (!selectedItem) {
                 selectedItem = barcodeList.find(item => 
                     (item.item && item.item.toUpperCase() === inputValue) || 
@@ -65,13 +68,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
     
             if (selectedItem) {
-                // Aggiorniamo il valore dell'input con il display completo
+                // Aggiorna il valore dell'input con il display completo
                 barCodeInput.value = selectedItem.display;
                 
                 // Validazione e correzione del valore di bookInv
                 let bookInvValue = selectedItem.bookInv;
                 
                 // Verifica se bookInv è un numero valido
+                // Effettua un controllo per evitare NaN o valori non numerici
+                // Lo converte in una stringa per rimpiazzare la virgola e evitare problemi di formattazione
                 if (bookInvValue !== undefined && bookInvValue !== null) {
                     // Converte in numero se è una stringa
                     if (typeof bookInvValue === 'string') {
@@ -107,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     barCodeInput.addEventListener("focusout", function() {
-        // Utilizziamo un timeout per permettere il click sugli elementi della lista
+        // Utilizza un timeout per permettere il click sugli elementi della lista
         setTimeout(() => {
             if(barCodeInput.value === "") {
                 barcodeAutocompleteList.classList.add("hidden");
@@ -121,7 +126,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (event.key === "Enter") {
             event.preventDefault();
             
-            // Controlliamo prima la lista completa
+            // Impedisce l'autocompletamento se l'input è vuoto
+            if(barCodeInput.value === "") {
+                barcodeAutocompleteList.classList.add("hidden");
+                quantitaInput.value = "";
+                quantitaInput.disabled = true;
+                return;
+            }
+
+            // Controlla prima la lista completa
             const selectedBarcode = barcodeList.find(item => 
                 item.item === barCodeInput.value.toUpperCase() || 
                 item.barCode === barCodeInput.value.toUpperCase());
@@ -133,7 +146,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 quantitaInput.disabled = false;
                 quantitaInput.focus();
             } else {
-                // Verifichiamo se c'è una corrispondenza parziale
+                // Verifica se c'è una corrispondenza parziale
                 const filteredItems = barcodeList.filter(item => 
                     (item.item && item.item.includes(barCodeInput.value.toUpperCase())) || 
                     (item.barCode && item.barCode.includes(barCodeInput.value.toUpperCase())) ||
@@ -141,7 +154,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
                 
                 if (filteredItems.length > 0) {
-                    // Prendiamo il primo risultato
+                    // Prende il primo risultato
                     barCodeInput.value = filteredItems[0].display;
                     barcodeAutocompleteList.classList.add("hidden");
                     quantitaInput.value = filteredItems[0].bookInv;
@@ -165,7 +178,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     addButton.addEventListener("click", function() {
-        // Ottieni il valore corrente dell'input barcode
+        // Ottiene il valore corrente dell'input barcode
         const barCodeValue = barCodeInput.value.trim();
         let quantitaStr = quantitaInput.value.trim().replace(',', '.');
         let quantita;
@@ -187,6 +200,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
         
         // Ricerca dell'elemento selezionato - come nel codice precedente
+        // Controlli per evitare problemi con la lunghezza dell'input che causa problemi di formattazione
+        // e per tanto la ricerca non dava i risultati attesi.
         let selectedBarcode = barcodeList.find(item => item.display === barCodeValue);
         
         if (!selectedBarcode) {
@@ -273,12 +288,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log("L'operazione viene salvata con l'utente:", workerId);
             }
             else {
-                // Recupera il workerid dai cookies
+                // Recupera il workerId dai cookies
                 const cookie = JSON.parse(getCookie("userInfo"));
-                console.log(typeof(cookie));
-                console.log("Cookie:", cookie);
                 workerId = cookie.workerId.toString();
-                console.log("Worker ID:", workerId);
+                //console.log("Worker ID:", workerId);
             }
 
             if (!workerId || workerId === "") {
@@ -290,8 +303,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 item.workerId = workerId;
             });
             console.log("Lista con Worker ID:", dataResultList);
-            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
-            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
             try {
                 const response = await fetchWithAuth("http://localhost:5245/api/inventario/post_inventario", {
                     method: "POST",

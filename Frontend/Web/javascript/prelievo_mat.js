@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const searchResultsBody = document.getElementById("search-results-body");
     const quantitaInput = document.getElementById("prel-mat-quantita");
     const saveButton = document.getElementById("inv-save");
-    // Aggiunto quando viene salvata la lista e viene svuotata. Pezzo commentato di script
+    // Aggiunto quando viene salvata la lista viene
     const noContent = document.getElementById("nocontent");
 
     // Liste di dati
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             for(const job of jobSearchResults) {
                 const results = await fetchJobMostep(job.job);
-                console.log("Risultati della ricerca:", results);
+                //console.log("Risultati della ricerca:", results);
                 filteredResults.push(...results.map(item => ({
                     job: job.job,
                     mono: item.mono || '',
@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else {
             for(const job of jobList) {
                 const results = await fetchJobMostep(job.job);
-                console.log("Risultati della ricerca:", results);
+                //console.log("Risultati della ricerca:", results);
                 filteredResults.push(...results.map(item => ({
                     job: job.job,
                     mono: item.mono || '',
@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     const odpEvent = new Event('change', { bubbles: true });
                     odlInput.dispatchEvent(odpEvent);
-                    console.log("Evento change per ODP dispatched");
+                    //console.log("Evento change per ODP dispatched");
                 }, 300); // Piccolo ritardo per permettere al primo evento di completarsi
             }
             
@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     const lavorazioneEvent = new Event('change', { bubbles: true });
                     lavorazioneInput.dispatchEvent(lavorazioneEvent);
-                    console.log("Evento change per lavorazione dispatched");
+                    //console.log("Evento change per lavorazione dispatched");
                 }, 600);
             }
 
@@ -365,7 +365,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     const barcodeEvent = new Event('change', { bubbles: true });
                     barcodeInput.dispatchEvent(barcodeEvent);
-                    console.log("Evento change per barcode dispatched");
+                    //console.log("Evento change per barcode dispatched");
                 }, 900);
             }
 
@@ -466,7 +466,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             var workerId = "";
             const puCookie = JSON.parse(getCookie("pu-User"));
             if(puCookie) {
-                console.log("cookie pu-User:", puCookie);
+                //console.log("cookie pu-User:", puCookie);
                 workerId = puCookie.workerId.toString();
                 console.log("L'operazione viene salvata con l'utente:", workerId);
             }
@@ -474,7 +474,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // Recupera il workerid dai cookies
                 const cookie = JSON.parse(getCookie("userInfo"));
                 console.log(typeof(cookie));
-                console.log("Cookie:", cookie);
+                //console.log("Cookie:", cookie);
                 workerId = cookie.workerId.toString();
                 console.log("Worker ID:", workerId);
             }
@@ -488,8 +488,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 item.workerId = workerId;
             });
             console.log("Lista con Worker ID:", dataResultList);
-            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
-            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
 
             try {
                 const response = await fetchWithAuth("http://localhost:5245/api/prel_mat/post_prel_mat", {
@@ -548,7 +546,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
         if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode && selectedQta) {
             const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
-            console.log("Risultato di loadAllData:", result);
+            //console.log("Risultato di loadAllData:", result);
             if (result) {
                 var data = {
                     job: result.job,
@@ -575,7 +573,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     prelQty: selectedQta
                 }
                 dataResultList.push(data);
-                console.log("Lista di risultati:", dataResultList);
+                //console.log("Lista di risultati:", dataResultList);
                 addToTemporaryList(data, dataResultList);
                 // Reset campo quantità
                 commessaInput.value = "";
@@ -610,7 +608,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         try {
             odlInput.disabled = false;
             const odpResult = await fetchJobMostep(jobId);
-            console.log("Risultato ODP:", odpResult);
+            //console.log("Risultato ODP:", odpResult);
             odpList = odpResult
                 .filter(odp => odp && odp.mono && odp.creationDate)
                 .map(odp => ({
@@ -619,11 +617,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     display: `${odp.mono} - ${odp.creationDate}`
                 }));
 
-            console.log("Lista di ODP:", odpList);
+            //console.log("Lista di ODP:", odpList);
             setupAutocomplete(odlInput, odlAutocompleteList, odpList);
             const odpDistinctList = odpList.filter((item, index, self) =>
                 index === self.findIndex((t) => t.odp === item.odp && t.creationDate === item.creationDate));
-            console.log("Lista di ODP Distinti:", odpDistinctList);
+            //console.log("Lista di ODP Distinti:", odpDistinctList);
             if(odpDistinctList.length === 1) {
                 setTimeout(() => {
                     odlInput.value = odpDistinctList[0].display;
@@ -645,7 +643,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         try {
             lavorazioneInput.disabled = false;
             const lavorazioneResult = await fetchJobsByOdp(jobId, mono, creationDate);
-            console.log("Risultato lavorazione:", lavorazioneResult);
+            //console.log("Risultato lavorazione:", lavorazioneResult);
             lavorazioneList = lavorazioneResult
                 .filter(lav => lav && lav.operation && lav.operDesc)
                 .map(lav => ({
@@ -654,7 +652,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     display: `${lav.operation} - ${lav.operDesc}`
                 }));
 
-            console.log("Lista di lavorazioni:", lavorazioneList);
+            //console.log("Lista di lavorazioni:", lavorazioneList);
             setupAutocomplete(lavorazioneInput, lavorazioneAutocompleteList, lavorazioneList);
         } catch (error) {
             console.error("Errore nel caricamento dei dati lavorazione:", error);
@@ -668,7 +666,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         try {
             barcodeInput.disabled = false;
             const barCodeResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
-            console.log("Risultato barcode:", barCodeResult);
+            //console.log("Risultato barcode:", barCodeResult);
             barcodeList = barCodeResult
                 .filter(barCode => barCode && barCode.barCode && barCode.itemDesc && barCode.component)
                 .map(barCode => ({
@@ -678,7 +676,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     display: `Item: ${barCode.component} - Code: ${barCode.barCode} - ${barCode.itemDesc}`
                 }));
 
-            console.log("Lista di barcode:", barcodeList);
+            //console.log("Lista di barcode:", barcodeList);
             setupAutocomplete(barcodeInput, barcodeAutocompleteList, barcodeList);
         } catch (error) {
             console.error("Errore nel caricamento dei dati barcode:", error);

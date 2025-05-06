@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (response && response.length > 0) {
                 filteredList = response;
                 populateInventarioList(filteredList);
-                console.log("Dati iniziali caricati:", filteredList);
+                //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", userId);
                 alert("Nessun dato trovato per l'utente.");
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             // Esegue la chiamata API con i filtri
             const results = await fetchViewInventario(filteredObject);
-            console.log("Risultati ricevuti:", results);
+            //console.log("Risultati ricevuti:", results);
             
             // Aggiorna la lista filtrata e popola la vista
             filteredList = results;
@@ -152,7 +152,7 @@ async function refreshAutocompleteData() {
         filteredBarcode.placeholder = "";
     }
 
-    console.log("Dati per l'autocomplete:", itemList, barcodeList);
+    //console.log("Dati per l'autocomplete:", itemList, barcodeList);
 
     setupAutocomplete(filteredItem, itemAutocompleteList, itemList);
     setupAutocomplete(filteredBarcode, barcodeAutocompleteList, barcodeList);
@@ -437,11 +437,11 @@ function cancelInvEdit(item) {
 
 async function fetchAllViewInventario() {
     if(globalAllData) {
-        console.log("Dati già caricati, restituisco i dati globali");
+        //console.log("Dati già caricati, restituisco i dati globali");
         return globalAllData
     };
     try {
-        console.log("CARICAMENTO DI TUTTI I DATI");
+        //console.log("CARICAMENTO DI TUTTI I DATI");
         const response = await fetchWithAuth("http://localhost:5245/api/inventario/get_all", {
             method: "GET",
             headers: {

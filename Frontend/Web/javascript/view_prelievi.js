@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         {
             filteredList = await fetchAllViewPrelievi();
             populatePrelieviList(filteredList);
-            console.log("Dati iniziali caricati:", filteredList);
+            //console.log("Dati iniziali caricati:", filteredList);
         }
         else if(user && user.tipoUtente === "Amministrazione" && puUser)
         {
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             if (response && response.length > 0) {
                 filteredList = response;
                 populatePrelieviList(filteredList);
-                console.log("Dati iniziali caricati:", filteredList);
+                //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", workerId);
                 alert("Nessun dato trovato per l'utente.");
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             if (response && response.length > 0) {
                 filteredList = response;
                 populatePrelieviList(filteredList);
-                console.log("Dati iniziali caricati:", filteredList);
+                //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", userId);
                 alert("Nessun dato trovato per l'utente.");
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             
             // Esegue la chiamata API con i filtri
             const results = await fetchViewPrelievi(filteredObject);
-            console.log("Risultati ricevuti:", results);
+            //console.log("Risultati ricevuti:", results);
             
             // Aggiorna la lista filtrata e popola la vista
             filteredList = results;

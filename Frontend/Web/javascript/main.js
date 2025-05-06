@@ -92,6 +92,8 @@ function displayWorkerInfo(container, cookie) {
     }
 }
 
+// Popola l'header con le informazioni del lavoratore 
+// Se il cookie pu-User è presente, mostra anche le informazioni del lavoratore simulato
 function displayWorkerAndPuInfo(container, worker, pu) {
     try {
         worker = JSON.parse(worker);

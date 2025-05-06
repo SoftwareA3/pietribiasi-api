@@ -29,10 +29,16 @@ export async function fetchWithAuth(url, options = {}) {
 
         if (!response.ok) {
             console.error("Errore nella risposta:", response.status, response.statusText);
+
         }
 
         return response;
-    } catch (error) {
+    }
+
+    catch (error) {
+        if (error.message.includes("Failed to fetch") || error.message.includes("net::ERR_CONNECTION_REFUSED")) {
+            alert("Errore di connessione: impossibile raggiungere il server. Verifica la tua connessione o riprova più tardi.");
+        }
         console.error("Errore durante la richiesta fetch:", error.message);
         throw error;
     }

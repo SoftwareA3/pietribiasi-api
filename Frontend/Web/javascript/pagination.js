@@ -10,19 +10,19 @@ export function createPagination(ulSelector, itemsPerPage = 6, maxPageButtons = 
     return;
     }
     
-    // Ottieni tutti gli elementi LI
+    // Ottiene tutti gli elementi LI
     const items = Array.from(ulElement.querySelectorAll('li'));
     const totalItems = items.length;
     console.log("Elementi totali: " + totalItems);
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     console.log("Pagine totali: " + totalPages);
     
-    // Se non ci sono abbastanza elementi per la paginazione, esci
+    // Se non ci sono abbastanza elementi per la paginazione, esce
     if (totalItems <= itemsPerPage) {
     return;
     }
 
-    // Se c'è solo una pagina, non mostrare la paginazione
+    // Se c'è solo una pagina, non mostra la paginazione
     if (totalPages === 1) {
         console.log("Pagine totali: " + totalPages);
         console.log("Nessuna paginazione da mostrare");
@@ -42,7 +42,7 @@ export function createPagination(ulSelector, itemsPerPage = 6, maxPageButtons = 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
     
-    // Nascondi tutti gli elementi
+    // Nasconde tutti gli elementi
     items.forEach(item => item.style.display = 'none');
     
     // Mostra solo gli elementi della pagina corrente
@@ -86,7 +86,6 @@ export function createPagination(ulSelector, itemsPerPage = 6, maxPageButtons = 
     let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
 
-    // Aggiusta se siamo vicini alla fine
     if (endPage - startPage + 1 < maxPageButtons) {
         startPage = Math.max(1, endPage - maxPageButtons + 1);
     }
@@ -154,7 +153,7 @@ export function createPagination(ulSelector, itemsPerPage = 6, maxPageButtons = 
     // Inizializza la visualizzazione
     showCurrentPage();
     
-    // Restituisci un oggetto con metodi pubblici
+    // Restituisce un oggetto con metodi pubblici
     return {
     goToPage: (pageNum) => {
         if (pageNum >= 1 && pageNum <= totalPages) {

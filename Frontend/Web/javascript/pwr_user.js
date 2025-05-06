@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         for (const user of userList) {
             searchResults.push(user);
         }
-        console.log("searchResults", searchResults);
+        //console.log("searchResults", searchResults);
 
         populateSearchResults(searchResults);
         searchOverlay.classList.add("active");

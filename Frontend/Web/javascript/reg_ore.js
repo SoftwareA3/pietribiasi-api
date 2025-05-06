@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             for(const job of jobSearchResults) {
                 const results = await fetchJobMostep(job.job);
-                console.log("Risultati della ricerca:", results);
+                //console.log("Risultati della ricerca:", results);
                 filteredResults.push(...results.map(item => ({
                     job: job.job,
                     mono: item.mono || '',
@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else {
             for(const job of jobList) {
                 const results = await fetchJobMostep(job.job);
-                console.log("Risultati della ricerca:", results);
+                //console.log("Risultati della ricerca:", results);
                 filteredResults.push(...results.map(item => ({
                     job: job.job,
                     mono: item.mono || '',
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     const odpEvent = new Event('change', { bubbles: true });
                     odlInput.dispatchEvent(odpEvent);
-                    console.log("Evento change per ODP dispatched");
+                    //console.log("Evento change per ODP dispatched");
                 }, 300); // Piccolo ritardo per permettere al primo evento di completarsi
             }
 
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 setTimeout(() => {
                     const lavorazioneEvent = new Event('change', { bubbles: true });
                     lavorazioneInput.dispatchEvent(lavorazioneEvent);
-                    console.log("Evento change per lavorazione dispatched");
+                    //console.log("Evento change per lavorazione dispatched");
                 }, 600);
             }
 
@@ -377,15 +377,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             var workerId = "";
             const puCookie = JSON.parse(getCookie("pu-User"));
             if(puCookie) {
-                console.log("cookie pu-User:", puCookie);
+                //console.log("cookie pu-User:", puCookie);
                 workerId = puCookie.workerId.toString();
                 console.log("L'operazione viene salvata con l'utente:", workerId);
             }
             else {
                 // Recupera il workerid dai cookies
                 const cookie = JSON.parse(getCookie("userInfo"));
-                console.log(typeof(cookie));
-                console.log("Cookie:", cookie);
+                //console.log("Cookie:", cookie);
                 workerId = cookie.workerId.toString();
                 console.log("Worker ID:", workerId);
             }
@@ -400,8 +399,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 item.workingTime = (item.workingTime * 3600); // Converte ore in secondi
             });
             console.log("Lista con Worker ID:", dataResultList);
-            console.log("Tipo Lista con Worker ID:", typeof(dataResultList));
-            console.log("Tipo lista convertita: ", typeof(JSON.stringify(dataResultList)));
             try {
                 const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/post_reg_ore", {
                     method: "POST",

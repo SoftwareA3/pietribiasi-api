@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         {
             filteredList = await fetchAllViewOre();
             populateOreList(filteredList);
-            console.log("Dati iniziali caricati:", filteredList);
+            //console.log("Dati iniziali caricati:", filteredList);
         }
         else if(user && user.tipoUtente === "Amministrazione" && puUser)
         {
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             if (response && response.length > 0) {
                 filteredList = response;
                 populateOreList(filteredList);
-                console.log("Dati iniziali caricati:", filteredList);
+                //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", workerId);
                 alert("Nessun dato trovato per l'utente.");
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             if (response && response.length > 0) {
                 filteredList = response;
                 populateOreList(filteredList);
-                console.log("Dati iniziali caricati:", filteredList);
+                //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", userId);
                 alert("Nessun dato trovato per l'utente.");
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             
             // Esegue la chiamata API con i filtri
             const results = await fetchViewOre(filteredObject);
-            console.log("Risultati ricevuti:", results);
+            //console.log("Risultati ricevuti:", results);
             
             // Aggiorna la lista filtrata e popola la vista
             filteredList = results;
@@ -246,7 +246,7 @@ async function fetchAllViewOre() {
 }
 
 async function fetchViewOre(filteredObject) {
-    // console.log("Chiamata API con filtri:", filteredObject);
+    console.log("Chiamata API con filtri:", filteredObject);
 
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/reg_ore/view_ore", {
@@ -406,15 +406,6 @@ function populateOreList(data) {
             paginationContainer.classList.add('hidden');
         }
     }
-
-    // // Gestisce lo scroll della lista se ci sono più di 10 elementi
-    // if (data.length > 10) {
-    //     oreList.style.maxHeight = '500px';
-    //     oreList.style.overflowY = 'auto';
-    // } else {
-    //     oreList.style.maxHeight = '';
-    //     oreList.style.overflowY = '';
-    // }
 }
 
 // Funzione per gestire la modifica delle ore
