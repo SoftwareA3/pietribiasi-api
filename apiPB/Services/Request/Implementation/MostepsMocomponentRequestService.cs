@@ -20,22 +20,6 @@ namespace apiPB.Services.Request.Implementation
             _moStepRequestService = moStepRequestService;
         }
 
-        // public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentByMoId(MostepsMocomponentRequestDto request)
-        // {
-        //     // FIXME controllo su filtro e su metodo di repository
-        //     var filter = _mapper.Map<MostepsMocomponentRequestFilter>(request);
-        //     return _repository.GetMostepsMocomponent(filter)
-        //     .Select(m => m.ToMostepsMocomponentDto());
-        // }
-
-        // public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentDistinct(MostepsMocomponentRequestDto request)
-        // {
-        //     // FIXME controllo su filtro e su metodo di repository
-        //     var filter = _mapper.Map<MostepsMocomponentRequestFilter>(request);
-        //     return _repository.GetMostepsMocomponentDistinct(filter)
-        //     .Select(m => m.ToMostepsMocomponentDto());
-        // }
-
         public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentJobDistinct(JobRequestDto request)
         {
             var filter = _mapper.Map<JobFilter>(request);

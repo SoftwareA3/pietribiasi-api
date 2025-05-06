@@ -54,7 +54,7 @@ namespace apiPB.Controllers
         /// <summary>
         /// Invia la lista di A3AppPrelMat al database
         /// </summary>
-        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Oggetto contenente i parametri di ricerca</param>
+        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="201">Crea delle entry nel database</response>
         /// <response code="404">Non trovato</response>
         public IActionResult PostPrelMatList([FromBody] IEnumerable<PrelMatRequestDto> a3AppPrelMatRequestDto)
@@ -79,7 +79,7 @@ namespace apiPB.Controllers
         /// <summary>
         /// Ritorna le informazioni della vista A3_app_prel_mat filtrate in base ai parametri opzionali inseriti
         /// </summary>
-        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Oggetto contenente i parametri di ricerca</param>
+        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna le informazioni della vista A3_app_prel_mat filtrate in base ai parametri opzionali inseriti</response>
         /// <response code="404">Non trovato</response>
         public IActionResult GetViewPrelMat([FromBody] ViewPrelMatRequestDto a3AppPrelMatRequestDto)
@@ -104,7 +104,7 @@ namespace apiPB.Controllers
         /// <summary>
         /// Aggiorna la riga della tabella A3_app_prel_mat in base al filtro passato
         /// /// </summary>
-        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Oggetto contenente i parametri di ricerca</param>
+        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna le informazioni della vista A3_app_prel_mat filtrate in base ai parametri opzionali inseriti</response>
         /// <response code="404">Non trovato</response>
         public IActionResult PutViewPrelMat([FromBody] ViewPrelMatPutRequestDto a3AppPrelMatRequestDto)
@@ -130,7 +130,7 @@ namespace apiPB.Controllers
         /// Elimina la riga della tabella A3_app_prel_mat in base al filtro passato
         /// </summary>
         /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna le informazioni della vista A3_app_prel_mat filtrate in base ai parametri opzionali inseriti</response>
+        /// <response code="200">Ritorna l'elemento eliminato dalla tabella</response>
         /// <response code="404">Non trovato</response>
         public IActionResult DeletePrelMatId([FromBody] ViewPrelMatDeleteRequestDto a3AppPrelMatRequestDto)
         {

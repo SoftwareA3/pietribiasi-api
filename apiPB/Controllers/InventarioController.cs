@@ -48,10 +48,10 @@ namespace apiPB.Controllers
 
         [HttpPost("post_inventario")]
         /// <summary>
-        /// Invia la lista di A3AppInventario al database
+        /// Invia la lista di Dto al database
         /// </summary>
-        /// <param name="IEnumerable<a3AppInventarioRequestDto>">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="201">Crea delle entry nel database</response>
+        /// <param name="IEnumerable<a3AppInventarioRequestDto>">Collezione contenente i parametri di ricerca</param>
+        /// <response code="201">Crea delle entry nel database. Se le entry esistono, aggiorna alcuni campi</response>
         /// <response code="404">Non trovato</response>
         public IActionResult PostInventarioList([FromBody] IEnumerable<InventarioRequestDto> inventarioRequestDto)
         {
@@ -100,7 +100,7 @@ namespace apiPB.Controllers
         /// <summary>
         /// Aggiorna il record di A3AppInventario in base al filtro passato
         /// </summary>
-        /// <param name="ViewInventarioPutRequestDto">Filtro per l'esecuzione della query. Richiede le proprietà: InvId, BookInv</param>
+        /// <param name="ViewInventarioPutRequestDto">Oggetto che contiene i parametri di ricerca</param>
         /// <response code="200">Ritorna l'elemento modificato</response>
         /// <response code="404">Non trovato</response>
         public IActionResult PutViewInventario([FromBody] ViewInventarioPutRequestDto request)

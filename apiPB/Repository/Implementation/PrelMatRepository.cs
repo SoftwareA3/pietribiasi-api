@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using apiPB.Dto.Models;
-using apiPB.Dto.Request;
 using apiPB.Data;
 using apiPB.Repository.Abstraction;
 using apiPB.Models;

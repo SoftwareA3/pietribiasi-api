@@ -48,7 +48,7 @@ namespace apiPB.Controllers
         /// <summary>
         /// Invia la lista di A3AppRegOre al database
         /// </summary>
-        /// <param name="IEnumerable<a3AppRegOreRequestDto>">Oggetto contenente i parametri di ricerca</param>
+        /// <param name="IEnumerable<a3AppRegOreRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="201">Crea delle entry nel database</response>
         /// <response code="404">Non trovato</response>
         public IActionResult PostRegOreList([FromBody] IEnumerable<RegOreRequestDto> a3AppRegOreRequestDto)

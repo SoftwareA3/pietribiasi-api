@@ -10,7 +10,9 @@ namespace apiPB.Mappers.Filters
     {
         public GiacenzeMapperFilters()
         {
-            
+            //Mappa automaticamente i Dto nei Filters
+
+            // Classe placeholder per la mappatura dei filtri
         }
     }
 }

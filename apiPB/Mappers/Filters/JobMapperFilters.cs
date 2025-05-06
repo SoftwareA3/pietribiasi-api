@@ -11,6 +11,8 @@ namespace apiPB.Mappers.Filter
         public JobMapperFilters()
         {
             //Mappa automaticamente i Dto nei Filters
+
+            // Classe placeholder per la mappatura dei filtri
         }
     }
 }

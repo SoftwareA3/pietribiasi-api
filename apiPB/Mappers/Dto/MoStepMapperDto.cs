@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using apiPB.Models;
 using apiPB.Dto.Models;
 using apiPB.Dto.Request;
@@ -37,33 +33,33 @@ namespace apiPB.Mappers.Dto
         }
 
         // Dto Richieste
-        public static JobRequestDto ToMostepRequestDto(this VwApiMostep mostepModel)
-        {
-            return new JobRequestDto
-            {
-                Job = mostepModel.Job ?? string.Empty
-            };
-        }
+        // public static JobRequestDto ToMostepRequestDto(this VwApiMostep mostepModel)
+        // {
+        //     return new JobRequestDto
+        //     {
+        //         Job = mostepModel.Job ?? string.Empty
+        //     };
+        // }
 
-        public static MonoRequestDto ToMostepOdpRequestDto(this VwApiMostep mostepOdpModel)
-        {
-            return new MonoRequestDto
-            {
-                Job = mostepOdpModel.Job ?? string.Empty,
-                Mono = mostepOdpModel.Mono ?? string.Empty,
-                CreationDate = mostepOdpModel.CreationDate ?? DateTime.MinValue
-            };
-        }
+        // public static MonoRequestDto ToMostepOdpRequestDto(this VwApiMostep mostepOdpModel)
+        // {
+        //     return new MonoRequestDto
+        //     {
+        //         Job = mostepOdpModel.Job ?? string.Empty,
+        //         Mono = mostepOdpModel.Mono ?? string.Empty,
+        //         CreationDate = mostepOdpModel.CreationDate ?? DateTime.MinValue
+        //     };
+        // }
 
-        public static OperationRequestDto ToMostepLavorazioniRequestDto(this VwApiMostep mostepLavorazioniModel)
-        {
-            return new OperationRequestDto
-            {
-                Job = mostepLavorazioniModel.Job ?? string.Empty,
-                Mono = mostepLavorazioniModel.Mono ?? string.Empty,
-                CreationDate = mostepLavorazioniModel.CreationDate ?? DateTime.MinValue,
-                Operation = mostepLavorazioniModel.Operation ?? string.Empty
-            };
-        }
+        // public static OperationRequestDto ToMostepLavorazioniRequestDto(this VwApiMostep mostepLavorazioniModel)
+        // {
+        //     return new OperationRequestDto
+        //     {
+        //         Job = mostepLavorazioniModel.Job ?? string.Empty,
+        //         Mono = mostepLavorazioniModel.Mono ?? string.Empty,
+        //         CreationDate = mostepLavorazioniModel.CreationDate ?? DateTime.MinValue,
+        //         Operation = mostepLavorazioniModel.Operation ?? string.Empty
+        //     };
+        // }
     }
 }

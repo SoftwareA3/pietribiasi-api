@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using apiPB.Models;
 using apiPB.Dto.Models;
 using apiPB.Dto.Request;
@@ -38,59 +34,46 @@ namespace apiPB.Mappers.Dto
                 Wc = mostepsMocomponentModel.Wc ?? string.Empty
             };
         }
-        // Dto Richieste
-        // public static MostepsMocomponentRequestDto ToMostepsMocomponentRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+
+        // public static JobRequestDto ToMostepsMocomponentJobRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
         // {
-        //     return new MostepsMocomponentRequestDto
+        //     return new JobRequestDto
+        //     {
+        //         Job = mostepsMocomponentModel.Job ?? string.Empty
+        //     };
+        // }
+        // public static MonoRequestDto ToMostepsMocomponentMonoRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        // {
+        //     return new MonoRequestDto
         //     {
         //         Job = mostepsMocomponentModel.Job ?? string.Empty,
-        //         RtgStep = mostepsMocomponentModel.RtgStep,
-        //         Alternate = mostepsMocomponentModel.Alternate ?? string.Empty,
-        //         AltRtgStep = mostepsMocomponentModel.AltRtgStep,
-        //         Position = mostepsMocomponentModel.Position,
-        //         Component = mostepsMocomponentModel.Component ?? string.Empty
+        //         Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+        //         CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue
         //     };
         // }
 
-        public static JobRequestDto ToMostepsMocomponentJobRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new JobRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty
-            };
-        }
-        public static MonoRequestDto ToMostepsMocomponentMonoRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new MonoRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue
-            };
-        }
+        // public static OperationRequestDto ToMostepsMocomponentOperationRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        // {
+        //     return new OperationRequestDto
+        //     {
+        //         Job = mostepsMocomponentModel.Job ?? string.Empty,
+        //         Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+        //         CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue,
+        //         Operation = mostepsMocomponentModel.Operation ?? string.Empty
+        //     };
+        // }
 
-        public static OperationRequestDto ToMostepsMocomponentOperationRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new OperationRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue,
-                Operation = mostepsMocomponentModel.Operation ?? string.Empty
-            };
-        }
-
-        public static BarCodeRequestDto ToMostepsMocomponentBarCodeRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
-        {
-            return new BarCodeRequestDto
-            {
-                Job = mostepsMocomponentModel.Job ?? string.Empty,
-                Mono = mostepsMocomponentModel.Mono ?? string.Empty,
-                CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue,
-                Operation = mostepsMocomponentModel.Operation ?? string.Empty,
-                BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
-            };
-        }
+        // public static BarCodeRequestDto ToMostepsMocomponentBarCodeRequestDto(this VwApiMostepsMocomponent mostepsMocomponentModel)
+        // {
+        //     return new BarCodeRequestDto
+        //     {
+        //         Job = mostepsMocomponentModel.Job ?? string.Empty,
+        //         Mono = mostepsMocomponentModel.Mono ?? string.Empty,
+        //         CreationDate = mostepsMocomponentModel.CreationDate ?? DateTime.MinValue,
+        //         Operation = mostepsMocomponentModel.Operation ?? string.Empty,
+        //         BarCode = mostepsMocomponentModel.BarCode ?? string.Empty
+        //     };
+        // }
     }
     
 }

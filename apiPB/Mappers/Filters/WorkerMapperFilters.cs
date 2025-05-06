@@ -2,7 +2,6 @@ using AutoMapper;
 using apiPB.Dto.Request;
 using apiPB.Filters;
 using apiPB.Dto.Models;
-using apiPB.Models;
 
 namespace apiPB.Mappers.Filters
 {

@@ -2,7 +2,6 @@ using apiPB.Data;
 using apiPB.Models;
 using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
-using apiPB.Filters;
 
 namespace apiPB.Repository.Implementation
 {
