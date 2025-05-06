@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     job: job.job,
                     mono: item.mono || '',
                     creationDate: item.creationDate || '',
-                    um: item.um || '',
+                    uoM: item.uoM || '',
                     resQty: item.resQty || '',
                     bom: item.bom || '',
                     itemDesc: item.itemDesc || '',
@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     job: job.job,
                     mono: item.mono || '',
                     creationDate: item.creationDate || '',
-                    um: item.um || '',
+                    uoM: item.uoM || '',
                     resQty: item.resQty || '',
                     bom: item.bom || '',
                     itemDesc: item.itemDesc || '',
@@ -412,7 +412,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             cellCreationDate.textContent = result.creationDate;
             
             const cellUM = row.insertCell();
-            cellUM.textContent = result.uom;
+            cellUM.textContent = result.uoM;
             
             const cellResQty = row.insertCell();
             cellResQty.textContent = result.resQty;

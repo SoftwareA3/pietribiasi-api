@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     job: job.job,
                     mono: item.mono || '',
                     creationDate: item.creationDate || '',
-                    um: item.um || '',
+                    uom: item.uom || '',
                     resQty: item.resQty || '',
                     bom: item.bom || '',
                     itemDesc: item.itemDesc || '',
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     job: job.job,
                     mono: item.mono || '',
                     creationDate: item.creationDate || '',
-                    um: item.um || '',
+                    uom: item.uom || '',
                     resQty: item.resQty || '',
                     bom: item.bom || '',
                     itemDesc: item.itemDesc || '',
@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             cellCreationDate.textContent = result.creationDate;
             
             const cellUM = row.insertCell();
-            cellUM.textContent = result.um;
+            cellUM.textContent = result.uom;
             
             const cellResQty = row.insertCell();
             cellResQty.textContent = result.resQty;
@@ -449,7 +449,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
         if (selectedCommessa && selectedOdp && selectedLavorazione && ore) {
             const result = await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
-            // console.log("Risultato di loadAllData:", result);
+            console.log("Risultato di loadAllData:", result);
             if (result) {
                 var data = {
                     job: result.job,

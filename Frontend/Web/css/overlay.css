@@ -74,6 +74,8 @@
     padding: 10px;
     text-align: center;
     border-bottom: 1px solid #eee;
+    border-right: 1px solid #f1eded;
+    min-width: 5rem;
 }
 
 .search-results-table td {
@@ -87,6 +89,11 @@
     position: sticky;
     top: 0;
     z-index: 1;
+}
+
+#search-results-body tr,
+#search-results-body td {
+    min-width: 11rem;
 }
 
 .search-results-table tr:hover {

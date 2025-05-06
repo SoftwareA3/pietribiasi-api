@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Validazione della quantità
         if (quantitaStr !== "") {
             quantita = parseFloat(quantitaStr);
-            if (isNaN(quantita) || !isFinite(quantita) || quantita < 0) {
+            if (isNaN(quantita) || !isFinite(quantita)) {
                 console.error("Quantità non valida:", quantitaInput.value);
                 alert("Inserisci una quantità valida.");
                 return;
