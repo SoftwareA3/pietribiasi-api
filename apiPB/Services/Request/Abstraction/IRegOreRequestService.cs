@@ -37,6 +37,6 @@ namespace apiPB.Services.Request.Abstraction
         /// </summary>
         /// <param name="request">Dto di richiesta</param>
         /// <returns>Ritorna il Dto dell'elemento eliminato</returns>
-        RegOreDto DeleteRegOreId(ViewOreDeleteRequestDto request);
+        RegOreDto? DeleteRegOreId(ViewOreDeleteRequestDto request);
     }
 }

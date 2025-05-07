@@ -67,11 +67,11 @@ namespace apiPB.Services.Request.Implementation
             return result?.ToDtoPrelMatDto();
         }
 
-        public PrelMatDto DeletePrelMatId(ViewPrelMatDeleteRequestDto request)
+        public PrelMatDto? DeletePrelMatId(ViewPrelMatDeleteRequestDto request)
         {
             var filter = _mapper.Map<ViewPrelMatDeleteFilter>(request);
             var result = _repository.DeletePrelMatId(filter);
-            return result.ToDtoPrelMatDto();
+            return result?.ToDtoPrelMatDto();
         }
     }
 }
