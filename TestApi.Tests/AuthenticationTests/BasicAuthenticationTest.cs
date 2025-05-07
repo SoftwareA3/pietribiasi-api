@@ -11,10 +11,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using System.Text.Encodings.Web;
 using apiPB.Authentication; 
-using apiPB.Services.Request.Abstraction; // Per IWorkersRequestService
-using apiPB.Services.Utils.Abstraction;   // Per ILogService
-using apiPB.Dto.Models;                  // Per WorkerDto
-using apiPB.Dto.Request;                 // Per PasswordWorkersRequestDto
+using apiPB.Services.Request.Abstraction; 
+using apiPB.Services.Utils.Abstraction;   
+using apiPB.Dto.Models;
+using apiPB.Dto.Request;                 
 using System.Collections.Generic;
 
 namespace TestApi.Tests.AuthenticationTests 
@@ -41,9 +41,6 @@ namespace TestApi.Tests.AuthenticationTests
             _optionsMonitorMock.Setup(x => x.Get(It.IsAny<string>())).Returns(new AuthenticationSchemeOptions());
             _loggerFactoryMock.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(_loggerMock.Object);
             
-            // Configura UrlEncoder.System per evitare NullReferenceException se non mockato esplicitamente per ogni chiamata
-            // Questo è un UrlEncoder di default che non fa nulla, va bene per i test se l'encoding non è critico.
-            // Se l'encoding specifico fosse importante, andrebbe mockato più precisamente.
             var defaultUrlEncoder = UrlEncoder.Default; 
             _urlEncoderMock.Setup(e => e.Encode(It.IsAny<string>())).Returns((string s) => defaultUrlEncoder.Encode(s));
 
@@ -60,11 +57,10 @@ namespace TestApi.Tests.AuthenticationTests
             var handler = new BasicAuthentication(
                 _optionsMonitorMock.Object,
                 _loggerFactoryMock.Object,
-                _urlEncoderMock.Object, // Passa il mock di UrlEncoder
+                _urlEncoderMock.Object, 
                 _logServiceMock.Object,
                 _workerRequestServiceMock.Object);
 
-            // Inizializza l'handler con lo schema e il contesto
             var scheme = new AuthenticationScheme("Basic", "Basic Authentication", typeof(BasicAuthentication));
             handler.InitializeAsync(scheme, httpContext).Wait(); 
             return handler;
@@ -75,8 +71,6 @@ namespace TestApi.Tests.AuthenticationTests
             var requestMock = new Mock<HttpRequest>();
             var headerDictionary = new HeaderDictionary();
             
-            // Solo aggiungi l'header se authorizationHeaderValue non è null.
-            // Se è null, simula l'assenza dell'header "Authorization".
             if (authorizationHeaderValue != null)
             {
                 headerDictionary.Add("Authorization", authorizationHeaderValue);
@@ -104,8 +98,6 @@ namespace TestApi.Tests.AuthenticationTests
         public async Task HandleAuthenticateAsync_ShouldReturnFail_WhenAuthorizationHeaderMissing()
         {
             // Arrange
-            // Per questo test, l'header "Authorization" non deve esistere affatto.
-            // CreateMockHttpContext senza argomenti o con null farà questo.
             var httpContext = CreateMockHttpContext(authorizationHeaderValue: null); 
             var handler = CreateAuthHandler(httpContext);
 
@@ -115,7 +107,7 @@ namespace TestApi.Tests.AuthenticationTests
             // Assert
             Assert.False(result.Succeeded);
             Assert.NotNull(result.Failure);
-            Assert.Equal("Authorization header is missing.", result.Failure.Message); // Messaggio dal primo blocco if
+            Assert.Equal("Authorization header is missing.", result.Failure.Message); 
             _logServiceMock.Verify(log => log.AppendMessageToLog(
                 "Authorization header is missing.", 401, "Unauthorized", false), Times.Once);
         }
@@ -126,7 +118,6 @@ namespace TestApi.Tests.AuthenticationTests
         public async Task HandleAuthenticateAsync_ShouldReturnFail_WhenAuthHeaderIsEmpty()
         {
             // Arrange
-            // L'header "Authorization" esiste ma il suo valore è vuoto.
             var httpContext = CreateMockHttpContext(string.Empty); 
             var handler = CreateAuthHandler(httpContext);
 
@@ -182,7 +173,7 @@ namespace TestApi.Tests.AuthenticationTests
         public async Task HandleAuthenticateAsync_ShouldReturnFail_WhenEncodedCredentialsAreEmpty()
         {
             // Arrange
-            // Header "Basic " seguito da nulla
+            // Header "Basic " seguito da null
             var httpContext = CreateMockHttpContext("Basic "); 
             var handler = CreateAuthHandler(httpContext);
 
@@ -232,9 +223,6 @@ namespace TestApi.Tests.AuthenticationTests
             // Assert
             Assert.False(result.Succeeded);
             Assert.NotNull(result.Failure);
-            // Il messaggio di errore specifico per FromBase64String è "The input is not a valid Base-64 string..."
-            // o localizzato. Per robustezza, potremmo verificare che contenga "Base64".
-            // Il codice BasicAuthentication.cs però restituisce "Invalid Base64 string."
             Assert.Equal("Invalid Base64 string.", result.Failure.Message); 
             _logServiceMock.Verify(log => log.AppendMessageToLog(
                 "Base64 decoding failed for the Authorization header.", 401, "Unauthorized", false), Times.Once);
@@ -326,9 +314,9 @@ namespace TestApi.Tests.AuthenticationTests
         public async Task HandleAuthenticateAsync_ShouldReturnFail_WhenCredentialsAreValidButUsernameMismatch()
         {
             // Arrange
-            var providedUsernameInHeader = "99"; // Username nell'header
-            var actualWorkerIdFromService = 43;    // WorkerId restituito dal servizio
-            var password = "validpassword";        // Password corretta per il worker 43
+            var providedUsernameInHeader = "99"; 
+            var actualWorkerIdFromService = 43;    
+            var password = "validpassword";        
             
             var credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{providedUsernameInHeader}:{password}"));
             var httpContext = CreateMockHttpContext($"Basic {credentials}");
@@ -354,8 +342,8 @@ namespace TestApi.Tests.AuthenticationTests
         {
             // Arrange
             var username = "43"; 
-            var passwordInHeader = "passwordInHeader";       // Password nell'header
-            var passwordInDbForWorker = "differentPasswordInDb"; // Password nel DB per il worker trovato
+            var passwordInHeader = "passwordInHeader";      
+            var passwordInDbForWorker = "differentPasswordInDb"; 
 
             var credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{passwordInHeader}"));
             var httpContext = CreateMockHttpContext($"Basic {credentials}");
