@@ -1,11 +1,12 @@
 using System.Net;
 using System.Reflection;
+using apiPB.Services.Utils.Abstraction;
 
-namespace apiPB.Services
+namespace apiPB.Services.Utils.Implementation
 {
     // Classe che si occupa della creazione della directory e del file di log
     // Aggiunge dei metodi per l'inserimento di informazioni nel file di log
-    public class LogService
+    public class LogService : ILogService
     {
         private readonly string _logFolderPath = string.Empty;
         private readonly string _logFilePath = string.Empty;
@@ -63,7 +64,7 @@ namespace apiPB.Services
         /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
-        public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive = false)
+        public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive)
         {
             if(isActive == false)
             {
@@ -88,7 +89,7 @@ namespace apiPB.Services
         /// <param name="list">Lista di tipo generico</param>
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
-        public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive = false)
+        public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive)
         {
             AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
             // Se isActive è false, non eseguire AppendListToLog
@@ -113,7 +114,7 @@ namespace apiPB.Services
         /// <param name="item">Oggetto generico</param>
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
-        public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item, bool isActive = false)
+        public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item, bool isActive)
         {
             AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
             if(isActive == false)

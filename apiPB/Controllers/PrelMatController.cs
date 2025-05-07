@@ -10,6 +10,7 @@ using apiPB.Filters;
 using apiPB.Services.Request.Abstraction;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
+using apiPB.Services.Utils.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -18,12 +19,14 @@ namespace apiPB.Controllers
     [ApiController]
     public class PrelMatController : ControllerBase
     {
-        private readonly LogService _logService;
+        private readonly ILogService _logService;
         private readonly IPrelMatRequestService _prelMatRequestService;
-        public PrelMatController(LogService logService, IPrelMatRequestService prelMatRequestService)
+        private readonly bool _logIsActive;
+        public PrelMatController(ILogService logService, IPrelMatRequestService prelMatRequestService)
         {
             _logService = logService;
             _prelMatRequestService = prelMatRequestService;
+            _logIsActive = false;
         }
 
         [HttpGet("get_all")]
@@ -40,12 +43,12 @@ namespace apiPB.Controllers
 
             if (a3AppPrelMatDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
 
             return Ok(a3AppPrelMatDto);
         }
@@ -59,18 +62,23 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult PostPrelMatList([FromBody] IEnumerable<PrelMatRequestDto> a3AppPrelMatRequestDto)
         {
+            if (a3AppPrelMatRequestDto == null || !a3AppPrelMatRequestDto.Any())
+            {
+                return BadRequest("Request body is null or empty");
+            }
+
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var a3AppPrelMatDto = _prelMatRequestService.PostPrelMatList(a3AppPrelMatRequestDto).ToList();
 
             if (a3AppPrelMatDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
 
             return Ok(a3AppPrelMatDto);
         }
@@ -84,18 +92,23 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetViewPrelMat([FromBody] ViewPrelMatRequestDto a3AppPrelMatRequestDto)
         {
+            if (a3AppPrelMatRequestDto == null)
+            {
+                return BadRequest("Request body is null");
+            }
+            
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var a3AppPrelMatDto = _prelMatRequestService.GetViewPrelMatList(a3AppPrelMatRequestDto).ToList();
 
             if (a3AppPrelMatDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
 
             return Ok(a3AppPrelMatDto);
         }
@@ -109,18 +122,22 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult PutViewPrelMat([FromBody] ViewPrelMatPutRequestDto a3AppPrelMatRequestDto)
         {
+            if (a3AppPrelMatRequestDto == null)
+            {
+                return BadRequest("Request body is null");
+            }
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var a3AppPrelMatDto = _prelMatRequestService.PutViewPrelMat(a3AppPrelMatRequestDto);
 
             if (a3AppPrelMatDto == null)
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto);
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
 
             return Ok(a3AppPrelMatDto);
         }
@@ -134,18 +151,22 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult DeletePrelMatId([FromBody] ViewPrelMatDeleteRequestDto a3AppPrelMatRequestDto)
         {
+            if (a3AppPrelMatRequestDto == null)
+            {
+                return BadRequest("Request body is null");
+            }
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var a3AppPrelMatDto = _prelMatRequestService.DeletePrelMatId(a3AppPrelMatRequestDto);
 
             if (a3AppPrelMatDto == null)
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto);
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
 
             return Ok(a3AppPrelMatDto);
         }

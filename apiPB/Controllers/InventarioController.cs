@@ -6,6 +6,7 @@ using apiPB.Filters;
 using apiPB.Services.Request.Abstraction;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
+using apiPB.Services.Utils.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -14,12 +15,14 @@ namespace apiPB.Controllers
     [ApiController]
     public class InventarioController : ControllerBase
     {
-        private readonly LogService _logService;
+        private readonly ILogService _logService;
         private readonly IInventarioRequestService _inventarioRequestService;
-        public InventarioController(LogService logService, IInventarioRequestService inventarioRequestService)
+        private readonly bool _logIsActive;
+        public InventarioController(ILogService logService, IInventarioRequestService inventarioRequestService)
         {
             _logService = logService;
             _inventarioRequestService = inventarioRequestService;
+            _logIsActive = false;
         }
 
         [HttpGet("get_all")]
@@ -30,18 +33,18 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetInventario()
         {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+            string requestPath = $"{HttpContext.Request.Method ?? string.Empty} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var inventarioDto = _inventarioRequestService.GetInventario().ToList();
 
             if (inventarioDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", inventarioDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", inventarioDto, _logIsActive);
 
             return Ok(inventarioDto);
         }
@@ -55,18 +58,22 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult PostInventarioList([FromBody] IEnumerable<InventarioRequestDto> inventarioRequestDto)
         {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+            if (inventarioRequestDto == null || !inventarioRequestDto.Any())
+            {
+                return BadRequest("Request body is null or empty");
+            }
+            string requestPath = $"{HttpContext.Request.Method ?? string.Empty} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var inventarioDto = _inventarioRequestService.PostInventarioList(inventarioRequestDto).ToList();
 
             if (inventarioDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", inventarioDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", inventarioDto, _logIsActive);
 
             return Ok(inventarioDto);
         }
@@ -80,18 +87,22 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetViewInventario([FromBody] ViewInventarioRequestDto request)
         {
+            if (request == null)
+            {
+                return BadRequest("Request body is null or empty");
+            }
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var inventarioDto = _inventarioRequestService.GetViewInventario(request).ToList();
 
             if (inventarioDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", inventarioDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", inventarioDto, _logIsActive);
 
             return Ok(inventarioDto);
         }
@@ -105,18 +116,22 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult PutViewInventario([FromBody] ViewInventarioPutRequestDto request)
         {
+            if (request == null)
+            {
+                return BadRequest("Request body is null or empty");
+            }
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var inventarioDto = _inventarioRequestService.PutViewInventario(request);
 
             if (inventarioDto == null)
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", inventarioDto);
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", inventarioDto, _logIsActive);
 
             return Ok(inventarioDto);
         }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using apiPB.Dto.Request;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Utils.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -12,13 +13,15 @@ namespace apiPB.Controllers
     [ApiController]
     public class MostepsMocomponentController : ControllerBase
     {
-        private readonly LogService _logService;
+        private readonly ILogService _logService;
         private readonly IMostepsMocomponentRequestService _mostepsMocomponentRequestService;
+        private readonly bool _logIsActive;
 
-        public MostepsMocomponentController(LogService logService, IMostepsMocomponentRequestService mostepsMocomponentRequestService)
+        public MostepsMocomponentController(ILogService logService, IMostepsMocomponentRequestService mostepsMocomponentRequestService)
         {
             _logService = logService;
             _mostepsMocomponentRequestService = mostepsMocomponentRequestService;
+            _logIsActive = false;
         }
 
         // [HttpPost("post_mostepsmocomponent")]
@@ -61,12 +64,12 @@ namespace apiPB.Controllers
 
             if(mostepComponentDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto, _logIsActive);
 
             return Ok(mostepComponentDto);
         }
@@ -86,12 +89,12 @@ namespace apiPB.Controllers
 
             if(mostepComponentDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto, _logIsActive);
 
             return Ok(mostepComponentDto);
         }
@@ -111,12 +114,12 @@ namespace apiPB.Controllers
 
             if(mostepComponentDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto, _logIsActive);
 
             return Ok(mostepComponentDto);
         }
@@ -136,12 +139,12 @@ namespace apiPB.Controllers
 
             if(mostepComponentDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", mostepComponentDto, _logIsActive);
 
             return Ok(mostepComponentDto);
         }

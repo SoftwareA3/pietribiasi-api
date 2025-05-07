@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using apiPB.Dto.Request;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Utils.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -12,12 +13,14 @@ namespace apiPB.Controllers
     [ApiController]
     public class RegOreController : Controller
     {
-        private readonly LogService _logService;
+        private readonly ILogService _logService;
         private readonly IRegOreRequestService _regOreRequestService;
-        public RegOreController(LogService logService, IRegOreRequestService regOreRequestService)
+        private readonly bool _logIsActive;
+        public RegOreController(ILogService logService, IRegOreRequestService regOreRequestService)
         {
             _logService = logService;
             _regOreRequestService = regOreRequestService;
+            _logIsActive = false;
         }
 
         [HttpGet("get_all")]
@@ -34,12 +37,12 @@ namespace apiPB.Controllers
 
             if (a3AppRegOreDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto, _logIsActive);
 
             return Ok(a3AppRegOreDto);
         }
@@ -53,19 +56,24 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult PostRegOreList([FromBody] IEnumerable<RegOreRequestDto> a3AppRegOreRequestDto)
         {
+            if (a3AppRegOreRequestDto.IsNullOrEmpty())
+            {
+                return BadRequest("La richiesta non può essere vuota.");
+            }
+            
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
 
             var a3AppRegOreDto = _regOreRequestService.PostAppRegOre(a3AppRegOreRequestDto).ToList();
 
             if (a3AppRegOreDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
             var createdResult = CreatedAtAction(nameof(PostRegOreList), a3AppRegOreDto);
-            _logService.AppendMessageAndListToLog(requestPath, createdResult.StatusCode, "Created", a3AppRegOreDto);
+            _logService.AppendMessageAndListToLog(requestPath, createdResult.StatusCode, "Created", a3AppRegOreDto, _logIsActive);
 
             return CreatedAtAction(nameof(PostRegOreList), a3AppRegOreDto);
         }
@@ -85,12 +93,12 @@ namespace apiPB.Controllers
 
             if (a3AppRegOreDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto, _logIsActive);
 
             return Ok(a3AppRegOreDto);
         }
@@ -110,12 +118,12 @@ namespace apiPB.Controllers
 
             if (a3AppRegOreDto == null)
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto);
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppRegOreDto, _logIsActive);
 
             return Ok(a3AppRegOreDto);
         }
@@ -135,12 +143,12 @@ namespace apiPB.Controllers
 
             if (a3AppRegOreDto == null)
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "Deleted", a3AppRegOreDto);
+            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "Deleted", a3AppRegOreDto, _logIsActive);
 
             return Ok(a3AppRegOreDto);
         }

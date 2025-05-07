@@ -9,6 +9,8 @@ using apiPB.Mappers.Filters;
 using apiPB.Mappers.Filter;
 using apiPB.Services.Request.Abstraction;
 using apiPB.Services.Request.Implementation;
+using apiPB.Services.Utils.Abstraction;
+using apiPB.Services.Utils.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -40,7 +42,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IInventarioRepository, InventarioRepository>();
     
     // Services
-    builder.Services.AddScoped<LogService>();
+    builder.Services.AddScoped<ILogService, LogService>();
     builder.Services.AddScoped<IWorkersRequestService, WorkersRequestService>();
     builder.Services.AddScoped<IJobRequestService, JobRequestService>();
     builder.Services.AddScoped<IMoStepRequestService, MoStepRequestService>();

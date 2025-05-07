@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using apiPB.Services;
 using Microsoft.AspNetCore.Authorization;
-using apiPB.Dto.Request;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Utils.Abstraction;
 
 namespace apiPB.Controllers
 {
@@ -12,14 +12,17 @@ namespace apiPB.Controllers
     [ApiController]
     public class GiacenzeController : ControllerBase
     {
-        private readonly LogService _logService;
+        private readonly ILogService _logService;
 
         private readonly IGiacenzeRequestService _giacenzeRequestService;
 
-        public GiacenzeController(LogService logService, IGiacenzeRequestService giacenzeRequestService)
+        private readonly bool _logIsActive;
+
+        public GiacenzeController(ILogService logService, IGiacenzeRequestService giacenzeRequestService)
         {
             _logService = logService;
             _giacenzeRequestService = giacenzeRequestService;
+            _logIsActive = false;
         }
 
         [HttpGet("get_all")]
@@ -36,12 +39,12 @@ namespace apiPB.Controllers
 
             if (giacenzeDto.IsNullOrEmpty())
             {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found");
+                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
 
                 return NotFound();
             }
 
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", giacenzeDto);
+            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", giacenzeDto, _logIsActive);
 
             return Ok(giacenzeDto);
         }
