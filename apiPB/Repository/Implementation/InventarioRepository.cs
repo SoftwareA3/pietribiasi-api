@@ -16,7 +16,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppInventario> GetInventario()
         {
-            return _context.A3AppInventarios.AsQueryable().ToList();
+            return _context.A3AppInventarios.ToList();
         }
 
         public IEnumerable<A3AppInventario> PostInventarioList(IEnumerable<InventarioFilter> filterList)
@@ -72,50 +72,29 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppInventario> GetViewInventario(ViewInventarioRequestFilter filter)
         {
-            var query = _context.A3AppInventarios.AsQueryable();
-
-            if(filter.FromDateTime != null && filter.ToDateTime != null)
-            {
-                query = query.Where(m => m.SavedDate >= filter.FromDateTime && m.SavedDate <= filter.ToDateTime);
-            }
-            else if(filter.FromDateTime != null && filter.ToDateTime == null)
-            {
-                query = query.Where(m => m.SavedDate >= filter.FromDateTime);
-            }
-            else if(filter.FromDateTime == null && filter.ToDateTime != null)
-            {
-                query = query.Where(m => m.SavedDate <= filter.ToDateTime);
-            }
-
-            if (filter.Item != null)
-            {
-                query = query.Where(m => m.Item == filter.Item);
-            }
-            if (filter.BarCode != null)
-            {
-                query = query.Where(m => m.BarCode == filter.BarCode);
-            }
-
-            if(filter.WorkerId != null)
-            {
-                query = query.Where(m => m.WorkerId == filter.WorkerId);
-            }
-
-            return query.ToList();
+            return _context.A3AppInventarios
+            .Where(i => (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
+                        && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
+                        && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
+                        && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
+                        && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode))
+            .ToList();
         }
 
         public A3AppInventario PutViewInventario(ViewInventarioPutFilter filter)
         {
             var inventario = _context.A3AppInventarios.FirstOrDefault(m => m.InvId == filter.InvId);
 
-            if (inventario != null)
+            if (inventario == null)
             {
-                inventario.SavedDate = DateTime.Now;
-                inventario.BookInv = filter.BookInv;
-                _context.SaveChanges();
+                return null;
             }
 
-            return inventario ?? throw new InvalidOperationException("Record not found.");
+            inventario.SavedDate = DateTime.Now;
+            inventario.BookInv = filter.BookInv;
+            _context.SaveChanges();
+
+            return inventario;
         }
     }
 
