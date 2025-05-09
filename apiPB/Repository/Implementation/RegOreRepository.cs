@@ -64,70 +64,44 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppRegOre> GetAppViewOre(ViewOreRequestFilter filter)
         {
-            var query = _context.A3AppRegOres.AsNoTracking();
-
-            if(filter.FromDateTime != null && filter.ToDateTime != null)
-            {
-                query = query.Where(m => m.SavedDate >= filter.FromDateTime && m.SavedDate <= filter.ToDateTime);
-            }
-            else if(filter.FromDateTime != null && filter.ToDateTime == null)
-            {
-                query = query.Where(m => m.SavedDate >= filter.FromDateTime);
-            }
-            else if(filter.FromDateTime == null && filter.ToDateTime != null)
-            {
-                query = query.Where(m => m.SavedDate <= filter.ToDateTime);
-            }
-
-            if (filter.Job != null)
-            {
-                query = query.Where(m => m.Job == filter.Job);
-            }
-
-            if (filter.Operation != null)
-            {
-                query = query.Where(m => m.Operation == filter.Operation);
-            }
-
-            if (filter.Mono != null)
-            {
-                query = query.Where(m => m.Mono == filter.Mono);
-            }
-
-            if(filter.WorkerId != null)
-            {
-                query = query.Where(m => m.WorkerId == filter.WorkerId);
-            }
-
-            var list = query.ToList();
-            return list;
+            return _context.A3AppRegOres.Where(i =>
+                (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
+                && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
+                && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
+                && (string.IsNullOrEmpty(filter.Job) || i.Job == filter.Job)
+                && (string.IsNullOrEmpty(filter.Operation) || i.Operation == filter.Operation)
+                && (string.IsNullOrEmpty(filter.Mono) || i.Mono == filter.Mono)
+            ).ToList();
         }
 
         public A3AppRegOre PutAppViewOre(ViewOrePutFilter filter)
         {
             var editRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId);
 
-            if (editRegOre != null)
+            if (editRegOre == null)
             {
-                editRegOre.SavedDate = DateTime.Now;
-                editRegOre.WorkingTime = filter.WorkingTime;
-                _context.SaveChanges();
+                return null;
             }
+            editRegOre.SavedDate = DateTime.Now;
+            editRegOre.WorkingTime = filter.WorkingTime;
+            _context.SaveChanges();
 
-            return editRegOre ?? throw new InvalidOperationException("Record not found.");
+            return editRegOre;
         }
 
         public A3AppRegOre DeleteRegOreId(ViewOreDeleteRequestFilter filter)
         {
             var deleteRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId);
 
-            if (deleteRegOre != null)
+            if (deleteRegOre == null)
             {
-                _context.A3AppRegOres.Remove(deleteRegOre);
-                _context.SaveChanges();
+                return null;
             }
 
-            return deleteRegOre ?? throw new InvalidOperationException("Record not found.");
+            _context.A3AppRegOres.Remove(deleteRegOre);
+            _context.SaveChanges();
+
+            return deleteRegOre;
         }
     }
 }

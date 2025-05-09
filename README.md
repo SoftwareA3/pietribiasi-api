@@ -302,12 +302,12 @@ Per eseguire lo scaffolding del database e creare in automatico sia le tabelle c
 ``` shell
 dotnet ef dbcontext scaffold "Data Source=SERVERNAME\SQLEXPRESS;Initial Catalog=NOMEDATABASE;User ID=user_id;Password=password;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" Microsoft.EntityFrameworkCore.SqlServer --output-dir models_directory --context-dir db_context_directory --context nome_file_dbcontext --table table_1 --table table_2 --force
 ```
-- La stringa del database è prefissata e alcuni campi probabilmente non servono. Sono da modificare i campi "Data Source" con l'IP del database o il nome del Server; "Initial Catalog" con il nome del database; "User ID" e "Password" con le credenziali di accesso al server.
-- "--output-dir" indica la directory di destinazione per il salvataggio dei modelli presi dal database
-- "--context" indica la directory dove verrà salvato il file che descrive il contesto del database
-- "--context" con il nome che si vuole dare al file che genererà in automatico la classe derivata da DbContext, classe che descriverà i modelli e si occuperà di interrogare il database. Alla creazione del file, scriverà anche la stringa di connessione al database sul codice, che andrà poi tolta, ma mantenuto un riferimento
-- "--table" indica il nome delle tabelle che si vogliono recuperare e "simulare" dal database. Si possono inserire tabelle e viste indifferentemente e basta indicare il nome (ad esempio dbo.User diventa User)
-- "--force" è una direttiva che permette di sovrascrivere dati o file già creati, in modo da non doverli rimuovere a mano.
+- La stringa del database è prefissata e alcuni campi probabilmente non servono. Sono da modificare i campi "**Data Source**" con l'IP del database o il nome del Server; "Initial Catalog" con il nome del database; "**User ID**" e "Password" con le credenziali di accesso al server.
+- "**--output-dir**" indica la directory di destinazione per il salvataggio dei modelli presi dal database
+- "**--context**" indica la directory dove verrà salvato il file che descrive il contesto del database
+- "**--context**" con il nome che si vuole dare al file che genererà in automatico la classe derivata da DbContext, classe che descriverà i modelli e si occuperà di interrogare il database. Alla creazione del file, scriverà anche la stringa di connessione al database sul codice, che andrà poi tolta, ma mantenuto un riferimento
+- "**--table**" indica il nome delle tabelle che si vogliono recuperare e "simulare" dal database. Si possono inserire tabelle e viste indifferentemente e basta indicare il nome (ad esempio dbo.User diventa User)
+- "**--force**" è una direttiva che permette di sovrascrivere dati o file già creati, in modo da non doverli rimuovere a mano.
 
 ### Scaffolding con stringa di connessione in locale
 Essendo che col metodo precedente è necessario inserire la stringa di connessione e che questa viene poi salvata nel file del contesto del database, .NET mette a disposizione delle soluzioni per "censurare" la stringa di connessione.

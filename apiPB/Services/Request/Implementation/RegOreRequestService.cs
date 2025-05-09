@@ -74,7 +74,7 @@ namespace apiPB.Services.Request.Implementation
             }
         }
 
-        public RegOreDto DeleteRegOreId(ViewOreDeleteRequestDto request)
+        public RegOreDto? DeleteRegOreId(ViewOreDeleteRequestDto request)
         {
             var filter = _mapper.Map<ViewOreDeleteRequestFilter>(request);
             var result = _repository.DeleteRegOreId(filter);
@@ -84,7 +84,7 @@ namespace apiPB.Services.Request.Implementation
             }
             else
             {
-                throw new InvalidOperationException("Record not found.");
+                return null;
             }
         }
     }

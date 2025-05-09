@@ -47,6 +47,6 @@ namespace apiPB.Services.Request.Abstraction
         /// <returns>
         /// A3AppPrelMatDto: restituisce l'elemento eliminato
         /// </returns>
-        PrelMatDto DeletePrelMatId(ViewPrelMatDeleteRequestDto request);
+        PrelMatDto? DeletePrelMatId(ViewPrelMatDeleteRequestDto request);
     }
 }

@@ -11,13 +11,11 @@ namespace apiPB.Services.Request.Implementation
     public class MostepsMocomponentRequestService : IMostepsMocomponentRequestService
     {
         private readonly IMostepsMocomponentRepository _repository;
-        private readonly IMoStepRequestService _moStepRequestService;
         private readonly IMapper _mapper;
-        public MostepsMocomponentRequestService(IMostepsMocomponentRepository repository, IMoStepRequestService moStepRequestService, IMapper mapper)
+        public MostepsMocomponentRequestService(IMostepsMocomponentRepository repository, IMapper mapper)
         {
             _mapper = mapper;
             _repository = repository;
-            _moStepRequestService = moStepRequestService;
         }
 
         public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentJobDistinct(JobRequestDto request)

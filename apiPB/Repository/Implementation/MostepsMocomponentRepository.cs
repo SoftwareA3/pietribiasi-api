@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace apiPB.Repository.Implementation
 {
-    public class MostepsMocomponentRepository : IMostepsMocomponentRepository, IGenericRepository<VwApiMostepsMocomponent>
+    public class MostepsMocomponentRepository : IMostepsMocomponentRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -16,34 +16,24 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
-        public IEnumerable<VwApiMostepsMocomponent> GetFiltered(Expression<Func<VwApiMostepsMocomponent, bool>> predicate, bool distinct = false)
-        {
-            var query = _context.VwApiMostepsMocomponents.AsNoTracking().Where(predicate);
-
-            if (distinct)
-                query = query.Distinct();
-
-            return query.ToList();
-        }
-
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(JobFilter filter)
         {
-            return GetFiltered(m => m.Job == filter.Job, true);
+            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job).Distinct().ToList();
         }
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MonoFilter filter)
         {
-            return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate, true);
+            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate).Distinct().ToList();
         }
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(OperationFilter filter)
         {
-            return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.CreationDate == filter.CreationDate, true);
+            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.CreationDate == filter.CreationDate).Distinct().ToList();
         }
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(BarCodeFilter filter)
         {
-            return GetFiltered(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode, true);
+            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode).Distinct().ToList();
         }
     }
 }

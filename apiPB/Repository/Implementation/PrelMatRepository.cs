@@ -66,76 +66,42 @@ namespace apiPB.Repository.Implementation
         
         public IEnumerable<A3AppPrelMat> GetViewPrelMat(ViewPrelMatRequestFilter filter)
         {
-            var query = _context.A3AppPrelMats.AsQueryable();
-
-            if(filter.FromDateTime != null && filter.ToDateTime != null)
-            {
-                query = query.Where(m => m.SavedDate >= filter.FromDateTime && m.SavedDate <= filter.ToDateTime);
-            }
-            else if(filter.FromDateTime != null && filter.ToDateTime == null)
-            {
-                query = query.Where(m => m.SavedDate >= filter.FromDateTime);
-            }
-            else if(filter.FromDateTime == null && filter.ToDateTime != null)
-            {
-                query = query.Where(m => m.SavedDate <= filter.ToDateTime);
-            }
-
-            if (filter.Job != null)
-            {
-                query = query.Where(m => m.Job == filter.Job);
-            }
-
-            if (filter.Operation != null)
-            {
-                query = query.Where(m => m.Operation == filter.Operation);
-            }
-
-            if (filter.Mono != null)
-            {
-                query = query.Where(m => m.Mono == filter.Mono);
-            }
-
-            if(filter.Component != null)
-            {
-                query = query.Where(m => m.Component == filter.Component);
-            }
-
-            if (filter.BarCode != null)
-            {
-                query = query.Where(m => m.BarCode == filter.BarCode);
-            }
-
-            if(filter.WorkerId != null)
-            {
-                query = query.Where(m => m.WorkerId == filter.WorkerId);
-            }
-
-            var list = query.ToList();
-            return list;
+            return _context.A3AppPrelMats.Where(i =>
+                (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
+                && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
+                && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
+                && (string.IsNullOrEmpty(filter.Job) || i.Job == filter.Job)
+                && (string.IsNullOrEmpty(filter.Operation) || i.Operation == filter.Operation)
+                && (string.IsNullOrEmpty(filter.Mono) || i.Mono == filter.Mono)
+                && (string.IsNullOrEmpty(filter.Component) || i.Component == filter.Component)
+                && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
+            ).ToList();
         }
 
         public A3AppPrelMat PutViewPrelMat(ViewPrelMatPutFilter filter)
         {
             var editPrelMat = _context.A3AppPrelMats.FirstOrDefault(m => m.PrelMatId == filter.PrelMatId);
             
-            if (editPrelMat != null)
+            if (editPrelMat == null)
             {
-                editPrelMat.SavedDate = DateTime.Now;
-                editPrelMat.PrelQty = filter.PrelQty;
-                _context.SaveChanges();
+                return null;
             }
-            return editPrelMat ?? throw new InvalidOperationException("Record not found.");
+            editPrelMat.SavedDate = DateTime.Now;
+            editPrelMat.PrelQty = filter.PrelQty;
+            _context.SaveChanges();
+            
+            return editPrelMat;
         }
         public A3AppPrelMat DeletePrelMatId(ViewPrelMatDeleteFilter filter)
         {
             var deletePrelMat = _context.A3AppPrelMats.Find(filter.PrelMatId);
-            if (deletePrelMat != null)
+            if (deletePrelMat == null)
             {
-                _context.A3AppPrelMats.Remove(deletePrelMat);
-                _context.SaveChanges();
+                return null;
             }
-            return deletePrelMat ?? throw new InvalidOperationException("Record not found.");
+            _context.A3AppPrelMats.Remove(deletePrelMat);
+            _context.SaveChanges();
+            return deletePrelMat;
         }
     }
 }
