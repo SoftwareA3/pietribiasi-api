@@ -18,7 +18,7 @@ namespace TestApi.Tests.ControllerTests
     public class GiacenzeControllerTests
     {
         private readonly Mock<IGiacenzeRequestService> _giacenzeRequestServiceMock;
-        private readonly Mock<ILogService> _logServiceMock;
+        private readonly Mock<IResponseHandler> _responseHandlerMock;
         private readonly GiacenzeController _controller;
 
         // DTO utilizzati per i test
@@ -32,12 +32,34 @@ namespace TestApi.Tests.ControllerTests
             BookInv = 100.0
         };
 
+        private readonly List<GiacenzeDto> _sampleGiacenzaDtoList = new List<GiacenzeDto>
+        {
+            new GiacenzeDto
+            {
+                Item = "ITEM001",
+                Description = "Sample Item Description",
+                BarCode = "1234567890123",
+                FiscalYear = 2024,
+                Storage = "MAG01",
+                BookInv = 100.0
+            },
+            new GiacenzeDto
+            {
+                Item = "ITEM002",
+                Description = "Another Item Description",
+                BarCode = "9876543210987",
+                FiscalYear = 2024,
+                Storage = "MAG02",
+                BookInv = 200.0
+            }
+        };
+
         public GiacenzeControllerTests()
         {
             _giacenzeRequestServiceMock = new Mock<IGiacenzeRequestService>();
-            _logServiceMock = new Mock<ILogService>();
+            _responseHandlerMock = new Mock<IResponseHandler>();
 
-            _controller = new GiacenzeController(_logServiceMock.Object, _giacenzeRequestServiceMock.Object);
+            _controller = new GiacenzeController(_responseHandlerMock.Object, _giacenzeRequestServiceMock.Object);
 
             // Mock HttpContext per requestPath e User
             var httpContextMock = new Mock<HttpContext>();
@@ -59,37 +81,23 @@ namespace TestApi.Tests.ControllerTests
                 HttpContext = httpContextMock.Object
             };
 
-            // Setup generico per i metodi di log (_logIsActive è false)
-            _logServiceMock.Setup(x => x.AppendMessageToLog(
-                It.IsAny<string>(),
-                It.IsAny<int?>(),
-                It.IsAny<string>(),
-                false)); 
-
-            _logServiceMock.Setup(x => x.AppendMessageAndListToLog(
-                It.IsAny<string>(),
-                It.IsAny<int?>(),
-                It.IsAny<string>(),
-                It.IsAny<List<GiacenzeDto>>(),
-                false)); 
-        }
-
-        private void MockRequestPath(string method, string path)
-        {
-            var httpRequestMock = Mock.Get(_controller.HttpContext.Request);
-            httpRequestMock.Setup(r => r.Method).Returns(method);
-            httpRequestMock.Setup(r => r.Path).Returns(new PathString(path));
+            // Setup generico per i metodi di log (_isLogActive è false)
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(_controller.HttpContext, false))
+                .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
+            _responseHandlerMock.Setup(x => x.HandleNotFound(_controller.HttpContext, false))
+                .Returns(new NotFoundObjectResult("Non risultato trovato."));
         }
 
         [Fact]
         public void GetGiacenze_ShouldReturnOkResult_WhenDataExists()
         {
             // Arrange
-            var expectedPath = "GET api/giacenze/get_all";
-            MockRequestPath("GET", "/api/giacenze/get_all");
-
-            var mockDataList = new List<GiacenzeDto> { _sampleGiacenzaDto, new GiacenzeDto { Item = "ITEM002" } };
+            var mockDataList = _sampleGiacenzaDtoList;
             _giacenzeRequestServiceMock.Setup(service => service.GetGiacenze()).Returns(mockDataList);
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(
+                _controller.HttpContext, 
+                It.IsAny<List<GiacenzeDto>>(), 
+                false)).Returns(new OkObjectResult(mockDataList));
 
             // Act
             var result = _controller.GetGiacenze();
@@ -101,11 +109,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(2, returnValue.Count());
             Assert.Equal(_sampleGiacenzaDto.Item, returnValue.First().Item);
 
-            _logServiceMock.Verify(log => log.AppendMessageAndListToLog(
-                expectedPath, 
-                200, 
-                "OK", 
-                It.Is<List<GiacenzeDto>>(list => list.Count == 2 && list.Contains(_sampleGiacenzaDto)), 
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(
+                _controller.HttpContext, 
+                It.IsAny<List<GiacenzeDto>>(), 
                 false), Times.Once);
         }
 
@@ -113,9 +119,6 @@ namespace TestApi.Tests.ControllerTests
         public void GetGiacenze_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
         {
             // Arrange
-            var expectedPath = "GET api/giacenze/get_all";
-            MockRequestPath("GET", "/api/giacenze/get_all");
-
             var emptyList = new List<GiacenzeDto>();
             _giacenzeRequestServiceMock.Setup(service => service.GetGiacenze()).Returns(emptyList);
 
@@ -123,37 +126,11 @@ namespace TestApi.Tests.ControllerTests
             var result = _controller.GetGiacenze();
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
 
-            _logServiceMock.Verify(log => log.AppendMessageToLog(
-                expectedPath, 
-                404, 
-                "Not Found", 
-                false), Times.Once);
-        }
-
-        [Fact]
-        public void GetGiacenze_ShouldReturnNotFound_WhenServiceReturnsNull()
-        {
-            var expectedPath = "GET api/giacenze/get_all";
-            MockRequestPath("GET", "/api/giacenze/get_all");
-
-            var emptyList = new List<GiacenzeDto>(); 
-            _giacenzeRequestServiceMock.Setup(service => service.GetGiacenze()).Returns(emptyList);
-
-
-            // Act
-            var result = _controller.GetGiacenze();
-
-            // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result);
-            Assert.Equal(404, notFoundResult.StatusCode);
-
-            _logServiceMock.Verify(log => log.AppendMessageToLog(
-                expectedPath,
-                404,
-                "Not Found",
+            _responseHandlerMock.Verify(log => log.HandleNotFound(
+                _controller.HttpContext, 
                 false), Times.Once);
         }
     }

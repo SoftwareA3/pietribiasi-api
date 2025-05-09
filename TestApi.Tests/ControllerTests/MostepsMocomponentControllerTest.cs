@@ -16,7 +16,7 @@ namespace TestApi.Tests.ControllerTests
     public class MostepsMocomponentControllerTest
     {
         private readonly Mock<IMostepsMocomponentRequestService> _requestServiceMock;
-        private readonly Mock<ILogService> _logServiceMock;
+        private readonly Mock<IResponseHandler> _responseHandlerMock;
         private readonly MostepsMocomponentController _controller;
 
         // Sample DTOs for testing
@@ -77,9 +77,9 @@ namespace TestApi.Tests.ControllerTests
         public MostepsMocomponentControllerTest()
         {
             _requestServiceMock = new Mock<IMostepsMocomponentRequestService>();
-            _logServiceMock = new Mock<ILogService>();
+            _responseHandlerMock = new Mock<IResponseHandler>();
 
-            _controller = new MostepsMocomponentController(_logServiceMock.Object, _requestServiceMock.Object);
+            _controller = new MostepsMocomponentController(_responseHandlerMock.Object, _requestServiceMock.Object);
 
             // Configure controller context with mocked HttpContext
             var httpContextMock = new Mock<HttpContext>();
@@ -96,18 +96,10 @@ namespace TestApi.Tests.ControllerTests
             };
 
             // Set up logging service mocks
-            _logServiceMock.Setup(x => x.AppendMessageToLog(
-                It.IsAny<string>(),
-                It.IsAny<int?>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>()));
-
-            _logServiceMock.Setup(x => x.AppendMessageAndListToLog(
-                It.IsAny<string>(),
-                It.IsAny<int?>(),
-                It.IsAny<string>(),
-                It.IsAny<List<MostepsMocomponentDto>>(),
-                It.IsAny<bool>()));
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+                .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
+            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+                .Returns(new NotFoundObjectResult("Non risultato trovato."));
         }
 
         // --- Tests for GetMostepsMocomponentWithJob ---
@@ -119,7 +111,10 @@ namespace TestApi.Tests.ControllerTests
             var mockData = new List<MostepsMocomponentDto> { _sampleMostepsMocomponentDto };
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentJobDistinct(It.IsAny<JobRequestDto>()))
                 .Returns(mockData);
-            MockRequestPath("POST", "/api/mostepsmocomponent/job");
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(
+                It.IsAny<HttpContext>(), 
+                It.IsAny<List<MostepsMocomponentDto>>(), 
+                false)).Returns(new OkObjectResult(mockData));
 
             // Act
             var result = _controller.GetMostepsMocomponentWithJob(_sampleJobRequestDto);
@@ -130,8 +125,20 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<MostepsMocomponentDto>>(okResult.Value);
             Assert.Single(returnValue);
             Assert.Equal(_sampleMostepsMocomponentDto.Job, returnValue.First().Job);
-            _logServiceMock.Verify(log => log.AppendMessageAndListToLog(It.IsAny<string>(), 200, "OK", 
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), 
                 It.Is<List<MostepsMocomponentDto>>(list => list.Count == 1), false), Times.Once);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentWithJob_ShouldReturnBadRequest_WhenJobIsNull()
+        {
+            // Act
+            var result = _controller.GetMostepsMocomponentWithJob(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
         }
 
         [Fact]
@@ -141,15 +148,14 @@ namespace TestApi.Tests.ControllerTests
             var emptyList = new List<MostepsMocomponentDto>();
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentJobDistinct(It.IsAny<JobRequestDto>()))
                 .Returns(emptyList);
-            MockRequestPath("POST", "/api/mostepsmocomponent/job");
 
             // Act
             var result = _controller.GetMostepsMocomponentWithJob(_sampleJobRequestDto);
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _logServiceMock.Verify(log => log.AppendMessageToLog(It.IsAny<string>(), 404, "Not Found", false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
         }
 
         // --- Tests for GetMostepsMocomponentWithMono ---
@@ -161,7 +167,10 @@ namespace TestApi.Tests.ControllerTests
             var mockData = new List<MostepsMocomponentDto> { _sampleMostepsMocomponentDto };
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentMonoDistinct(It.IsAny<MonoRequestDto>()))
                 .Returns(mockData);
-            MockRequestPath("POST", "/api/mostepsmocomponent/mono");
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(
+                It.IsAny<HttpContext>(), 
+                It.IsAny<List<MostepsMocomponentDto>>(), 
+                false)).Returns(new OkObjectResult(mockData));
 
             // Act
             var result = _controller.GetMostepsMocomponentWithMono(_sampleMonoRequestDto);
@@ -172,8 +181,20 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<MostepsMocomponentDto>>(okResult.Value);
             Assert.Single(returnValue);
             Assert.Equal(_sampleMostepsMocomponentDto.Mono, returnValue.First().Mono);
-            _logServiceMock.Verify(log => log.AppendMessageAndListToLog(It.IsAny<string>(), 200, "OK", 
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), 
                 It.Is<List<MostepsMocomponentDto>>(list => list.Count == 1), false), Times.Once);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentWithMono_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Act
+            var result = _controller.GetMostepsMocomponentWithMono(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
         }
 
         [Fact]
@@ -183,15 +204,14 @@ namespace TestApi.Tests.ControllerTests
             var emptyList = new List<MostepsMocomponentDto>();
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentMonoDistinct(It.IsAny<MonoRequestDto>()))
                 .Returns(emptyList);
-            MockRequestPath("POST", "/api/mostepsmocomponent/mono");
 
             // Act
             var result = _controller.GetMostepsMocomponentWithMono(_sampleMonoRequestDto);
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _logServiceMock.Verify(log => log.AppendMessageToLog(It.IsAny<string>(), 404, "Not Found", false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
         }
 
         // --- Tests for GetMostepsMocomponentWithOperation ---
@@ -203,7 +223,10 @@ namespace TestApi.Tests.ControllerTests
             var mockData = new List<MostepsMocomponentDto> { _sampleMostepsMocomponentDto };
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentOperationDistinct(It.IsAny<OperationRequestDto>()))
                 .Returns(mockData);
-            MockRequestPath("POST", "/api/mostepsmocomponent/operation");
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(
+                It.IsAny<HttpContext>(), 
+                It.IsAny<List<MostepsMocomponentDto>>(), 
+                false)).Returns(new OkObjectResult(mockData));
 
             // Act
             var result = _controller.GetMostepsMocomponentWithOperation(_sampleOperationRequestDto);
@@ -214,8 +237,20 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<MostepsMocomponentDto>>(okResult.Value);
             Assert.Single(returnValue);
             Assert.Equal(_sampleMostepsMocomponentDto.Operation, returnValue.First().Operation);
-            _logServiceMock.Verify(log => log.AppendMessageAndListToLog(It.IsAny<string>(), 200, "OK", 
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), 
                 It.Is<List<MostepsMocomponentDto>>(list => list.Count == 1), false), Times.Once);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentWithOperation_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Act
+            var result = _controller.GetMostepsMocomponentWithOperation(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
         }
 
         [Fact]
@@ -225,15 +260,14 @@ namespace TestApi.Tests.ControllerTests
             var emptyList = new List<MostepsMocomponentDto>();
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentOperationDistinct(It.IsAny<OperationRequestDto>()))
                 .Returns(emptyList);
-            MockRequestPath("POST", "/api/mostepsmocomponent/operation");
 
             // Act
             var result = _controller.GetMostepsMocomponentWithOperation(_sampleOperationRequestDto);
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _logServiceMock.Verify(log => log.AppendMessageToLog(It.IsAny<string>(), 404, "Not Found", false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
         }
 
         // --- Tests for GetMostepsMocomponentWithBarCode ---
@@ -245,7 +279,10 @@ namespace TestApi.Tests.ControllerTests
             var mockData = new List<MostepsMocomponentDto> { _sampleMostepsMocomponentDto };
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentBarCodeDistinct(It.IsAny<BarCodeRequestDto>()))
                 .Returns(mockData);
-            MockRequestPath("POST", "/api/mostepsmocomponent/barcode");
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(
+                It.IsAny<HttpContext>(), 
+                It.IsAny<List<MostepsMocomponentDto>>(), 
+                false)).Returns(new OkObjectResult(mockData));
 
             // Act
             var result = _controller.GetMostepsMocomponentWithBarCode(_sampleBarCodeRequestDto);
@@ -256,8 +293,20 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<MostepsMocomponentDto>>(okResult.Value);
             Assert.Single(returnValue);
             Assert.Equal(_sampleMostepsMocomponentDto.BarCode, returnValue.First().BarCode);
-            _logServiceMock.Verify(log => log.AppendMessageAndListToLog(It.IsAny<string>(), 200, "OK", 
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), 
                 It.Is<List<MostepsMocomponentDto>>(list => list.Count == 1), false), Times.Once);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentWithBarCode_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Act
+            var result = _controller.GetMostepsMocomponentWithBarCode(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
         }
 
         [Fact]
@@ -267,30 +316,14 @@ namespace TestApi.Tests.ControllerTests
             var emptyList = new List<MostepsMocomponentDto>();
             _requestServiceMock.Setup(service => service.GetMostepsMocomponentBarCodeDistinct(It.IsAny<BarCodeRequestDto>()))
                 .Returns(emptyList);
-            MockRequestPath("POST", "/api/mostepsmocomponent/barcode");
 
             // Act
             var result = _controller.GetMostepsMocomponentWithBarCode(_sampleBarCodeRequestDto);
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _logServiceMock.Verify(log => log.AppendMessageToLog(It.IsAny<string>(), 404, "Not Found", false), Times.Once);
-        }
-
-        // Helper method to mock HttpContext.Request.Method and Path for tests
-        private void MockRequestPath(string method, string path)
-        {
-            var httpContextMock = new Mock<HttpContext>();
-            var httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(r => r.Method).Returns(method);
-            httpRequestMock.Setup(r => r.Path).Returns(new PathString(path));
-            httpContextMock.Setup(c => c.Request).Returns(httpRequestMock.Object);
-
-            _controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = httpContextMock.Object
-            };
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
         }
     }
 }

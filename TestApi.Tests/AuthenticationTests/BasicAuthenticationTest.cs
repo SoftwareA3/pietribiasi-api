@@ -49,7 +49,7 @@ namespace TestApi.Tests.AuthenticationTests
                 It.IsAny<string>(),
                 It.IsAny<int?>(),
                 It.IsAny<string>(),
-                false)); // _logIsActive è false in BasicAuthentication
+                false)); // _isLogActive è false in BasicAuthentication
         }
 
         private BasicAuthentication CreateAuthHandler(HttpContext httpContext)
