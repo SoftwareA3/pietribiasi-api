@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using apiPB.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using apiPB.Services.Request.Abstraction;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Services.Abstraction;
+using apiPB.Utils.Abstraction;
 using apiPB.Dto.Models;
 
 namespace apiPB.Controllers

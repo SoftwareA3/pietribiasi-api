@@ -4,9 +4,9 @@ using apiPB.Repository.Abstraction;
 using apiPB.Mappers.Dto;
 using apiPB.Dto.Models;
 using AutoMapper;
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 
-namespace apiPB.Services.Request.Implementation
+namespace apiPB.Services.Implementation
 {
     public class MostepsMocomponentRequestService : IMostepsMocomponentRequestService
     {

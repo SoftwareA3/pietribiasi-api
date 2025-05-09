@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using apiPB.Services.Utils.Abstraction;
-using apiPB.Services.Utils.Implementation;
+using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace TestApi.Tests.ServicesTests
+namespace TestApi.Tests.UtilsTests
 {
     public class ResponseHandlerTest
     {

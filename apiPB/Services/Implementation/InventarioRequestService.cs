@@ -1,4 +1,4 @@
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using AutoMapper;
 using apiPB.Dto.Models;
 using apiPB.Dto.Request;
@@ -6,7 +6,7 @@ using apiPB.Mappers.Dto;
 using apiPB.Filters;
 using apiPB.Repository.Abstraction;
 
-namespace apiPB.Services.Request.Implementation
+namespace apiPB.Services.Implementation
 {
     public class InventarioRequestService : IInventarioRequestService
     {

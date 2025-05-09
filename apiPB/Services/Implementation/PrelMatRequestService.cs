@@ -1,4 +1,4 @@
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using AutoMapper;
 using apiPB.Repository.Abstraction;
 using apiPB.Dto.Models;
@@ -6,7 +6,7 @@ using apiPB.Dto.Request;
 using apiPB.Mappers.Dto;
 using apiPB.Filters;
 
-namespace apiPB.Services.Request.Implementation
+namespace apiPB.Services.Implementation
 {
     public class PrelMatRequestService : IPrelMatRequestService
     {

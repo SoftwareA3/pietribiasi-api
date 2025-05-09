@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Utils.Abstraction;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace apiPB.Services.Utils.Implementation
+namespace apiPB.Utils.Implementation
 {
     public class ResponseHandler : IResponseHandler
     {

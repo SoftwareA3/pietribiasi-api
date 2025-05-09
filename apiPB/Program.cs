@@ -7,10 +7,10 @@ using apiPB.Repository.Abstraction;
 using apiPB.Repository.Implementation;
 using apiPB.Mappers.Filters;
 using apiPB.Mappers.Filter;
-using apiPB.Services.Request.Abstraction;
-using apiPB.Services.Request.Implementation;
-using apiPB.Services.Utils.Abstraction;
-using apiPB.Services.Utils.Implementation;
+using apiPB.Services.Abstraction;
+using apiPB.Services.Implementation;
+using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 {

@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using apiPB.Dto.Request;
 using apiPB.Dto.Models;
 using apiPB.Filters;
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Utils.Abstraction;
 
 namespace apiPB.Controllers
 {

@@ -8,8 +8,8 @@ using System.Linq;
 using apiPB.Controllers;
 using apiPB.Dto.Models;
 using apiPB.Dto.Request;
-using apiPB.Services.Utils.Abstraction;
-using apiPB.Services.Request.Abstraction;
+using apiPB.Utils.Abstraction;
+using apiPB.Services.Abstraction;
 
 namespace TestApi.Tests.ControllerTests
 {

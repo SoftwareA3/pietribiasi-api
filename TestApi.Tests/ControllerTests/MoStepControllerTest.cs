@@ -9,9 +9,9 @@ using apiPB.Controllers;
 using apiPB.Dto.Models;
 using apiPB.Dto.Request;
 using apiPB.Services;
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using Microsoft.IdentityModel.Tokens;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Utils.Abstraction;
 
 namespace TestApi.Tests.ControllerTests
 {

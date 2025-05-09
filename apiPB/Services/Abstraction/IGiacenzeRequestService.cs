@@ -1,6 +1,6 @@
 using apiPB.Dto.Models;
 
-namespace apiPB.Services.Request.Abstraction
+namespace apiPB.Services.Abstraction
 {
     public interface IGiacenzeRequestService
     {

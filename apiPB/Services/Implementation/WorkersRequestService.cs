@@ -1,12 +1,12 @@
 using apiPB.Mappers.Dto;
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using apiPB.Repository.Abstraction;
 using apiPB.Dto.Models;
 using apiPB.Dto.Request;
 using apiPB.Filters;
 using AutoMapper;
 
-namespace apiPB.Services.Request.Implementation
+namespace apiPB.Services.Implementation
 {
     public class WorkersRequestService : IWorkersRequestService
     {

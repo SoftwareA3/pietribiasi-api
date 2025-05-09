@@ -5,9 +5,9 @@ using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Repository.Abstraction;
 using apiPB.Dto.Models;
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using Microsoft.AspNetCore.Authorization;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Utils.Abstraction;
 
 namespace apiPB.Controllers
 {

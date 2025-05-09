@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using apiPB.Services.Utils.Implementation;
+using apiPB.Services.Implementation;
 using Microsoft.AspNetCore.Mvc;
 
-namespace apiPB.Services.Utils.Abstraction
+namespace apiPB.Utils.Abstraction
 {
     public interface IResponseHandler
     {

@@ -1,10 +1,10 @@
 using System.Net;
 using System.Reflection;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Utils.Abstraction;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace apiPB.Services.Utils.Implementation
+namespace apiPB.Utils.Implementation
 {
     // Classe che si occupa della creazione della directory e del file di log
     // Aggiunge dei metodi per l'inserimento di informazioni nel file di log

@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
-using apiPB.Services.Request.Abstraction;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Services.Abstraction;
+using apiPB.Utils.Abstraction;
 using apiPB.Dto.Request;
 
 namespace apiPB.Authentication

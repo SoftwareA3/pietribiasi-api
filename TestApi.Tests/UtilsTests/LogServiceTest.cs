@@ -6,10 +6,10 @@ using System.IO;
 using System.Reflection;
 using System.Net;
 using System.Linq;
-using apiPB.Services.Utils.Implementation;
-using apiPB.Services.Utils.Abstraction;
+using apiPB.Utils.Implementation;
+using apiPB.Utils.Abstraction;
 
-namespace TestApi.Tests.ServicesTests
+namespace TestApi.Tests.UtilsTests
 {
     public class LogServiceTest : IDisposable
     {

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using apiPB.Dto.Models;
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using apiPB.Services;
 using apiPB.Dto.Request;
 

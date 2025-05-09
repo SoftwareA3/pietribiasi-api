@@ -1,10 +1,10 @@
-using apiPB.Services.Request.Abstraction;
+using apiPB.Services.Abstraction;
 using apiPB.Dto.Models;
 using apiPB.Mappers.Dto;
 using AutoMapper;
 using apiPB.Repository.Abstraction;
 
-namespace apiPB.Services.Request.Implementation
+namespace apiPB.Services.Implementation
 {
     public class GiacenzeRequestService : IGiacenzeRequestService
     {
