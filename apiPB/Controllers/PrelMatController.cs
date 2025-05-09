@@ -19,14 +19,14 @@ namespace apiPB.Controllers
     [ApiController]
     public class PrelMatController : ControllerBase
     {
-        private readonly ILogService _logService;
+        private readonly IResponseHandler _responseHandler;
         private readonly IPrelMatRequestService _prelMatRequestService;
-        private readonly bool _logIsActive;
-        public PrelMatController(ILogService logService, IPrelMatRequestService prelMatRequestService)
+        private readonly bool _isLogActive;
+        public PrelMatController(IResponseHandler responseHandler, IPrelMatRequestService prelMatRequestService)
         {
-            _logService = logService;
+            _responseHandler = responseHandler;
             _prelMatRequestService = prelMatRequestService;
-            _logIsActive = false;
+            _isLogActive = false;
         }
 
         [HttpGet("get_all")]
@@ -35,22 +35,13 @@ namespace apiPB.Controllers
         /// </summary>
         /// <response code="200">Ritorna tutte le informazioni della vista A3_app_prel_mat</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult getAllPrelMat()
+        public IActionResult GetAllPrelMat()
         {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
             var a3AppPrelMatDto = _prelMatRequestService.GetAppPrelMat().ToList();
 
-            if (a3AppPrelMatDto.IsNullOrEmpty())
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+            if (a3AppPrelMatDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
-
-            return Ok(a3AppPrelMatDto);
+            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
 
         [HttpPost("post_prel_mat")]
@@ -60,27 +51,15 @@ namespace apiPB.Controllers
         /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="201">Crea delle entry nel database</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult PostPrelMatList([FromBody] IEnumerable<PrelMatRequestDto> a3AppPrelMatRequestDto)
+        public IActionResult PostPrelMatList([FromBody] IEnumerable<PrelMatRequestDto>? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null || !a3AppPrelMatRequestDto.Any())
-            {
-                return BadRequest("Request body is null or empty");
-            }
-
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+            if (a3AppPrelMatRequestDto == null || !a3AppPrelMatRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
             var a3AppPrelMatDto = _prelMatRequestService.PostPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-            if (a3AppPrelMatDto.IsNullOrEmpty())
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+            if (a3AppPrelMatDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
-
-            return Ok(a3AppPrelMatDto);
+            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
 
         [HttpPost("get_view_prel_mat")]
@@ -90,27 +69,15 @@ namespace apiPB.Controllers
         /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna le informazioni della vista A3_app_prel_mat filtrate in base ai parametri opzionali inseriti</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult GetViewPrelMat([FromBody] ViewPrelMatRequestDto a3AppPrelMatRequestDto)
+        public IActionResult GetViewPrelMat([FromBody] ViewPrelMatRequestDto? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null)
-            {
-                return BadRequest("Request body is null");
-            }
+            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
             
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
             var a3AppPrelMatDto = _prelMatRequestService.GetViewPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-            if (a3AppPrelMatDto.IsNullOrEmpty())
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+            if (a3AppPrelMatDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
-
-            return Ok(a3AppPrelMatDto);
+            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
 
         [HttpPut("view_prel_mat/edit_prel_qty")]
@@ -120,26 +87,15 @@ namespace apiPB.Controllers
         /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna le informazioni della vista A3_app_prel_mat filtrate in base ai parametri opzionali inseriti</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult PutViewPrelMat([FromBody] ViewPrelMatPutRequestDto a3AppPrelMatRequestDto)
+        public IActionResult PutViewPrelMat([FromBody] ViewPrelMatPutRequestDto? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null)
-            {
-                return BadRequest("Request body is null");
-            }
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
+            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            
             var a3AppPrelMatDto = _prelMatRequestService.PutViewPrelMat(a3AppPrelMatRequestDto);
 
-            if (a3AppPrelMatDto == null)
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+            if (a3AppPrelMatDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
-
-            return Ok(a3AppPrelMatDto);
+            return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
 
         [HttpDelete("view_prel_mat/delete_prel_mat_id")]
@@ -149,26 +105,15 @@ namespace apiPB.Controllers
         /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna l'elemento eliminato dalla tabella</response>
         /// <response code="404">Non trovato</response>
-        public IActionResult DeletePrelMatId([FromBody] ViewPrelMatDeleteRequestDto a3AppPrelMatRequestDto)
+        public IActionResult DeletePrelMatId([FromBody] ViewPrelMatDeleteRequestDto? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null)
-            {
-                return BadRequest("Request body is null");
-            }
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
             var a3AppPrelMatDto = _prelMatRequestService.DeletePrelMatId(a3AppPrelMatRequestDto);
 
-            if (a3AppPrelMatDto == null)
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+            if (a3AppPrelMatDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndItemToLog(requestPath, Ok().StatusCode, "OK", a3AppPrelMatDto, _logIsActive);
-
-            return Ok(a3AppPrelMatDto);
+            return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
     }
 }

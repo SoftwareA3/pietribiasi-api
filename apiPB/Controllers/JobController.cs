@@ -13,16 +13,15 @@ namespace apiPB.Controllers
     [ApiController]
     public class JobController : ControllerBase
     {
-        private readonly ILogService _logService;
+        private readonly IResponseHandler _responseHandler;
         private readonly IJobRequestService _jobRequestService;
-        private readonly bool _logIsActive;
+        private readonly bool _isLogActive;
 
-        public JobController(ILogService logService, 
-            IJobRequestService jobRequestService)
+        public JobController(IResponseHandler responseHandler, IJobRequestService jobRequestService)
         {
-            _logService = logService;
+            _responseHandler = responseHandler;
             _jobRequestService = jobRequestService;
-            _logIsActive = false;
+            _isLogActive = false;
         }
 
         [HttpGet]
@@ -33,23 +32,11 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiJobs()
         {
-            // Stringa necessaria per il log: inserisce il nome del metodo e il percorso della richiesta
-            // Esempio: GET api/job
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+            var jobsDto = _jobRequestService.GetJobs().ToList();
 
-            var jobsDto = _jobRequestService.GetJobs()
-            .ToList();
+            if (jobsDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-            if (jobsDto.IsNullOrEmpty())
-            {   
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
-
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", jobsDto, _logIsActive);
-
-            return Ok(jobsDto);    
+            return _responseHandler.HandleOkAndList(HttpContext, jobsDto, _isLogActive);  
         }
     }    
 }

@@ -15,17 +15,16 @@ namespace apiPB.Controllers
     [ApiController]
     public class WorkerController : ControllerBase
     {
-        private readonly ILogService _logService;
+        private readonly IResponseHandler _responseHandler;
         private readonly IWorkersRequestService _workerRequestService;
-        private readonly bool _logIsActive;
+        private readonly bool _isLogActive;
         
-        public WorkerController(ILogService logService,
-        IWorkersRequestService workersRequestService
+        public WorkerController(IResponseHandler responseHandler, IWorkersRequestService workersRequestService
         )
         {
-            _logService = logService;
+            _responseHandler = responseHandler;
             _workerRequestService = workersRequestService;
-            _logIsActive = false;
+            _isLogActive = false;
         }
 
         [HttpGet]
@@ -36,25 +35,15 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetAllWorkers()
         {
-            // Stringa necessaria per il log: inserisce il nome del metodo e il percorso della richiesta
-            // Esempio: GET api/worker
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
+            var workersDto = _workerRequestService.GetWorkers().ToList();
 
-            var workersDto = _workerRequestService.GetWorkers();
+            if (workersDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-            if (workersDto.IsNullOrEmpty())
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
-
-                return NotFound();
-            } 
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersDto.ToList(), _logIsActive);
-
-            return Ok(workersDto.ToList());
+            return _responseHandler.HandleOkAndList(HttpContext, workersDto, _isLogActive);
         }
 
-        // Metodi deprecati
+        // --- Metodi deprecati --- //
+
         // [HttpGet("workersfield/{id}")]
         // /// <summary>
         // /// Ritorna tutte le informazioni della tabella RmWorkersField
@@ -70,12 +59,12 @@ namespace apiPB.Controllers
 
         //     if(workersFieldDto == null)
         //     {
-        //         _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+        //         _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _isLogActive);
 
         //         return NotFound();
         //     }
 
-        //     _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto, _logIsActive);
+        //     _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", workersFieldDto, _isLogActive);
             
         //     return Ok(workersFieldDto);
         // }
@@ -94,14 +83,14 @@ namespace apiPB.Controllers
 
         //     if(lastWorkerField == null)
         //     {
-        //         _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+        //         _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _isLogActive);
 
         //         return NotFound();
         //     }
             
         //     var created = CreatedAtAction(nameof(GetWorkersFieldsById), new { id = lastWorkerField.WorkerId }, lastWorkerField);
 
-        //     _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created", _logIsActive);
+        //     _logService.AppendMessageToLog(requestPath, created.StatusCode, "Created", _isLogActive);
 
             
         //     return created;
@@ -112,22 +101,17 @@ namespace apiPB.Controllers
         /// </summary>
         /// <returns>WorkerDto; 200 OK se le credenziali sono corrette, altrimenti 404 Not Found.</returns>
         [HttpPost("login")]
-        public IActionResult LoginWithPassword([FromBody] PasswordWorkersRequestDto passwordWorkersRequestDto)
+        public IActionResult LoginWithPassword([FromBody] PasswordWorkersRequestDto? passwordWorkersRequestDto)
         {
             string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
-            var workerDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
-            if(workerDto == null)
-            {
-                _logService.AppendMessageAndItemToLog(requestPath, NotFound().StatusCode, "Not Found", passwordWorkersRequestDto, _logIsActive);
-                return NotFound();
-            }
             
-            var ok = Ok(workerDto);
-
-            _logService.AppendMessageAndItemToLog(requestPath, ok.StatusCode, "OK", workerDto, _logIsActive);
-
-            return ok;   
+            if(passwordWorkersRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            
+            var workerDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
+            
+            if(workerDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            
+            return _responseHandler.HandleOkAndItem(HttpContext, workerDto, _isLogActive);
         }
     }
 }

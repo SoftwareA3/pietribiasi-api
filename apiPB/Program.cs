@@ -43,6 +43,7 @@ var builder = WebApplication.CreateBuilder(args);
     
     // Services
     builder.Services.AddScoped<ILogService, LogService>();
+    builder.Services.AddScoped<IResponseHandler, ResponseHandler>();
     builder.Services.AddScoped<IWorkersRequestService, WorkersRequestService>();
     builder.Services.AddScoped<IJobRequestService, JobRequestService>();
     builder.Services.AddScoped<IMoStepRequestService, MoStepRequestService>();

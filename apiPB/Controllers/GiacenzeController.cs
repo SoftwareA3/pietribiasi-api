@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Services.Request.Abstraction;
 using apiPB.Services.Utils.Abstraction;
+using apiPB.Dto.Models;
 
 namespace apiPB.Controllers
 {
@@ -12,17 +13,17 @@ namespace apiPB.Controllers
     [ApiController]
     public class GiacenzeController : ControllerBase
     {
-        private readonly ILogService _logService;
+        private readonly IResponseHandler _responseHandler;
 
         private readonly IGiacenzeRequestService _giacenzeRequestService;
 
-        private readonly bool _logIsActive;
+        private readonly bool _isLogActive;
 
-        public GiacenzeController(ILogService logService, IGiacenzeRequestService giacenzeRequestService)
+        public GiacenzeController(IResponseHandler responseHandler, IGiacenzeRequestService giacenzeRequestService)
         {
-            _logService = logService;
+            _responseHandler = responseHandler;
             _giacenzeRequestService = giacenzeRequestService;
-            _logIsActive = false;
+            _isLogActive = false;
         }
 
         [HttpGet("get_all")]
@@ -33,20 +34,11 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetGiacenze()
         {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-
             var giacenzeDto = _giacenzeRequestService.GetGiacenze().ToList();
 
-            if (giacenzeDto.IsNullOrEmpty())
-            {
-                _logService.AppendMessageToLog(requestPath, NotFound().StatusCode, "Not Found", _logIsActive);
+            if (giacenzeDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-                return NotFound();
-            }
-
-            _logService.AppendMessageAndListToLog(requestPath, Ok().StatusCode, "OK", giacenzeDto, _logIsActive);
-
-            return Ok(giacenzeDto);
+            return _responseHandler.HandleOkAndList<GiacenzeDto>(HttpContext, giacenzeDto, _isLogActive);
         }
     }
 }
