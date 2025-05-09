@@ -22,6 +22,7 @@
    - [Models](#models)
    - [Repository](#repository)
    - [Services](#services)
+   - [Utils](#utils)
    - [Sequenza di esecuzione](#sequenza-di-esecuzione)
      - [Richieste GET](#richieste-get)
      - [Richieste POST](#richieste-post)
@@ -247,11 +248,24 @@ I Serivices sono classi di servizi che si occupano di svolgere tutte le operazio
 - Convertire i modelli ritornati dai Repository in Dto che si possono restituire all'utente.
 Sono necessari per ridurre al minimo il compito dei controllers, che si occuperanno solo di chiamare i servizi
 
-### Dipendenze
+### Dipendenze 
 - Mappers: per mappare i Dto nei Filters
 - Filters: per passarli come parametri ai Services
 - Repository: per ricevere i filtri e gestire la logica delle richieste
 - Dtos: per ricevere i Dto di richiesta come parametri e ritornare i Dto inviabili all'utente
+
+## Utils
+Gli Utils sono classi che servono per supportare alcuni processi. In particolare per gestire gli errori dei controller e scrivere il file di log. I file contenuti in Utils sono due:
+- LogService: classe che serve a creare la cartella il file di log e a popolarlo con le informazioni necessarie.
+- ResponseHandler: è il gestore delle risposte dei Controller dopo aver ricevuto una richiesta API. Questa classe si occupa di catturare la condizione, scrivere sul file di log e ritornare una risposta. 
+
+In particolare gestisce 3 tipi di situazione:
+- BadRequest: il corpo della richiesta all'API è vuoto
+- NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati
+- Altre richieste tipo 200: (ad esempio 200 Ok o 201 Created) la richiesta è andata a buon fine. Ritorna il Dto di risposta e lo stampa sul file.
+
+### Dipendenze
+- LogService: per scrivere sul file di log
 
 ## Sequenza di esecuzione
 
