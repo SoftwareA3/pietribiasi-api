@@ -1,6 +1,8 @@
 using System.Net;
 using System.Reflection;
 using apiPB.Services.Utils.Abstraction;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace apiPB.Services.Utils.Implementation
 {
@@ -56,14 +58,6 @@ namespace apiPB.Services.Utils.Implementation
             return ipAddress;
         } 
 
-        /// <summary>
-        /// Metodo che aggiunge un messaggio al file di log, passando informazioni specifiche
-        /// </summary>
-        /// <param name="requestType">Tipo di richiesta e percorso di questa. Ad esempio: GET api/user</param>
-        /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
-        /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
-        /// <param name="isActive">Controlla se il log è attivo o meno</param>
-        /// <remarks>Il log è attivo se isActive è true</remarks>
         public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive)
         {
             if(isActive == false)
@@ -79,16 +73,7 @@ namespace apiPB.Services.Utils.Implementation
             writer.WriteLine(message);
         }
 
-        /// <summary>
-        /// Chiama il metodo AppendMessageToLog e aggiunge una lista di oggetti generici al file di log
-        /// </summary>
-        /// <typeparam name="T">Nome del tipo di classe o oggetto passato in una lista generica</typeparam>
-        /// <param name="requestType">Tipo di richiesta e percorso di questa. Ad esempio: GET api/user</param>
-        /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
-        /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
-        /// <param name="list">Lista di tipo generico</param>
-        /// <param name="isActive">Controlla se il log è attivo o meno</param>
-        /// <remarks>Il log è attivo se isActive è true</remarks>
+        
         public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive)
         {
             AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
@@ -104,16 +89,6 @@ namespace apiPB.Services.Utils.Implementation
             }
         }
 
-        /// <summary>
-        /// Chiama il metodo AppendMessageToLog e aggiunge un oggetto generico al file di log
-        /// </summary>
-        /// <typeparam name="T">Nome del tipo di classe o oggetto passato</typeparam>
-        /// <param name="requestType">Tipo di richiesta e percorso di questa. Ad esempio: GET api/user</param>
-        /// <param name="statusCode">Numero di stato della richiesta. Ad esempio: 200</param>
-        /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
-        /// <param name="item">Oggetto generico</param>
-        /// <param name="isActive">Controlla se il log è attivo o meno</param>
-        /// <remarks>Il log è attivo se isActive è true</remarks>
         public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item, bool isActive)
         {
             AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
