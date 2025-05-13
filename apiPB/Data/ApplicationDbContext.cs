@@ -22,6 +22,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<A3AppRegOre> A3AppRegOres { get; set; }
 
+    public virtual DbSet<A3AppSetting> A3AppSettings { get; set; }
+
     public virtual DbSet<VwApiGiacenze> VwApiGiacenzes { get; set; }
 
     public virtual DbSet<VwApiJob> VwApiJobs { get; set; }
@@ -153,6 +155,22 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("WC");
+        });
+
+        modelBuilder.Entity<A3AppSetting>(entity =>
+        {
+            entity.HasKey(e => e.SettingsId);
+
+            entity.ToTable("A3_app_Settings");
+
+            entity.Property(e => e.SettingsId).HasDefaultValue(1);
+            entity.Property(e => e.MagoUrl).IsUnicode(false);
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<VwApiGiacenze>(entity =>

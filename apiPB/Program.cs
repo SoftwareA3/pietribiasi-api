@@ -46,6 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IPrelMatRepository, PrelMatRepository>();
     builder.Services.AddScoped<IGiacenzeRepository, GiacenzeRepository>();
     builder.Services.AddScoped<IInventarioRepository, InventarioRepository>();
+    builder.Services.AddScoped<IMagoRepository, MagoRepository>();
     
     // Services
     builder.Services.AddScoped<ILogService, LogService>();
@@ -59,6 +60,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IGiacenzeRequestService, GiacenzeRequestService>();
     builder.Services.AddScoped<IInventarioRequestService, InventarioRequestService>();
     builder.Services.AddScoped<IMagoAccessService, MagoAccessService>();
+    builder.Services.AddScoped<IMagoRequestService, MagoRequestService>();
 
     builder.Services.AddCors(options =>
     {
@@ -80,6 +82,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAutoMapper(typeof(PrelMatMapperFilters));
     builder.Services.AddAutoMapper(typeof(GiacenzeMapperFilters));
     builder.Services.AddAutoMapper(typeof(InventarioMapperFilters));
+    builder.Services.AddAutoMapper(typeof(SettingsMapperFilter));
 }
 
 var app = builder.Build();

@@ -103,5 +103,30 @@ namespace apiPB.Repository.Implementation
             _context.SaveChanges();
             return deletePrelMat;
         }
+
+        public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(string workerId)
+        {
+            var notImported = _context.A3AppPrelMats
+                .Where(x => x.Imported == false)
+                .ToList();
+            
+            if (notImported.Count == 0)
+            {
+                return notImported;
+            }
+
+            foreach (var item in notImported)
+            {
+                item.Imported = true;
+                item.UserImp = workerId;
+                item.DataImp = DateTime.Now;
+
+                _context.A3AppPrelMats.Update(item);
+                _context.SaveChanges();
+            }
+
+            // Ritorna la lista aggiornata
+            return GetAppPrelMat();
+        }
     }
 }

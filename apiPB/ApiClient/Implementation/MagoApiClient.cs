@@ -12,13 +12,14 @@ namespace apiPB.ApiClient.Implementation
     public class MagoApiClient : IMagoApiClient
     {
         private readonly HttpClient _httpClient;
+        private readonly string _baseUrl;
 
         public MagoApiClient(HttpClient httpClient,IConfiguration configuration)
         {
-            var baseUrl = configuration["ConnectionStrings:MagoConnectionString"]
+            _baseUrl = configuration["ConnectionStrings:MagoConnectionString"]
             ?? throw new InvalidOperationException("MagoConnectionString non configurata.");
 
-            httpClient.BaseAddress = new Uri(baseUrl);
+            httpClient.BaseAddress = new Uri(_baseUrl);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             
             _httpClient = httpClient;

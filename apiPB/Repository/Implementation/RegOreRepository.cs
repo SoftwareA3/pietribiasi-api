@@ -103,5 +103,30 @@ namespace apiPB.Repository.Implementation
 
             return deleteRegOre;
         }
+
+        public IEnumerable<A3AppRegOre> UpdateRegOreImported(string workerId)
+        {
+            var notImported = _context.A3AppRegOres
+                .Where(x => x.Imported == false)
+                .ToList();
+            
+            if (notImported.Count == 0)
+            {
+                return notImported;
+            }
+
+            foreach (var item in notImported)
+            {
+                item.Imported = true;
+                item.UserImp = workerId;
+                item.DataImp = DateTime.Now;
+
+                _context.A3AppRegOres.Update(item);
+                _context.SaveChanges();
+            }
+
+            // Ritorna la lista aggiornata
+            return GetAppRegOre();
+        }
     }
 }

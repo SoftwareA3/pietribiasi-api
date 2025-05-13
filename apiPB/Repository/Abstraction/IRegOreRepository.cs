@@ -47,5 +47,7 @@ namespace apiPB.Repository.Abstraction
         /// A3AppRegOre: restituisce l'elemento eliminato
         /// </returns>
         A3AppRegOre DeleteRegOreId(ViewOreDeleteRequestFilter filter);
+
+        IEnumerable<A3AppRegOre> UpdateRegOreImported(string workerId);
     }
 }
