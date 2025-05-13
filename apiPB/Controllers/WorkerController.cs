@@ -37,7 +37,7 @@ namespace apiPB.Controllers
         {
             var workersDto = _workerRequestService.GetWorkers().ToList();
 
-            if (workersDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (workersDto == null || workersDto.Count == 0) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, workersDto, _isLogActive);
         }

@@ -37,7 +37,7 @@ namespace apiPB.Controllers
 
             var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentJobDistinct(mostepsMocomponentJobRequestDto).ToList();
 
-            if(mostepComponentDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
         }
@@ -55,7 +55,7 @@ namespace apiPB.Controllers
 
             var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentMonoDistinct(mostepsMocomponentMonoRequestDto).ToList();
 
-            if(mostepComponentDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
         }
@@ -73,7 +73,7 @@ namespace apiPB.Controllers
 
             var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentOperationDistinct(mostepsMocomponentOperationRequestDto).ToList();
 
-            if(mostepComponentDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
         }
@@ -91,7 +91,7 @@ namespace apiPB.Controllers
 
             var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentBarCodeDistinct(mostepsMocomponentBarCodeRequestDto).ToList();
 
-            if(mostepComponentDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
         }

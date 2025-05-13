@@ -35,7 +35,7 @@ namespace TestApi.Tests.ServicesTests
             LastLogin = "2025-05-07 12:00:00"
         };
 
-        private readonly RmWorkersField _workerFieldSample = new RmWorkersField
+        private readonly VwApiWorkersfield _workerFieldSample = new VwApiWorkersfield
         {
             WorkerId = 1,
             Line = 4,
@@ -209,7 +209,7 @@ namespace TestApi.Tests.ServicesTests
         {
             // Arrange
             var filter = new WorkerIdAndValueRequestFilter { WorkerId = _workersFieldRequestDtoSample.WorkerId };
-            var workersFields = new List<RmWorkersField> { _workerFieldSample };
+            var workersFields = new List<VwApiWorkersfield> { _workerFieldSample };
             _workerRepositoryMock.Setup(repo => repo.GetWorkersFieldsById(filter)).Returns(workersFields);
             _mapperMock.Setup(m => m.Map<WorkerIdAndValueRequestFilter>(_workersFieldRequestDtoSample)).Returns(filter);
             _mapperMock.Setup(m => m.Map<WorkersFieldDto>(_workerFieldSample)).Returns(_workersFieldDtoSample);
@@ -238,7 +238,7 @@ namespace TestApi.Tests.ServicesTests
         {
             // Arrange
             var filter = new WorkerIdAndValueRequestFilter { WorkerId = _workersFieldRequestDtoSample.WorkerId };
-            var workersFields = new List<RmWorkersField>();
+            var workersFields = new List<VwApiWorkersfield>();
             _workerRepositoryMock.Setup(repo => repo.GetWorkersFieldsById(filter)).Returns(workersFields);
             _mapperMock.Setup(m => m.Map<WorkerIdAndValueRequestFilter>(_workersFieldRequestDtoSample)).Returns(filter);
 
@@ -282,7 +282,7 @@ namespace TestApi.Tests.ServicesTests
         {
             // Arrange
             var filter = new WorkerIdAndValueRequestFilter { WorkerId = _workerFieldSample.WorkerId };
-            _workerRepositoryMock.Setup(repo => repo.GetLastWorkerFieldLine(filter)).Returns((RmWorkersField)null);
+            _workerRepositoryMock.Setup(repo => repo.GetLastWorkerFieldLine(filter)).Returns((VwApiWorkersfield)null);
             _mapperMock.Setup(m => m.Map<WorkerIdAndValueRequestFilter>(_workerDtoSample)).Returns(filter);
 
             // Act

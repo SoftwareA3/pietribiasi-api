@@ -11,6 +11,9 @@ using apiPB.Services.Abstraction;
 using apiPB.Services.Implementation;
 using apiPB.Utils.Abstraction;
 using apiPB.Utils.Implementation;
+using apiPB.ApiClient.Abstraction;
+using apiPB.ApiClient.Implementation;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -19,6 +22,9 @@ var builder = WebApplication.CreateBuilder(args);
     
     // Authorization
     builder.Services.AddAuthorization();
+
+    // ApiClient
+    builder.Services.AddHttpClient<IMagoApiClient, MagoApiClient>();
     
     // Controllers
     builder.Services.AddControllers();
@@ -52,6 +58,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IPrelMatRequestService, PrelMatRequestService>();
     builder.Services.AddScoped<IGiacenzeRequestService, GiacenzeRequestService>();
     builder.Services.AddScoped<IInventarioRequestService, InventarioRequestService>();
+    builder.Services.AddScoped<IMagoAccessService, MagoAccessService>();
 
     builder.Services.AddCors(options =>
     {

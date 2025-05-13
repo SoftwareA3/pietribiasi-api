@@ -43,18 +43,18 @@ namespace apiPB.Repository.Implementation
             await CallStoredProcedure(workerIdRequestFilter);
         }
 
-        public IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter)
+        public IEnumerable<VwApiWorkersfield> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter)
         {
-            return _context.RmWorkersFields
+            return _context.VwApiWorkersfields
             .Where(w => w.WorkerId == filter.WorkerId)
             .AsNoTracking()
             .ToList();
         }
 
-        public RmWorkersField? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter)
+        public VwApiWorkersfield? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter)
         {
             // SELECT TOP 1 * FROM RM_WorkersFields WHERE WorkerID = {0} ORDER BY Line DESC
-            return _context.RmWorkersFields
+            return _context.VwApiWorkersfields
             .Where(w => w.WorkerId == filter.WorkerId)
             .OrderByDescending(w => w.Line)
             .AsNoTracking()

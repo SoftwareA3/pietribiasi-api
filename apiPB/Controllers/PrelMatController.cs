@@ -39,7 +39,7 @@ namespace apiPB.Controllers
         {
             var a3AppPrelMatDto = _prelMatRequestService.GetAppPrelMat().ToList();
 
-            if (a3AppPrelMatDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
@@ -57,7 +57,7 @@ namespace apiPB.Controllers
 
             var a3AppPrelMatDto = _prelMatRequestService.PostPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-            if (a3AppPrelMatDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
@@ -75,7 +75,7 @@ namespace apiPB.Controllers
             
             var a3AppPrelMatDto = _prelMatRequestService.GetViewPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-            if (a3AppPrelMatDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
         }

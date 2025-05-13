@@ -45,7 +45,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di RmWorkersField: restituisce una collezione generica di modelli RmWorkersField
         /// </returns>
-        IEnumerable<RmWorkersField> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter);
+        IEnumerable<VwApiWorkersfield> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter);
 
         /// <summary>
         /// Esegue la query per ottenere il record con linea massima, dato il WorkerId
@@ -54,7 +54,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// RmWorkersField: restituisce il record con linea massima della tabella RmWorkersField
         /// </returns>
-        RmWorkersField? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter);
+        VwApiWorkersfield? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter);
 
         /// <summary>
         /// /// Esegue una query su id e password per trovare un lavoratore

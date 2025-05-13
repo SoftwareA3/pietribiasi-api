@@ -24,7 +24,7 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static WorkersFieldDto ToWorkersFieldDto(this RmWorkersField workersField)
+        public static WorkersFieldDto ToWorkersFieldDto(this VwApiWorkersfield workersField)
         {
             return new WorkersFieldDto
             {

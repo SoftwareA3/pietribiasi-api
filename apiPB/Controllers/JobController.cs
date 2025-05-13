@@ -34,7 +34,7 @@ namespace apiPB.Controllers
         {
             var jobsDto = _jobRequestService.GetJobs().ToList();
 
-            if (jobsDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (jobsDto == null || jobsDto.Count == 0) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, jobsDto, _isLogActive);  
         }

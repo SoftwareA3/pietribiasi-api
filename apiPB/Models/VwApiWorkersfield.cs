@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace apiPB.Models;
 
-public partial class RmWorkersField
+public partial class VwApiWorkersfield
 {
     public int WorkerId { get; set; }
 
@@ -24,6 +24,4 @@ public partial class RmWorkersField
     public int TbcreatedId { get; set; }
 
     public int TbmodifiedId { get; set; }
-
-    public virtual RmWorker Worker { get; set; } = null!;
 }

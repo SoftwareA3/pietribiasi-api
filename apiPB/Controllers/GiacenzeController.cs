@@ -36,7 +36,7 @@ namespace apiPB.Controllers
         {
             var giacenzeDto = _giacenzeRequestService.GetGiacenze().ToList();
 
-            if (giacenzeDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (giacenzeDto == null || !giacenzeDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList<GiacenzeDto>(HttpContext, giacenzeDto, _isLogActive);
         }

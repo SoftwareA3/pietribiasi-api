@@ -19,7 +19,15 @@ public partial class VwApiMostepsMocomponent
 
     public short? Position { get; set; }
 
+    public string? PrelUoM { get; set; }
+
     public string? Component { get; set; }
+
+    public double? PrelNeededQty { get; set; }
+
+    public double? PickedQuantity { get; set; }
+
+    public double? PrelResQty { get; set; }
 
     public string? Bom { get; set; }
 

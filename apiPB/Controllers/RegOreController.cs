@@ -33,7 +33,7 @@ namespace apiPB.Controllers
         {   
             var a3AppRegOreDto = _regOreRequestService.GetAppRegOre().ToList();
 
-            if (a3AppRegOreDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (a3AppRegOreDto == null || !a3AppRegOreDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
         }
@@ -51,7 +51,7 @@ namespace apiPB.Controllers
 
             var a3AppRegOreDto = _regOreRequestService.PostAppRegOre(a3AppRegOreRequestDto).ToList();
 
-            if (a3AppRegOreDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (a3AppRegOreDto == null || !a3AppRegOreDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleCreated(HttpContext, a3AppRegOreDto, _isLogActive);
         }
@@ -69,7 +69,7 @@ namespace apiPB.Controllers
 
             var a3AppRegOreDto = _regOreRequestService.GetAppViewOre(a3AppViewOreRequestDto).ToList();
 
-            if (a3AppRegOreDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (a3AppRegOreDto == null || !a3AppRegOreDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
         }

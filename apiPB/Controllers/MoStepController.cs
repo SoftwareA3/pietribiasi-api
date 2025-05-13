@@ -36,7 +36,7 @@ namespace apiPB.Controllers
 
             var mostepDto = _moStepRequestService.GetMostepWithJob(mostepRequestDto).ToList();
 
-            if(mostepDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if(mostepDto == null || !mostepDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
         }
@@ -54,7 +54,7 @@ namespace apiPB.Controllers
 
             var mostepDto = _moStepRequestService.GetMostepWithMono(mostepMonoRequestDto).ToList();
 
-            if(mostepDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if(mostepDto == null || !mostepDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
         }
@@ -72,7 +72,7 @@ namespace apiPB.Controllers
 
             var mostepDto = _moStepRequestService.GetMostepWithOperation(mostepOperationRequestDto).ToList();
 
-            if(mostepDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if(mostepDto == null || !mostepDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
         }

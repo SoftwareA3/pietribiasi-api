@@ -35,7 +35,7 @@ namespace apiPB.Controllers
         {
             var inventarioDto = _inventarioRequestService.GetInventario().ToList();
 
-            if (inventarioDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
         }
@@ -53,7 +53,7 @@ namespace apiPB.Controllers
 
             var inventarioDto = _inventarioRequestService.PostInventarioList(inventarioRequestDto).ToList();
 
-            if (inventarioDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
         }
@@ -71,7 +71,7 @@ namespace apiPB.Controllers
 
             var inventarioDto = _inventarioRequestService.GetViewInventario(request).ToList();
 
-            if (inventarioDto.IsNullOrEmpty()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
             return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
         }
