@@ -29,24 +29,21 @@ async function synchronizeData() {
     startLoadingAnimation(iconElement);
     
     // Garantisce un minimo di tempo di caricamento (1.5 secondi)
-    const minLoadingTime = new Promise(resolve => setTimeout(resolve, 2000));
+    //const minLoadingTime = new Promise(resolve => setTimeout(resolve, 2000));
     
     try {
-        console.log("Starting data synchronization...");
+        console.log("Sincronizzazione dei dati...");
         console.log("User ID:", userCookie.workerId);
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
-        const [response] = await Promise.all([
-            fetchWithAuth("http://localhost:5245/api/mago_api/synchronize", {
+        const response = await fetchWithAuth("http://localhost:5245/api/mago_api/synchronize", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    userId: userCookie.workerId,
+                    workerId: userCookie.workerId,
                 })
-            }),
-            minLoadingTime
-        ]);
+            });
 
         // Rimuovi l'animazione di caricamento con effetto
         iconElement.classList.remove("sync-loading");
@@ -56,12 +53,11 @@ async function synchronizeData() {
         await new Promise(resolve => setTimeout(resolve, 300));
 
         if (response.ok) {
-            const data = await response.json();
-            console.log("Data synchronized successfully:", data);
+            console.log("Dati sincronizzati correttamente:", response.statusText);
             // Mostra l'icona di successo
             showSuccessIcon(iconElement);
         } else {
-            console.error("Error synchronizing data:", response.statusText);
+            console.error("Errore durante la sincronizzazione dei dati:", response.statusText);
             // Mostra l'icona di errore
             showErrorIcon(iconElement);
         }
