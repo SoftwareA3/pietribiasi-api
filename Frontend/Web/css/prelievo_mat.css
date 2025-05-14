@@ -20,6 +20,19 @@
     box-shadow: 0 0 0 3px rgba(255, 183, 0, 0.2);
 }
 
+.quantity-group {
+    display: flex;
+    align-items: center;
+    column-gap: 3rem;
+}
+
+#error-quantity {
+    display: none;
+    color: var(--error);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-4);
+}
+
 /* Evidenziazione tipo movimento */
 form p strong {
     display: inline-block;

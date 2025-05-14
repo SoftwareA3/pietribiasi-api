@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const saveButton = document.getElementById("inv-save");
     // Aggiunto quando viene salvata la lista viene
     const noContent = document.getElementById("nocontent");
+    const errorQty = document.getElementById("error-quantity");
 
     // Liste di dati
     let jobList = [];
@@ -67,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            errorQty.style.display = "none";
         }
         
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -81,6 +83,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            errorQty.style.display = "none";
         }
     });
 
@@ -103,6 +106,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeAutocompleteList.innerHTML = "";
             barcodeAutocompleteList.classList.add("hidden"); 
             quantitaInput.disabled = true; 
+            errorQty.style.display = "none";
             return;
         }
     });
@@ -117,6 +121,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            errorQty.style.display = "none";
         }
     
         // Carica i dati della lavorazione solo se necessario
@@ -134,6 +139,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.disabled = true;
             barcodeList = [];
             quantitaInput.disabled = true;
+            errorQty.style.display = "none";
         }
     });
 
@@ -151,6 +157,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeAutocompleteList.innerHTML = "";
             barcodeAutocompleteList.classList.add("hidden"); 
             quantitaInput.disabled = true; 
+            errorQty.style.display = "none";
             return;
         }
     });
@@ -163,6 +170,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            errorQty.style.display = "none";
         }
 
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -184,6 +192,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeAutocompleteList.innerHTML = ""; // Svuota la lista di autocompletamento
             barcodeAutocompleteList.classList.add("hidden"); // Nasconde la lista di autocompletamento
             quantitaInput.disabled = true; // Disabilita il campo quantità
+            errorQty.style.display = "none";
             return;
         }
     });
@@ -573,6 +582,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     prelQty: selectedQta
                 }
                 dataResultList.push(data);
+
+                if(selectedQta > result.prelResQty) 
+                {
+                    errorQty.style.display = "block";
+                }
+
                 //console.log("Lista di risultati:", dataResultList);
                 addToTemporaryList(data, dataResultList);
                 // Reset campo quantità
@@ -585,6 +600,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 barcodeInput.disabled = true;
                 quantitaInput.value = "1";
                 quantitaInput.disabled = true;
+                const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+                if (quantitaLabel) {
+                    quantitaLabel.textContent = "Quantità: ";
+                }
             } else {
                 alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
             }
@@ -689,9 +708,47 @@ document.addEventListener("DOMContentLoaded", async function () {
         try {
             const allDataResult = await fetchJobsByBarCode(jobId, mono, creationDate, operation, barCode);
             console.log("Lista di tutti i dati:", allDataResult);
-    
-            // Restituisce il primo elemento o un oggetto vuoto
-            return allDataResult.length > 0 ? allDataResult[0] : null;
+
+            if(allDataResult.length > 0) {
+                
+                const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+                if (quantitaLabel) {
+                    quantitaLabel.textContent = "Quantità disponibile: " + allDataResult[0].prelResQty + " - UoM: " + allDataResult[0].uoM;
+                }
+
+                var sum = 0;
+                // Dati lista temporanea
+                dataResultList.forEach(element => {
+                    sum += element.prelQty;
+                });
+                console.log("Somma delle quantità della lista temporanea:", sum);
+                const prelMatQtyList = await fetchA3PrelMatQtyList(allDataResult[0].moid);
+                console.log("Lista di quantità da A3_app_prel_mat:", prelMatQtyList);
+
+                if(prelMatQtyList.length > 0) {
+                    prelMatQtyList.forEach(element => {
+                        sum += element.prelQty;
+                    });
+                }
+
+                console.log("Somma totale:", sum);
+
+                quantitaInput.disabled = false;
+                // Il valore comincia dalla quantità disponibile meno quella già prelevata
+                quantitaInput.value = allDataResult[0].prelResQty - sum; 
+
+                // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
+                if (quantitaInput.value < 0) {
+                    errorQty.display = "block";
+                }
+
+                return allDataResult[0];
+            }
+            else {
+                console.error("Nessun dato trovato per i parametri forniti.");
+                return null;
+            }
+
         } catch (error) {
             console.error("Errore nel caricamento dei dati:", error);
             return null;
@@ -804,6 +861,29 @@ async function fetchAllJobs() {
     }
 }
 
+async function fetchA3PrelMatQtyList(moid) {
+    try {
+        const request = await fetchWithAuth("http://localhost:5245/api/prel_mat/get_prel_mat_with_moid", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({"moid": moid}),
+        });
+
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return [];
+        }
+
+        const qtyList = await request.json();
+        return qtyList;
+    } catch (error) {
+        console.error("Errore durante la fetch:", error);
+        return [];
+    }
+};
+
 async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     try {
         const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/operation", {
@@ -841,7 +921,7 @@ function addToTemporaryList(data, dataResultList) {
         <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono}</div>
         <div><spam class="item-content-heading">Lav:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc} </div>
         <div><spam class="item-content-heading">Item:</spam> ${data.component} - <spam class="item-content-heading">Code:</spam> ${data.barCode} </div>
-        <div><strong>Qta: ${data.prelQty}</strong></div></div>
+        <div class=temp-list-qta-${data.moid}><strong>Qta: ${data.prelQty}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>

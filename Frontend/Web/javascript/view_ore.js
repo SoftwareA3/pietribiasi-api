@@ -5,6 +5,7 @@ import { getCookie } from "./cookies.js";
 
 // Variabili globali per mantenere lo stato
 let globalAllData = null;
+let showImportedItems = false;
 let filteredList = [];
 let commessaList = [];
 let lavorazioneList = [];
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     const odpAutocompleteList = document.getElementById("filter-ore-odp-autocomplete-list");
     const oreList = document.getElementById("ore-list");
     const noContent = document.getElementById("nocontent");
+    const showImportedToggle = document.getElementById("show-imported");
 
     oreList.classList.add("hidden");
     noContent.classList.remove("hidden");
@@ -52,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", workerId);
-                alert("Nessun dato trovato per l'utente.");
+                alert("Nessun dato trovato per questo utente. Registrare prima delle ore");
             }
         }
         else {
@@ -129,6 +131,11 @@ document.addEventListener("DOMContentLoaded", async function() {
             console.error("Errore durante il filtraggio:", error);
             alert("Si è verificato un errore durante il recupero dei dati.");
         }
+    });
+
+    showImportedToggle.addEventListener("change", async function() {
+        showImportedItems = this.checked;
+        populateOreList(filteredList);
     });
 });
 
@@ -279,11 +286,16 @@ function populateOreList(data) {
     oreList.innerHTML = "";
     noContent.classList.add("hidden");
 
+    let displayData = showImportedItems === true ? data : data.filter(item => item.imported === false || item.imported === "0");
+
     // Controlla se la lista è vuota
-    if (!data || data.length === 0) {
+    if (!data || displayData.length === 0) {
         oreList.classList.add("hidden");
         noContent.classList.remove("hidden");
-        paginationControls.classList.add("hidden");
+        if(paginationControls != null)
+        {
+            paginationControls.classList.add("hidden");
+        }
         return;
     }
     
@@ -292,7 +304,7 @@ function populateOreList(data) {
     noContent.classList.add("hidden");
     
     // Popola la lista con gli elementi
-    data.forEach(item => {
+    displayData.forEach(item => {
         const li = document.createElement("li");
         li.dataset.id = item.regOreId; // Aggiunge un data attribute per identificare l'elemento
         
@@ -304,11 +316,11 @@ function populateOreList(data) {
         const itemContent = document.createElement("div");
         itemContent.className = "item-content";
 
-        const isImported = item.imported === 0 || item.imported === "0";
+        const isImported = item.imported === false || item.imported === "0" ? false : true;
         
         const statusIndicator = document.createElement("div");
-        statusIndicator.className = `status-indicator ${isImported ? 'status-closed' : 'status-open'}`;
-        statusIndicator.title = isImported ? 'Importato' : 'Modificabile';
+        statusIndicator.className = `status-indicator ${isImported === true ? 'status-closed' : 'status-open'}`;
+        statusIndicator.title = isImported === true ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
 
         const convertedTime = (item.workingTime / 3600);
