@@ -87,7 +87,7 @@ namespace apiPB.Services.Implementation
                 {
                     Token = token
                 });
-                throw new Exception("No records found in A3_app_reg_ore");
+                throw new Exception("No records found in A3_app_reg_ore: logging off...");
             }
 
             List<SyncRegOreRequestDto> syncRegOreList = new List<SyncRegOreRequestDto>();
@@ -109,7 +109,7 @@ namespace apiPB.Services.Implementation
                 {
                     Token = token
                 });
-                throw new Exception("Error sending data to Mago", ex);
+                throw new Exception("Error sending data to Mago: logging off...", ex);
             }
 
             // Aggiornamento della lista di record in A3_app_reg_ore 
@@ -124,7 +124,7 @@ namespace apiPB.Services.Implementation
                 {
                     Token = token
                 });
-                throw new Exception("No records updated in A3_app_reg_ore");
+                throw new Exception("No records updated in A3_app_reg_ore: logging off...");
             }
 
             // Recupero Lista di record da A3_app_prel_mat

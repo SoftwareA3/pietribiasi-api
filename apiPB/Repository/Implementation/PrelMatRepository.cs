@@ -128,5 +128,17 @@ namespace apiPB.Repository.Implementation
             // Ritorna la lista aggiornata
             return GetAppPrelMat();
         }
+
+        public IEnumerable<A3AppPrelMat>? GetPrelMatWithMoId(MoidFilter? filter)
+        {
+            if(filter == null || filter.Moid == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return _context.A3AppPrelMats.Where(i => i.Moid == filter.Moid).ToList();
+            }
+        }
     }
 }

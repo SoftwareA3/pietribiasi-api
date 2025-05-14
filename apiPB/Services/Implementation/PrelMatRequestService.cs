@@ -73,5 +73,29 @@ namespace apiPB.Services.Implementation
             var result = _repository.DeletePrelMatId(filter);
             return result?.ToDtoPrelMatDto();
         }
+
+        public IEnumerable<PrelMatDto> GetPrelMatWithMoId(MoidRequestDto? request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+            var filter = _mapper.Map<MoidFilter>(request);
+            var result = _repository.GetPrelMatWithMoId(filter);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            var resultList = new List<PrelMatDto>();
+            foreach (var item in result)
+            {
+                var dto = item.ToDtoPrelMatDto();
+                resultList.Add(dto);
+            }
+
+            return resultList;
+        }
     }
 }

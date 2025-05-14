@@ -4,6 +4,8 @@ using apiPB.Services;
 using apiPB.Dto.Request;
 using apiPB.Services.Abstraction;
 using System.Threading.Tasks;
+using apiPB.Utils.Abstraction;
+using apiPB.Dto.Models;
 
 namespace apiPB.MagoApi.Controllers
 {
@@ -13,13 +15,16 @@ namespace apiPB.MagoApi.Controllers
     {
         private readonly IMagoAccessService _magoAccessService;
         private readonly IMagoRequestService _magoRequestService;   
+        private readonly IResponseHandler _responseHandler;
 
         public MagoController( 
             IMagoAccessService magoAccessService,
-            IMagoRequestService magoRequestService)
+            IMagoRequestService magoRequestService,
+            IResponseHandler responseHandler)
         {
             _magoAccessService = magoAccessService;
             _magoRequestService = magoRequestService;
+            _responseHandler = responseHandler;
         }
 
         [HttpPost("login")]
@@ -65,6 +70,27 @@ namespace apiPB.MagoApi.Controllers
             {
                 return BadRequest($"Synchronization failed: {ex.Message}");
             }
+        }
+
+        [HttpGet("get_settings")]
+        [Authorize]
+        public IActionResult GetSettings()
+        {
+            var settingsDto = _magoRequestService.GetSettings();
+            if(settingsDto == null) return _responseHandler.HandleNotFound(HttpContext, false);
+            return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, false);
+        }
+
+        [HttpPost("edit_settings")]
+        [Authorize]
+        public IActionResult EditSettings([FromBody] SettingsDto? request)
+        {
+            if (request == null) return BadRequest("Invalid request");
+
+            var settingsDto = _magoRequestService.EditSettings(request);
+            if (settingsDto == null) return _responseHandler.HandleNotFound(HttpContext, false);
+
+            return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, false);
         }
     }
 }
