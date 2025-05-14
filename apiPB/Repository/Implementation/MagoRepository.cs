@@ -18,6 +18,19 @@ namespace apiPB.Repository.Implementation
             _context = context;
         }
 
+        public SettingsDto? GetSettings()
+        {
+            var settings = _context.A3AppSettings.FirstOrDefault();
+            if (settings != null)
+            {
+                return settings.ToSettingsDto();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public SettingsDto EditSettings(SettingsFilter settings)
         {
             var existingSettings = _context.A3AppSettings.FirstOrDefault();
@@ -26,6 +39,7 @@ namespace apiPB.Repository.Implementation
                 existingSettings.MagoUrl = settings.MagoUrl;
                 existingSettings.Username = settings.Username;
                 existingSettings.Password = settings.Password;
+                existingSettings.Company = settings.Company;
                 existingSettings.SpecificatorType = settings.SpecificatorType;
                 existingSettings.Closed = settings.Closed;
 
@@ -40,8 +54,9 @@ namespace apiPB.Repository.Implementation
                     MagoUrl = settings.MagoUrl,
                     Username = settings.Username,
                     Password = settings.Password,
-                    SpecificatorType = 6750211,
-                    Closed = false
+                    Company = settings.Company,
+                    SpecificatorType = settings.SpecificatorType,
+                    Closed = settings.Closed
                 };   
                 _context.A3AppSettings.Add(magoSettings);
                 _context.SaveChanges();

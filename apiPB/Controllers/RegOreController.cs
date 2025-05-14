@@ -53,7 +53,7 @@ namespace apiPB.Controllers
 
             if (a3AppRegOreDto == null || !a3AppRegOreDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
-            return _responseHandler.HandleCreated(HttpContext, a3AppRegOreDto, _isLogActive);
+            return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
         }
 
         [HttpPost("view_ore")]

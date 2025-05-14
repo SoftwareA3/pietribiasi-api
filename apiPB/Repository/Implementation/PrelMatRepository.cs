@@ -104,7 +104,7 @@ namespace apiPB.Repository.Implementation
             return deletePrelMat;
         }
 
-        public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(string workerId)
+        public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(int? workerId)
         {
             var notImported = _context.A3AppPrelMats
                 .Where(x => x.Imported == false)
@@ -118,7 +118,7 @@ namespace apiPB.Repository.Implementation
             foreach (var item in notImported)
             {
                 item.Imported = true;
-                item.UserImp = workerId;
+                item.UserImp = workerId.ToString();
                 item.DataImp = DateTime.Now;
 
                 _context.A3AppPrelMats.Update(item);

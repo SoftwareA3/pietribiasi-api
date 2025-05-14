@@ -11,7 +11,7 @@ namespace apiPB.Mappers.Filters
         public SettingsMapperFilter()
         {
             CreateMap<SettingsDto, SettingsFilter>();
-                
+            CreateMap<SyncRegOreRequestDto, SyncRegOreFilter>();
         }
     }
 }

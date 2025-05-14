@@ -62,13 +62,5 @@ namespace apiPB.Services.Implementation
                 throw new HttpRequestException($"Errore nel logout. Stato: {response.StatusCode}");
             }
         }
-
-        public SettingsDto EditSettings(SettingsDto settings)
-        {
-            var filter = _mapper.Map<SettingsFilter>(settings);
-            _magoRepository.EditSettings(filter);
-
-            return settings;
-        }
     }
 }

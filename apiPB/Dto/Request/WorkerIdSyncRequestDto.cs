@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
-    public class MagoSyncronizeRequestDto : MagoLoginRequestDto
+    public class WorkerIdSyncRequestDto
     {
         public int? WorkerId { get; set; }
     }

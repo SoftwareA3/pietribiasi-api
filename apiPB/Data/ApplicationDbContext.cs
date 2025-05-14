@@ -100,7 +100,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.UserImp)
-                .HasMaxLength(1)
+                .HasMaxLength(10)
                 .IsUnicode(false);
             entity.Property(e => e.Variant)
                 .HasMaxLength(50)
@@ -113,7 +113,7 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<A3AppRegOre>(entity =>
         {
-            entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D9343703AF1E");
+            entity.HasKey(e => e.RegOreId).HasName("PK__A3_app_r__8CC8D9345A637FD5");
 
             entity.ToTable("A3_app_reg_ore");
 
@@ -146,7 +146,7 @@ public partial class ApplicationDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("uom");
             entity.Property(e => e.UserImp)
-                .HasMaxLength(1)
+                .HasMaxLength(10)
                 .IsUnicode(false);
             entity.Property(e => e.Variant)
                 .HasMaxLength(50)
@@ -164,6 +164,9 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("A3_app_Settings");
 
             entity.Property(e => e.SettingsId).HasDefaultValue(1);
+            entity.Property(e => e.Company)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.MagoUrl).IsUnicode(false);
             entity.Property(e => e.Password)
                 .HasMaxLength(50)

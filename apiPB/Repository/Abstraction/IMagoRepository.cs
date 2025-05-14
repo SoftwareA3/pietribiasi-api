@@ -8,5 +8,6 @@ namespace apiPB.Repository.Abstraction
     public interface IMagoRepository
     {
         SettingsDto EditSettings(SettingsFilter settings);
+        SettingsDto? GetSettings();
     }
 }

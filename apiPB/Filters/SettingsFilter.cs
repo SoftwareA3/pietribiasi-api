@@ -13,6 +13,8 @@ namespace apiPB.Filters
 
         public string? Password { get; set; }
 
+        public string? Company { get; set; }
+
         public int? SpecificatorType { get; set; }
 
         public bool? Closed { get; set; }
