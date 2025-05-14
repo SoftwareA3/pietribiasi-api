@@ -14,11 +14,14 @@
     <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
     <!-- Font Awesome per icone moderne -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animazione caricamento -->
+    <link rel="stylesheet" href="../css/sync-animations.css">
     <!-- Script (caricati in modo asincrono) -->
     <script src="../javascript/login.js" type="module" defer></script>
     <script src="../javascript/main.js" type="module" defer></script>
     <script src="../javascript/fetch.js" type="module" defer></script>
     <script src="../javascript/home.js" type="module" defer></script>
+    <script src="../javascript/synchronize_data.js" type="module" defer></script>
 </head>
 <body>
     <header class="app-header" id="main-app-header">
@@ -77,8 +80,18 @@
                 </button>
                 
                 <button onclick="location.href='pwr_user.html'" id="goto-poweruser-login" class="menu-button poweruser">
-                    <i class="fa-solid fa-gear menu-icon"></i>
+                    <i class="fa-solid fa-user-plus menu-icon"></i>
                     <span class="menu-button-descr">Modalità Power User</span>
+                </button>
+
+                <button onclick="location.href='settings.html'" id="goto-settings" class="menu-button poweruser">
+                    <i class="fa-solid fa-gear menu-icon"></i>
+                    <span class="menu-button-descr">Impostazioni</span>
+                </button>
+
+                <button id="sync-data" class="menu-button poweruser">
+                    <i class="fa-solid fa-arrows-rotate menu-icon"></i>
+                    <span class="menu-button-descr">Sincronizza</span>
                 </button>
             </div>  
         </div>
