@@ -13,16 +13,13 @@ namespace apiPB.MagoApi.Controllers
     [ApiController]
     public class MagoController : ControllerBase
     {
-        private readonly IMagoAccessService _magoAccessService;
         private readonly IMagoRequestService _magoRequestService;   
         private readonly IResponseHandler _responseHandler;
 
         public MagoController( 
-            IMagoAccessService magoAccessService,
             IMagoRequestService magoRequestService,
             IResponseHandler responseHandler)
         {
-            _magoAccessService = magoAccessService;
             _magoRequestService = magoRequestService;
             _responseHandler = responseHandler;
         }
@@ -32,7 +29,7 @@ namespace apiPB.MagoApi.Controllers
         {
             if (magoLoginRequestDto == null) return BadRequest("Invalid request");
 
-            var magoIdDto = await _magoAccessService.LoginAsync(magoLoginRequestDto);
+            var magoIdDto = await _magoRequestService.LoginAsync(magoLoginRequestDto);
 
             if (magoIdDto == null) return NotFound("MagoId not found");
 
@@ -46,7 +43,7 @@ namespace apiPB.MagoApi.Controllers
 
             try
             {
-                await _magoAccessService.LogoffAsync(tokenRequestDto);
+                await _magoRequestService.LogoffAsync(tokenRequestDto);
                 return Ok("Logoff successful");
             }
             catch (Exception ex)

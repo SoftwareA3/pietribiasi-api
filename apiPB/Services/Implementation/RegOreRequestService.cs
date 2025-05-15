@@ -87,5 +87,25 @@ namespace apiPB.Services.Implementation
                 return null;
             }
         }
+
+        public IEnumerable<RegOreDto> GetNotImportedAppRegOre()
+        {
+            return _repository.GetNotImportedRegOre()
+            .Select(m => m.ToA3AppRegOreDto());
+        }
+
+        public IEnumerable<RegOreDto> UpdateRegOreImported(WorkerIdSyncRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<WorkerIdSyncFilter>(request);
+            var result = _repository.UpdateRegOreImported(filter);
+
+            return result
+            .Select(m => m.ToA3AppRegOreDto());
+        }
     }
 }

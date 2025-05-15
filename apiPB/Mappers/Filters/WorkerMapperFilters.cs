@@ -24,6 +24,7 @@ namespace apiPB.Mappers.Filters
             CreateMap<WorkerIdAndPasswordRequestDto, WorkerIdAndPasswordFilter>()
                 .ForMember(dest => dest.WorkerId, opt => opt.MapFrom(src => src.WorkerId))
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password));
+            CreateMap<WorkerIdSyncRequestDto, WorkerIdSyncFilter>();
         }
     }
 }

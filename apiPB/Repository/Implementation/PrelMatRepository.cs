@@ -104,7 +104,7 @@ namespace apiPB.Repository.Implementation
             return deletePrelMat;
         }
 
-        public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(int? workerId)
+        public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter)
         {
             var notImported = _context.A3AppPrelMats
                 .Where(x => x.Imported == false)
@@ -118,7 +118,7 @@ namespace apiPB.Repository.Implementation
             foreach (var item in notImported)
             {
                 item.Imported = true;
-                item.UserImp = workerId.ToString();
+                item.UserImp = filter.WorkerId.ToString();
                 item.DataImp = DateTime.Now;
 
                 _context.A3AppPrelMats.Update(item);
@@ -139,6 +139,13 @@ namespace apiPB.Repository.Implementation
             {
                 return _context.A3AppPrelMats.Where(i => i.Moid == filter.Moid).ToList();
             }
+        }
+
+        public IEnumerable<A3AppPrelMat> GetNotImportedPrelMat()
+        {
+            return _context.A3AppPrelMats
+                .Where(x => x.Imported == false)
+                .ToList();
         }
     }
 }

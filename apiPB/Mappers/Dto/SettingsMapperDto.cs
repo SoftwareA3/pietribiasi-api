@@ -44,29 +44,64 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static SyncRegOreRequestDto ToSyncregOreRequestDto(this SyncSettingsRequestDto settings, RegOreDto regOre)
+        public static List<SyncRegOreRequestDto> ToSyncregOreRequestDto(this SyncSettingsRequestDto settings, List<RegOreDto> regOreList)
         {
-            long workingTimeInSeconds = (long)regOre.WorkingTime; // esempio: 542439
-            TimeSpan workingTimeSpan = TimeSpan.FromSeconds(workingTimeInSeconds);
+            List<SyncRegOreRequestDto> syncRegOreList = new List<SyncRegOreRequestDto>();
 
-            return new SyncRegOreRequestDto
+            foreach (var regOre in regOreList)
             {
-                Closed = settings.Closed,
-                WorkerId = settings.WorkerId,
-                MoId = regOre.Moid,
-                RtgStep = regOre.RtgStep,
-                Alternate = regOre.Alternate,
-                AltRtgStep = regOre.AltRtgStep,
-                ActualProcessingTime = workingTimeSpan,
-                WorkerProcessingTime = workingTimeSpan,
-                SecondRateVariant = regOre.Variant,
-                ScrapVariant = regOre.Variant,
-                Variant = regOre.Variant,
-                Bom = regOre.Bom,
-                Storage = regOre.Storage,
-                ScrapStorage = regOre.Storage,
-                Wc = regOre.Wc,
-            };  
+                long workingTimeInSeconds = (long)regOre.WorkingTime; // esempio: 542439
+                TimeSpan workingTimeSpan = TimeSpan.FromSeconds(workingTimeInSeconds);
+
+                SyncRegOreRequestDto syncRegOre = new SyncRegOreRequestDto
+                {
+                    Closed = settings.Closed,
+                    WorkerId = settings.WorkerId,
+                    MoId = regOre.Moid,
+                    RtgStep = regOre.RtgStep,
+                    Alternate = regOre.Alternate,
+                    AltRtgStep = regOre.AltRtgStep,
+                    ActualProcessingTime = workingTimeSpan,
+                    WorkerProcessingTime = workingTimeSpan,
+                    SecondRateVariant = regOre.Variant,
+                    ScrapVariant = regOre.Variant,
+                    Variant = regOre.Variant,
+                    Bom = regOre.Bom,
+                    Storage = regOre.Storage,
+                    ScrapStorage = regOre.Storage,
+                    Wc = regOre.Wc,
+                };
+
+                syncRegOreList.Add(syncRegOre);
+            }
+
+            return syncRegOreList;
+        }
+
+        public static List<SyncPrelMatRequestDto> ToSyncPrelMatRequestDto(this SyncSettingsRequestDto settings, List<PrelMatDto> prelMatList)
+        {
+            var syncPrelMatList = prelMatList
+                .GroupBy(p => new { p.Moid, p.RtgStep, p.Alternate, p.AltRtgStep, p.WorkerId })
+                .Select(group => new SyncPrelMatRequestDto
+                {
+                    MoId = group.Key.Moid,
+                    RtgStep = group.Key.RtgStep,
+                    Alternate = group.Key.Alternate,
+                    AltRtgStep = group.Key.AltRtgStep,
+                    WorkerId = group.Key.WorkerId,
+                    ActionDetails = group
+                        .Select(p => new SyncPrelMatDetailsRequestdto
+                        {
+                            Position = p.Position,
+                            PickedQty = p.PrelQty,
+                            Closed = settings.Closed,
+                            SpecificatorType = settings.SpecificatorType,
+                            Storage = p.Storage
+                        }).ToList()
+                })
+                .ToList();
+
+            return syncPrelMatList;
         }
     }
 }

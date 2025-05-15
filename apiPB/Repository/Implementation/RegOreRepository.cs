@@ -104,7 +104,14 @@ namespace apiPB.Repository.Implementation
             return deleteRegOre;
         }
 
-        public IEnumerable<A3AppRegOre> UpdateRegOreImported(int? workerId)
+        public IEnumerable<A3AppRegOre> GetNotImportedRegOre()
+        {
+            return _context.A3AppRegOres
+                .Where(x => x.Imported == false)
+                .ToList();
+        }
+
+        public IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter? filter)
         {
             var notImported = _context.A3AppRegOres
                 .Where(x => x.Imported == false)
@@ -118,7 +125,7 @@ namespace apiPB.Repository.Implementation
             foreach (var item in notImported)
             {
                 item.Imported = true;
-                item.UserImp = workerId?.ToString();
+                item.UserImp = filter.WorkerId.ToString();
                 item.DataImp = DateTime.Now;
 
                 var dbItem = _context.A3AppRegOres.FirstOrDefault(x => x.RegOreId == item.RegOreId);

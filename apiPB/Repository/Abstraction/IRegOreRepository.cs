@@ -48,6 +48,8 @@ namespace apiPB.Repository.Abstraction
         /// </returns>
         A3AppRegOre DeleteRegOreId(ViewOreDeleteRequestFilter filter);
 
-        IEnumerable<A3AppRegOre> UpdateRegOreImported(int? workerId);
+        IEnumerable<A3AppRegOre> GetNotImportedRegOre();
+
+        IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter? filter);
     }
 }

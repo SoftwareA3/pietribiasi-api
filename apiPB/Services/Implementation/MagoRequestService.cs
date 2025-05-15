@@ -18,33 +18,27 @@ namespace apiPB.Services.Implementation
         // ApiClient
         private readonly IMagoApiClient _magoApiClient;
 
-        // Repository
-        private readonly IRegOreRepository _regOreRepository;
-        private readonly IPrelMatRepository _prelMatRepository;
-        private readonly IInventarioRepository _inventarioRepository;
+        private readonly IRegOreRequestService _regoreRequestService;
+        private readonly IPrelMatRequestService _prelMatRequestService;
+        private readonly IInventarioRequestService _inventarioRequestService;
         private readonly IMagoRepository _magoRepository;
-
-        // Service
-        private readonly IMagoAccessService _magoAccessService;
 
         // Mapper
         private readonly IMapper _mapper;
 
         public MagoRequestService(IMagoApiClient magoApiClient, 
-            IMagoAccessService magoAccessService,
             IMapper mapper,
             IMagoRepository magoRepository,
-            IRegOreRepository regOreRepository,
-            IPrelMatRepository prelMatRepository,
-            IInventarioRepository inventarioRepository)
+            IRegOreRequestService regOreRequestService,
+            IPrelMatRequestService prelMatRequestService,
+            IInventarioRequestService inventarioRequestService)
         {
             _magoApiClient = magoApiClient;
             _magoRepository = magoRepository;
             _mapper = mapper;
-            _magoAccessService = magoAccessService;
-            _regOreRepository = regOreRepository;
-            _prelMatRepository = prelMatRepository;
-            _inventarioRepository = inventarioRepository;
+            _regoreRequestService = regOreRequestService;
+            _prelMatRequestService = prelMatRequestService;
+            _inventarioRequestService = inventarioRequestService;
         }
 
         public async Task SyncronizeAsync(WorkerIdSyncRequestDto request)
@@ -65,7 +59,7 @@ namespace apiPB.Services.Implementation
             var magoLoginRequest = settings.ToMagoLoginRequestDto();
 
             // Login
-            var loginResponse = await _magoAccessService.LoginAsync(magoLoginRequest);
+            var loginResponse = await LoginAsync(magoLoginRequest);
             if (loginResponse == null || loginResponse.Token == null)
             {
                 throw new Exception("Login failed");
@@ -78,25 +72,19 @@ namespace apiPB.Services.Implementation
             var magoApiRequest = settings.ToSyncSettingsRequestDto(request.WorkerId);
 
             // Recupero Lista di record da A3_app_reg_ore
-            var regOreList = _regOreRepository.GetAppRegOre()
-                .Select(x => x.ToA3AppRegOreDto());
+            var regOreList = _regoreRequestService.GetNotImportedAppRegOre();
 
-            if (regOreList == null || !regOreList.Any())
+            if (regOreList == null)
             {
-                await _magoAccessService.LogoffAsync(new MagoTokenRequestDto
+                await LogoffAsync(new MagoTokenRequestDto
                 {
                     Token = token
                 });
                 throw new Exception("No records found in A3_app_reg_ore: logging off...");
             }
 
-            List<SyncRegOreRequestDto> syncRegOreList = new List<SyncRegOreRequestDto>();
-
             // Mapping delle informazioni per l'invio a Mago. Dati di settings + A3_app_reg_ore
-            foreach (var regOre in regOreList)
-            {
-                syncRegOreList.Add(magoApiRequest.ToSyncregOreRequestDto(regOre));
-            }
+            var syncRegOreList = magoApiRequest.ToSyncregOreRequestDto(regOreList.ToList());
 
             // Invio Lista di record a Mago assieme a magoApiRequest
             try
@@ -105,7 +93,7 @@ namespace apiPB.Services.Implementation
             }
             catch (Exception ex)
             {
-                await _magoAccessService.LogoffAsync(new MagoTokenRequestDto
+                await LogoffAsync(new MagoTokenRequestDto
                 {
                     Token = token
                 });
@@ -113,14 +101,10 @@ namespace apiPB.Services.Implementation
             }
 
             // Aggiornamento della lista di record in A3_app_reg_ore 
-            var regOreListUpdated = _regOreRepository.UpdateRegOreImported(request.WorkerId);  
-            if(regOreListUpdated != null && regOreListUpdated.Any())
+            var regOreListUpdated = _regoreRequestService.UpdateRegOreImported(request);  
+            if(regOreListUpdated == null)
             {
-                regOreListUpdated.Select(x => x.ToA3AppRegOreDto());
-            }
-            else
-            {
-                await _magoAccessService.LogoffAsync(new MagoTokenRequestDto
+                await LogoffAsync(new MagoTokenRequestDto
                 {
                     Token = token
                 });
@@ -128,16 +112,44 @@ namespace apiPB.Services.Implementation
             }
 
             // Recupero Lista di record da A3_app_prel_mat
-            // var prelMatList = _prelMatRepository.GetAppPrelMat();
-            // if (prelMatList == null || !prelMatList.Any())
-            // {
-            //     throw new Exception("No records found in A3_app_prel_mat");
-            // }
+            var prelMatList = _prelMatRequestService.GetNotImportedPrelMat();
+            if (prelMatList == null)
+            {
+                await LogoffAsync(new MagoTokenRequestDto
+                {
+                    Token = token
+                });
+                // Da correggere con NoContent
+                throw new Exception("No records found in A3_app_prel_mat");
+            }
 
+            // Mapping delle informazioni per l'invio a Mago. Dati di settings + A3_app_prel_mat
+            var syncPrelMatList = magoApiRequest.ToSyncPrelMatRequestDto(prelMatList.ToList());
+            
             // Invio Lista di record a Mago
+            try
+            {
+                var syncPrelMatResponse = SyncPrelMat(syncPrelMatList, token);
+            }
+            catch (Exception ex)
+            {
+                await LogoffAsync(new MagoTokenRequestDto
+                {
+                    Token = token
+                });
+                throw new Exception("Error sending data to Mago: logging off...", ex);
+            }
 
             // Aggiornamento della lista di record in A3_app_prel_mat
-            //var prelMatListUpdated = _prelMatRepository.UpdatePrelMatImported(request.WorkerId);
+            var prelMatListUpdated = _prelMatRequestService.UpdatePrelMatImported(request);
+            if (prelMatListUpdated == null)
+            {
+                await LogoffAsync(new MagoTokenRequestDto
+                {
+                    Token = token
+                });
+                throw new Exception("No records updated in A3_app_prel_mat: logging off...");
+            } 
 
             // Recupero Lista di record da A3_app_inventario
             
@@ -149,7 +161,7 @@ namespace apiPB.Services.Implementation
 
             try
             {
-                await _magoAccessService.LogoffAsync(new MagoTokenRequestDto
+                await LogoffAsync(new MagoTokenRequestDto
                 {
                     Token = token
                 });
@@ -174,6 +186,50 @@ namespace apiPB.Services.Implementation
                 throw new Exception("SyncRegOre failed");
             }
             Console.WriteLine("Logoff successful");
+        }
+
+        public async Task SyncPrelMat(IEnumerable<SyncPrelMatRequestDto> request, string token)
+        {
+            if (request == null || token == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var response = await _magoApiClient.SendPostAsyncWithToken("openMes/mo-confirmation", request, token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("SyncPrelMat failed");
+            }
+        }
+
+        public async Task<MagoLoginResponseDto?> LoginAsync(MagoLoginRequestDto request)
+        {
+            var response = await _magoApiClient.SendPostAsync("account-manager/login", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<MagoLoginResponseDto>();
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return result;
+            }
+            else
+            {
+                throw new Exception("Login failed");
+            }
+        }
+
+        public async Task LogoffAsync(MagoTokenRequestDto dto)
+        {
+            var response = await _magoApiClient.SendPostAsyncWithToken("account-manager/logout", dto, dto.Token ?? string.Empty);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"Errore nel logout. Stato: {response.StatusCode}");
+            }
         }
 
         public SettingsDto EditSettings(SettingsDto settings)

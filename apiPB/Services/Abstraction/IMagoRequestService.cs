@@ -13,5 +13,8 @@ namespace apiPB.Services.Abstraction
         SettingsDto? EditSettings(SettingsDto settings);
         SettingsDto? GetSettings();
         Task SyncRegOre(IEnumerable<SyncRegOreRequestDto> request, string token);
+        Task SyncPrelMat(IEnumerable<SyncPrelMatRequestDto> request, string token);
+        Task<MagoLoginResponseDto?> LoginAsync(MagoLoginRequestDto request);
+        Task LogoffAsync(MagoTokenRequestDto requestToken);
     }
 }

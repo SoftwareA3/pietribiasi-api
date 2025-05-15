@@ -38,5 +38,9 @@ namespace apiPB.Services.Abstraction
         /// <param name="request">Dto di richiesta</param>
         /// <returns>Ritorna il Dto dell'elemento eliminato</returns>
         RegOreDto? DeleteRegOreId(ViewOreDeleteRequestDto request);
+
+        IEnumerable<RegOreDto> GetNotImportedAppRegOre();
+
+        IEnumerable<RegOreDto> UpdateRegOreImported(WorkerIdSyncRequestDto request);
     }
 }

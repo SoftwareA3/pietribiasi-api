@@ -59,7 +59,6 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IPrelMatRequestService, PrelMatRequestService>();
     builder.Services.AddScoped<IGiacenzeRequestService, GiacenzeRequestService>();
     builder.Services.AddScoped<IInventarioRequestService, InventarioRequestService>();
-    builder.Services.AddScoped<IMagoAccessService, MagoAccessService>();
     builder.Services.AddScoped<IMagoRequestService, MagoRequestService>();
 
     builder.Services.AddCors(options =>

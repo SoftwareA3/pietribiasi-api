@@ -52,5 +52,9 @@ namespace apiPB.Services.Abstraction
         //IEnumerable<PrelMatDto> UpdatePrelMatImported(int? workerId);
 
         IEnumerable<PrelMatDto> GetPrelMatWithMoId(MoidRequestDto? request);
+
+        IEnumerable<PrelMatDto> GetNotImportedPrelMat();
+
+        IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request);
     }
 }

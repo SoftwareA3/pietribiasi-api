@@ -97,5 +97,25 @@ namespace apiPB.Services.Implementation
 
             return resultList;
         }
+
+        public IEnumerable<PrelMatDto> GetNotImportedPrelMat()
+        {
+            return _repository.GetNotImportedPrelMat()
+            .Select(m => m.ToDtoPrelMatDto());
+        }
+
+        public IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<WorkerIdSyncFilter>(request);
+            var result = _repository.UpdatePrelMatImported(filter);
+
+            return result
+            .Select(m => m.ToDtoPrelMatDto());
+        }
     }
 }

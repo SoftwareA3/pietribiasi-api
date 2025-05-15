@@ -49,8 +49,10 @@ namespace apiPB.Repository.Abstraction
         /// </returns>
         A3AppPrelMat DeletePrelMatId(ViewPrelMatDeleteFilter filter);
 
-        IEnumerable<A3AppPrelMat> UpdatePrelMatImported(int? workerId);
+        IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter);
 
         IEnumerable<A3AppPrelMat>? GetPrelMatWithMoId(MoidFilter? filter);
+
+        IEnumerable<A3AppPrelMat> GetNotImportedPrelMat();
     }
 }
