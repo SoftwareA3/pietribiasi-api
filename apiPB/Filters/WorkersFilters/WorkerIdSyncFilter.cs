@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace apiPB.Filters
 {
-    public class ViewPrelMatPutFilter
+    public class WorkerIdSyncFilter
     {
-        public int PrelMatId { get; set; }
-        public int PrelQty { get; set; }
+        public string? WorkerId { get; set; }
     }
 }

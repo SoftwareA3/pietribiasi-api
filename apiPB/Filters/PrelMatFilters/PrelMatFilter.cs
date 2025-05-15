@@ -15,6 +15,6 @@ namespace apiPB.Filters
 
         public string BarCode { get; set; } = null!;
 
-        public int? PrelQty { get; set; }
+        public double? PrelQty { get; set; }
     }
 }

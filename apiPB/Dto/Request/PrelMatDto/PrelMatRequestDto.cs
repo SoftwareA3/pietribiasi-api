@@ -14,6 +14,6 @@ namespace apiPB.Dto.Request
 
         public string BarCode { get; set; } = null!;
 
-        public int? PrelQty { get; set; }
+        public double? PrelQty { get; set; }
     }
 }
