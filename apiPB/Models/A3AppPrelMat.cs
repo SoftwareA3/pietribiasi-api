@@ -53,7 +53,7 @@ public partial class A3AppPrelMat
 
     public string? Wc { get; set; }
 
-    public int? PrelQty { get; set; }
+    public double? PrelQty { get; set; }
 
     public bool Imported { get; set; }
 
