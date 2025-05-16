@@ -39,16 +39,16 @@ namespace apiPB.MagoApi.Controllers
         [HttpPost("logoff")]
         public async Task<IActionResult> LogOff([FromBody] MagoTokenRequestDto tokenRequestDto)
         {
-            if(tokenRequestDto == null) return BadRequest("Invalid request");
+            if(tokenRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, false);
 
             try
             {
                 await _magoRequestService.LogoffAsync(tokenRequestDto);
                 return Ok("Logoff successful");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest($"Logoff failed: {ex.Message}");
+                return _responseHandler.HandleBadRequest(HttpContext, false);
             }
         }
 
@@ -56,16 +56,16 @@ namespace apiPB.MagoApi.Controllers
         [Authorize]
         public async Task<IActionResult> Syncronize([FromBody] WorkerIdSyncRequestDto? request)
         {
-            if (request == null) return BadRequest("Invalid request");
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, false);
 
             try
             {
-                await _magoRequestService.SyncronizeAsync(request);
-                return Ok("Synchronization successful");
+                var response = await _magoRequestService.SyncronizeAsync(request);
+                return _responseHandler.HandleOkAndItem(HttpContext, response, false);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest($"Synchronization failed: {ex.Message}");
+                return _responseHandler.HandleBadRequest(HttpContext, false);
             }
         }
 

@@ -129,15 +129,15 @@ namespace apiPB.Repository.Implementation
             return GetAppPrelMat();
         }
 
-        public IEnumerable<A3AppPrelMat>? GetPrelMatWithMoId(MoidFilter? filter)
+        public IEnumerable<A3AppPrelMat>? GetPrelMatWithComponent(ComponentFilter? filter)
         {
-            if(filter == null || filter.Moid == 0)
+            if(filter == null || filter.Component == string.Empty)
             {
                 return null;
             }
             else
             {
-                return _context.A3AppPrelMats.Where(i => i.Moid == filter.Moid).ToList();
+                return _context.A3AppPrelMats.Where(i => i.Component == filter.Component).ToList();
             }
         }
 

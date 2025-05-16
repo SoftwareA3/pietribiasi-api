@@ -31,7 +31,7 @@ namespace apiPB.Repository.Implementation
             }
         }
 
-        public SettingsDto EditSettings(SettingsFilter settings)
+        public A3AppSetting EditSettings(SettingsFilter settings)
         {
             var existingSettings = _context.A3AppSettings.FirstOrDefault();
             if (existingSettings != null)
@@ -43,9 +43,9 @@ namespace apiPB.Repository.Implementation
                 existingSettings.SpecificatorType = settings.SpecificatorType;
                 existingSettings.Closed = settings.Closed;
 
-                _context.A3AppSettings.Update(existingSettings);
+                //_context.A3AppSettings.Update(existingSettings);
                 _context.SaveChanges();
-                return existingSettings.ToSettingsDto();
+                return existingSettings;
             }
             else
             {
@@ -60,7 +60,7 @@ namespace apiPB.Repository.Implementation
                 };   
                 _context.A3AppSettings.Add(magoSettings);
                 _context.SaveChanges();
-                return magoSettings.ToSettingsDto();
+                return magoSettings;
             }
         }
     }

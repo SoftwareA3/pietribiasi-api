@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using apiPB.Dto.Models;
 using apiPB.Dto.Request;
 
@@ -51,7 +52,7 @@ namespace apiPB.Services.Abstraction
 
         //IEnumerable<PrelMatDto> UpdatePrelMatImported(int? workerId);
 
-        IEnumerable<PrelMatDto> GetPrelMatWithMoId(MoidRequestDto? request);
+        IEnumerable<PrelMatDto> GetPrelMatWithComponent(ComponentRequestDto? request);
 
         IEnumerable<PrelMatDto> GetNotImportedPrelMat();
 

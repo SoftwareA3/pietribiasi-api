@@ -41,19 +41,17 @@ namespace apiPB.Services.Implementation
             _inventarioRequestService = inventarioRequestService;
         }
 
-        public async Task SyncronizeAsync(WorkerIdSyncRequestDto request)
+        public async Task<SyncronizedDataDto> SyncronizeAsync(WorkerIdSyncRequestDto request)
         {
-            if(request == null || request.WorkerId == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
             // Recupero delle impostazioni da Mago. Attacca il WorkerId
             var settings = _magoRepository.GetSettings();
             if (settings == null)
             {
                 throw new Exception("Settings not found");
             }
+
+            // Crea il dto da ritornare
+            var syncData = new SyncronizedDataDto();
 
             // Crea il dto per il login
             var magoLoginRequest = settings.ToMagoLoginRequestDto();
@@ -149,10 +147,10 @@ namespace apiPB.Services.Implementation
                     Token = token
                 });
                 throw new Exception("No records updated in A3_app_prel_mat: logging off...");
-            } 
+            }
 
             // Recupero Lista di record da A3_app_inventario
-            
+
             // Invio Lista di record a Mago
 
             // Aggiornamento della lista di record in A3_app_inventario
@@ -165,6 +163,7 @@ namespace apiPB.Services.Implementation
                 {
                     Token = token
                 });
+                return syncData.ToSyncronizedDataDto(syncRegOreList, syncPrelMatList);
             }
             catch (Exception ex)
             {
@@ -235,9 +234,9 @@ namespace apiPB.Services.Implementation
         public SettingsDto EditSettings(SettingsDto settings)
         {
             var filter = _mapper.Map<SettingsFilter>(settings);
-            _magoRepository.EditSettings(filter);
+            var editedSettings =_magoRepository.EditSettings(filter);
 
-            return settings;
+            return editedSettings.ToSettingsDto();
         }
 
         public SettingsDto? GetSettings()

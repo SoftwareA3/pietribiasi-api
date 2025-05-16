@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace apiPB.Mappers.Dto
 {
-    public static class SettingsMapperDto
+    public static class SyncMapperDto
     {
         public static SettingsDto ToSettingsDto(this A3AppSetting settings)
         {
@@ -42,6 +42,13 @@ namespace apiPB.Mappers.Dto
                 Closed = settings.Closed,
                 WorkerId = workerId
             };
+        }
+
+        public static SyncronizedDataDto ToSyncronizedDataDto(this SyncronizedDataDto sincData, List<SyncRegOreRequestDto>? syncRegOreList, List<SyncPrelMatRequestDto>? syncPrelMatList)
+        {
+            if(syncRegOreList != null && syncRegOreList.Count > 0) sincData.RegOreRequest = syncRegOreList;
+            if(syncPrelMatList != null && syncPrelMatList.Count > 0) sincData.PrelMatRequest = syncPrelMatList;
+            return sincData;
         }
 
         public static List<SyncRegOreRequestDto> ToSyncregOreRequestDto(this SyncSettingsRequestDto settings, List<RegOreDto> regOreList)
@@ -81,14 +88,14 @@ namespace apiPB.Mappers.Dto
         public static List<SyncPrelMatRequestDto> ToSyncPrelMatRequestDto(this SyncSettingsRequestDto settings, List<PrelMatDto> prelMatList)
         {
             var syncPrelMatList = prelMatList
-                .GroupBy(p => new { p.Moid, p.RtgStep, p.Alternate, p.AltRtgStep, p.WorkerId })
+                .GroupBy(p => new { p.Moid, p.RtgStep, p.Alternate, p.AltRtgStep })
                 .Select(group => new SyncPrelMatRequestDto
                 {
                     MoId = group.Key.Moid,
                     RtgStep = group.Key.RtgStep,
                     Alternate = group.Key.Alternate,
                     AltRtgStep = group.Key.AltRtgStep,
-                    WorkerId = group.Key.WorkerId,
+                    WorkerId = settings.WorkerId,
                     ActionDetails = group
                         .Select(p => new SyncPrelMatDetailsRequestdto
                         {

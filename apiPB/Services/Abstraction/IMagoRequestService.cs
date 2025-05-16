@@ -9,7 +9,7 @@ namespace apiPB.Services.Abstraction
 {
     public interface IMagoRequestService
     {
-        Task SyncronizeAsync(WorkerIdSyncRequestDto request);
+        Task<SyncronizedDataDto> SyncronizeAsync(WorkerIdSyncRequestDto request);
         SettingsDto? EditSettings(SettingsDto settings);
         SettingsDto? GetSettings();
         Task SyncRegOre(IEnumerable<SyncRegOreRequestDto> request, string token);

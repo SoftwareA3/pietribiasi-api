@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace apiPB.Dto.Request
+namespace apiPB.Filters
 {
-    public class MoidRequestDto
+    public class ComponentFilter
     {
-        public int Moid { get; set; }
+        public string? Component { get; set; }
     }
 }

@@ -74,14 +74,14 @@ namespace apiPB.Services.Implementation
             return result?.ToDtoPrelMatDto();
         }
 
-        public IEnumerable<PrelMatDto> GetPrelMatWithMoId(MoidRequestDto? request)
+        public IEnumerable<PrelMatDto> GetPrelMatWithComponent(ComponentRequestDto? request)
         {
             if (request == null)
             {
                 return null;
             }
-            var filter = _mapper.Map<MoidFilter>(request);
-            var result = _repository.GetPrelMatWithMoId(filter);
+            var filter = _mapper.Map<ComponentFilter>(request);
+            var result = _repository.GetPrelMatWithComponent(filter);
 
             if (result == null)
             {

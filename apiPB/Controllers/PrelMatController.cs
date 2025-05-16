@@ -116,12 +116,12 @@ namespace apiPB.Controllers
             return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
 
-        [HttpPost("get_prel_mat_with_moid")]
-        public IActionResult GetPrelMatWithMoId([FromBody] MoidRequestDto? a3AppPrelMatRequestDto)
+        [HttpPost("get_prel_mat_with_component")]
+        public IActionResult GetPrelMatWithComponent([FromBody] ComponentRequestDto? a3AppPrelMatRequestDto)
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var a3AppPrelMatDto = _prelMatRequestService.GetPrelMatWithMoId(a3AppPrelMatRequestDto).ToList();
+            var a3AppPrelMatDto = _prelMatRequestService.GetPrelMatWithComponent(a3AppPrelMatRequestDto).ToList();
 
             if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 
