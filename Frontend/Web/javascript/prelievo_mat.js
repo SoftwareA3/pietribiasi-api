@@ -68,7 +68,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            quantitaInput.value = "";
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
         }
         
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -83,7 +88,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            quantitaInput.value = "";
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
         }
     });
 
@@ -106,7 +116,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeAutocompleteList.innerHTML = "";
             barcodeAutocompleteList.classList.add("hidden"); 
             quantitaInput.disabled = true; 
+            quantitaInput.value = "";
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
             return;
         }
     });
@@ -121,7 +136,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            quantitaInput.value = "";
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
         }
     
         // Carica i dati della lavorazione solo se necessario
@@ -139,7 +159,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.disabled = true;
             barcodeList = [];
             quantitaInput.disabled = true;
+            quantitaInput.value = "";
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
         }
     });
 
@@ -157,7 +182,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeAutocompleteList.innerHTML = "";
             barcodeAutocompleteList.classList.add("hidden"); 
             quantitaInput.disabled = true; 
+            quantitaInput.value = "";
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
             return;
         }
     });
@@ -170,7 +200,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
             quantitaInput.disabled = true;
+            quantitaInput.value = "";
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
         }
 
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -188,11 +223,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (lavorazioneInput.value === "") {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
+            quantitaInput.value = "";
             barcodeList = [];
             barcodeAutocompleteList.innerHTML = ""; // Svuota la lista di autocompletamento
             barcodeAutocompleteList.classList.add("hidden"); // Nasconde la lista di autocompletamento
             quantitaInput.disabled = true; // Disabilita il campo quantità
             errorQty.style.display = "none";
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
             return;
         }
     });
@@ -522,7 +562,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     lavorazioneInput.disabled = true;
                     barcodeInput.value = "";
                     barcodeInput.disabled = true;
-                    quantitaInput.value = "1";
+                    quantitaInput.value = "";
                     quantitaInput.disabled = true;
                     noContent.classList.remove("hidden");
                     alert("Dati salvati con successo");
@@ -583,7 +623,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
                 dataResultList.push(data);
 
-                if(selectedQta > result.prelResQty) 
+                if(selectedQta > result.finalSum) 
                 {
                     errorQty.style.display = "block";
                 }
@@ -598,7 +638,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 lavorazioneInput.disabled = true;
                 barcodeInput.value = "";
                 barcodeInput.disabled = true;
-                quantitaInput.value = "1";
+                quantitaInput.value = "";
                 quantitaInput.disabled = true;
                 const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
                 if (quantitaLabel) {
@@ -710,24 +750,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Lista di tutti i dati:", allDataResult);
 
             if(allDataResult.length > 0) {
-                
-                const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
-                if (quantitaLabel) {
-                    quantitaLabel.textContent = "Quantità disponibile: " + allDataResult[0].prelResQty + " - UoM: " + allDataResult[0].uoM;
-                }
 
                 var sum = 0;
                 // Dati lista temporanea
                 dataResultList.forEach(element => {
-                    sum += element.prelQty;
+                    if(element.component === allDataResult[0].component) {
+                        sum += parseFloat(element.prelQty || 0);
+                    }
                 });
                 console.log("Somma delle quantità della lista temporanea:", sum);
-                const prelMatQtyList = await fetchA3PrelMatQtyList(allDataResult[0].moid);
+                console.log("Component:", allDataResult[0].component);
+                const prelMatQtyList = await fetchA3PrelMatQtyList(allDataResult[0].component);
                 console.log("Lista di quantità da A3_app_prel_mat:", prelMatQtyList);
 
                 if(prelMatQtyList.length > 0) {
                     prelMatQtyList.forEach(element => {
-                        sum += element.prelQty;
+                        sum += parseFloat(element.prelQty || 0);
                     });
                 }
 
@@ -735,12 +773,20 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 quantitaInput.disabled = false;
                 // Il valore comincia dalla quantità disponibile meno quella già prelevata
-                quantitaInput.value = allDataResult[0].prelResQty - sum; 
+                const finalSum =  parseFloat(allDataResult[0].prelResQty || 0) - sum;
+                quantitaInput.value = finalSum;
+                
+                const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+                if (quantitaLabel) {
+                    quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - UoM: ${allDataResult[0].prelUoM}`;
+                }
 
                 // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
-                if (quantitaInput.value < 0) {
-                    errorQty.display = "block";
+                if (parseFloat(quantitaInput.value) < 0) {
+                    errorQty.style.display = "block";
                 }
+
+                allDataResult[0].finalSum = finalSum;
 
                 return allDataResult[0];
             }
@@ -861,14 +907,14 @@ async function fetchAllJobs() {
     }
 }
 
-async function fetchA3PrelMatQtyList(moid) {
+async function fetchA3PrelMatQtyList(component) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/prel_mat/get_prel_mat_with_moid", {
+        const request = await fetchWithAuth("http://localhost:5245/api/prel_mat/get_prel_mat_with_component", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({"moid": moid}),
+            body: JSON.stringify({"component": component}),
         });
 
         if (!request || !request.ok) {

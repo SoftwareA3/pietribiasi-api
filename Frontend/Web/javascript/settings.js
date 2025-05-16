@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.log("Settings to save:", settings);
 
         try {
-            const response = await fetchWithAuth("http://localhost:5245/api/mago_api/save_settings", {
+            const response = await fetchWithAuth("http://localhost:5245/api/mago_api/edit_settings", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -66,10 +66,9 @@ document.addEventListener("DOMContentLoaded", async function() {
             });
 
             if (response.ok) {
+                alert("Impostazioni modificate con successo");
                 console.log("Settings saved successfully:", response.statusText);
                 console.log("Ricaricamento della pagina...");
-                // Ricarica la pagina dopo il salvataggio
-                location.reload();
             } else {
                 console.error("Error saving settings:", response.statusText);
             }

@@ -324,6 +324,28 @@ function populateOreList(data) {
         itemContent.appendChild(statusIndicator);
 
         const convertedTime = (item.workingTime / 3600);
+
+        // Estrai solo la data e l'orario da dataImp nel formato richiesto
+        let parsedDate = "";
+        let parsedTime = "";
+        if (item.dataImp) {
+            // Gestisce sia formato "YYYY-MM-DD HH:mm:ss.SSS" che ISO "YYYY-MM-DDTHH:mm:ss.SSSZ"
+            let dateObj;
+            if (item.dataImp.includes("T")) {
+            // ISO format
+            dateObj = new Date(item.dataImp);
+            } else {
+            // "YYYY-MM-DD HH:mm:ss.SSS"
+            // Sostituisci spazio con "T" per compatibilità con Date
+            dateObj = new Date(item.dataImp.replace(" ", "T"));
+            }
+            if (!isNaN(dateObj)) {
+            // Formatta la data come "dd/MM/yyyy"
+            parsedDate = dateObj.toLocaleDateString("it-IT");
+            // Formatta l'orario come "HH:mm:ss"
+            parsedTime = dateObj.toLocaleTimeString("it-IT", { hour12: false });
+            }
+        }
         
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
@@ -333,6 +355,8 @@ function populateOreList(data) {
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Ore:</strong> <span class="ore-value" id="ore-value-${item.regOreId}">${convertedTime}</span> </div>
+            ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDate} alle ${parsedTime} </div>` : ''}
+            ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
         
         li.appendChild(itemContent);

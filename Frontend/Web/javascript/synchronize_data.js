@@ -54,6 +54,8 @@ async function synchronizeData() {
 
         if (response.ok) {
             console.log("Dati sincronizzati correttamente:", response.statusText);
+            const data = await response.json();
+            console.log("Response DTO:", data);
             // Mostra l'icona di successo
             showSuccessIcon(iconElement);
         } else {

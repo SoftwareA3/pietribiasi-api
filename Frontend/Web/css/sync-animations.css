@@ -69,7 +69,6 @@
     display: inline-block;
     width: 1em;
     text-align: center;
-    transition: color 0.3s ease;
     position: relative;
 }
 
@@ -88,7 +87,7 @@
 
 /* Effetto hover per migliorare l'accessibilità */
 #sync-data:not(:disabled):hover {
-    transform: translateY(-2px);
+    transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 

@@ -428,7 +428,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             } catch (error) {
                 console.error("Errore durante la richiesta di salvataggio:", error);
             }
-        } else {
+        } 
+        else {
             alert("Nessun dato da salvare. Aggiungi prima un elemento.");
         }
     }); 

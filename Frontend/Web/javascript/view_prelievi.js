@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", workerId);
-                alert("Nessun dato trovato per l'utente.");
+                alert("Nessun dato trovato per l'utente. Inserire prima un prelievo.");
             }
         }
         else {
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", userId);
-                alert("Nessun dato trovato per l'utente.");
+                alert("Nessun dato trovato per l'utente. Inserire prima un prelievo.");
             }
         }
 
@@ -358,6 +358,28 @@ function populatePrelieviList(data) {
         statusIndicator.className = `status-indicator ${isImported === true ? 'status-closed' : 'status-open'}`;
         statusIndicator.title = isImported === true ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
+
+        // Estrai solo la data e l'orario da dataImp nel formato richiesto
+        let parsedDate = "";
+        let parsedTime = "";
+        if (item.dataImp) {
+            // Gestisce sia formato "YYYY-MM-DD HH:mm:ss.SSS" che ISO "YYYY-MM-DDTHH:mm:ss.SSSZ"
+            let dateObj;
+            if (item.dataImp.includes("T")) {
+            // ISO format
+            dateObj = new Date(item.dataImp);
+            } else {
+            // "YYYY-MM-DD HH:mm:ss.SSS"
+            // Sostituisci spazio con "T" per compatibilità con Date
+            dateObj = new Date(item.dataImp.replace(" ", "T"));
+            }
+            if (!isNaN(dateObj)) {
+            // Formatta la data come "dd/MM/yyyy"
+            parsedDate = dateObj.toLocaleDateString("it-IT");
+            // Formatta l'orario come "HH:mm:ss"
+            parsedTime = dateObj.toLocaleTimeString("it-IT", { hour12: false });
+            }
+        }
         
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
@@ -369,6 +391,8 @@ function populatePrelieviList(data) {
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Qta: <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</strong></span> </div>
+            ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDate} alle ${parsedTime} </div>` : ''}
+            ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
         
         li.appendChild(itemContent);
@@ -386,8 +410,7 @@ function populatePrelieviList(data) {
             // Campo input per la modifica
             const editInput = document.createElement("input");
             editInput.type = "number";
-            editInput.min = "1";
-            editInput.step = "1";
+            editInput.step = "0.1";
             editInput.className = "edit-prel-input";
             editInput.id = `edit-prel-input-${item.prelMatId}`;
             editInput.value = item.prelQty;
@@ -481,7 +504,7 @@ function editPrelievi(item) {
 async function savePrelieviEdit(item, data) {
     // Ottiene il nuovo valore dall'input
     const editInput = document.getElementById(`edit-prel-input-${item.prelMatId}`);
-    const newPrelQty = parseInt(editInput.value);
+    const newPrelQty = parseFloat(editInput.value);
     
     // Verifica che l'input sia valido
     if (isNaN(newPrelQty) || newPrelQty <= 0) {
@@ -517,7 +540,7 @@ async function savePrelieviEdit(item, data) {
         
         // Aggiorna la visualizzazione
         const prelieviValueSpan = document.getElementById(`prel-value-${item.prelMatId}`);
-        if (prelieviValueSpan) prelieviValueSpan.textContent = newPrelQty;
+        if (prelieviValueSpan) prelieviValueSpan.textContent = parseFloat(newPrelQty);
         
         // Ripristina la visualizzazione normale
         cancelPrelieviEdit(item);

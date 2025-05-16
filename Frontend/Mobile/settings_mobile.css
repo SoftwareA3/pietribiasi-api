@@ -1,0 +1,88 @@
+/* Stili mobile specifici per pagina impostazioni */
+
+/* Layout principale */
+.container {
+    padding-right: var(--spacing-2);
+    padding-left: var(--spacing-2);
+}
+
+/* Adattamento card */
+.card {
+    margin-top: 0.5rem;
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-3);
+    font-size: small;
+}
+
+.card-header {
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-2);
+}
+
+/* Sistemazione layout del form */
+#settings-form {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-2);
+    gap: var(--spacing-2);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-2);
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-1);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    font-size:  0.85rem;
+    width: 100%;
+    padding: var(--spacing-2);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius);
+}
+
+/* Contenitore pulsanti */
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-3);
+    width: 100%;
+}
+
+.buttons-container .button {
+    width: 100%;
+    justify-content: center;
+    padding: var(--spacing-2);
+    font-size: 0.9rem;
+}
+
+/* Adattamenti per schermi molto piccoli */
+@media screen and (max-width: 360px) {
+    .card {
+        padding: var(--spacing-2);
+    }
+    
+    #settings-form {
+        padding: var(--spacing-1);
+    }
+    
+    .form-group {
+        margin-bottom: var(--spacing-1);
+    }
+    
+    .form-group input,
+    .form-group select {
+        padding: var(--spacing-1);
+    }
+    
+    .buttons-container {
+        margin-top: var(--spacing-2);
+    }
+}

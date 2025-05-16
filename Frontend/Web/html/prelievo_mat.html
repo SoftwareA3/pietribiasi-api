@@ -83,13 +83,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="quantity-group">
-                        <div class="form-group">
-                            <label for="prel-mat-quantita">Quantità:</label>
-                            <input type="number" id="prel-mat-quantita" name="prel-mat-quantita" value="1" required="" disabled="true">
-                        </div>
-                        <div class="form-group" id="error-quantity">
-                            <p><strong>La quantità prelevata è negativa o maggiore di quella disponibile</strong></p>
+                    
+                    <div class="form-group">
+                        <label for="prel-mat-quantita">Quantità:</label>
+                        <div class="quantity-group">
+                            <input type="number" id="prel-mat-quantita" name="prel-mat-quantita" required="" disabled="true">
+                            <div class="form-group" id="error-quantity">
+                                <p><strong>Attenzione! La quantità prelevata è negativa o maggiore di quella disponibile</strong></p>
+                            </div>
                         </div>
                     </div>
                     <p><strong>Tipo Movimento: Prelievo</strong></p>

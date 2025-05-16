@@ -23,14 +23,14 @@
 .quantity-group {
     display: flex;
     align-items: center;
-    column-gap: 3rem;
+    column-gap: 2rem;
 }
 
 #error-quantity {
     display: none;
     color: var(--error);
     font-size: 0.9rem;
-    margin-top: var(--spacing-4);
+    margin-top: var(--spacing-2);
 }
 
 /* Evidenziazione tipo movimento */

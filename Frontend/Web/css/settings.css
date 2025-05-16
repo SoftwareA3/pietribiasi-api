@@ -38,6 +38,37 @@
     transform: scale(1.1);
 }
 
+#settings-form, .filter-form {
+    display: block;
+}
+
+.form-group, input
+{
+    max-width: 70%;
+    margin-left: var(--spacing-2);
+}
+
+#settings-closed {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    margin-left: var(--spacing-2);
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+#settings-closed:hover {
+    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+}
+
+#settings-closed option {
+    background-color: var(--white);
+    color: var(--gray-800);
+}
+
 /* Bottoni principali in basso */
 .buttons-container {
     display: flex;

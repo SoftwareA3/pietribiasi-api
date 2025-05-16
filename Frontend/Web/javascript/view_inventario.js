@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", workerId);
-                alert("Nessun dato trovato per l'utente.");
+                alert("Nessun dato trovato per l'utente. Inserire prima un'operazione di inventario.");
             }
         }
         else {
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 //console.log("Dati iniziali caricati:", filteredList);
             } else {
                 console.error("Nessun dato trovato per l'utente:", userId);
-                alert("Nessun dato trovato per l'utente.");
+                alert("Nessun dato trovato per l'utente. Inserire prima un'operazione di inventario.");
             }
         }
 
@@ -270,6 +270,28 @@ function populateInventarioList(data) {
         statusIndicator.title = isImported === true ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
 
+        // Estrai solo la data e l'orario da dataImp nel formato richiesto
+        let parsedDate = "";
+        let parsedTime = "";
+        if (item.dataImp) {
+            // Gestisce sia formato "YYYY-MM-DD HH:mm:ss.SSS" che ISO "YYYY-MM-DDTHH:mm:ss.SSSZ"
+            let dateObj;
+            if (item.dataImp.includes("T")) {
+            // ISO format
+            dateObj = new Date(item.dataImp);
+            } else {
+            // "YYYY-MM-DD HH:mm:ss.SSS"
+            // Sostituisci spazio con "T" per compatibilità con Date
+            dateObj = new Date(item.dataImp.replace(" ", "T"));
+            }
+            if (!isNaN(dateObj)) {
+            // Formatta la data come "dd/MM/yyyy"
+            parsedDate = dateObj.toLocaleDateString("it-IT");
+            // Formatta l'orario come "HH:mm:ss"
+            parsedTime = dateObj.toLocaleTimeString("it-IT", { hour12: false });
+            }
+        }
+
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
             <div><strong>Item:</strong> ${item.item} </div>
@@ -278,6 +300,8 @@ function populateInventarioList(data) {
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Qta: <span class="inv-value" id="inv-value-${item.invId}">${item.bookInv}</strong></span> </div>
+            ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDate} alle ${parsedTime} </div>` : ''}
+            ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
         
         li.appendChild(itemContent);
@@ -359,7 +383,7 @@ function populateInventarioList(data) {
 async function saveInvEdit(item, data) {
     // Ottiene il nuovo valore dall'input
     const editInput = document.getElementById(`edit-inv-input-${item.invId}`);
-    const newBookInvQty = parseInt(editInput.value);
+    const newBookInvQty = parseFloat(editInput.value);
 
     // Verifica che l'input sia valido
     if (isNaN(newBookInvQty) || newBookInvQty <= 0) {
@@ -428,7 +452,7 @@ function editInv(item) {
     if (editContainer) editContainer.classList.remove("hidden");
     
     if (editInput) {
-        editInput.value = item.bookInv;
+        editInput.value = parseFloat(item.bookInv);
         editInput.focus();
         editInput.select();
     }
