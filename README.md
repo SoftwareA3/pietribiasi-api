@@ -3,12 +3,16 @@
 # Indice 
 1. [FrontEnd](#frontend)
    - [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
+   - [Home](#home)
    - [Registrazione Ore Commessa](#registrazione-ore-commessa)
    - [Visualizza Ore Registrate](#visualizza-ore-registrate)
    - [Prelievo Materiali Produzione](#prelievo-materiali-produzione)
    - [Visualizza Prelievi Effettuati](#visualizza-prelievi-effettuati) 
    - [Gestione Inventario](#gestione-inventario)
    - [Visualizza Registrazioni Inventario](#visualizza-registrazioni-inventario)
+   - [Power User](#power-user)
+   - [Sincronizzazione](#sincronizzazione)
+   - [Impostazioni](#impostazioni)
 2. [Backend](#backend)
    - [Divisione](#divisione)
    - [Controllers](#controllers)
@@ -44,8 +48,23 @@ Queste due credenziali verranno poi validate attraverso una ricerca di corrispon
 Questo viene fatto per permettere l'inoltro di altre richieste all'API che richiedono l'autorizzazione tramite Basic Authentication.
 I cookies hanno durata massima di 24 ore, di conseguenza dopo un giorno, è necessario rieffettuare l'accesso se la sessione è stata lasciata aperta. 
 
+## Home
+La home è la pagina principale del sito alla quale si può accedere inserendo le credenziali correttamente. La pagina si presenta con 9 pulsanti per un utente di tipo **Amministrazione** e con 2 pulsanti in meno per un utente di tipo **Addetto**.
+I pulsanti disponibili per tutti gli utenti sono (Titolo - icona):
+- **Registrazione Ore Commessa** - 🕛: porta alla pagina della [Registrazione Ore Commessa](#registrazione-ore-commessa)
+- **Prerlievo Materiali di Produzione** - 📦: porta alla pagina [Prelievo Materiali Produzione](#prelievo-materiali-produzione)
+- **Gestione Inventario** - 📇: porta alla pagina [Gestione Inventario](#gestione-inventario)
+- **Visualizza Ore Registrate** - 📄: porta alla pagina [Visualizza Ore Registrate](#visualizza-ore-registrate)
+- **Visualizza Prelievi Effettuati** - 🚚: porta alla pagina [Visualizza Prelievi Effettuati](#visualizza-prelievi-effettuati)
+- **Visualizza Registrazioni Inventario** - 🔍: porta alla pagina [Visualizza Registrazioni Inventario](#visualizza-registrazioni-inventario)
+- **Sincronizza** - 🔄️: attiva la funzione di [Sincronizzazione](#sincronizzazione)
+
+Le operazioni aggiuntive disponibili per gli utenti di tipo amministratore sono:
+- **Modalità Power User** - (utente con un "+"): porta alla pagina [Power User](#power-user)
+- **Impostazioni** - ⚙️: porta alla pagina [Impostazioni](#impostazioni)
+
 ## Viste
-Ogni vista è dotata di campi compilabili e liste con gli elementi selezionati tramite gli input. Le liste sono dotate di paginazione. È possibile cambiare pagina premendo il tasto **Successiva** per la pagina successiva e **Precedente** per quella precedente. In alternativa è possibile premere uno dei numeri di pagina per viaggiare rapidamente ad una delle pagine.
+Ogni pagina di visualizzazione è dotata di campi compilabili e liste con gli elementi selezionati tramite i filtri. Le liste sono dotate di paginazione. È possibile cambiare pagina premendo il tasto **Successiva** per la pagina successiva e **Precedente** per quella precedente. In alternativa è possibile premere uno dei numeri di pagina per viaggiare rapidamente ad una delle pagine.
 
 ## Registrazione Ore Commessa
 La pagina per la registrazione delle ore di una commessa si presenta come una serie di campi: 
@@ -87,10 +106,12 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 - **Ore**: le ore registrate
 - **Data**: la data nella quale sono state salvate le ore
 
-È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata dal gestionale MAGO (rosso) o se è stata registrata utilizzando l'applicazione (verde).
+È inoltre disponibile un pallino di colore verde o rosso che indica se la commessa è stata importata (cioè è già stata fatta la sincronizzazione) dal gestionale Mago4 (rosso) o se è stata registrata utilizzando l'applicazione (verde).
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
-- **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione
+- **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione.
+
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
 
 ## Prelievo Materiali Produzione
 La pagina per il Prelievo di Materiali per Produzione si presenta come una serie di campi: 
@@ -99,7 +120,9 @@ La pagina per il Prelievo di Materiali per Produzione si presenta come una serie
 - Selezionati tutti i campi, è disponibile un ultimo campo prima dell'inserimento della quantità: questo campo, denominato **Barcode Articolo**, rappresenta il codice dell'articolo e il barcode dell'articolo. Essendo che un articolo può avere più barcode, è possibile inserire porzione del barcode o dell'articolo e visualizzare la lista di autocompletamento dalla quale selezionare l'articolo e il barcode necessari. Inoltre è possibile inserire il barcode completo nell'input e premere "Invio" per compilare in automatico barcode e articolo associato. Quest'operazione garantisce che l'input di una pistola barcode possa incollare il codice di un barcode nell'input e inviarlo in automatico. Selezionando il campo dalla lista di autocompletamento o premento invio con un barcode, il focus si sposta nell'input della selezione delle quantità
 - Ogni campo richiede che il precedente sia inserito o selezionato correttamente. Se viene modificato uno dei campi precedenti, quelli successivi, essendone dipendenti, vengono resettati.
 - Una tabella in overlay è disponibile alla pressione del pulsante **“Cerca”**, indicato anche tramite l'icona 🔎. Questo pulsante rende disponibile una tabella che elenca tutte le commesse disponibili, se non sono state inserite commesse nel campo **“Codice Commessa”**, altrimenti filtra le commesse in base alle informazioni inserite nel campo e le mostra nella tabella. Selezionando una riga della tabella, vengono compilati in automatico tutti i campi. 
-- Quando tutti i campi sono completi, sono da inserire le **Quantità**. Inserite anche le quantità, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
+- Quando tutti i campi sono completi, sono da inserire le **Quantità**. Nell'input delle quantità comparirà come valore di default, la quantità prelevabile. Inoltre l'etichetta delle quantità cambierà da "Quantità:" a "Qta. da prelevare: 6000 - Qta. prelevabile: 5983 - UoM: MM", dove la quantità da prelevare è la quantità massima stabilita di prelievo, la quantità prelevabile è la differenza tra la quantità da prelevare e quella già prelevata e UoM determina la sigla dell'unità di misura. 
+- Inserite anche le quantità, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
+- Nel caso in cui la quantità inserita superi la quantità da prelevare (ad esempio 6000 nel caso sopra), l'elemento verrà comunque aggiunto, ma verrà mostrato un messaggio per avvisare l'utente.
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
 - Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_prel_mat**.
@@ -136,10 +159,12 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 - **Qta**: la quantità prelevata
 - **Data**: la data nella quale è stata salvata la quantità prelevata
 
-È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata dal gestionale MAGO (rosso) o se è stata registrata utilizzando l'applicazione (verde).
+È inoltre disponibile un pallino verde o rosso che indica se la commessa è stata importata (cioè quei dati sono stati sincronizzati) dal gestionale Mago4 (rosso) o se è stata registrata utilizzando l'applicazione (verde).
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database
-- **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare la quantità prelevata tramite la pressione del pulsante e la successiva conferma dell'operazione
+- **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare la quantità prelevata tramite la pressione del pulsante e la successiva conferma dell'operazione.
+
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
 
 ## Gestione Inventario
 La pagina per la Gestione dell'Inventario si presenta con due campi: 
@@ -195,13 +220,25 @@ La pagina della **Modalità Power User** si presenta nella seguente maniera:
 - Una volta selezionato correttamente l'utente, è possibile premere il pulsante **Accedi come Addetto**, che salverà le informazioni e simulerà l'addetto. Verranno anche resi disponibili i pulsanti di navigazione che si trovano nella home, in modod da poter navigare più comodamente alla pagina interessata.
 - Una volta effettuato l'accesso come addetto, il pulsante **Accedi come Addetto** viene sostituito con il pulsante **Disconnetti**, che cancella i cookies contenenti le informazioni dell'utente che si sta simulando e ripristina le funzionalità dell'utente corrente. 
 
+## Sincronizzazione
+Nella **Home Page** è disponibile un pulsante **Sincronizza**, per ogni tipo di utente, indicato tramite l'icona 🔄️. Questo pulsante recupera le liste di elementi inseriti tramite l'applicazione (quindi quelli registrati dagli utenti e che hanno il pallino verde nelle pagine di visualizzazione) ed effettua la sincronizzazione delle liste, inviandole a Mago4 e segnalandole come "Importate". 
+Alla pressione del pulsante, l'icona gira per simulare un caricamento ed il pulsante viene disabilitato.
+Al completamento dell'operazione, possono verificarsi due eventi:
+- L'operazione è andata a buon fine: l'icona di caricamento scompare e viene sostituita da un'icona ✔️. L'icona si resetta dopo un paio di secondi.  
+- L'operazione dà esito negativo: l'icona di caricamento scompare e viene sostituita da un'icona ❌. L'icona si resetta dopo un paio di secondi.
+
+## Impostazioni
+Nella **Home Page** è disponibile per gli utenti di tipo **Amministrazione** un pulsante **Impostazioni**, rappresentato da un'icona ⚙️. Alla pressione del pulsante, si viene portati in una pagina, nella quale è possibile modificare i campi delle impostazioni. I campi sono degli input nei quali sono inserite le informazioni per la connessione a Mago4 per le richieste API e alcuni campi aggiuntivi che assegnano valori di default per alcune richieste. 
+È possibile modificare ognuno di questi campi. L'inoltro delle modifiche è valido solamente alla pressione del pulsante **Salva**, indicato con un'icona 💾. Se l'invio delle modifiche ha successo, viene mostrato un alert per segnalarlo.
+
 # Backend
 
 ## Divisione
 Per il BackEnd, la maggior parte delle directory hanno una divisione dei file che dipende dalle tabelle del database che vanno ad interrogare. Per Controllers, Repositories, Services e Mappers esiste un file per ogni tabella/vista interrogata.
 
 ## Controllers
-I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT, DELETE)
+I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT, DELETE). 
+I controllers inoltre rappresentano il layer di presentazione, ossia si occupano di esporre l'endpoint, inoltrare la richiesta dell'utente al layer di business (il service in questo caso) e inoltre si occupa di fornire la risposta finale, quindi è l'ultimo gestore delle eccezioni che ritorna messaggi all'utente che ha effettuato la richiesta.
 
 ### Dipendenze
 - Services: Servizio per la scrittura del file di log
@@ -211,6 +248,9 @@ I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT,
 
 ## Authentication
 Classe che implementa Basic Authentication, un sistema di autenticazione che chiede allo user di inserire le credenziali "username" e "password", le codifica e le invia al BackEnd per la validazione. La classe si occupa di inviare la richiesta di autenticazione prima di una chiamata all'API e di validare questa richiesta. La validazione viene fatta su un controllo del formato della richiesta e sulla compatibilità tra le stinghe inserite e quelle salvate in appsettings.json.
+
+## ApiClient
+La classe contenuta in ApiClient è un delegato del Controller, che si occupa di stabilire la connessione con l'API di Mago4 e di costruire l'header per effettuare le richieste con il Token fornito tramite il login all'API. In questo senso, il controller si occupa esclusivamente di fare le richieste invocando l'ApiClient (che autonomamente stabilisce la connessione) e inserendo l'endpoint con il corpo della richiesta.
 
 ## Data
 In data è salvata la classe che descrive il contesto del database. Tramite questa classe, si può accedere ai modelli e usarli per le interrogazioni/richieste al database, senza dover direttamente recuperare le tabelle ad ogni richiesta. La classe che descrive il database è generata automaticamente tramite scaffolding dal database (vedi la sezione [Scaffolding](#scaffolding)).
@@ -261,7 +301,7 @@ Gli Utils sono classi che servono per supportare alcuni processi. In particolare
 
 In particolare gestisce 3 tipi di situazione:
 - BadRequest: il corpo della richiesta all'API è vuoto
-- NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati
+- NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati. <strong><i>Su questo punto c'è da fare la premessa del NoContent, ossia quando ci si aspetta che non venga ritornato nulla</i></strong>
 - Altre richieste tipo 200: (ad esempio 200 Ok o 201 Created) la richiesta è andata a buon fine. Ritorna il Dto di risposta e lo stampa sul file.
 
 ### Dipendenze
@@ -294,10 +334,10 @@ Nel controller, alla richiesta di una DELETE all'API, viene richiesto all'utente
 - In caso di successo, verrà ritornato un messaggio "Ok()" o "Created()" che ritorerà le informazioni richieste, lo stato di successo e il rispettivo messaggio. Verrà prima aggiunta la richiesta sul file API.log con le informazioni restituite all'utente.
 
 ## Aggiunta di nuove richieste per il Back End:
-Per aggiungere una nuova richiesta al Back End, io farei così:
-- Aggiornamento delle tabelle del database interessate dalla richiesta tramite lo scaffolding, in modo da aggiornare il contesto del database nell'applicazione e i modelli
+Per aggiungere una nuova richiesta al Back End, la procedura più efficace è la seguente:
+- Aggiornamento delle tabelle del database interessate dalla richiesta tramite lo scaffolding, in modo da aggiornare il **Contesto** del database nell'applicazione e i **Modelli**
 - Sistemazione di eventuali dipendenze dalla modifica del contesto del database (ad esempio se la tabella viene aggiornata con nuovi campi o campi rimossi, che richiedono probabilmente modifiche ad altre richieste, mappers, repository ecc...)
-- Creazione del Dto del modello in modo da separare il modello dalle informazioni richieste e/o ritornate 
+- Creazione del **Dto** del modello in modo da separare il modello dalle informazioni richieste e/o ritornate. In alternativa, un **Dto** di richiesta che contenga informazioni per la risposta (non ho distinto request e response) 
 - Creazione di un file Dto di richiesta
 - Creazione del rispettivo filtro
 - Creazione dei mappers (dto - filtro; modello - dto, viceversa, ecc...)
