@@ -2,6 +2,7 @@ import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import { createPagination } from "./pagination.js";
 import { getCookie } from "./cookies.js";
+import { parseDateTime } from "./main.js";
 
 // Variabili globali per mantenere lo stato
 let globalAllData = null;
@@ -359,27 +360,7 @@ function populatePrelieviList(data) {
         statusIndicator.title = isImported === true ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
 
-        // Estrai solo la data e l'orario da dataImp nel formato richiesto
-        let parsedDate = "";
-        let parsedTime = "";
-        if (item.dataImp) {
-            // Gestisce sia formato "YYYY-MM-DD HH:mm:ss.SSS" che ISO "YYYY-MM-DDTHH:mm:ss.SSSZ"
-            let dateObj;
-            if (item.dataImp.includes("T")) {
-            // ISO format
-            dateObj = new Date(item.dataImp);
-            } else {
-            // "YYYY-MM-DD HH:mm:ss.SSS"
-            // Sostituisci spazio con "T" per compatibilità con Date
-            dateObj = new Date(item.dataImp.replace(" ", "T"));
-            }
-            if (!isNaN(dateObj)) {
-            // Formatta la data come "dd/MM/yyyy"
-            parsedDate = dateObj.toLocaleDateString("it-IT");
-            // Formatta l'orario come "HH:mm:ss"
-            parsedTime = dateObj.toLocaleTimeString("it-IT", { hour12: false });
-            }
-        }
+        const parsedDateTime = parseDateTime(item.dataImp);
         
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
@@ -391,7 +372,7 @@ function populatePrelieviList(data) {
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Qta: <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</strong></span> </div>
-            ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDate} alle ${parsedTime} </div>` : ''}
+            ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDateTime.date} alle ${parsedDateTime.time} </div>` : ''}
             ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
         
@@ -453,6 +434,22 @@ function populatePrelieviList(data) {
             itemActions.appendChild(editContainer);
             itemActions.appendChild(editButton);
             itemActions.appendChild(deleteButton);
+            li.appendChild(itemActions);
+        }
+        else
+        {
+            const itemActions = document.createElement("div");
+            itemActions.className = "item-actions";
+            // Pulsante per l'apertura del Log
+            const logButton = document.createElement("button");
+            logButton.className = "button-icon log option-button";
+            logButton.title = "Visualizza log per MoId: " + item.moid;
+            logButton.id = `log-button-${item.invId}`;
+            logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
+            logButton.addEventListener("click", () => {
+                openLogOverlay(item.moid);
+            });
+            itemActions.appendChild(logButton);
             li.appendChild(itemActions);
         }
         
@@ -572,6 +569,73 @@ function cancelPrelieviEdit(item) {
     if (editContainer) editContainer.classList.add("hidden");
 }
 
+async function openLogOverlay(moid) {
+    console.log("MoId:", moid);
+    // Crea l'overlay se non esiste già
+    let overlay = document.getElementById("log-overlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "log-overlay";
+        overlay.className = "log-overlay hidden";
+        overlay.innerHTML = `
+            <div class="log-overlay-content">
+                <button id="close-log-overlay" class="close-log-overlay-btn" aria-label="Chiudi log">&times;</button>
+                <div id="log-messages" class="log-messages"></div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    // Trova il messaggio con lo stesso moid
+    const logMessagesDiv = overlay.querySelector("#log-messages");
+    const logItem = await fetchLog(moid);
+    console.log("Log item:", logItem);
+
+    if (logItem) {
+        logMessagesDiv.innerHTML = ""; // Pulisci prima
+        logItem.forEach(item => {
+            // Mostra MoId
+            logMessagesDiv.innerHTML += `<div class="msg-header"><strong>MoId:</strong> ${item.moid}</div>`;
+            // Se ommessageDetails è un array, mostra ogni messaggio come JSON
+            if (Array.isArray(item.ommessageDetails) && item.ommessageDetails.length > 0) {
+            item.ommessageDetails.forEach(msg => {
+                const dateTime = parseDateTime(msg.messageDate);
+                const createdDateTime = parseDateTime(msg.tbcreated);
+                const editedDateTime = parseDateTime(msg.tbmodified);
+                logMessagesDiv.innerHTML += `
+                <div style="margin-bottom:10px;">
+                    <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
+                    <div class="msg-content">
+                        <strong>Descrizione:</strong> ${msg.messageText.replace(/\*\*\s*(.*?)\s*\*\*/, '$1')} <br>
+                        <strong>Inviato da:</strong> ${msg.workerId} <br>
+                        <strong>Data messaggio:</strong> ${dateTime.date} alle ${dateTime.time} <br>
+                        <strong>Creato il:</strong> ${createdDateTime.date} alle ${createdDateTime.time} <br>
+                        <strong>Da: </strong> ${msg.tbcreatedId} <br>
+                        <strong>Modificato il:</strong> ${editedDateTime.date} alle ${editedDateTime.time} <br>
+                        <strong>Da: </strong> ${msg.tbmodifiedId} <br>
+                    </div>
+                </div>
+                `;
+            });
+            } else {
+            logMessagesDiv.innerHTML += `<div><strong>Messaggio:</strong> Nessun messaggio disponibile</div>`;
+            }
+        });
+    } else {
+        logMessagesDiv.innerHTML = "<div>Nessun log trovato per questo MoId.</div>";
+    }
+
+    // Mostra l'overlay
+    overlay.classList.remove("hidden");
+
+    // Gestione chiusura overlay
+    const closeBtn = overlay.querySelector("#close-log-overlay");
+    closeBtn.onclick = () => {
+        overlay.classList.add("hidden");
+    };
+}
+
+
 // Funzione per gestire l'eliminazione di un prelievo
 async function deletePrelievi(item) {
     const deleteData = {
@@ -605,3 +669,26 @@ async function deletePrelievi(item) {
         alert("Si è verificato un errore durante l'eliminazione della registrazione.");
     }
 }   
+
+async function fetchLog(moidItem) {
+    const data = { moid: moidItem };
+
+    try {
+        console.log("MoId da cercare:", data);
+        const response = await fetchWithAuth("http://localhost:5245/api/ommessage/get_log_from_moid", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+            throw new Error("Errore nella risposta del server");
+        }
+        const logData = await response.json();
+        return logData;
+    } catch (error) {
+        console.error("Errore durante il recupero dei log:", error);
+        alert("Si è verificato un errore durante il recupero dei log.");
+    }
+}

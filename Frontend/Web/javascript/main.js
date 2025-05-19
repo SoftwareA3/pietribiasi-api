@@ -146,3 +146,31 @@ export function extractUniqueValues(data, field) {
     
     return uniqueValues;
 }
+
+export function parseDateTime(dateString)
+{
+    let parsedDate = "";
+    let parsedTime = "";
+    if (dateString) {
+        // Gestisce sia formato "YYYY-MM-DD HH:mm:ss.SSS" che ISO "YYYY-MM-DDTHH:mm:ss.SSSZ"
+        let dateObj;
+        if (dateString.includes("T")) {
+        // ISO format
+        dateObj = new Date(dateString);
+        } else {
+        // "YYYY-MM-DD HH:mm:ss.SSS"
+        // Sostituisci spazio con "T" per compatibilità con Date
+        dateObj = new Date(dateString.replace(" ", "T"));
+        }
+        if (!isNaN(dateObj)) {
+        // Formatta la data come "dd/MM/yyyy"
+        parsedDate = dateObj.toLocaleDateString("it-IT");
+        // Formatta l'orario come "HH:mm:ss"
+        parsedTime = dateObj.toLocaleTimeString("it-IT", { hour12: false });
+        }
+    }
+    return {
+        date: parsedDate,
+        time: parsedTime
+    };
+}
