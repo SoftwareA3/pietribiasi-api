@@ -19,24 +19,24 @@ var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthentication>("BasicAuthentication", null);
-    
+
     // Authorization
     builder.Services.AddAuthorization();
 
     // ApiClient
     builder.Services.AddHttpClient<IMagoApiClient, MagoApiClient>();
-    
+
     // Controllers
     builder.Services.AddControllers();
-    
+
     builder.Services.AddEndpointsApiExplorer();
-    
+
     // Swagger
     builder.Services.AddSwaggerGen();
-    
+
     // DbContext
-    builder.Services.AddDbContext<ApplicationDbContext> (options => {options.UseSqlServer(builder.Configuration.GetConnectionString("LocalA3Db"));}); 
-    
+    builder.Services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("LocalA3Db")); });
+
     // Repositories
     builder.Services.AddScoped<IWorkerRepository, WorkerRepository>();
     builder.Services.AddScoped<IJobRepository, JobRepository>();
@@ -47,7 +47,8 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IGiacenzeRepository, GiacenzeRepository>();
     builder.Services.AddScoped<IInventarioRepository, InventarioRepository>();
     builder.Services.AddScoped<IMagoRepository, MagoRepository>();
-    
+    builder.Services.AddScoped<IOmmessageRepository, OmmessageRepository>();
+
     // Services
     builder.Services.AddScoped<ILogService, LogService>();
     builder.Services.AddScoped<IResponseHandler, ResponseHandler>();
@@ -60,6 +61,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IGiacenzeRequestService, GiacenzeRequestService>();
     builder.Services.AddScoped<IInventarioRequestService, InventarioRequestService>();
     builder.Services.AddScoped<IMagoRequestService, MagoRequestService>();
+    builder.Services.AddScoped<IOmmessageRequestService, OmmessageRequestService>();
 
     builder.Services.AddCors(options =>
     {
@@ -70,8 +72,8 @@ var builder = WebApplication.CreateBuilder(args);
                 .AllowAnyHeader();
         });
     });
-    
-    
+
+
     // AutoMappers
     builder.Services.AddAutoMapper(typeof(WorkerMapperFilters));
     builder.Services.AddAutoMapper(typeof(JobMapperFilters));
@@ -82,6 +84,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAutoMapper(typeof(GiacenzeMapperFilters));
     builder.Services.AddAutoMapper(typeof(InventarioMapperFilters));
     builder.Services.AddAutoMapper(typeof(SettingsMapperFilter));
+    builder.Services.AddAutoMapper(typeof(OmmessageMapperFilters));
 }
 
 var app = builder.Build();

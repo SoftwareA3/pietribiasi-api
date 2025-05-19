@@ -6,22 +6,24 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
 using apiPB.ApiClient.Abstraction;
+using apiPB.Data;
 
 namespace apiPB.ApiClient.Implementation
 {
     public class MagoApiClient : IMagoApiClient
     {
         private readonly HttpClient _httpClient;
+        private readonly ApplicationDbContext _dbContext;
         private readonly string _baseUrl;
 
-        public MagoApiClient(HttpClient httpClient,IConfiguration configuration)
+        public MagoApiClient(HttpClient httpClient, ApplicationDbContext dbContext)
         {
-            _baseUrl = configuration["ConnectionStrings:MagoConnectionString"]
-            ?? throw new InvalidOperationException("MagoConnectionString non configurata.");
+            _dbContext = dbContext;
+            _baseUrl = GetConnectionString();
 
             httpClient.BaseAddress = new Uri(_baseUrl);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            
+
             _httpClient = httpClient;
         }
 
@@ -47,6 +49,13 @@ namespace apiPB.ApiClient.Implementation
             request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             return await _httpClient.SendAsync(request);
+        }
+
+        private string GetConnectionString()
+        {
+            var connectionString = _dbContext.A3AppSettings.FirstOrDefault()?.MagoUrl;
+            if (connectionString != null) return connectionString;
+            throw new InvalidOperationException("Connection string non trovata.");
         }
     }
 }

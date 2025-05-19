@@ -36,6 +36,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<VwApiWorkersfield> VwApiWorkersfields { get; set; }
 
+    public virtual DbSet<VwOmmessage> VwOmmessages { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:LocalA3Db");
 
@@ -375,6 +377,41 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnName("TBModified");
             entity.Property(e => e.TbmodifiedId).HasColumnName("TBModifiedID");
             entity.Property(e => e.WorkerId).HasColumnName("WorkerID");
+        });
+
+        modelBuilder.Entity<VwOmmessage>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_ommessages");
+
+            entity.Property(e => e.Alternate)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+            entity.Property(e => e.Expire)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.MessageDate).HasColumnType("datetime");
+            entity.Property(e => e.MessageId).ValueGeneratedOnAdd();
+            entity.Property(e => e.MessageText)
+                .HasMaxLength(512)
+                .IsUnicode(false);
+            entity.Property(e => e.Moid).HasColumnName("MOId");
+            entity.Property(e => e.Tbcreated)
+                .HasColumnType("datetime")
+                .HasColumnName("TBCreated");
+            entity.Property(e => e.TbcreatedId).HasColumnName("TBCreatedID");
+            entity.Property(e => e.Tbguid).HasColumnName("TBGuid");
+            entity.Property(e => e.Tbmodified)
+                .HasColumnType("datetime")
+                .HasColumnName("TBModified");
+            entity.Property(e => e.TbmodifiedId).HasColumnName("TBModifiedID");
+            entity.Property(e => e.UserMessage)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
         });
 
         OnModelCreatingPartial(modelBuilder);
