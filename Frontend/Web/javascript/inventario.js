@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const saveButton = document.getElementById("inv-save");
     const barcodeAutocompleteList = document.getElementById("inv-barcode-autocomplete-list");
     const noContent = document.getElementById("nocontent");
+    const quantitaLabel = document.querySelector('label[for="inv-quantita"]');
     
     var barcodeList = [];
     var dataResultList = [];
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 bookInv: item.bookInv,
                 storage: item.storage,
                 fiscalYear: item.fiscalYear,
+                uoM: item.uoM,
                 display: item.barCode ? `Item: ${item.item} - Code: ${item.barCode} - Descr: ${item.description}` : `Item: ${item.item} - Descr: ${item.description}`
             }));
             
@@ -69,6 +71,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
             if (selectedItem) {
                 // Aggiorna il valore dell'input con il display completo
+                quantitaLabel.textContent = "Quantità Rilevata: " + selectedItem.uoM;
                 barCodeInput.value = selectedItem.display;
                 
                 // Validazione e correzione del valore di bookInv
@@ -106,6 +109,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log("bookInv corretto:", bookInvValue);
             } else {
                 quantitaInput.value = "";
+                quantitaLabel.textContent = "Quantità Rilevata: ";
             }
         }, 300);
 
@@ -118,6 +122,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 barcodeAutocompleteList.classList.add("hidden");
                 quantitaInput.value = "";
                 quantitaInput.disabled = true;
+                quantitaLabel.textContent = "Quantità Rilevata: ";
             }
         }, 200);
     });
@@ -131,6 +136,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 barcodeAutocompleteList.classList.add("hidden");
                 quantitaInput.value = "";
                 quantitaInput.disabled = true;
+                quantitaLabel.textContent = "Quantità Rilevata: ";
                 return;
             }
 
@@ -145,6 +151,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 quantitaInput.value = selectedBarcode.bookInv;
                 quantitaInput.disabled = false;
                 quantitaInput.focus();
+                quantitaLabel.textContent = "Quantità Rilevata: " + selectedBarcode.uoM;
             } else {
                 // Verifica se c'è una corrispondenza parziale
                 const filteredItems = barcodeList.filter(item => 
@@ -160,9 +167,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     quantitaInput.value = filteredItems[0].bookInv;
                     quantitaInput.disabled = false;
                     quantitaInput.focus();
+                    quantitaLabel.textContent = "Quantità Rilevata: " + filteredItems[0].uoM;
                 } else {
                     barCodeInput.value = "";
                     quantitaInput.value = "";
+                    quantitaInput.disabled = true;
+                    quantitaLabel.textContent = "Quantità Rilevata: ";
                 }
             }
         }
@@ -265,6 +275,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.value = "";
             quantitaInput.disabled = true;
             barcodeAutocompleteList.classList.add("hidden");
+            quantitaLabel.textContent = "Quantità Rilevata: ";
             barCodeInput.focus();
         } else {
             console.error("Selezione non valida:", {

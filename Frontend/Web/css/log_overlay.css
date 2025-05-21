@@ -102,6 +102,15 @@ li:nth-child(odd) .item-actions .option-button:hover {
     margin-right: var(--spacing-1);
 }
 
+.log-message {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    color: #eab308;
+    font-size: 1.2em;
+    pointer-events: none;
+}
+
 .msg-header strong {
     margin-bottom:10px;
     font-size: 1.3rem;

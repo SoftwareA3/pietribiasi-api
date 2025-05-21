@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const searchResultsBody = document.getElementById("search-results-body");
     const quantitaInput = document.getElementById("prel-mat-quantita");
     const saveButton = document.getElementById("inv-save");
+    const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
     // Aggiunto quando viene salvata la lista viene
     const noContent = document.getElementById("nocontent");
     const errorQty = document.getElementById("error-quantity");
@@ -70,7 +71,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -90,7 +90,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -118,7 +117,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true; 
             quantitaInput.value = "";
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -138,7 +136,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -161,7 +158,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -184,7 +180,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true; 
             quantitaInput.value = "";
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -202,7 +197,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -229,7 +223,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeAutocompleteList.classList.add("hidden"); // Nasconde la lista di autocompletamento
             quantitaInput.disabled = true; // Disabilita il campo quantità
             errorQty.style.display = "none";
-            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
@@ -307,8 +300,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     job: job.job,
                     mono: item.mono || '',
                     creationDate: item.creationDate || '',
-                    uoM: item.uoM || '',
-                    resQty: item.resQty || '',
+                    prelUoM: item.prelUoM || '',
+                    prelResQty: item.prelResQty || '',
                     bom: item.bom || '',
                     itemDesc: item.itemDesc || '',
                     operation: item.operation || '',
@@ -326,8 +319,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     job: job.job,
                     mono: item.mono || '',
                     creationDate: item.creationDate || '',
-                    uoM: item.uoM || '',
-                    resQty: item.resQty || '',
+                    prelUoM: item.prelUoM || '',
+                    prelResQty: item.prelResQty || '',
                     bom: item.bom || '',
                     itemDesc: item.itemDesc || '',
                     operation: item.operation || '',
@@ -461,10 +454,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             cellCreationDate.textContent = result.creationDate;
             
             const cellUM = row.insertCell();
-            cellUM.textContent = result.uoM;
+            cellUM.textContent = result.prelUoM;
             
             const cellResQty = row.insertCell();
-            cellResQty.textContent = result.resQty;
+            cellResQty.textContent = result.prelResQty;
             
             const cellBOM = row.insertCell();
             cellBOM.textContent = result.bom;

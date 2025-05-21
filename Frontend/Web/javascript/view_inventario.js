@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const filterInvSubmit = document.getElementById("filter-inv-submit");
     const inventarioList = document.getElementById("inventario-list");
     const showImportedToggle = document.getElementById("show-imported");
+    const importedData = document.getElementById("filter-inv-data-imp");
+    const importedDataGroup = document.getElementById("filter-inv-imp-group");
 
     const noContent = document.getElementById("nocontent");
 
@@ -99,7 +101,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     showImportedToggle.addEventListener("change", async function() {
         showImportedItems = this.checked;
+        if(showImportedItems) {
+            importedDataGroup.classList.remove("hidden");
+        } else {
+            importedDataGroup.classList.add("hidden");
+        }
         populateInventarioList(filteredList);
+    });
+    
+    importedData.addEventListener("change", async function() {
+        await refreshAutocompleteData();
     });
 
     filterInvSubmit.addEventListener("click", async function() {
@@ -171,6 +182,8 @@ function createFilterObject() {
     const filterDataA = document.getElementById("filter-inv-data-a");
     const filterItem = document.getElementById("filter-inv-item");
     const filterBarcode = document.getElementById("filter-inv-barcode");
+    const filterImported = document.getElementById("filter-inv-data-imp");
+    const showImportedToggle = document.getElementById("show-imported");
     
     const filteredObject = {};
 
@@ -196,6 +209,13 @@ function createFilterObject() {
         const toDate = new Date(filterDataA.value);
         toDate.setHours(23, 59, 59, 999); // Imposta l'ora alle 23:59:59.999
         filteredObject.toDateTime = toDate.toISOString().slice(0, -1);
+    }
+
+    if (showImportedToggle.checked == true) {
+        if(filterImported.value) {
+            const importedDate = new Date(filterImported.value);
+            filteredObject.dataImp = importedDate.toISOString().slice(0, -1); // Rimuove la "Z" che crea problemi con le chiamate all'API
+        }
     }
 
     if (filterItem.value) filteredObject.item = filterItem.value;

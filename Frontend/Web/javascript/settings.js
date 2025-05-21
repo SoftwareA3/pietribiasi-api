@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", async function() {
     const companyInput = document.getElementById("settings-company");
     const specificatorInput = document.getElementById("settings-specificator");
     const closedComboBox = document.getElementById("settings-closed");
+    const rectificationPosInput = document.getElementById("settings-causale-pos");
+    const rectificationNegInput = document.getElementById("settings-causale-neg");
+    const storageInput = document.getElementById("settings-deposito");
     const saveButton = document.getElementById("save-settings");
 
     var settings = {
@@ -45,6 +48,9 @@ document.addEventListener("DOMContentLoaded", async function() {
     passwordInput.value = settings.password;
     companyInput.value = settings.company;
     specificatorInput.value = settings.specificatorType;
+    rectificationPosInput.value = settings.rectificationReasonPositive;
+    rectificationNegInput.value = settings.rectificationReasonNegative;
+    storageInput.value = settings.storage;
     closedComboBox.value = settings.closed ? "True" : "False"
 
     saveButton.addEventListener("click", async function() {
@@ -53,6 +59,9 @@ document.addEventListener("DOMContentLoaded", async function() {
         settings.password = passwordInput.value;
         settings.company = companyInput.value;
         settings.specificatorType = specificatorInput.value;
+        settings.rectificationReasonPositive = rectificationPosInput.value;
+        settings.rectificationReasonNegative = rectificationNegInput.value;
+        settings.storage = storageInput.value;
         settings.closed = closedComboBox.value === "True" ? true : false;
         console.log("Settings to save:", settings);
 

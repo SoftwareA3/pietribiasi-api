@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", async function() {
     const prelieviList = document.getElementById("prelievi-list");
     const noContent = document.getElementById("nocontent");
     const showImportedToggle = document.getElementById("show-imported");
+    const importedData = document.getElementById("filter-prel-mat-data-imp");
+    const importedDataGroup = document.getElementById("filter-prel-mat-imp-group");
 
     prelieviList.classList.add("hidden");
     noContent.classList.remove("hidden");
@@ -130,7 +132,16 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     showImportedToggle.addEventListener("change", async function() {
         showImportedItems = this.checked;
+        if(showImportedItems) {
+            importedDataGroup.classList.remove("hidden");
+        } else {
+            importedDataGroup.classList.add("hidden");
+        }
         populatePrelieviList(filteredList);
+    });
+
+    importedData.addEventListener("change", async function() {
+        await refreshAutocompleteData();
     });
 
     // Setup pulsante di filtro
@@ -168,6 +179,8 @@ function createFilterObject() {
     const filterOrdineDiProduzione = document.getElementById("filter-prel-odp");
     const filterItem = document.getElementById("filter-prel-item");
     const filterBarcode = document.getElementById("filter-prel-barcode");
+    const filterImported = document.getElementById("filter-prel-mat-data-imp");
+    const showImportedToggle = document.getElementById("show-imported");
 
     
     const filteredObject = {};
@@ -195,6 +208,15 @@ function createFilterObject() {
         toDate.setHours(23, 59, 59, 999); // Imposta l'ora alle 23:59:59.999
         filteredObject.toDateTime = toDate.toISOString().slice(0, -1);
     }
+
+    
+    if (showImportedToggle.checked == true) {
+        if(filterImported.value) {
+            const importedDate = new Date(filterImported.value);
+            filteredObject.dataImp = importedDate.toISOString().slice(0, -1); // Rimuove la "Z" che crea problemi con le chiamate all'API
+        }
+    }
+
     if(filterCommessa.value) filteredObject.job = filterCommessa.value;
     if(filterLavorazione.value) filteredObject.operation = filterLavorazione.value;
     if(filterOrdineDiProduzione.value) filteredObject.mono = filterOrdineDiProduzione.value;
@@ -314,7 +336,7 @@ async function fetchViewPrelievi(filteredObject) {
     }
 }
 
-function populatePrelieviList(data) {
+async function populatePrelieviList(data) {
     const prelieviList = document.getElementById("prelievi-list");
     const noContent = document.getElementById("nocontent");
     var paginationControls = document.querySelector('.pagination-controls');
@@ -341,7 +363,7 @@ function populatePrelieviList(data) {
     noContent.classList.add("hidden");
     
     // Popola la lista con gli elementi
-    displayData.forEach(item => {
+    await Promise.all(displayData.map(async (item) => {
         const li = document.createElement("li");
         li.dataset.id = item.prelMatId; // Aggiunge un data attribute per identificare l'elemento
         
@@ -438,23 +460,42 @@ function populatePrelieviList(data) {
         }
         else
         {
+            const logList = await fetchLog(item.moid);
+
             const itemActions = document.createElement("div");
-            itemActions.className = "item-actions";
-            // Pulsante per l'apertura del Log
-            const logButton = document.createElement("button");
-            logButton.className = "button-icon log option-button";
-            logButton.title = "Visualizza log per MoId: " + item.moid;
-            logButton.id = `log-button-${item.invId}`;
-            logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
-            logButton.addEventListener("click", () => {
-                openLogOverlay(item.moid);
-            });
-            itemActions.appendChild(logButton);
-            li.appendChild(itemActions);
+                itemActions.className = "item-actions";
+                // Pulsante per l'apertura del Log
+                const logButton = document.createElement("button");
+                logButton.className = "button-icon log option-button";
+                logButton.title = "Visualizza log per MoId: " + item.moid;
+                logButton.id = `log-button-${item.invId}`;
+                logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
+                itemActions.appendChild(logButton);
+                li.appendChild(itemActions);
+            if(logList && logList.length > 0)
+            {
+                const noLogMessage = document.createElement("span");
+                noLogMessage.className = "log-message";
+                noLogMessage.title = "Log rilevato";
+                noLogMessage.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                // Posiziona il messaggio sopra il pulsante log
+                logButton.style.position = "relative";
+                logButton.appendChild(noLogMessage);
+
+                logButton.addEventListener("click", () => {
+                    openLogOverlay(item.moid, logList);
+                });
+            }
+            else
+            {
+                logButton.addEventListener("click", () => {
+                    alert("Nessun log trovato per questo MoId.");
+                });
+            }
         }
         
         prelieviList.appendChild(li);
-    });
+    }));
 
     if(paginationControls)
     {
@@ -569,7 +610,7 @@ function cancelPrelieviEdit(item) {
     if (editContainer) editContainer.classList.add("hidden");
 }
 
-async function openLogOverlay(moid) {
+async function openLogOverlay(moid, logList) {
     console.log("MoId:", moid);
     // Crea l'overlay se non esiste già
     let overlay = document.getElementById("log-overlay");
@@ -588,7 +629,7 @@ async function openLogOverlay(moid) {
 
     // Trova il messaggio con lo stesso moid
     const logMessagesDiv = overlay.querySelector("#log-messages");
-    const logItem = await fetchLog(moid);
+    const logItem = logList;
     console.log("Log item:", logItem);
 
     if (logItem) {
