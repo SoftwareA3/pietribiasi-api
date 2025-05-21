@@ -52,10 +52,26 @@ namespace apiPB.Services.Abstraction
 
         //IEnumerable<PrelMatDto> UpdatePrelMatImported(int? workerId);
 
+        /// <summary>
+        /// Ritorna le informazioni della tabella A3_app_prel_mat filtrate per Component
+        /// </summary>
+        /// <param name="request">Filtro per l'esecuzione della query. Richiede le proprietà: Component</param>
         IEnumerable<PrelMatDto> GetPrelMatWithComponent(ComponentRequestDto? request);
 
+        /// <summary>
+        /// Ritorna tutte le informazioni della tabella A3_app_prel_mat che hanno Imported = false
+        /// </summary>
+        /// <returns>
+        /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat, ossia i record che hanno Imported = false
         IEnumerable<PrelMatDto> GetNotImportedPrelMat();
 
+        /// <summary>
+        /// Aggiorna tutte le informazioni sincronizzate dalla tabella A3_app_prel_mat, impostando Imported a true
+        /// </summary>
+        /// <param name="request">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId</param>
+        /// <returns>
+        /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat, cioè i record modificati
+        /// </returns>
         IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request);
     }
 }

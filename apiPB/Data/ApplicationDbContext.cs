@@ -173,6 +173,15 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.RectificationReasonNegative)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.RectificationReasonPositive)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Storage)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.Username)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -194,6 +203,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(21)
                 .IsUnicode(false);
             entity.Property(e => e.Storage)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.UoM)
                 .HasMaxLength(8)
                 .IsUnicode(false);
         });

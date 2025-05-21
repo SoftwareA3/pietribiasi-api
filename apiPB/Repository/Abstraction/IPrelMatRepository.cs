@@ -49,10 +49,30 @@ namespace apiPB.Repository.Abstraction
         /// </returns>
         A3AppPrelMat DeletePrelMatId(ViewPrelMatDeleteFilter filter);
 
+        /// <summary>
+        /// Aggiorna tutte le informazioni sincronizzate dalla tabella A3_app_prel_mat, impostando Imported a true
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId</param>
+        /// <returns>
+        /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat, cioè i record modificati
+        /// </returns>
         IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter);
 
+        /// <summary>
+        /// Ritorna la lista di A3AppPrelMat in base al filtro passato per recuperare le informazioni sulla quantità salvata
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: Component</param>
+        /// <returns>
+        /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat
+        /// </returns>
         IEnumerable<A3AppPrelMat>? GetPrelMatWithComponent(ComponentFilter? filter);
 
+        /// <summary>   
+        /// Ritorna la lista di A3AppPrelMat non importati
+        /// </summary>
+        /// <returns>
+        /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat
+        /// </returns>
         IEnumerable<A3AppPrelMat> GetNotImportedPrelMat();
     }
 }

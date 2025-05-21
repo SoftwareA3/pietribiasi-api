@@ -48,8 +48,22 @@ namespace apiPB.Repository.Abstraction
         /// </returns>
         A3AppRegOre DeleteRegOreId(ViewOreDeleteRequestFilter filter);
 
+        /// <summary>
+        /// Aggiorna tutte le informazioni sincronizzate dalla tabella A3_app_reg_ore, impostando Imported a true
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId</param>
+        /// <returns>
+        /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre, cioè i record modificati
+        /// </returns>
         IEnumerable<A3AppRegOre> GetNotImportedRegOre();
 
+        /// <summary>
+        /// Aggiorna tutte le informazioni sincronizzate dalla tabella A3_app_reg_ore, impostando Imported a true
+        /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId</param>
+        /// <returns>
+        /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre, cioè i record modificati
+        /// </returns>
         IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter? filter);
     }
 }

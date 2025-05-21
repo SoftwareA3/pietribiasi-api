@@ -30,5 +30,6 @@ namespace apiPB.Dto.Request
         public string? UserImp { get; set; }
 
         public DateTime? DataImp { get; set; }
+        public string UoM { get; set; } = null!;
     }
 }

@@ -22,21 +22,23 @@ namespace apiPB.Repository.Implementation
         public IEnumerable<A3AppInventario> PostInventarioList(IEnumerable<InventarioFilter> filterList)
         {
             var inventarioList = new List<A3AppInventario>();
-            
+
             // Lista di elementi che sono stati modificati
             var editedList = new List<A3AppInventario>();
 
             foreach (var filter in filterList)
             {
                 // Verifica che non esiste già un elemento con lo stesso Item e/o BarCode
-                var existingItem = _context.A3AppInventarios.FirstOrDefault(m => 
-                    m.Item == filter.Item && 
-                    (string.IsNullOrEmpty(filter.BarCode) || m.BarCode == filter.BarCode));
+                // Effettua anche un controllo solo sugli elementi non importati
+                var existingItem = _context.A3AppInventarios.FirstOrDefault(m =>
+                    m.Item == filter.Item &&
+                    (string.IsNullOrEmpty(filter.BarCode) || m.BarCode == filter.BarCode) &&
+                    m.Imported == false);
                 if (existingItem != null)
                 {
                     existingItem.WorkerId = filter.WorkerId;
                     existingItem.SavedDate = DateTime.Now;
-                    existingItem.BookInv = filter.BookInv; 
+                    existingItem.BookInv = filter.BookInv;
                     _context.A3AppInventarios.Update(existingItem);
                     editedList.Add(existingItem);
                     continue;
@@ -61,7 +63,7 @@ namespace apiPB.Repository.Implementation
             }
             _context.SaveChanges();
 
-            if(editedList.Count > 0)
+            if (editedList.Count > 0)
             {
                 // Se sono stati modificati elementi, li aggiunge alla lista finale
                 inventarioList.AddRange(editedList);
@@ -76,6 +78,7 @@ namespace apiPB.Repository.Implementation
             .Where(i => (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
                         && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
                         && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
+                        && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
                         && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
                         && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode))
             .ToList();
@@ -96,7 +99,44 @@ namespace apiPB.Repository.Implementation
 
             return inventario;
         }
-    }
 
-    
+        public IEnumerable<A3AppInventario> GetNotImportedInventario()
+        {
+            return _context.A3AppInventarios
+                .Where(x => x.Imported == false)
+                .ToList();
+        }
+
+        public IEnumerable<A3AppInventario> UpdateInventarioImported(WorkerIdSyncFilter? filter)
+        {
+            var notImported = _context.A3AppInventarios
+                .Where(x => x.Imported == false)
+                .ToList();
+
+            if (notImported.Count == 0)
+            {
+                return notImported;
+            }
+
+            foreach (var item in notImported)
+            {
+                item.Imported = true;
+                item.UserImp = filter.WorkerId.ToString();
+                item.DataImp = DateTime.Now;
+
+                var dbItem = _context.A3AppInventarios.FirstOrDefault(x => x.InvId == item.InvId);
+                if (dbItem != null)
+                {
+                    dbItem.Imported = item.Imported;
+                    dbItem.UserImp = item.UserImp;
+                    dbItem.DataImp = item.DataImp;
+
+                    _context.A3AppInventarios.Update(dbItem);
+                    _context.SaveChanges();
+                }
+            }
+            // Ritorna la lista aggiornata
+            return GetInventario();
+        }
+    }
 }

@@ -41,6 +41,9 @@ namespace apiPB.Repository.Implementation
                 existingSettings.Password = settings.Password;
                 existingSettings.Company = settings.Company;
                 existingSettings.SpecificatorType = settings.SpecificatorType;
+                existingSettings.RectificationReasonPositive = settings.RectificationReasonPositive;
+                existingSettings.RectificationReasonNegative = settings.RectificationReasonNegative;
+                existingSettings.Storage = settings.Storage;
                 existingSettings.Closed = settings.Closed;
 
                 //_context.A3AppSettings.Update(existingSettings);
@@ -56,7 +59,10 @@ namespace apiPB.Repository.Implementation
                     Password = settings.Password,
                     Company = settings.Company,
                     SpecificatorType = settings.SpecificatorType,
-                    Closed = settings.Closed
+                    Closed = settings.Closed,
+                    RectificationReasonPositive = settings.RectificationReasonPositive,
+                    RectificationReasonNegative = settings.RectificationReasonNegative,
+                    Storage = settings.Storage
                 };   
                 _context.A3AppSettings.Add(magoSettings);
                 _context.SaveChanges();

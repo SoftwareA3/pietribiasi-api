@@ -18,4 +18,10 @@ public partial class A3AppSetting
     public int? SpecificatorType { get; set; }
 
     public bool? Closed { get; set; }
+
+    public string? RectificationReasonPositive { get; set; }
+
+    public string? RectificationReasonNegative { get; set; }
+
+    public string? Storage { get; set; }
 }

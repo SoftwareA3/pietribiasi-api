@@ -103,6 +103,7 @@ var app = builder.Build();
     app.UseAuthorization();
 
     app.Urls.Add("http://localhost:5245");
+    app.Urls.Add("http://192.168.100.113:5246");
 
     app.MapControllers();
 

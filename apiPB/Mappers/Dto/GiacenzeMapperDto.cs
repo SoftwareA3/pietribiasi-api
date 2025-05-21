@@ -15,7 +15,8 @@ namespace apiPB.Mappers.Dto
                 BarCode = giacenzeModel.BarCode ?? string.Empty,
                 FiscalYear = giacenzeModel.FiscalYear,
                 Storage = giacenzeModel.Storage ?? string.Empty,
-                BookInv = giacenzeModel.BookInv
+                BookInv = giacenzeModel.BookInv,
+                UoM = giacenzeModel.UoM ?? string.Empty
             };
         }
     }

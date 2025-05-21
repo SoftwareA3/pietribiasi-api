@@ -8,6 +8,11 @@ namespace apiPB.Services.Abstraction
 {
     public interface IOmmessageRequestService
     {
+        /// <summary>
+        /// Ritorna la lista delle informazioni della vista VwOmmessage, filtrata per MoId
+        /// </summary>
+        /// <param name="moIdRequestDtos">Richiesta di filtro per MoId</param>
+        /// <returns>Lista di VwOmmessage</returns>
         List<OmmessageInfoRequestDto> GetOmmessageGroupedByMoid(MoIdRequestDto moIdRequestDtos);
     }
 }

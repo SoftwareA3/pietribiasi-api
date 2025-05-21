@@ -16,6 +16,9 @@ namespace apiPB.Mappers.Dto
                 Password = settings.Password,
                 Company = settings.Company,
                 SpecificatorType = settings.SpecificatorType,
+                RectificationReasonPositive = settings.RectificationReasonPositive,
+                RectificationReasonNegative = settings.RectificationReasonNegative,
+                Storage = settings.Storage,
                 Closed = settings.Closed
             };
         }
@@ -40,6 +43,9 @@ namespace apiPB.Mappers.Dto
                 Company = settings.Company,
                 SpecificatorType = settings.SpecificatorType,
                 Closed = settings.Closed,
+                RectificationReasonPositive = settings.RectificationReasonPositive,
+                RectificationReasonNegative = settings.RectificationReasonNegative,
+                Storage = settings.Storage,
                 WorkerId = workerId
             };
         }

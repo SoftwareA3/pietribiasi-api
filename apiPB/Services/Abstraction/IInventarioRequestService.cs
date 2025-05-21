@@ -39,5 +39,20 @@ namespace apiPB.Services.Abstraction
         /// InventarioDto: restituisce l'elemento modificato
         /// </returns>
         InventarioDto PutViewInventario(ViewInventarioPutRequestDto request);
+
+        // IEnumerable<PrelMatDto> GetNotImportedPrelMat();
+
+        // /// <summary>
+        // /// Aggiorna tutte le informazioni sincronizzate dalla tabella A3_app_prel_mat, impostando Imported a true
+        // /// </summary>
+        // /// <param name="request">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId</param>
+        // /// <returns>
+        // /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat, cioè i record modificati
+        // /// </returns>
+        // IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request);
+
+        IEnumerable<InventarioDto> GetNotImportedInventario();
+
+        IEnumerable<InventarioDto> UpdateInventarioImported(WorkerIdSyncRequestDto? request);
     }
 }

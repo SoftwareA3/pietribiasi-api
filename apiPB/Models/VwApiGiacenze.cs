@@ -16,4 +16,6 @@ public partial class VwApiGiacenze
     public string Storage { get; set; } = null!;
 
     public double? BookInv { get; set; }
+
+    public string UoM { get; set; } = null!;
 }

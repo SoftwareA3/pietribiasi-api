@@ -67,5 +67,25 @@ namespace apiPB.Services.Implementation
 
             return result.ToInventarioDto();
         }
+
+        public IEnumerable<InventarioDto> GetNotImportedInventario()
+        {
+            return _repository.GetNotImportedInventario()
+            .Select(m => m.ToInventarioDto());
+        }
+
+        public IEnumerable<InventarioDto> UpdateInventarioImported(WorkerIdSyncRequestDto? request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<WorkerIdSyncFilter>(request);
+            var result = _repository.UpdateInventarioImported(filter);
+
+            return result
+            .Select(m => m.ToInventarioDto());
+        }
     }
 }

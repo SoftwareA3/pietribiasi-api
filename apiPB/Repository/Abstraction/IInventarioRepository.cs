@@ -35,5 +35,9 @@ namespace apiPB.Repository.Abstraction
         /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: InvId, BookInv</param>
         /// <returns>A3AppInventario Ritorna l'elemento modificato</returns>
         A3AppInventario PutViewInventario(ViewInventarioPutFilter filter);
+
+        IEnumerable<A3AppInventario> GetNotImportedInventario();
+        
+        IEnumerable<A3AppInventario> UpdateInventarioImported(WorkerIdSyncFilter? filter);
     }
 }

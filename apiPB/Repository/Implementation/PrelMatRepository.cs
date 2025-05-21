@@ -70,6 +70,7 @@ namespace apiPB.Repository.Implementation
                 (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
                 && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
                 && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
+                && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
                 && (string.IsNullOrEmpty(filter.Job) || i.Job == filter.Job)
                 && (string.IsNullOrEmpty(filter.Operation) || i.Operation == filter.Operation)
                 && (string.IsNullOrEmpty(filter.Mono) || i.Mono == filter.Mono)
