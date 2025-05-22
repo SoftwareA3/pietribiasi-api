@@ -1,5 +1,6 @@
 import { fetchWithAuth } from "./fetch.js";
 import {getCookie} from "./cookies.js";
+import { getIPString } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", async function() {
     const syncButton = document.getElementById("sync-data");
@@ -35,13 +36,13 @@ async function synchronizeData() {
         console.log("Sincronizzazione dei dati...");
         console.log("User ID:", userCookie.workerId);
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
-        const response = await fetchWithAuth("http://localhost:5245/api/mago_api/synchronize", {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/synchronize`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    workerId: userCookie.workerId,
+                    "workerId": userCookie.workerId,
                 })
             });
 

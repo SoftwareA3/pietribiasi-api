@@ -1,6 +1,7 @@
 import { fetchWithAuth } from "./fetch.js";
 import { getCookie, setCookie, deleteCookie } from "./cookies.js";
 import { setupAutocomplete } from "./autocomplete.js";
+import { getIPString } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", async function () {
     const puInput = document.getElementById("pu-codice-addetto");
@@ -192,7 +193,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 async function getAllWorkers() {
     try {
-        const response = await fetchWithAuth("http://localhost:5245/api/worker", "GET");
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/worker`, "GET");
         if (response.ok) {
             const data = await response.json();
             return data;

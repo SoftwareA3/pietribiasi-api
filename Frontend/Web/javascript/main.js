@@ -33,6 +33,10 @@ function setupLogoutButton() {
     }
 }
 
+export function getIPString() {
+    return "192.168.100.113";
+}
+
 // Funzione che carica le inofrmazioni del lavoratore che si è autenticato e popola l'header
 async function loadWorkerInfo() {
     const workerInformations = document.getElementById("current-user");

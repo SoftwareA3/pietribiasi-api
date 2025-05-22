@@ -1,6 +1,7 @@
 import { getCookie } from "./cookies.js";
 import { fetchWithAuth } from "./fetch.js";
 import { setupCustomAutocomplete } from "./autocomplete.js";
+import { getIPString } from "./main.js";
 
 let globalAllData = null;
 
@@ -266,6 +267,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 description: selectedBarcode.description,
                 fiscalYear: selectedBarcode.fiscalYear,
                 storage: selectedBarcode.storage,
+                uoM: selectedBarcode.uoM,
                 bookInv: quantita.toString() // Usa il valore arrotondato e convertito a stringa
             };
 
@@ -315,7 +317,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
             console.log("Lista con Worker ID:", dataResultList);
             try {
-                const response = await fetchWithAuth("http://localhost:5245/api/inventario/post_inventario", {
+                const response = await fetchWithAuth(`http://${getIPString()}:5245/api/inventario/post_inventario`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -390,7 +392,7 @@ function addToTemporaryList(data, dataResultList) {
 
 async function getAllItems(){
     if(globalAllData) return globalAllData;
-    const response = await fetchWithAuth("http://localhost:5245/api/giacenze/get_all", {
+    const response = await fetchWithAuth(`http://${getIPString()}:5245/api/giacenze/get_all`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"

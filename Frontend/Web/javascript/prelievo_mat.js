@@ -1,6 +1,7 @@
 import { fetchWithAuth } from "./fetch.js";
 import { getCookie } from "./cookies.js";
 import { setupAutocomplete } from "./autocomplete.js";
+import { getIPString } from "./main.js";
 
 let globalAllData = null;
 
@@ -532,7 +533,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Lista con Worker ID:", dataResultList);
 
             try {
-                const response = await fetchWithAuth("http://localhost:5245/api/prel_mat/post_prel_mat", {
+                const response = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/post_prel_mat`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -798,7 +799,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 // Funzioni di fetch
 async function fetchJobMostep(job) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/job", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/mostepsmocomponent/job`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -821,7 +822,7 @@ async function fetchJobMostep(job) {
 
 async function fetchJobsByOdp(job, mono, creationDate) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/mono", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/mostepsmocomponent/mono`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -849,7 +850,7 @@ async function fetchJobsByOdp(job, mono, creationDate) {
 
 async function fetchJobsByBarCode(job, mono, creationDate, operation, barCode) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/barcode", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/mostepsmocomponent/barcode`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -880,7 +881,7 @@ async function fetchJobsByBarCode(job, mono, creationDate, operation, barCode) {
 async function fetchAllJobs() {
     if(globalAllData) return globalAllData;
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/job", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/job`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -902,7 +903,7 @@ async function fetchAllJobs() {
 
 async function fetchA3PrelMatQtyList(component) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/prel_mat/get_prel_mat_with_component", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/get_prel_mat_with_component`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -925,7 +926,7 @@ async function fetchA3PrelMatQtyList(component) {
 
 async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/mostepsmocomponent/operation", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/mostepsmocomponent/operation`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

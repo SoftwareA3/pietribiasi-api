@@ -2,7 +2,7 @@ import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import {createPagination} from "./pagination.js";
 import { getCookie } from "./cookies.js";
-import { parseDateTime } from "./main.js";
+import { getIPString, parseDateTime } from "./main.js";
 
 // Variabili globali per mantenere lo stato
 let globalAllData = null;
@@ -254,7 +254,7 @@ function extractUniqueValues(data, field) {
 async function fetchAllViewOre() {
     if(globalAllData) return globalAllData;
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/reg_ore/get_all", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/get_all`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -278,7 +278,7 @@ async function fetchViewOre(filteredObject) {
     console.log("Chiamata API con filtri:", filteredObject);
 
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/reg_ore/view_ore", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -523,7 +523,7 @@ async function saveOreEdit(item, data) {
     };
     
     try {
-        const response = await fetchWithAuth("http://localhost:5245/api/reg_ore/view_ore/edit_working_time", {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore/edit_working_time`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -589,7 +589,7 @@ async function deleteOre(item) {
     // Inserire body e non ID
     
     try {
-        const response = await fetchWithAuth(`http://localhost:5245/api/reg_ore/view_ore/delete_reg_ore_id`, {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore/delete_reg_ore_id`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
@@ -685,7 +685,7 @@ async function fetchLog(moidItem) {
 
     try {
         console.log("MoId da cercare:", data);
-        const response = await fetchWithAuth("http://localhost:5245/api/ommessage/get_log_from_moid", {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/ommessage/get_log_from_moid`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

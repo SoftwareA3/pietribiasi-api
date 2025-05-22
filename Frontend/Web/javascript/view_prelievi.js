@@ -2,7 +2,7 @@ import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import { createPagination } from "./pagination.js";
 import { getCookie } from "./cookies.js";
-import { parseDateTime } from "./main.js";
+import { getIPString, parseDateTime } from "./main.js";
 
 // Variabili globali per mantenere lo stato
 let globalAllData = null;
@@ -290,7 +290,7 @@ function extractUniqueValues(data, field) {
 async function fetchAllViewPrelievi() {
     if(globalAllData) return globalAllData;
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/prel_mat/get_all", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/get_all`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -315,7 +315,7 @@ async function fetchViewPrelievi(filteredObject) {
     // console.log("Chiamata API con filtri:", filteredObject);
 
     try {
-        const request = await fetchWithAuth("http://localhost:5245/api/prel_mat/get_view_prel_mat", {
+        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/get_view_prel_mat`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -557,7 +557,7 @@ async function savePrelieviEdit(item, data) {
     };
     
     try {
-        const response = await fetchWithAuth("http://localhost:5245/api/prel_mat/view_prel_mat/edit_prel_qty", {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/view_prel_mat/edit_prel_qty`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -688,7 +688,7 @@ async function deletePrelievi(item) {
     }
     
     try {
-        const response = await fetchWithAuth(`http://localhost:5245/api/prel_mat/view_prel_mat/delete_prel_mat_id`, {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/view_prel_mat/delete_prel_mat_id`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
@@ -716,7 +716,7 @@ async function fetchLog(moidItem) {
 
     try {
         console.log("MoId da cercare:", data);
-        const response = await fetchWithAuth("http://localhost:5245/api/ommessage/get_log_from_moid", {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/ommessage/get_log_from_moid`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
