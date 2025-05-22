@@ -42,6 +42,14 @@
     top: 18px;
 }
 
+.toggle-container {
+    padding-left: var(--spacing-2);
+}
+
+.toggle-label {
+    font-size: 0.9rem;
+}
+
 /* Adattamento tooltip */
 .detail-tooltip {
     left: auto;
