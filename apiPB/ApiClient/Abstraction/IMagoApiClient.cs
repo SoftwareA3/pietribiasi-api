@@ -7,7 +7,7 @@ namespace apiPB.ApiClient.Abstraction
 {
     public interface IMagoApiClient
     {
-        Task<HttpResponseMessage> SendPostAsyncWithToken(string endpoint, object body, string token);
+        Task<HttpResponseMessage> SendPostAsyncWithToken<T>(string endpoint, IEnumerable<T> body, string token);
         Task<HttpResponseMessage> SendPostAsync(string endpoint, object body);
     }
 }

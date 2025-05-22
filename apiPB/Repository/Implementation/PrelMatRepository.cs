@@ -138,7 +138,7 @@ namespace apiPB.Repository.Implementation
             }
             else
             {
-                return _context.A3AppPrelMats.Where(i => i.Component == filter.Component).ToList();
+                return _context.A3AppPrelMats.Where(i => i.Component == filter.Component && i.Imported == false).ToList();
             }
         }
 

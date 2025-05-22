@@ -10,6 +10,7 @@ using apiPB.Filters;
 using apiPB.Dto.Models;
 using apiPB.Services.Abstraction;
 using apiPB.Dto.Request;
+using Azure.Core;
 
 namespace apiPB.Services.Implementation
 {
@@ -87,10 +88,17 @@ namespace apiPB.Services.Implementation
             // Invio Lista di record a Mago assieme a magoApiRequest
             try
             {
-                var syncRegOreResponse = SyncRegOre(syncRegOreList, token);
+                Console.WriteLine($"SyncRegOreList: {syncRegOreList}");
+                var response = await SyncRegOre(syncRegOreList, token);
+
+                if (response.StatusCode != HttpStatusCode.OK || response.StatusCode != HttpStatusCode.NoContent)
+                {
+                    throw new Exception("SyncRegOre failed");
+                }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error: {ex}");
                 await LogoffAsync(new MagoTokenRequestDto
                 {
                     Token = token
@@ -120,14 +128,20 @@ namespace apiPB.Services.Implementation
                 // Da correggere con NoContent
                 throw new Exception("No records found in A3_app_prel_mat");
             }
+            Console.WriteLine($"PrelMatList: {prelMatList}");
 
             // Mapping delle informazioni per l'invio a Mago. Dati di settings + A3_app_prel_mat
             var syncPrelMatList = magoApiRequest.ToSyncPrelMatRequestDto(prelMatList.ToList());
-            
+
             // Invio Lista di record a Mago
             try
             {
-                var syncPrelMatResponse = SyncPrelMat(syncPrelMatList, token);
+                Console.WriteLine($"SyncPrelMatList: {syncPrelMatList}");
+                var response = await SyncPrelMat(syncPrelMatList, token);
+                if (response.StatusCode != HttpStatusCode.OK || response.StatusCode != HttpStatusCode.NoContent)
+                {
+                    throw new Exception("SyncPrelMat failed");
+                }
             }
             catch (Exception ex)
             {
@@ -171,7 +185,7 @@ namespace apiPB.Services.Implementation
             }
         }
 
-        public async Task SyncRegOre(IEnumerable<SyncRegOreRequestDto> request, string token)
+        public async Task<HttpResponseMessage> SyncRegOre(IEnumerable<SyncRegOreRequestDto> request, string token)
         {
             if (request == null || token == null)
             {
@@ -184,22 +198,27 @@ namespace apiPB.Services.Implementation
             {
                 throw new Exception("SyncRegOre failed");
             }
-            Console.WriteLine("Logoff successful");
+            Console.WriteLine($"SyncRegOre successfull response: {response}");
+
+            return response;
         }
 
-        public async Task SyncPrelMat(IEnumerable<SyncPrelMatRequestDto> request, string token)
+        public async Task<HttpResponseMessage> SyncPrelMat(IEnumerable<SyncPrelMatRequestDto> request, string token)
         {
             if (request == null || token == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var response = await _magoApiClient.SendPostAsyncWithToken("openMes/mo-confirmation", request, token);
+            var response = await _magoApiClient.SendPostAsyncWithToken("openMes/materials-picking", request, token);
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("SyncPrelMat failed");
             }
+            Console.WriteLine($"SyncPrelMat successfull response: {response}");
+
+            return response;
         }
 
         public async Task<MagoLoginResponseDto?> LoginAsync(MagoLoginRequestDto request)
@@ -224,7 +243,8 @@ namespace apiPB.Services.Implementation
 
         public async Task LogoffAsync(MagoTokenRequestDto dto)
         {
-            var response = await _magoApiClient.SendPostAsyncWithToken("account-manager/logout", dto, dto.Token ?? string.Empty);
+            var listLogoff = new List<MagoTokenRequestDto> { dto };
+            var response = await _magoApiClient.SendPostAsyncWithToken<MagoTokenRequestDto>("account-manager/logout", listLogoff, dto.Token ?? string.Empty);
             if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException($"Errore nel logout. Stato: {response.StatusCode}");

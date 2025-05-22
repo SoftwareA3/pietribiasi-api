@@ -35,7 +35,7 @@ namespace apiPB.Services.Abstraction
         /// <param name="request">Richiesta di sincronizzazione delle ore registrate</param>
         /// <param name="token">Token di autenticazione</param>
         /// <returns>Ritorna le ore registrate sincronizzate</returns>
-        Task SyncRegOre(IEnumerable<SyncRegOreRequestDto> request, string token);
+        Task<HttpResponseMessage> SyncRegOre(IEnumerable<SyncRegOreRequestDto> request, string token);
 
         /// <summary>
         /// Effettua la sincronizzazione delle informazioni dei prelievi effettuati
@@ -43,7 +43,7 @@ namespace apiPB.Services.Abstraction
         /// <param name="request">Richiesta di sincronizzazione delle informazioni dei materiali prelevati</param>
         /// <param name="token">Token di autenticazione</param>
         /// <returns>Ritorna le informazioni dei materiali prelevati sincronizzati</returns>
-        Task SyncPrelMat(IEnumerable<SyncPrelMatRequestDto> request, string token);
+        Task<HttpResponseMessage> SyncPrelMat(IEnumerable<SyncPrelMatRequestDto> request, string token);
 
         /// <summary>
         /// Effettua la procedura di login per l'autenticazione a Mago

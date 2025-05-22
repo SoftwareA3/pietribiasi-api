@@ -7,7 +7,7 @@ using apiPB.Dto.Request;
 
 namespace apiPB.Dto.Request
 {
-    public class SyncRegOreRequestDto 
+    public class SyncRegOreRequestDto
     {
         public bool? Closed { get; set; }
         public int? WorkerId { get; set; }
@@ -32,11 +32,12 @@ namespace apiPB.Dto.Request
         public string? ScrapNonConformityReason { get; set; } = string.Empty;
         public string? ProductionLotNumber { get; set; } = string.Empty;
         public string? Variant { get; set; } // PRENDI DA VARIANT 
-        public string? Bom { get; set;} // INSERISCI BOM
-        public string? Storage { get; set;} // INSERISCI SEDE
-        public string? Wc { get; set;} // INSERISCI WC
-        public string ExternalReferences { get;} = "";
-        public bool PickMaterialQtyGreater{get;} = false;
-        public bool ReturnMaterialQtyLower{get;} = false;
+        public string? Bom { get; set; } // INSERISCI BOM
+        public string? Storage { get; set; } // INSERISCI SEDE
+        public string? Wc { get; set; } // INSERISCI WC
+        public string ExternalReferences { get; } = "";
+        public bool PickMaterialQtyGreater { get; } = false;
+        public bool ReturnMaterialQtyLower { get; } = false;
+        public bool ConfirmChildMOs { get; } = false;
     }
 }
