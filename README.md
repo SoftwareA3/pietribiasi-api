@@ -34,10 +34,11 @@
        - [Richieste PUT](#richieste-put)
 3. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
 4. [Comandi](#comandi)
-   - [Avvio API](#avvio-api)
-   - [Scaffolding](#scaffolding)
-   - [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale)
-   - [Avvio FrontEnd con NodeJs](#avvio-frontend-con-nodejs)
+   1. [Avvio API](#avvio-api)
+   2. [Scaffolding](#scaffolding)
+   3. [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale)
+   4. [Avvio FrontEnd con NodeJs](#avvio-frontend-con-nodejs)
+   5. [Avvio Applicazione tramite il file bash](#avvio-applicazione-tramite-il-file-bash) 
 
 # FrontEnd
 
@@ -997,3 +998,38 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 ### Avvio FrontEnd con NodeJs
 Per avviare il FrontEnd, bisogna posizionarsi con terminale nella cartella dov'è situato il FrontEnd e avviarlo tramite il comando ```npx serve .``` che avvia un server statico per testare il FrontEnd.
 Comando per installare ```npx```: ```npm install -g serve``` 
+Questo comando funziona solo per avviare l'applicazione localmente.
+
+### Avvio Applicazione tramite il file bash
+Per avviare l'applicazione tramite il file con estensione `.bat` è sufficiente spostarsi nella directory contenente il file. Da lì, bisogna digitare il comando `./start.bat`. Il comando serve per avviare sia il Backend che il Frontend e inizializzare l'applicazione in `index.html`. Momentaneamente nel Frontend in `main.js` ho scritto una funzione per ritornare una stringa con il mio IP che poi viene chiamata in ogni chiamata API prima dell'inserimento della porta e dell'endpoint. Il file è sufficiente per avviare l'applicazione e per tanto la soluzione usata con **NodeJs** è deprecata. Il Frontend ora utilizza `http-server` globalmente per la demo 
+
+``` bash
+@echo off
+echo Avvio dell'applicazione...
+
+REM Avvia il backend
+start cmd /k "cd apiPB && dotnet run"
+
+REM Attendi qualche secondo per assicurarti che il backend sia avviato
+timeout /t 5
+
+REM Avvia il frontend
+start cmd /k "cd Frontend && http-server -a 0.0.0.0 -p 8080 --cors -o index.html -c-1"
+
+REM Mostra gli indirizzi IP disponibili
+echo.
+echo ----------------------------------------------
+echo Per accedere all'applicazione dall'esterno:
+echo.
+ipconfig | findstr IPv4
+echo.
+echo Backend: http://LOCAL_IP:5245
+echo Frontend: http://LOCAL_IP:8080
+echo ---------------------------------------------- 
+```
+
+In caso di modifiche, cambiare:
+- La funzione `getIPString()` in `main.js` e adattarla con l'IP per la comunicazione con il backend
+- Le stringhe di connessione nel Backend (apiPB) in `Properties/launchsettings.json`
+- L'URL aggiunto nel Backend in `apiPB/Program.cs`
+- Il file `start.bat` per configurare gli IP per la comunicazione dell'applicazione
