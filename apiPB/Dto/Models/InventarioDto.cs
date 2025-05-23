@@ -22,7 +22,10 @@ namespace apiPB.Dto.Models
         public string Storage { get; set; } = null!;
 
         public double? BookInv { get; set; }
-
+        public double? PrevBookInv { get; set; }
+        public double? BookInvDiff { get; set; }
+        public bool? InvRsn { get; set; }
+        public string? UoM { get; set; }
         public bool Imported { get; set; }
 
         public string? UserImp { get; set; }

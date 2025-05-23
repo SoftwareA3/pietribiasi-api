@@ -13,7 +13,7 @@ namespace apiPB.MagoApi.Controllers
     [ApiController]
     public class MagoController : ControllerBase
     {
-        private readonly IMagoRequestService _magoRequestService;   
+        private readonly IMagoRequestService _magoRequestService;
         private readonly IResponseHandler _responseHandler;
         private readonly bool _isLogActive = false;
 
@@ -56,7 +56,7 @@ namespace apiPB.MagoApi.Controllers
         [HttpPost("logoff")]
         public async Task<IActionResult> LogOff([FromBody] MagoTokenRequestDto tokenRequestDto)
         {
-            if(tokenRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Token non valido");
+            if (tokenRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Token non valido");
 
             try
             {
@@ -94,7 +94,7 @@ namespace apiPB.MagoApi.Controllers
                 return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione non riuscita");
             }
         }
-        
+
         /// <summary>
         /// Ritorna le informazioni della tabella A3AppSettings
         /// </summary>
@@ -105,7 +105,7 @@ namespace apiPB.MagoApi.Controllers
         public IActionResult GetSettings()
         {
             var settingsDto = _magoRequestService.GetSettings();
-            if(settingsDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            if (settingsDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
             return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive);
         }
 
@@ -127,6 +127,15 @@ namespace apiPB.MagoApi.Controllers
             if (settingsDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Modifica delle impostazioni non riuscita");
 
             return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive, "Impostazioni modificate con successo");
+        }
+
+        [HttpGet("get_sync_global_active")]
+        [Authorize]
+        public IActionResult GetSyncGlobalActive()
+        {
+            var syncGlobalActiveDto = _magoRequestService.GetSyncGlobalActive();
+            if (syncGlobalActiveDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+            return _responseHandler.HandleOkAndItem(HttpContext, syncGlobalActiveDto, _isLogActive);
         }
     }
 }

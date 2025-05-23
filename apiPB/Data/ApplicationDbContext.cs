@@ -45,7 +45,7 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<A3AppInventario>(entity =>
         {
-            entity.HasKey(e => e.InvId).HasName("PK__A3_app_i__9DC82C6AFA723957");
+            entity.HasKey(e => e.InvId).HasName("PK__A3_app_i__9DC82C6A5EAC02C7");
 
             entity.ToTable("A3_app_inventario");
 
@@ -57,6 +57,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Item).IsUnicode(false);
             entity.Property(e => e.SavedDate).HasColumnType("datetime");
             entity.Property(e => e.Storage)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.UoM)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.UserImp)

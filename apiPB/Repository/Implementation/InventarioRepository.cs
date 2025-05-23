@@ -2,6 +2,7 @@ using apiPB.Repository.Abstraction;
 using apiPB.Models;
 using apiPB.Filters;
 using apiPB.Data;
+using System.Security.Cryptography.X509Certificates;
 
 namespace apiPB.Repository.Implementation
 {
@@ -30,15 +31,20 @@ namespace apiPB.Repository.Implementation
             {
                 // Verifica che non esiste già un elemento con lo stesso Item e/o BarCode
                 // Effettua anche un controllo solo sugli elementi non importati
-                var existingItem = _context.A3AppInventarios.FirstOrDefault(m =>
+                var existingItem = _context.A3AppInventarios.Where(m =>
                     m.Item == filter.Item &&
                     (string.IsNullOrEmpty(filter.BarCode) || m.BarCode == filter.BarCode) &&
-                    m.Imported == false);
+                    m.Imported == false).FirstOrDefault();
                 if (existingItem != null)
                 {
+                    Console.WriteLine("Match in ExistingItem");
                     existingItem.WorkerId = filter.WorkerId;
                     existingItem.SavedDate = DateTime.Now;
                     existingItem.BookInv = filter.BookInv;
+                    existingItem.PrevBookInv = filter.PrevBookInv;
+                    existingItem.UoM = filter.UoM;
+                    CalculateBookInvDiff(existingItem);
+                    
                     _context.A3AppInventarios.Update(existingItem);
                     editedList.Add(existingItem);
                     continue;
@@ -53,12 +59,23 @@ namespace apiPB.Repository.Implementation
                     FiscalYear = filter.FiscalYear,
                     Storage = filter.Storage,
                     BookInv = filter.BookInv,
+                    PrevBookInv = filter.PrevBookInv,
+                    UoM = filter.UoM,
                 };
+                CalculateBookInvDiff(inventario);
+
                 inventarioList.Add(inventario);
             }
 
             if (inventarioList.Count > 0)
             {
+                // Rimuove eventuali duplicati per Item e BarCode nella lista prima di aggiungerli al database
+                inventarioList = inventarioList
+                    .GroupBy(x => new { x.Item, BarCode = string.IsNullOrEmpty(x.BarCode) ? null : x.BarCode })
+                    .Select(g => g.Key.BarCode == null
+                        ? g.Last() 
+                        : g.Last())
+                    .ToList();
                 _context.A3AppInventarios.AddRange(inventarioList);
             }
             _context.SaveChanges();
@@ -95,9 +112,30 @@ namespace apiPB.Repository.Implementation
 
             inventario.SavedDate = DateTime.Now;
             inventario.BookInv = filter.BookInv;
+            CalculateBookInvDiff(inventario);
             _context.SaveChanges();
 
             return inventario;
+        }
+
+        private void CalculateBookInvDiff(A3AppInventario inventario)
+        {
+            if (inventario.BookInv != null && inventario.BookInv - inventario.PrevBookInv > 0)
+            {
+                inventario.InvRsn = true;
+            }
+            else
+            {
+                inventario.InvRsn = false;
+            }
+            if (inventario.BookInv.HasValue && inventario.PrevBookInv.HasValue)
+            {
+                inventario.BookInvDiff = Math.Abs(inventario.BookInv.Value - inventario.PrevBookInv.Value);
+            }
+            else
+            {
+                inventario.BookInvDiff = null;
+            };
         }
 
         public IEnumerable<A3AppInventario> GetNotImportedInventario()

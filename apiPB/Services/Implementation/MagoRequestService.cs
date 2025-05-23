@@ -75,6 +75,8 @@ namespace apiPB.Services.Implementation
             // Crea il Dto con tutti i dati per effettuare le richieste all'API di Mago
             var magoApiRequest = settings;
 
+// ==========================================================================================================
+
             // Recupero Lista di record da A3_app_reg_ore
             var regOreList = _regoreRequestService.GetNotImportedAppRegOre();
 
@@ -133,8 +135,10 @@ namespace apiPB.Services.Implementation
                 Console.WriteLine("SyncRegOreList is null or empty: no data to send and therefore ignored");
             }
 
+// =========================================================================================================
+
             // Recupero Lista di record da A3_app_prel_mat
-                var prelMatList = _prelMatRequestService.GetNotImportedPrelMat();
+            var prelMatList = _prelMatRequestService.GetNotImportedPrelMat();
             if (prelMatList == null)
             {
                 await LogoffAsync(new MagoTokenRequestDto
@@ -189,14 +193,66 @@ namespace apiPB.Services.Implementation
                 Console.WriteLine("SyncPrelMatList is null or empty: no data to send and therefore ignored");
             }
 
+// ==========================================================================================================
+
             // Recupero Lista di record da A3_app_inventario
+            var inventarioList = _inventarioRequestService.GetNotImportedInventario();
+            if (inventarioList == null)
+            {
+                await LogoffAsync(new MagoTokenRequestDto
+                {
+                    Token = token
+                });
+                // Da correggere con NoContent
+                throw new Exception("No records found in A3_app_inventario");
+            }
+            Console.WriteLine($"InventarioList: {inventarioList}");
 
-            // Invio Lista di record a Mago
+            // Mapping delle informazioni per l'invio a Mago. Dati di settings + A3_app_inventario
+            var syncInventarioList = magoApiRequest.ToSyncInventarioRequestDto(inventarioList.ToList());
+            if (syncInventarioList != null && syncInventarioList.Count > 0)
+            {
+                // Invio Lista di record a Mago
+                try
+                {
+                    Console.WriteLine($"SyncInventarioList: {syncInventarioList}");
+                    var response = await SyncInventario(syncInventarioList, token);
+                    if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                    {
+                        throw new Exception("SyncInventario failed");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logService.AppendErrorToLog($"Error in SyncInventario: {ex.Message}");
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    throw new Exception("Error sending data to Mago: logging off...", ex);
+                }
 
-            // Aggiornamento della lista di record in A3_app_inventario
+                // Aggiornamento della lista di record in A3_app_inventario
+                Console.WriteLine("Updating records in A3_app_inventario...");
+                var inventarioListUpdated = _inventarioRequestService.UpdateInventarioImported(request);
+                Console.WriteLine($"InventarioListUpdated: {inventarioListUpdated}");
+                if (inventarioListUpdated == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    throw new Exception("No records updated in A3_app_inventario: logging off...");
+                }
+            }
+            else
+            {
+                Console.WriteLine("SyncInventarioList is null or empty: no data to send and therefore ignored");
+            }
+
+// ==========================================================================================================
 
             // Se le operazioni vanno a buon fine, invio Logout
-
             try
             {
                 await LogoffAsync(new MagoTokenRequestDto
@@ -249,6 +305,22 @@ namespace apiPB.Services.Implementation
             return response;
         }
 
+        public async Task<HttpResponseMessage> SyncInventario(IEnumerable<SyncInventarioRequestDto> request, string token)
+        {
+            if (request == null || token == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var response = await _magoApiClient.SendPostAsyncWithToken("ERPInventory/ImportInventoryEntries", request, token, false);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("SyncInventario failed");
+            }
+            Console.WriteLine($"SyncInventario successfull response: {response}");
+            return response;
+        } 
+
         public async Task<MagoLoginResponseDto?> LoginAsync(MagoLoginRequestDto request)
         {
             var response = await _magoApiClient.SendPostAsync("account-manager/login", request);
@@ -282,7 +354,7 @@ namespace apiPB.Services.Implementation
         public SettingsDto EditSettings(SettingsDto settings)
         {
             var filter = _mapper.Map<SettingsFilter>(settings);
-            var editedSettings =_magoRepository.EditSettings(filter);
+            var editedSettings = _magoRepository.EditSettings(filter);
 
             return editedSettings.ToSettingsDto();
         }
@@ -293,6 +365,19 @@ namespace apiPB.Services.Implementation
             if (settings != null)
             {
                 return settings;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public SyncGobalActiveRequestDto? GetSyncGlobalActive()
+        {
+            var appSetting = _magoRepository.GetSyncGlobalActive();
+            if (appSetting != null && appSetting.SyncGlobalActive != null)
+            {
+                return appSetting;
             }
             else
             {

@@ -2,6 +2,7 @@ using apiPB.Models;
 using apiPB.Dto.Request;
 using apiPB.Dto.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Text.Json.Serialization;
 
 namespace apiPB.Mappers.Dto
 {
@@ -19,7 +20,16 @@ namespace apiPB.Mappers.Dto
                 RectificationReasonPositive = settings.RectificationReasonPositive,
                 RectificationReasonNegative = settings.RectificationReasonNegative,
                 Storage = settings.Storage,
-                Closed = settings.Closed
+                Closed = settings.Closed,
+                SyncGlobalActive = settings.SyncGlobalActive
+            };
+        }
+
+        public static SyncGobalActiveRequestDto ToSyncGobalActiveRequestDto(this A3AppSetting settings)
+        {
+            return new SyncGobalActiveRequestDto
+            {
+                SyncGlobalActive = settings.SyncGlobalActive
             };
         }
 
@@ -35,8 +45,8 @@ namespace apiPB.Mappers.Dto
 
         public static SyncronizedDataDto ToSyncronizedDataDto(this SyncronizedDataDto sincData, List<SyncRegOreRequestDto>? syncRegOreList, List<SyncPrelMatRequestDto>? syncPrelMatList)
         {
-            if(syncRegOreList != null && syncRegOreList.Count > 0) sincData.RegOreRequest = syncRegOreList;
-            if(syncPrelMatList != null && syncPrelMatList.Count > 0) sincData.PrelMatRequest = syncPrelMatList;
+            if (syncRegOreList != null && syncRegOreList.Count > 0) sincData.RegOreRequest = syncRegOreList;
+            if (syncPrelMatList != null && syncPrelMatList.Count > 0) sincData.PrelMatRequest = syncPrelMatList;
             return sincData;
         }
 
@@ -98,6 +108,41 @@ namespace apiPB.Mappers.Dto
                 .ToList();
 
             return syncPrelMatList;
+        }
+
+        public static List<SyncInventarioRequestDto> ToSyncInventarioRequestDto(this SettingsDto settings, List<InventarioDto> inventarioList)
+        {
+            var syncInventarioList = new List<SyncInventarioRequestDto>();
+
+            foreach (var inventario in inventarioList)
+            {
+                var syncInventario = new SyncInventarioRequestDto
+                {
+                    MA_InventoryEntries = new MA_InventoryEntries
+                    {
+                        InvRsn = inventario.InvRsn == true ? settings.RectificationReasonPositive : settings.RectificationReasonNegative,
+                        PostingDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        PreprintedDocNo = inventario.InvId.ToString(),
+                        DocumentDate = inventario.SavedDate?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        StoragePhase1 = settings.Storage
+                    },
+                    MA_InventoryEntriesDetail = new List<MA_InventoryEntriesDetail>()
+                    {
+                        new MA_InventoryEntriesDetail
+                        {
+                            Item = inventario.Item,
+                            Qty = inventario.BookInvDiff,
+                            UoM = inventario.UoM,
+                            UnitValue = 0,
+                            DocumentType = 3801188
+                        }
+                    }
+                };
+
+                syncInventarioList.Add(syncInventario);
+            }
+
+            return syncInventarioList;
         }
     }
 }

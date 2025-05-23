@@ -29,8 +29,8 @@ namespace apiPB.ApiClient.Implementation
             _jsonOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = false, // Per produzione, usa false per ridurre la dimensione
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+                WriteIndented = false,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
             };
 
             httpClient.BaseAddress = new Uri(_baseUrl);
@@ -44,7 +44,7 @@ namespace apiPB.ApiClient.Implementation
             _httpClient = httpClient;
         }
 
-        public async Task<HttpResponseMessage> SendPostAsyncWithToken<T>(string endpoint, IEnumerable<T> body, string token)
+        public async Task<HttpResponseMessage> SendPostAsyncWithToken<T>(string endpoint, IEnumerable<T> body, string token, bool isList = true)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
 
@@ -72,7 +72,16 @@ namespace apiPB.ApiClient.Implementation
             request.Headers.Connection.Add("keep-alive");
 
             // Serializzazione con camelCase
-            var jsonBody = JsonSerializer.Serialize(body, _jsonOptions);
+            var jsonBody = "";
+            if (isList)
+            {
+                jsonBody = JsonSerializer.Serialize(body, _jsonOptions);
+            }
+            else
+            {
+                jsonBody = JsonSerializer.Serialize(body.FirstOrDefault(), _jsonOptions);
+            }
+
             request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             // Debug logging
@@ -135,7 +144,7 @@ namespace apiPB.ApiClient.Implementation
         public async Task<HttpResponseMessage> SendPostAsync(string endpoint, object body)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
-            
+
             // Header per il login
             request.Headers.Accept.Clear();
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -152,14 +161,14 @@ namespace apiPB.ApiClient.Implementation
             try
             {
                 var response = await _httpClient.SendAsync(request);
-                
+
                 Console.WriteLine($"=== LOGIN RESPONSE DEBUG ===");
                 Console.WriteLine($"Status Code: {response.StatusCode}");
-                
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Response Content: {responseContent}");
                 Console.WriteLine($"=== END LOGIN RESPONSE DEBUG ===");
-                
+
                 // Riavvolgi il contenuto
                 if (!string.IsNullOrEmpty(responseContent))
                 {

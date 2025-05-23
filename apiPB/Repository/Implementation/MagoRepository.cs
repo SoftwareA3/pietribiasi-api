@@ -31,6 +31,19 @@ namespace apiPB.Repository.Implementation
             }
         }
 
+        public SyncGobalActiveRequestDto? GetSyncGlobalActive()
+        {
+            var appSetting = _context.A3AppSettings.FirstOrDefault();
+            if (appSetting != null && appSetting.SyncGlobalActive != null)
+            {
+                return appSetting.ToSyncGobalActiveRequestDto();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public A3AppSetting EditSettings(SettingsFilter settings)
         {
             var existingSettings = _context.A3AppSettings.FirstOrDefault();
@@ -45,6 +58,7 @@ namespace apiPB.Repository.Implementation
                 existingSettings.RectificationReasonNegative = settings.RectificationReasonNegative;
                 existingSettings.Storage = settings.Storage;
                 existingSettings.Closed = settings.Closed;
+                existingSettings.SyncGlobalActive = settings.SyncGlobalActive;
 
                 //_context.A3AppSettings.Update(existingSettings);
                 _context.SaveChanges();
@@ -62,8 +76,9 @@ namespace apiPB.Repository.Implementation
                     Closed = settings.Closed,
                     RectificationReasonPositive = settings.RectificationReasonPositive,
                     RectificationReasonNegative = settings.RectificationReasonNegative,
-                    Storage = settings.Storage
-                };   
+                    Storage = settings.Storage,
+                    SyncGlobalActive = settings.SyncGlobalActive
+                };
                 _context.A3AppSettings.Add(magoSettings);
                 _context.SaveChanges();
                 return magoSettings;

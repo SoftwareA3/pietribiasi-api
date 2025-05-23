@@ -9,5 +9,7 @@ namespace apiPB.Repository.Abstraction
     {
         A3AppSetting EditSettings(SettingsFilter settings);
         SettingsDto? GetSettings();
+
+        SyncGobalActiveRequestDto? GetSyncGlobalActive();
     }
 }

@@ -21,7 +21,15 @@ public partial class A3AppInventario
 
     public string Storage { get; set; } = null!;
 
+    public string? UoM { get; set; }
+
     public double? BookInv { get; set; }
+
+    public double? PrevBookInv { get; set; }
+
+    public double? BookInvDiff { get; set; }
+
+    public bool? InvRsn { get; set; }
 
     public bool Imported { get; set; }
 

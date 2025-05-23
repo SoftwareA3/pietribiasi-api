@@ -30,6 +30,12 @@ namespace apiPB.Services.Abstraction
         SettingsDto? GetSettings();
 
         /// <summary>
+        /// Ritorna le impostazioni per la sincronizzazione globale
+        /// </summary>
+        /// <returns>Ritorna le impostazioni per la sincronizzazione globale</returns>
+        SyncGobalActiveRequestDto? GetSyncGlobalActive();
+
+        /// <summary>
         /// Effettua la sincronizzazione delle ore registrate
         /// </summary>
         /// <param name="request">Richiesta di sincronizzazione delle ore registrate</param>
@@ -44,6 +50,14 @@ namespace apiPB.Services.Abstraction
         /// <param name="token">Token di autenticazione</param>
         /// <returns>Ritorna le informazioni dei materiali prelevati sincronizzati</returns>
         Task<HttpResponseMessage> SyncPrelMat(IEnumerable<SyncPrelMatRequestDto> request, string token);
+
+        /// <summary>
+        /// Effettua la sincronizzazione delle informazioni delle movimentazioni di inventario
+        /// </summary>
+        /// <param name="request">Richiesta di sincronizzazione delle informazioni delle movimentazioni di inventario</param>
+        /// <param name="token">Token di autenticazione</param>
+        /// <returns>Ritorna le informazioni delle movimentazioni di inventario sincronizzate</returns>
+        Task<HttpResponseMessage> SyncInventario(IEnumerable<SyncInventarioRequestDto> request, string token);
 
         /// <summary>
         /// Effettua la procedura di login per l'autenticazione a Mago
