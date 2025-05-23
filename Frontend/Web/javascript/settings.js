@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     const rectificationNegInput = document.getElementById("settings-causale-neg");
     const storageInput = document.getElementById("settings-deposito");
     const saveButton = document.getElementById("save-settings");
+    const syncToggle = document.getElementById("settings-sync-for-all");
 
     var settings = {
         magoUrl: "",
@@ -20,7 +21,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         password: "",
         company: "",
         specificatorType: "",
-        closed: false
+        closed: false,
+        syncGlobalActive: false,
     }
 
     try {
@@ -53,6 +55,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     rectificationNegInput.value = settings.rectificationReasonNegative;
     storageInput.value = settings.storage;
     closedComboBox.value = settings.closed ? "True" : "False"
+    syncToggle.value = settings.syncGlobalActive ? "True" : "False";
 
     saveButton.addEventListener("click", async function() {
         settings.magoUrl = urlInput.value;
@@ -64,6 +67,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         settings.rectificationReasonNegative = rectificationNegInput.value;
         settings.storage = storageInput.value;
         settings.closed = closedComboBox.value === "True" ? true : false;
+        settings.syncGlobalActive = syncToggle.value === "True" ? true : false;
         console.log("Settings to save:", settings);
 
         try {

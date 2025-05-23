@@ -48,7 +48,7 @@
     margin-left: var(--spacing-2);
 }
 
-#settings-closed {
+.settings-toggle {
     padding: 8px 16px;
     border-radius: 4px;
     font-size: 1rem;
@@ -60,11 +60,11 @@
     background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
 }
 
-#settings-closed:hover {
+.settings-toggle:hover {
     background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-color) 100%);
 }
 
-#settings-closed option {
+.settings-toggle option {
     background-color: var(--white);
     color: var(--gray-800);
 }

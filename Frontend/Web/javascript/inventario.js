@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     var barcodeList = [];
     var dataResultList = [];
+    var prevBookInv = 0;
 
     // Inizializza con tutti gli articoli
     try {
@@ -40,11 +41,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         alert("Si è verificato un errore durante il caricamento iniziale dei dati.");
     }
 
-    barCodeInput.addEventListener("change", function() {
+    barCodeInput.addEventListener("change", async function() {
         // Controlli maggiori a causa di input di grandi dimensioni.
         // La descrizione causava problemi di formattazione del testo e per tanto la ricerca
         // non dava i risultati attesi.
-        setTimeout(() => {
+        prevBookInv = 0;
+        setTimeout(async () => {
             const inputValue = barCodeInput.value.trim().toUpperCase();
             
             // Cerca una corrispondenza esatta con il display
@@ -77,6 +79,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                 
                 // Validazione e correzione del valore di bookInv
                 let bookInvValue = selectedItem.bookInv;
+                prevBookInv = bookInvValue;
+
+                try {
+                    const existingItem = await getAllAppInventario();
+                    const existingItemIds = existingItem.filter(item => item && item.item === selectedItem.item && item.barCode === selectedItem.barCode);
+                    if(existingItemIds.length > 0) {
+                        console.log("Elemento già esistente:", existingItemIds[0]);
+                        bookInvValue = existingItemIds[0].bookInv;
+                    }
+                }
+                catch (error) {
+                    console.error("Errore durante la ricerca dell'elemento:", error);
+                }
+                
                 
                 // Verifica se bookInv è un numero valido
                 // Effettua un controllo per evitare NaN o valori non numerici
@@ -128,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }, 200);
     });
 
-    barCodeInput.addEventListener("keydown", function(event) {
+    barCodeInput.addEventListener("keydown", async function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
             
@@ -268,6 +284,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 fiscalYear: selectedBarcode.fiscalYear,
                 storage: selectedBarcode.storage,
                 uoM: selectedBarcode.uoM,
+                prevBookInv: prevBookInv,
                 bookInv: quantita.toString() // Usa il valore arrotondato e convertito a stringa
             };
 
@@ -388,6 +405,22 @@ function addToTemporaryList(data, dataResultList) {
             noContent.classList.remove("hidden");
         }
     });
+}
+
+async function getAllAppInventario()
+{
+    const response = await fetchWithAuth(`http://${getIPString()}:5245/api/inventario/get_inventario_not_imported`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch items");
+    }
+
+    return await response.json();
 }
 
 async function getAllItems(){
