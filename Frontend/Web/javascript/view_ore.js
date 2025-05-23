@@ -11,6 +11,7 @@ let filteredList = [];
 let commessaList = [];
 let lavorazioneList = [];
 let odpList = [];
+const actionType = 2051538945; // Action Type per la registrazione ore
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Recupera gli elementi del DOM:
@@ -425,29 +426,74 @@ async function populateOreList(data) {
         }
         else
         {
-            const logList = await fetchLog(item.moid);
+            const logFilterObject = 
+            {
+                moid: item.moid,
+                rtgStep: item.rtgStep,
+                alternate: item.alternate,
+                altRtgStep: item.altRtgStep,
+                mono: item.mono,
+                bom: item.bom,
+                variant: item.variant,
+                wc: item.wc,
+                operation: item.operation,
+                workerId: item.workerId,
+                actionType: actionType
+            }
+            console.log("Log filter object:", logFilterObject); 
+            const logList = await fetchLog(logFilterObject);
 
             const itemActions = document.createElement("div");
-                itemActions.className = "item-actions";
-                // Pulsante per l'apertura del Log
-                const logButton = document.createElement("button");
-                logButton.className = "button-icon log option-button";
-                logButton.title = "Visualizza log per MoId: " + item.moid;
-                logButton.id = `log-button-${item.invId}`;
-                logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
-                itemActions.appendChild(logButton);
-                li.appendChild(itemActions);
-            if(logList && logList.length > 0)
+            itemActions.className = "item-actions";
+            // Pulsante per l'apertura del Log
+            const logButton = document.createElement("button");
+            logButton.className = "button-icon log option-button";
+            logButton.title = "Visualizza log per MoId: " + item.moid;
+            logButton.id = `log-button-${item.invId}`;
+            logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
+            itemActions.appendChild(logButton);
+            li.appendChild(itemActions);
+            if(logList)
             {
-                const noLogMessage = document.createElement("span");
-                noLogMessage.className = "log-message";
-                noLogMessage.title = "Log rilevato";
-                noLogMessage.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                // Posiziona il messaggio sopra il pulsante log
-                logButton.style.position = "relative";
-                logButton.appendChild(noLogMessage);
+                console.log("Log trovato:", logList);
+                // Controlla se almeno un elemento nella lista interna "actionMessageDetails" ha messageType === "Errore"
+                // Mostra icona di warning se ci sono errori nei log
+                let hasError = false;
+
+                // Controlla errori in actionMessageDetails
+                if (
+                    Array.isArray(logList.actionMessageDetails) &&
+                    logList.actionMessageDetails.some(
+                        detail =>
+                            (typeof detail.actionStatus === "string" &&
+                                (detail.actionStatus.includes("Errore") || detail.actionStatus.includes("Da Fare")))
+                    )
+                ) {
+                    hasError = true;
+                }
+
+                // Controlla errori in omMessageDetails
+                if (
+                    Array.isArray(logList.omMessageDetails) &&
+                    logList.omMessageDetails.some(
+                        detail =>
+                            (typeof detail.messageType === "string" &&
+                                detail.messageType.includes("Errore"))
+                    )
+                ) {
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    const warningLogMessage = document.createElement("span");
+                    warningLogMessage.className = "log-message";
+                    warningLogMessage.title = "Log di errore rilevato";
+                    warningLogMessage.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                    logButton.style.position = "relative";
+                    logButton.appendChild(warningLogMessage);
+                }
                 logButton.addEventListener("click", () => {
-                    openLogOverlay(item.moid, logList);
+                    openLogOverlay(logList);
                 });
             }
             else
@@ -614,8 +660,8 @@ async function deleteOre(item) {
     }
 }   
 
-async function openLogOverlay(moid, logList) {
-    console.log("MoId:", moid);
+async function openLogOverlay(logList) {
+    console.log("MoId:", logList.moid);
     // Crea l'overlay se non esiste già
     let overlay = document.getElementById("log-overlay");
     if (!overlay) {
@@ -638,34 +684,53 @@ async function openLogOverlay(moid, logList) {
 
     if (logItem) {
         logMessagesDiv.innerHTML = ""; // Pulisci prima
-        logItem.forEach(item => {
-            // Mostra MoId
-            logMessagesDiv.innerHTML += `<div class="msg-header"><strong>MoId:</strong> ${item.moid}</div>`;
-            // Se ommessageDetails è un array, mostra ogni messaggio come JSON
-            if (Array.isArray(item.ommessageDetails) && item.ommessageDetails.length > 0) {
-            item.ommessageDetails.forEach(msg => {
-                const dateTime = parseDateTime(msg.messageDate);
-                const createdDateTime = parseDateTime(msg.tbcreated);
-                const editedDateTime = parseDateTime(msg.tbmodified);
+        // Mostra MoId e MoNo
+        logMessagesDiv.innerHTML += `<div class="msg-header"><strong>WorkerId:</strong> ${logItem.workerId}</div>
+        <div class="msg-header"><strong>MoId:</strong> ${logItem.moid}</div>
+        <div class="msg-header"><strong>MoNo:</strong> ${logItem.mono}</div>`;
+
+        const messageDateTime = parseDateTime(logItem.messageDate);
+        // Prima mostra gli errori di omMessageDetails
+        if(Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails && logItem.omMessageDetails.length > 0) {
+            logItem.omMessageDetails.forEach(msg => {
+                if(msg.messageId)
+                {
+                    logMessagesDiv.innerHTML += `
+                    <div style="margin-bottom:10px;">
+                        <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
+                        <div class="msg-content">
+                            <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
+                            <strong>Messaggio:</strong> ${msg.messageText} <br>
+                            <strong>Data:</strong> ${messageDateTime.parsedDate} <br>
+                        </div>
+                    </div>
+                    `;
+                }
+            });
+        }
+
+        // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
+        if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
+            logItem.actionMessageDetails.forEach(msg => {
+                // const dateTime = parseDateTime(msg.messageDate);
+                // const createdDateTime = parseDateTime(msg.tbcreated);
+                // const editedDateTime = parseDateTime(msg.tbmodified);
                 logMessagesDiv.innerHTML += `
                 <div style="margin-bottom:10px;">
-                    <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
+                    <strong class="msg-id"><u>Messaggio #${msg.actionId}:</u></strong> <br>
                     <div class="msg-content">
-                        <strong>Descrizione:</strong> ${msg.messageText.replace(/\*\*\s*(.*?)\s*\*\*/, '$1')} <br>
-                        <strong>Inviato da:</strong> ${msg.workerId} <br>
-                        <strong>Data messaggio:</strong> ${dateTime.date} alle ${dateTime.time} <br>
-                        <strong>Creato il:</strong> ${createdDateTime.date} alle ${createdDateTime.time} <br>
-                        <strong>Da: </strong> ${msg.tbcreatedId} <br>
-                        <strong>Modificato il:</strong> ${editedDateTime.date} alle ${editedDateTime.time} <br>
-                        <strong>Da: </strong> ${msg.tbmodifiedId} <br>
+                        <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
+                        ${msg.actionMessage !== null ? "<strong>Messaggio:</strong>" + msg.actionMessage + "<br>" : "" } 
+                        <strong>Stato chiusura:</strong> ${(msg.closed === true || msg.closed === 1) ? "Chiuso" : "Aperto"} <br>
+                        <strong>Tipo Specificazione:</strong> ${msg.specificatorType} <br>
+                        <strong>Mo Status:</strong> ${msg.mostatus} <br>
                     </div>
                 </div>
                 `;
             });
-            } else {
+        } else {
             logMessagesDiv.innerHTML += `<div><strong>Messaggio:</strong> Nessun messaggio disponibile</div>`;
-            }
-        });
+        }
     } else {
         logMessagesDiv.innerHTML = "<div>Nessun log trovato per questo MoId.</div>";
     }
@@ -680,12 +745,25 @@ async function openLogOverlay(moid, logList) {
     };
 }
 
-async function fetchLog(moidItem) {
-    const data = { moid: moidItem };
+async function fetchLog(filterLIst) {
+    const data = 
+    { 
+        moid: filterLIst.moid,
+        rtgStep: filterLIst.rtgStep,
+        alternate: filterLIst.alternate,
+        altRtgStep: filterLIst.altRtgStep,
+        mono: filterLIst.mono,
+        bom: filterLIst.bom,
+        variant: filterLIst.variant,
+        wc: filterLIst.wc,
+        operation: filterLIst.operation,
+        workerId: filterLIst.workerId,
+        actionType: filterLIst.actionType
+    };
 
     try {
         console.log("MoId da cercare:", data);
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/ommessage/get_log_from_moid`, {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/action_message/get_action_messages_filtered`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -699,6 +777,5 @@ async function fetchLog(moidItem) {
         return logData;
     } catch (error) {
         console.error("Errore durante il recupero dei log:", error);
-        alert("Si è verificato un errore durante il recupero dei log.");
     }
 }

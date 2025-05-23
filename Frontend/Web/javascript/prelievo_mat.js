@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "./fetch.js";
 import { getCookie } from "./cookies.js";
 import { setupAutocomplete } from "./autocomplete.js";
-import { getIPString } from "./main.js";
+import { extractUniqueValues, getIPString } from "./main.js";
 
 let globalAllData = null;
 
@@ -383,7 +383,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             // Compila il campo lavorazione
             if (selectedSearchRow.operation) {
                 console.log("Lavorazione trovata in overlay:", selectedSearchRow.operation);
-                lavorazioneInput.value = `${selectedSearchRow.operation} - ${selectedSearchRow.operDesc}`;
+                lavorazioneInput.value = `${selectedSearchRow.operation} - ${selectedSearchRow.operDesc} - ${selectedSearchRow.bom}`;
             } else {
                 lavorazioneInput.value = ""; // Resetta il campo se non c'è un'operazione
             }
@@ -667,7 +667,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 .map(odp => ({
                     mono: odp.mono,
                     creationDate: odp.creationDate,
-                    display: `${odp.mono} - ${odp.creationDate}`
+                    bom: odp.bom,
+                    display: `${odp.mono} - ${odp.creationDate} - ${odp.bom}`
                 }));
 
             //console.log("Lista di ODP:", odpList);
@@ -704,9 +705,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                     operDesc: lav.operDesc,
                     display: `${lav.operation} - ${lav.operDesc}`
                 }));
+            console.log("Lista di lavorazioni:", lavorazioneList);  
 
             //console.log("Lista di lavorazioni:", lavorazioneList);
             setupAutocomplete(lavorazioneInput, lavorazioneAutocompleteList, lavorazioneList);
+            
+            // Siccome per una lavorazione ci sono più barcode, e quindi le lavoraizoni sono ripetute, crea una lista di lavorazioni distinte 
+            const lavorazioneDistinctList = lavorazioneList.filter((item, index, self) =>
+                index === self.findIndex((t) => t.operation === item.operation && t.operDesc === item.operDesc));
+            if(lavorazioneDistinctList.length === 1) {
+                setTimeout(() => {
+                    lavorazioneInput.value = lavorazioneDistinctList[0].display;
+                    const event = new Event('change', { bubbles: true });
+                    lavorazioneInput.dispatchEvent(event);
+                    lavorazioneInput.disabled = true;
+                }, 100);
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati lavorazione:", error);
         }
@@ -731,6 +745,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             //console.log("Lista di barcode:", barcodeList);
             setupAutocomplete(barcodeInput, barcodeAutocompleteList, barcodeList);
+
+            const barcodeDistinctList = barcodeList.filter((item, index, self) =>
+                index === self.findIndex((t) => t.component === item.component && t.barCode === item.barCode && t.itemDesc === item.itemDesc));
+            if(barcodeDistinctList.length === 1) {
+                setTimeout(() => {
+                    barcodeInput.value = barcodeDistinctList[0].display;
+                    const event = new Event('change', { bubbles: true });
+                    barcodeInput.dispatchEvent(event);
+                    barcodeInput.disabled = true;
+                }, 100);
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati barcode:", error);
         }
@@ -748,7 +773,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 var sum = 0;
                 // Dati lista temporanea
                 dataResultList.forEach(element => {
-                    if(element.component === allDataResult[0].component) {
+                    // console.log("Elemento della lista temporanea:", element);
+                    // console.log("Elemento corrente:", allDataResult[0]);
+                    // console.log("moId:", element.moid, "component:", element.component);
+                    // console.log("moId:", allDataResult[0].moid, "component:", allDataResult[0].component);
+                    if(element.moid === allDataResult[0].moid && element.component === allDataResult[0].component) {
                         sum += parseFloat(element.prelQty || 0);
                     }
                 });
@@ -960,6 +989,7 @@ function addToTemporaryList(data, dataResultList) {
     newItem.innerHTML = `
         <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono}</div>
         <div><spam class="item-content-heading">Lav:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc} </div>
+        <div><spam class="item-content-heading">BOM:</spam> ${data.bom}</div>
         <div><spam class="item-content-heading">Item:</spam> ${data.component} - <spam class="item-content-heading">Code:</spam> ${data.barCode} </div>
         <div class=temp-list-qta-${data.moid}><strong>Qta: ${data.prelQty}</strong></div></div>
         <div class="item-actions">

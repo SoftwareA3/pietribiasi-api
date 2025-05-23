@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             // Compila il campo ODP/mono
             if (selectedSearchRow.mono) {
-                odlInput.value = `${selectedSearchRow.mono} - ${selectedSearchRow.creationDate}`;
+                odlInput.value = `${selectedSearchRow.mono} - ${selectedSearchRow.creationDate} - ${selectedSearchRow.bom}`;
             } else {
                 odlInput.value = ""; // Resetta il campo se non c'è un mono
             }
@@ -513,7 +513,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 .map(odp => ({
                     odp: odp.mono,
                     creationDate: odp.creationDate,
-                    display: `${odp.mono} - ${odp.creationDate}`
+                    bom: odp.bom,
+                    display: `${odp.mono} - ${odp.creationDate} - ${odp.bom}`
                 }));
 
             console.log("Lista di ODP:", odpList);
@@ -551,6 +552,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             console.log("Lista di lavorazioni:", lavorazioneList);
             setupAutocomplete(lavorazioneInput, lavorazioneAutocompleteList, lavorazioneList);
+            const lavorazioneDistinctList = lavorazioneList.filter((item, index, self) =>
+                index === self.findIndex((t) => t.operation === item.operation && t.operDesc === item.operDesc));
+            if(lavorazioneDistinctList.length === 1) {
+                setTimeout(() => {
+                    lavorazioneInput.value = lavorazioneDistinctList[0].display;
+                    const event = new Event('change', { bubbles: true });
+                    lavorazioneInput.dispatchEvent(event);
+                    lavorazioneInput.disabled = true;
+                }, 100);
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati lavorazione:", error);
         }
@@ -683,6 +694,7 @@ function addToTemporaryList(data, dataResultList) {
     newItem.innerHTML = `
         <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono} </div>
         <div><spam class="item-content-heading">Operation:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc}</div>
+        <div><spam class="item-content-heading">BOM:</spam> ${data.bom}</div>
         <div><strong>Ore: ${data.workingTime}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
