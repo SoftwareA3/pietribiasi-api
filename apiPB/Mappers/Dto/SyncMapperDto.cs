@@ -33,23 +33,6 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static SyncSettingsRequestDto ToSyncSettingsRequestDto(this SettingsDto settings, int? workerId)
-        {
-            return new SyncSettingsRequestDto
-            {
-                MagoUrl = settings.MagoUrl,
-                Username = settings.Username,
-                Password = settings.Password,
-                Company = settings.Company,
-                SpecificatorType = settings.SpecificatorType,
-                Closed = settings.Closed,
-                RectificationReasonPositive = settings.RectificationReasonPositive,
-                RectificationReasonNegative = settings.RectificationReasonNegative,
-                Storage = settings.Storage,
-                WorkerId = workerId
-            };
-        }
-
         public static SyncronizedDataDto ToSyncronizedDataDto(this SyncronizedDataDto sincData, List<SyncRegOreRequestDto>? syncRegOreList, List<SyncPrelMatRequestDto>? syncPrelMatList)
         {
             if(syncRegOreList != null && syncRegOreList.Count > 0) sincData.RegOreRequest = syncRegOreList;
@@ -57,7 +40,7 @@ namespace apiPB.Mappers.Dto
             return sincData;
         }
 
-        public static List<SyncRegOreRequestDto> ToSyncregOreRequestDto(this SyncSettingsRequestDto settings, List<RegOreDto> regOreList)
+        public static List<SyncRegOreRequestDto> ToSyncregOreRequestDto(this SettingsDto settings, List<RegOreDto> regOreList)
         {
             List<SyncRegOreRequestDto> syncRegOreList = new List<SyncRegOreRequestDto>();
 
@@ -69,7 +52,7 @@ namespace apiPB.Mappers.Dto
                 SyncRegOreRequestDto syncRegOre = new SyncRegOreRequestDto
                 {
                     Closed = settings.Closed,
-                    WorkerId = settings.WorkerId,
+                    WorkerId = regOre.WorkerId,
                     MoId = regOre.Moid,
                     RtgStep = regOre.RtgStep,
                     Alternate = regOre.Alternate,
@@ -91,17 +74,17 @@ namespace apiPB.Mappers.Dto
             return syncRegOreList;
         }
 
-        public static List<SyncPrelMatRequestDto> ToSyncPrelMatRequestDto(this SyncSettingsRequestDto settings, List<PrelMatDto> prelMatList)
+        public static List<SyncPrelMatRequestDto> ToSyncPrelMatRequestDto(this SettingsDto settings, List<PrelMatDto> prelMatList)
         {
             var syncPrelMatList = prelMatList
-                .GroupBy(p => new { p.Moid, p.RtgStep, p.Alternate, p.AltRtgStep })
+                .GroupBy(p => new { p.Moid, p.RtgStep, p.Alternate, p.AltRtgStep, p.WorkerId })
                 .Select(group => new SyncPrelMatRequestDto
                 {
                     MoId = group.Key.Moid,
                     RtgStep = group.Key.RtgStep,
                     Alternate = group.Key.Alternate,
                     AltRtgStep = group.Key.AltRtgStep,
-                    WorkerId = settings.WorkerId,
+                    WorkerId = group.Key.WorkerId,
                     ActionDetails = group
                         .Select(p => new SyncPrelMatDetailsRequestdto
                         {

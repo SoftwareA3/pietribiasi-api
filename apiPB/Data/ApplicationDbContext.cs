@@ -36,7 +36,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<VwApiWorkersfield> VwApiWorkersfields { get; set; }
 
-    public virtual DbSet<VwOmmessage> VwOmmessages { get; set; }
+    public virtual DbSet<VwOmActionMessage> VwOmActionMessages { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:LocalA3Db");
@@ -391,39 +391,72 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.WorkerId).HasColumnName("WorkerID");
         });
 
-        modelBuilder.Entity<VwOmmessage>(entity =>
+        modelBuilder.Entity<VwOmActionMessage>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToView("vw_ommessages");
+                .ToView("vw_om_action_messages");
 
+            entity.Property(e => e.ActionMessage)
+                .HasMaxLength(255)
+                .IsUnicode(false);
             entity.Property(e => e.Alternate)
                 .HasMaxLength(8)
                 .IsUnicode(false);
-            entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
-            entity.Property(e => e.Expire)
+            entity.Property(e => e.Bom)
+                .HasMaxLength(21)
+                .IsUnicode(false)
+                .HasColumnName("BOM");
+            entity.Property(e => e.Closed)
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.ConfirmChildMos)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ConfirmChildMOs");
+            entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
+            entity.Property(e => e.Job)
+                .HasMaxLength(10)
+                .IsUnicode(false);
             entity.Property(e => e.MessageDate).HasColumnType("datetime");
-            entity.Property(e => e.MessageId).ValueGeneratedOnAdd();
             entity.Property(e => e.MessageText)
                 .HasMaxLength(512)
                 .IsUnicode(false);
             entity.Property(e => e.Moid).HasColumnName("MOId");
-            entity.Property(e => e.Tbcreated)
-                .HasColumnType("datetime")
-                .HasColumnName("TBCreated");
-            entity.Property(e => e.TbcreatedId).HasColumnName("TBCreatedID");
-            entity.Property(e => e.Tbguid).HasColumnName("TBGuid");
-            entity.Property(e => e.Tbmodified)
-                .HasColumnType("datetime")
-                .HasColumnName("TBModified");
-            entity.Property(e => e.TbmodifiedId).HasColumnName("TBModifiedID");
-            entity.Property(e => e.UserMessage)
+            entity.Property(e => e.Mono)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("MONo");
+            entity.Property(e => e.Mostatus).HasColumnName("MOStatus");
+            entity.Property(e => e.Operation)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.PickMaterialQtyGreater)
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.ProductionLotNumber)
+                .HasMaxLength(16)
+                .IsUnicode(false);
+            entity.Property(e => e.ReturnMaterialQtyLower)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.Specificator)
+                .HasMaxLength(12)
+                .IsUnicode(false);
+            entity.Property(e => e.Storage)
+                .HasMaxLength(8)
+                .IsUnicode(false);
+            entity.Property(e => e.Variant)
+                .HasMaxLength(21)
+                .IsUnicode(false);
+            entity.Property(e => e.Wc)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .HasColumnName("WC");
         });
 
         OnModelCreatingPartial(modelBuilder);

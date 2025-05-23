@@ -16,7 +16,9 @@ namespace apiPB.Utils.Abstraction
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
         void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive);
-        
+
+        void AppendErrorToLog(string errorMessage);
+
         /// <summary>
         /// Chiama il metodo AppendMessageToLog e aggiunge una lista di oggetti generici al file di log
         /// </summary>
@@ -28,7 +30,7 @@ namespace apiPB.Utils.Abstraction
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
         void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive);
-        
+
         /// <summary>
         /// Chiama il metodo AppendMessageToLog e aggiunge un oggetto generico al file di log
         /// </summary>

@@ -24,4 +24,6 @@ public partial class A3AppSetting
     public string? RectificationReasonNegative { get; set; }
 
     public string? Storage { get; set; }
+
+    public bool? SyncGlobalActive { get; set; }
 }

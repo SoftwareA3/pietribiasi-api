@@ -13,10 +13,12 @@ namespace apiPB.Utils.Implementation
     {
         private readonly string _logFolderPath = string.Empty;
         private readonly string _logFilePath = string.Empty;
+        private readonly string _logErrorFilePath = string.Empty;
         public LogService()
         {
             _logFolderPath = "Logs\\";
             _logFilePath = Path.Combine(_logFolderPath, "API.log");
+            _logErrorFilePath = Path.Combine(_logFolderPath, "APIErrors.log");
         }
 
         // Metodo per la creazione della cartella di log
@@ -35,6 +37,17 @@ namespace apiPB.Utils.Implementation
             if (!File.Exists(_logFilePath))
             {
                 using (File.Create(_logFilePath))
+                {
+                };
+            }
+        }
+
+        private void CreateErrorLogFile()
+        {
+            CreateDirectory();
+            if (!File.Exists(_logErrorFilePath))
+            {
+                using (File.Create(_logErrorFilePath))
                 {
                 };
             }
@@ -73,6 +86,21 @@ namespace apiPB.Utils.Implementation
             
             writer.WriteLine(message);
         }
+        
+        public void AppendErrorToLog(string errorMessage)
+        {
+            CreateErrorLogFile();
+
+            using var fileStream = new FileStream(_logErrorFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(fileStream);
+            string message = $"=== ERROR MESSAGE ===\n{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - ErrorMessage:\n{errorMessage}\n=== END ERROR MESSAGE ===";
+            
+            // Scrive il messaggio di errore nella console
+            Console.WriteLine(message);
+
+            // Scrive il messaggio di errore nel file di log
+            writer.WriteLine(message);
+        }
 
         
         public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive)
@@ -80,7 +108,7 @@ namespace apiPB.Utils.Implementation
             AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
             // Se isActive è false, non eseguire AppendListToLog
             // Necessario perché in AppendMessageToLog viene controllato, ma semplicemente ritorna senza eseguire
-            if(isActive == false)
+            if (isActive == false)
             {
                 return;
             }

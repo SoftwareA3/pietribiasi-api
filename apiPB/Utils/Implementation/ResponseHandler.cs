@@ -28,6 +28,7 @@ namespace apiPB.Utils.Implementation
         {
             string requestPath = BuildHttpContextString(httpContext);
             _logService.AppendMessageToLog(requestPath, StatusCodes.Status400BadRequest, message, isLogActive);
+            _logService.AppendErrorToLog(message);
             return new BadRequestObjectResult(message);
         }
 
@@ -35,6 +36,7 @@ namespace apiPB.Utils.Implementation
         {
             string requestPath = BuildHttpContextString(httpContext);
             _logService.AppendMessageToLog(requestPath, StatusCodes.Status404NotFound, message, isLogActive);
+            _logService.AppendErrorToLog(message);
             return new NotFoundObjectResult(message);
         }
 

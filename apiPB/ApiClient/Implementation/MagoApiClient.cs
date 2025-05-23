@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text;
 using apiPB.ApiClient.Abstraction;
 using apiPB.Data;
+using apiPB.Utils.Abstraction;
 
 namespace apiPB.ApiClient.Implementation
 {
@@ -16,10 +17,12 @@ namespace apiPB.ApiClient.Implementation
         private readonly ApplicationDbContext _dbContext;
         private readonly string _baseUrl;
         private readonly JsonSerializerOptions _jsonOptions;
+        private readonly ILogService _logService;
 
-        public MagoApiClient(HttpClient httpClient, ApplicationDbContext dbContext)
+        public MagoApiClient(HttpClient httpClient, ApplicationDbContext dbContext, ILogService logService)
         {
             _dbContext = dbContext;
+            _logService = logService;
             _baseUrl = GetConnectionString();
 
             // Configurazione JSON con camelCase
@@ -32,7 +35,7 @@ namespace apiPB.ApiClient.Implementation
 
             httpClient.BaseAddress = new Uri(_baseUrl);
             Console.WriteLine($"Base URL: {_baseUrl}");
-            
+
             // Configurazione header di base
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -123,8 +126,8 @@ namespace apiPB.ApiClient.Implementation
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in HTTP request: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                var errorMessage = $"Error in HTTP request: {ex.Message}\nstack trace: {ex.StackTrace}";
+                _logService.AppendErrorToLog(errorMessage);
                 throw;
             }
         }
@@ -167,7 +170,7 @@ namespace apiPB.ApiClient.Implementation
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in login request: {ex.Message}");
+                _logService.AppendErrorToLog($"Error in HTTP request: {ex.Message}\nstack trace: {ex.StackTrace}");
                 throw;
             }
         }

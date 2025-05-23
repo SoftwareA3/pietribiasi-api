@@ -65,6 +65,7 @@ namespace apiPB.MagoApi.Controllers
             }
             catch (Exception)
             {
+
                 return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Logoff non riuscito");
             }
         }

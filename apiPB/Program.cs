@@ -47,7 +47,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IGiacenzeRepository, GiacenzeRepository>();
     builder.Services.AddScoped<IInventarioRepository, InventarioRepository>();
     builder.Services.AddScoped<IMagoRepository, MagoRepository>();
-    builder.Services.AddScoped<IOmmessageRepository, OmmessageRepository>();
+    builder.Services.AddScoped<IActionMessageRepository, ActionMessageRepository>();
 
     // Services
     builder.Services.AddScoped<ILogService, LogService>();
@@ -61,7 +61,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IGiacenzeRequestService, GiacenzeRequestService>();
     builder.Services.AddScoped<IInventarioRequestService, InventarioRequestService>();
     builder.Services.AddScoped<IMagoRequestService, MagoRequestService>();
-    builder.Services.AddScoped<IOmmessageRequestService, OmmessageRequestService>();
+    builder.Services.AddScoped<IActionMessageRequestService, ActionMessageRequestService>();
 
     builder.Services.AddCors(options =>
     {
@@ -84,7 +84,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAutoMapper(typeof(GiacenzeMapperFilters));
     builder.Services.AddAutoMapper(typeof(InventarioMapperFilters));
     builder.Services.AddAutoMapper(typeof(SettingsMapperFilter));
-    builder.Services.AddAutoMapper(typeof(OmmessageMapperFilters));
+    builder.Services.AddAutoMapper(typeof(ActionMessageMapperFilters));
 }
 
 var app = builder.Build();
