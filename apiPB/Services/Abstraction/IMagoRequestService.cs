@@ -60,6 +60,27 @@ namespace apiPB.Services.Abstraction
         Task<HttpResponseMessage> SyncInventario(IEnumerable<SyncInventarioRequestDto> request, string token);
 
         /// <summary>
+        /// Effettua la sincronizzazione delle ore registrate filtrate
+        /// </summary>
+        /// <param name="request">Richiesta di sincronizzazione delle ore registrate filtrate</param>
+        /// <returns>Ritorna le ore registrate sincronizzate filtrate</returns>
+        Task<SyncRegOreRequestDto> SyncRegOreFiltered(ViewOreRequestDto request);
+
+        /// <summary>
+        /// Effettua la sincronizzazione delle informazioni dei prelievi effettuati filtrate
+        /// </summary>
+        /// <param name="request">Richiesta di sincronizzazione delle informazioni dei materiali prelevati filtrate</param>
+        /// <returns>Ritorna le informazioni dei materiali prelevati sincronizzati filtrati</returns>
+        Task<SyncPrelMatRequestDto> SyncPrelMatFiltered(ViewPrelMatRequestDto request);
+
+        /// <summary>
+        /// Effettua la sincronizzazione delle informazioni delle movimentazioni di inventario filtrate
+        /// </summary>
+        /// <param name="request">Richiesta di sincronizzazione delle informazioni delle movimentazioni di inventario filtrate</param>
+        /// <returns>Ritorna le informazioni delle movimentazioni di inventario sincronizzate filtrate</returns>
+        Task<SyncInventarioRequestDto> SyncInventarioFiltered(ViewInventarioRequestDto request);
+
+        /// <summary>
         /// Effettua la procedura di login per l'autenticazione a Mago
         /// </summary>
         /// <param name="request">Richiesta di login</param>

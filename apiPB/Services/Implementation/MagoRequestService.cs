@@ -216,10 +216,14 @@ namespace apiPB.Services.Implementation
                 try
                 {
                     Console.WriteLine($"SyncInventarioList: {syncInventarioList}");
-                    var response = await SyncInventario(syncInventarioList, token);
-                    if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                    foreach (var item in syncInventarioList)
                     {
-                        throw new Exception("SyncInventario failed");
+                        List<SyncInventarioRequestDto> itemList = new List<SyncInventarioRequestDto> { item };
+                        var response = await SyncInventario(itemList, token);
+                        if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                        {
+                            throw new Exception("SyncInventario failed");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -260,7 +264,7 @@ namespace apiPB.Services.Implementation
                     Token = token
                 });
                 Console.WriteLine($"Data sent to Mago and logged off successfully. Data: {syncData}");
-                return syncData.ToSyncronizedDataDto(syncRegOreList, syncPrelMatList);
+                return syncData.ToSyncronizedDataDto(syncRegOreList, syncPrelMatList, syncInventarioList);
             }
             catch (Exception ex)
             {
@@ -319,7 +323,367 @@ namespace apiPB.Services.Implementation
             }
             Console.WriteLine($"SyncInventario successfull response: {response}");
             return response;
-        } 
+        }
+
+        public async Task<SyncRegOreRequestDto> SyncRegOreFiltered(ViewOreRequestDto? request)
+        {
+            // Recupero delle impostazioni da Mago. Attacca il WorkerId
+            var settings = _magoRepository.GetSettings();
+            if (settings == null)
+            {
+                throw new Exception("Settings not found");
+            }
+
+            // Crea il dto per il login
+            var magoLoginRequest = settings.ToMagoLoginRequestDto();
+
+            // Login
+            var loginResponse = await LoginAsync(magoLoginRequest);
+            if (loginResponse == null || loginResponse.Token == null)
+            {
+                throw new Exception("Login failed");
+            }
+
+            var token = loginResponse.Token;
+            Console.WriteLine($"Token: {token}");
+
+            // Crea il Dto con tutti i dati per effettuare le richieste all'API di Mago
+            var magoApiRequest = settings;
+            var syncRegOreRequest = new List<RegOreDto>();
+
+            if (request == null)
+            {
+                syncRegOreRequest = _regoreRequestService.GetNotImportedAppRegOre().ToList();
+                if (syncRegOreRequest == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    // Da correggere con NoContent
+                    throw new Exception("No records found in A3_app_inventario");
+                }
+            }
+            else
+            {
+                syncRegOreRequest = _regoreRequestService.GetNotImportedAppRegOreByFilter(request).ToList();
+                if (syncRegOreRequest == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    // Da correggere con NoContent
+                    throw new Exception("No records found in A3_app_inventario");
+                }
+            }
+
+            var regOreList = magoApiRequest.ToSyncregOreRequestDto(syncRegOreRequest);
+            if (regOreList != null && regOreList.Count > 0)
+            {
+                // Invio Lista di record a Mago assieme a magoApiRequest
+                try
+                {
+                    Console.WriteLine($"SyncRegOreList: {regOreList}");
+
+                    var response = await SyncRegOre(regOreList, token);
+
+                    // Aggiornamento della lista di record in A3_app_reg_ore 
+                    // A prescindere dal risultato della chiamata a Mago, aggiorna i record in A3_app_reg_ore
+                    Console.WriteLine("Updating records in A3_app_reg_ore...");
+                    var regOreListUpdated = new List<RegOreDto>();
+
+                    foreach (var item in syncRegOreRequest)
+                    {
+                        regOreListUpdated.AddRange(_regoreRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                        {
+                            Id = item.RegOreId,
+                            WorkerId = request.WorkerId
+                        }));
+                    }
+                    
+                    Console.WriteLine($"RegOreListUpdated: {regOreListUpdated}");
+                    if (regOreListUpdated == null)
+                    {
+                        await LogoffAsync(new MagoTokenRequestDto
+                        {
+                            Token = token
+                        });
+                        throw new Exception("No records updated in A3_app_reg_ore: logging off...");
+                    }
+
+                    if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                    {
+                        throw new Exception("SyncRegOre failed");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logService.AppendErrorToLog($"Error in SyncRegOre: {ex.Message}");
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    throw new Exception("Error sending data to Mago: logging off...", ex);
+                }
+            }
+            else
+            {
+                Console.WriteLine("SyncRegOreList is null or empty: no data to send and therefore ignored");
+            }
+
+            try
+            {
+                await LogoffAsync(new MagoTokenRequestDto
+                {
+                    Token = token
+                });
+                return regOreList.FirstOrDefault() ?? new SyncRegOreRequestDto();
+            }
+            catch (Exception ex)
+            {
+                _logService.AppendErrorToLog($"Error in Logoff: {ex.Message}");
+                throw new Exception("Logoff failed", ex);
+            }
+        }
+
+        public async Task<SyncPrelMatRequestDto> SyncPrelMatFiltered(ViewPrelMatRequestDto request)
+        {
+            // Recupero delle impostazioni da Mago. Attacca il WorkerId
+            var settings = _magoRepository.GetSettings();
+            if (settings == null)
+            {
+                throw new Exception("Settings not found");
+            }
+
+            // Crea il dto per il login
+            var magoLoginRequest = settings.ToMagoLoginRequestDto();
+
+            // Login
+            var loginResponse = await LoginAsync(magoLoginRequest);
+            if (loginResponse == null || loginResponse.Token == null)
+            {
+                throw new Exception("Login failed");
+            }
+
+            var token = loginResponse.Token;
+            Console.WriteLine($"Token: {token}");
+
+            // Crea il Dto con tutti i dati per effettuare le richieste all'API di Mago
+            var magoApiRequest = settings;
+            var syncPrelMatRequest = new List<PrelMatDto>();
+
+            if (request == null)
+            {
+                syncPrelMatRequest = _prelMatRequestService.GetNotImportedPrelMat().ToList();
+                if (syncPrelMatRequest == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    // Da correggere con NoContent
+                    throw new Exception("No records found in A3_app_prel_mat");
+                }
+            }
+            else
+            {
+                syncPrelMatRequest = _prelMatRequestService.GetNotImportedAppPrelMatByFilter(request).ToList();
+                if (syncPrelMatRequest == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    // Da correggere con NoContent
+                    throw new Exception("No records found in A3_app_prel_mat");
+                }
+            }
+            var prelMatList = magoApiRequest.ToSyncPrelMatRequestDto(syncPrelMatRequest);
+
+            if (prelMatList != null && prelMatList.Count > 0)
+            {
+                // Invio Lista di record a Mago
+                try
+                {
+                    Console.WriteLine($"SyncPrelMatList: {prelMatList}");
+                    var response = await SyncPrelMat(prelMatList, token);
+                    if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                    {
+                        throw new Exception("SyncPrelMat failed");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logService.AppendErrorToLog($"Error in SyncPrelMat: {ex.Message}");
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    throw new Exception("Error sending data to Mago: logging off...", ex);
+                }
+
+                // Aggiornamento della lista di record in A3_app_prel_mat
+                Console.WriteLine("Updating records in A3_app_prel_mat...");
+                var prelMatListUpdated = new List<PrelMatDto>();
+
+                foreach (var item in syncPrelMatRequest)
+                {
+                    prelMatListUpdated.AddRange(_prelMatRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                    {
+                        Id = item.PrelMatId,
+                        WorkerId = request.WorkerId
+                    }));
+                }
+                
+                Console.WriteLine($"PrelMatListUpdated: {prelMatListUpdated}");
+                if (prelMatListUpdated == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    throw new Exception("No records updated in A3_app_prel_mat: logging off...");
+                }
+            }
+            else
+            {
+                Console.WriteLine("SyncPrelMatList is null or empty: no data to send and therefore ignored");
+            }
+            try
+            {
+                await LogoffAsync(new MagoTokenRequestDto
+                {
+                    Token = token
+                });
+                return prelMatList.FirstOrDefault() ?? new SyncPrelMatRequestDto();
+            }
+            catch (Exception ex)
+            {
+                _logService.AppendErrorToLog($"Error in Logoff: {ex.Message}");
+                throw new Exception("Logoff failed", ex);
+            }
+        }
+
+        public async Task<SyncInventarioRequestDto> SyncInventarioFiltered(ViewInventarioRequestDto request)
+        {
+            // Recupero delle impostazioni da Mago. Attacca il WorkerId
+            var settings = _magoRepository.GetSettings();
+            if (settings == null)
+            {
+                throw new Exception("Settings not found");
+            }
+
+            // Crea il dto per il login
+            var magoLoginRequest = settings.ToMagoLoginRequestDto();
+
+            // Login
+            var loginResponse = await LoginAsync(magoLoginRequest);
+            if (loginResponse == null || loginResponse.Token == null)
+            {
+                throw new Exception("Login failed");
+            }
+
+            var token = loginResponse.Token;
+            Console.WriteLine($"Token: {token}");
+
+            // Crea il Dto con tutti i dati per effettuare le richieste all'API di Mago
+            var magoApiRequest = settings;
+            var syncInventarioRequest = new List<InventarioDto>();
+
+            if (request == null)
+            {
+                syncInventarioRequest = _inventarioRequestService.GetNotImportedInventario().ToList();
+                if (syncInventarioRequest == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    // Da correggere con NoContent
+                    throw new Exception("No records found in A3_app_inventario");
+                }
+            }
+            else
+            {
+                syncInventarioRequest = _inventarioRequestService.GetNotImportedAppInventarioByFilter(request).ToList();
+                if (syncInventarioRequest == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    // Da correggere con NoContent
+                    throw new Exception("No records found in A3_app_inventario");
+                }
+            }
+
+            var inventarioList = magoApiRequest.ToSyncInventarioRequestDto(syncInventarioRequest);
+
+            if (inventarioList != null && inventarioList.Count > 0)
+            {
+                // Invio Lista di record a Mago
+                try
+                {
+                    Console.WriteLine($"SyncInventarioList: {inventarioList}");
+                    foreach (var item in inventarioList)
+                    {
+                        List<SyncInventarioRequestDto> itemList = new List<SyncInventarioRequestDto> { item };
+                        var response = await SyncInventario(itemList, token);
+                        if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                        {
+                            throw new Exception("SyncInventario failed");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logService.AppendErrorToLog($"Error in SyncInventario: {ex.Message}");
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    throw new Exception("Error sending data to Mago: logging off...", ex);
+                }
+                // Aggiornamento della lista di record in A3_app_inventario
+                Console.WriteLine("Updating records in A3_app_inventario...");
+                var inventarioListUpdated = new List<InventarioDto>();
+                foreach (var item in syncInventarioRequest)
+                {
+                    inventarioListUpdated.AddRange(_inventarioRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                    {
+                        Id = item.InvId,
+                        WorkerId = request.WorkerId
+                    }));
+                }
+                Console.WriteLine($"InventarioListUpdated: {inventarioListUpdated}");
+                if (inventarioListUpdated == null)
+                {
+                    await LogoffAsync(new MagoTokenRequestDto
+                    {
+                        Token = token
+                    });
+                    throw new Exception("No records updated in A3_app_inventario: logging off...");
+                }
+            }
+            else
+            {
+                Console.WriteLine("SyncInventarioList is null or empty: no data to send and therefore ignored");
+            }
+            try
+            {
+                await LogoffAsync(new MagoTokenRequestDto
+                {
+                    Token = token
+                });
+                return inventarioList.FirstOrDefault() ?? new SyncInventarioRequestDto();
+            }
+            catch (Exception ex)
+            {
+                _logService.AppendErrorToLog($"Error in Logoff: {ex.Message}");
+                throw new Exception("Logoff failed", ex);
+            }
+        }
 
         public async Task<MagoLoginResponseDto?> LoginAsync(MagoLoginRequestDto request)
         {

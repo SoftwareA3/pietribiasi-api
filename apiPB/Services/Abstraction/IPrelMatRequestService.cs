@@ -73,5 +73,9 @@ namespace apiPB.Services.Abstraction
         /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat, cioè i record modificati
         /// </returns>
         IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request);
+
+        IEnumerable<PrelMatDto> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestDto request);
+
+        IEnumerable<PrelMatDto> UpdateImportedById(UpdateImportedIdRequestDto request);
     }
 }

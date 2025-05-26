@@ -117,5 +117,33 @@ namespace apiPB.Services.Implementation
             return result
             .Select(m => m.ToDtoPrelMatDto());
         }
+
+        public IEnumerable<PrelMatDto> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<ViewPrelMatRequestFilter>(request);
+            var result = _repository.GetNotImportedAppPrelMatByFilter(filter);
+
+            return result
+            .Select(m => m.ToDtoPrelMatDto());
+        }
+
+        public IEnumerable<PrelMatDto> UpdateImportedById(UpdateImportedIdRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<UpdateImportedIdFilter>(request);
+            var result = _repository.UpdateImportedById(filter);
+
+            return result
+            .Select(m => m.ToDtoPrelMatDto());
+        }
     }
 }

@@ -72,7 +72,7 @@ namespace apiPB.Controllers
         public IActionResult GetViewPrelMat([FromBody] ViewPrelMatRequestDto? a3AppPrelMatRequestDto)
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
-            
+
             var a3AppPrelMatDto = _prelMatRequestService.GetViewPrelMatList(a3AppPrelMatRequestDto).ToList();
 
             if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
@@ -90,7 +90,7 @@ namespace apiPB.Controllers
         public IActionResult PutViewPrelMat([FromBody] ViewPrelMatPutRequestDto? a3AppPrelMatRequestDto)
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
-            
+
             var a3AppPrelMatDto = _prelMatRequestService.PutViewPrelMat(a3AppPrelMatRequestDto);
 
             if (a3AppPrelMatDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
@@ -122,6 +122,38 @@ namespace apiPB.Controllers
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
             var a3AppPrelMatDto = _prelMatRequestService.GetPrelMatWithComponent(a3AppPrelMatRequestDto).ToList();
+
+            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+
+            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+        }
+
+        [HttpGet("view_prel_mat/not_imported")]
+        /// <summary>
+        /// Ritorna la lista di A3AppPrelMat non importati
+        /// /// </summary>
+        /// <response code="200">Ritorna la lista di A3AppPrelMat non importati</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetNotImportedPrelMat()
+        {
+            var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedPrelMat().ToList();
+
+            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+
+            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+        }
+
+        [HttpPost("view_prel_mat/not_imported/filtered")]
+        /// <summary>
+        /// Ritorna la lista di A3AppPrelMat non importati in base al filtro passato
+        /// /// </summary>
+        /// <response code="200">Ritorna la lista di A3AppPrelMat non importati in base al filtro passato</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetNotImportedPrelMatWithFilter(ViewPrelMatRequestDto request)
+        {
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+
+            var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedAppPrelMatByFilter(request).ToList();
 
             if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
 

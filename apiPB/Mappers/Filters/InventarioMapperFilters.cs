@@ -18,6 +18,7 @@ namespace apiPB.Mappers.Filters
             CreateMap<InventarioFilter, A3AppInventario>();
             CreateMap<ViewInventarioRequestDto, ViewInventarioRequestFilter>();
             CreateMap<ViewInventarioPutRequestDto, ViewInventarioPutFilter>();
+            CreateMap<UpdateImportedIdRequestDto, UpdateImportedIdFilter>();
         }
     }
 }

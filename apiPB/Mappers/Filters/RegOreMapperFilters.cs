@@ -39,6 +39,7 @@ namespace apiPB.Mappers.Filters
             CreateMap<ViewOreRequestDto, ViewOreRequestFilter>();
             CreateMap<ViewOrePutRequestDto, ViewOrePutFilter>();
             CreateMap<ViewOreDeleteRequestDto, ViewOreDeleteRequestFilter>();
+            CreateMap<UpdateImportedIdRequestDto, UpdateImportedIdFilter>();
         }
     }
 }

@@ -117,7 +117,7 @@ namespace apiPB.Repository.Implementation
             var notImported = _context.A3AppRegOres
                 .Where(x => x.Imported == false)
                 .ToList();
-            
+
             if (notImported.Count == 0)
             {
                 return notImported;
@@ -139,6 +139,45 @@ namespace apiPB.Repository.Implementation
             }
             _context.SaveChanges();
 
+            // Ritorna la lista aggiornata
+            return GetAppRegOre();
+        }
+
+        public IEnumerable<A3AppRegOre> GetNotImportedAppRegOreByFilter(ViewOreRequestFilter filter)
+        {
+            return GetAppViewOre(filter)
+                .Where(i => i.Imported == false)
+                .ToList();
+        }
+
+        public IEnumerable<A3AppRegOre> UpdateImportedById(UpdateImportedIdFilter filter)
+        {
+            var notImported = _context.A3AppRegOres
+                .Where(x => x.Imported == false && x.RegOreId == filter.Id)
+                .ToList();
+
+            if (notImported.Count == 0)
+            {
+                return notImported;
+            }
+
+            foreach (var item in notImported)
+            {
+                item.Imported = true;
+                item.UserImp = filter.WorkerId.ToString();
+                item.DataImp = DateTime.Now;
+
+                var dbItem = _context.A3AppRegOres.FirstOrDefault(x => x.RegOreId == item.RegOreId);
+                if (dbItem != null)
+                {
+                    dbItem.Imported = item.Imported;
+                    dbItem.UserImp = item.UserImp;
+                    dbItem.DataImp = item.DataImp;
+
+                    _context.A3AppRegOres.Update(dbItem);
+                    _context.SaveChanges();
+                }
+            }
             // Ritorna la lista aggiornata
             return GetAppRegOre();
         }

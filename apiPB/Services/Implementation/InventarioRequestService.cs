@@ -87,5 +87,33 @@ namespace apiPB.Services.Implementation
             return result
             .Select(m => m.ToInventarioDto());
         }
+
+        public IEnumerable<InventarioDto> GetNotImportedAppInventarioByFilter(ViewInventarioRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<ViewInventarioRequestFilter>(request);
+            var result = _repository.GetNotImportedAppInventarioByFilter(filter);
+
+            return result
+            .Select(m => m.ToInventarioDto());
+        }
+
+        public IEnumerable<InventarioDto> UpdateImportedById(UpdateImportedIdRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<UpdateImportedIdFilter>(request);
+            var result = _repository.UpdateImportedById(filter);
+
+            return result
+            .Select(m => m.ToInventarioDto());
+        }
     }
 }

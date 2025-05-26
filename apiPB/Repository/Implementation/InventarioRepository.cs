@@ -44,7 +44,7 @@ namespace apiPB.Repository.Implementation
                     existingItem.PrevBookInv = filter.PrevBookInv;
                     existingItem.UoM = filter.UoM;
                     CalculateBookInvDiff(existingItem);
-                    
+
                     _context.A3AppInventarios.Update(existingItem);
                     editedList.Add(existingItem);
                     continue;
@@ -73,7 +73,7 @@ namespace apiPB.Repository.Implementation
                 inventarioList = inventarioList
                     .GroupBy(x => new { x.Item, BarCode = string.IsNullOrEmpty(x.BarCode) ? null : x.BarCode })
                     .Select(g => g.Key.BarCode == null
-                        ? g.Last() 
+                        ? g.Last()
                         : g.Last())
                     .ToList();
                 _context.A3AppInventarios.AddRange(inventarioList);
@@ -135,7 +135,8 @@ namespace apiPB.Repository.Implementation
             else
             {
                 inventario.BookInvDiff = null;
-            };
+            }
+            ;
         }
 
         public IEnumerable<A3AppInventario> GetNotImportedInventario()
@@ -149,6 +150,45 @@ namespace apiPB.Repository.Implementation
         {
             var notImported = _context.A3AppInventarios
                 .Where(x => x.Imported == false)
+                .ToList();
+
+            if (notImported.Count == 0)
+            {
+                return notImported;
+            }
+
+            foreach (var item in notImported)
+            {
+                item.Imported = true;
+                item.UserImp = filter.WorkerId.ToString();
+                item.DataImp = DateTime.Now;
+
+                var dbItem = _context.A3AppInventarios.FirstOrDefault(x => x.InvId == item.InvId);
+                if (dbItem != null)
+                {
+                    dbItem.Imported = item.Imported;
+                    dbItem.UserImp = item.UserImp;
+                    dbItem.DataImp = item.DataImp;
+
+                    _context.A3AppInventarios.Update(dbItem);
+                    _context.SaveChanges();
+                }
+            }
+            // Ritorna la lista aggiornata
+            return GetInventario();
+        }
+
+        public IEnumerable<A3AppInventario> GetNotImportedAppInventarioByFilter(ViewInventarioRequestFilter filter)
+        {
+            return GetViewInventario(filter)
+                .Where(i => i.Imported == false)
+                .ToList();
+        }
+
+        public IEnumerable<A3AppInventario> UpdateImportedById(UpdateImportedIdFilter filter)
+        {
+            var notImported = _context.A3AppInventarios
+                .Where(x => x.Imported == false && x.InvId == filter.Id)
                 .ToList();
 
             if (notImported.Count == 0)

@@ -15,6 +15,7 @@ namespace apiPB.Mappers.Filters
             CreateMap<ViewPrelMatPutRequestDto, ViewPrelMatPutFilter>();
             CreateMap<ViewPrelMatDeleteRequestDto, ViewPrelMatDeleteFilter>();
             CreateMap<ComponentRequestDto, ComponentFilter>();
+            CreateMap<UpdateImportedIdRequestDto, UpdateImportedIdFilter>();
         }
     }
 }

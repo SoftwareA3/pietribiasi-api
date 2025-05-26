@@ -43,8 +43,9 @@ namespace apiPB.Mappers.Dto
             };
         }
 
-        public static SyncronizedDataDto ToSyncronizedDataDto(this SyncronizedDataDto sincData, List<SyncRegOreRequestDto>? syncRegOreList, List<SyncPrelMatRequestDto>? syncPrelMatList)
+        public static SyncronizedDataDto ToSyncronizedDataDto(this SyncronizedDataDto sincData, List<SyncRegOreRequestDto>? syncRegOreList, List<SyncPrelMatRequestDto>? syncPrelMatList, List<SyncInventarioRequestDto>? syncInventarioList)
         {
+            if (syncInventarioList != null && syncInventarioList.Count > 0) sincData.InventarioRequest = syncInventarioList;
             if (syncRegOreList != null && syncRegOreList.Count > 0) sincData.RegOreRequest = syncRegOreList;
             if (syncPrelMatList != null && syncPrelMatList.Count > 0) sincData.PrelMatRequest = syncPrelMatList;
             return sincData;
@@ -121,9 +122,9 @@ namespace apiPB.Mappers.Dto
                     MA_InventoryEntries = new MA_InventoryEntries
                     {
                         InvRsn = inventario.InvRsn == true ? settings.RectificationReasonPositive : settings.RectificationReasonNegative,
-                        PostingDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-                        PreprintedDocNo = inventario.InvId.ToString(),
-                        DocumentDate = inventario.SavedDate?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        PostingDate = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                        PreprintedDocNo = "PB000" + inventario.InvId.ToString(),
+                        DocumentDate = inventario.SavedDate?.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                         StoragePhase1 = settings.Storage
                     },
                     MA_InventoryEntriesDetail = new List<MA_InventoryEntriesDetail>()

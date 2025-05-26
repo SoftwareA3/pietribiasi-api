@@ -108,5 +108,23 @@ namespace apiPB.Controllers
 
             return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
         }
+
+        [HttpPost("view_inventario/not_imported/filtered")]
+        /// <summary>
+        /// Ritorna la lista di A3AppInventario non importati in base al filtro passato
+        /// /// </summary>
+        /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: FromDate, ToDate, Item, BarCode</param>
+        /// <response code="200">Ritorna la lista di A3AppInventario non importati in base al filtro passato</response>
+        /// <response code="404">Non trovato</response>
+        public IActionResult GetNotImportedAppInventarioByFilter([FromBody] ViewInventarioRequestDto? request)
+        {
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+
+            var inventarioDto = _inventarioRequestService.GetNotImportedAppInventarioByFilter(request).ToList();
+
+            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
+
+            return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+        }
     }
 }

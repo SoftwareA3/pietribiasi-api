@@ -107,5 +107,33 @@ namespace apiPB.Services.Implementation
             return result
             .Select(m => m.ToA3AppRegOreDto());
         }
+
+        public IEnumerable<RegOreDto> GetNotImportedAppRegOreByFilter(ViewOreRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<ViewOreRequestFilter>(request);
+            var result = _repository.GetNotImportedAppRegOreByFilter(filter);
+
+            return result
+            .Select(m => m.ToA3AppRegOreDto());
+        }
+
+        public IEnumerable<RegOreDto> UpdateImportedById(UpdateImportedIdRequestDto request)
+        {
+            if (request == null)
+            {
+                return null;
+            }
+
+            var filter = _mapper.Map<UpdateImportedIdFilter>(request);
+            var result = _repository.UpdateImportedById(filter);
+
+            return result
+            .Select(m => m.ToA3AppRegOreDto());
+        }
     }
 }

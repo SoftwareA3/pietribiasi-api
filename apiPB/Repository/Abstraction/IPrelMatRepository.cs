@@ -29,7 +29,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat
         /// </returns>
-        IEnumerable<A3AppPrelMat> GetViewPrelMat(ViewPrelMatRequestFilter filter); 
+        IEnumerable<A3AppPrelMat> GetViewPrelMat(ViewPrelMatRequestFilter filter);
 
         /// <summary>
         /// Aggiorna la riga della tabella A3_app_prel_mat in base al filtro passato
@@ -74,5 +74,9 @@ namespace apiPB.Repository.Abstraction
         /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat
         /// </returns>
         IEnumerable<A3AppPrelMat> GetNotImportedPrelMat();
+
+        IEnumerable<A3AppPrelMat> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestFilter filter);
+        
+        IEnumerable<A3AppPrelMat> UpdateImportedById(UpdateImportedIdFilter filter);
     }
 }

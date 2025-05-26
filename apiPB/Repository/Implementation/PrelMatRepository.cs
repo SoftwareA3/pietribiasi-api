@@ -63,7 +63,7 @@ namespace apiPB.Repository.Implementation
 
             return list;
         }
-        
+
         public IEnumerable<A3AppPrelMat> GetViewPrelMat(ViewPrelMatRequestFilter filter)
         {
             return _context.A3AppPrelMats.Where(i =>
@@ -82,7 +82,7 @@ namespace apiPB.Repository.Implementation
         public A3AppPrelMat PutViewPrelMat(ViewPrelMatPutFilter filter)
         {
             var editPrelMat = _context.A3AppPrelMats.FirstOrDefault(m => m.PrelMatId == filter.PrelMatId);
-            
+
             if (editPrelMat == null)
             {
                 return null;
@@ -90,7 +90,7 @@ namespace apiPB.Repository.Implementation
             editPrelMat.SavedDate = DateTime.Now;
             editPrelMat.PrelQty = filter.PrelQty;
             _context.SaveChanges();
-            
+
             return editPrelMat;
         }
         public A3AppPrelMat DeletePrelMatId(ViewPrelMatDeleteFilter filter)
@@ -110,7 +110,7 @@ namespace apiPB.Repository.Implementation
             var notImported = _context.A3AppPrelMats
                 .Where(x => x.Imported == false)
                 .ToList();
-            
+
             if (notImported.Count == 0)
             {
                 return notImported;
@@ -132,7 +132,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppPrelMat>? GetPrelMatWithComponent(ComponentFilter? filter)
         {
-            if(filter == null || filter.Component == string.Empty)
+            if (filter == null || filter.Component == string.Empty)
             {
                 return null;
             }
@@ -147,6 +147,37 @@ namespace apiPB.Repository.Implementation
             return _context.A3AppPrelMats
                 .Where(x => x.Imported == false)
                 .ToList();
+        }
+        public IEnumerable<A3AppPrelMat> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestFilter filter)
+        {
+            return GetViewPrelMat(filter)
+                .Where(i => i.Imported == false)
+                .ToList();
+        }
+
+        public IEnumerable<A3AppPrelMat> UpdateImportedById(UpdateImportedIdFilter filter)
+        {
+            var notImported = _context.A3AppPrelMats
+                .Where(x => x.Imported == false && x.PrelMatId == filter.Id)
+                .ToList();
+
+            if (notImported.Count == 0)
+            {
+                return notImported;
+            }
+
+            foreach (var item in notImported)
+            {
+                item.Imported = true;
+                item.UserImp = filter.WorkerId.ToString();
+                item.DataImp = DateTime.Now;
+
+                _context.A3AppPrelMats.Update(item);
+                _context.SaveChanges();
+            }
+
+            // Ritorna la lista aggiornata
+            return GetAppPrelMat();
         }
     }
 }

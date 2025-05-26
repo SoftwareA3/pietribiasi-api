@@ -42,5 +42,9 @@ namespace apiPB.Services.Abstraction
         IEnumerable<RegOreDto> GetNotImportedAppRegOre();
 
         IEnumerable<RegOreDto> UpdateRegOreImported(WorkerIdSyncRequestDto request);
+
+        IEnumerable<RegOreDto> GetNotImportedAppRegOreByFilter(ViewOreRequestDto request);
+
+        IEnumerable<RegOreDto> UpdateImportedById(UpdateImportedIdRequestDto request);
     }
 }
