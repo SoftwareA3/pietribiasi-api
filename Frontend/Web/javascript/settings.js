@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     const storageInput = document.getElementById("settings-deposito");
     const saveButton = document.getElementById("save-settings");
     const syncToggle = document.getElementById("settings-sync-for-all");
+    const editToggle = document.getElementById("edit-toggle");
 
     var settings = {
         magoUrl: "",
@@ -56,6 +57,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     storageInput.value = settings.storage;
     closedComboBox.value = settings.closed ? "True" : "False"
     syncToggle.value = settings.syncGlobalActive ? "True" : "False";
+    editToggle.checked = false;
 
     saveButton.addEventListener("click", async function() {
         settings.magoUrl = urlInput.value;
@@ -89,6 +91,32 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
         catch (error) {
             console.error("Error saving settings:", error);
+        }
+    });
+
+    editToggle.addEventListener("click", function() {
+        if (editToggle.checked) {
+            urlInput.disabled = false;
+            usernameInput.disabled = false;
+            passwordInput.disabled = false;
+            companyInput.disabled = false;
+            specificatorInput.disabled = false;
+            closedComboBox.disabled = false;
+            rectificationPosInput.disabled = false;
+            rectificationNegInput.disabled = false;
+            storageInput.disabled = false;
+            syncToggle.disabled = false;
+        } else {
+            urlInput.disabled = true;
+            usernameInput.disabled = true;
+            passwordInput.disabled = true;
+            companyInput.disabled = true;
+            specificatorInput.disabled = true;
+            closedComboBox.disabled = true;
+            rectificationPosInput.disabled = true;
+            rectificationNegInput.disabled = true;
+            storageInput.disabled = true;
+            syncToggle.disabled = true;
         }
     });
 });

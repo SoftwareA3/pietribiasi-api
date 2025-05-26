@@ -11,6 +11,30 @@
     font-weight: bold;
 }
 
+.toggle-text {
+    font-size: 1rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: var(--spacing-2);
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+    background-color: var(--white);
+}
+
+.edit-toggle{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position:relative;
+    margin-left: var(--spacing-4);
+}
+
 /* Input di testo e password */
 /* #settings-form input[type="text"],
 #settings-form input[type="password"],

@@ -65,9 +65,9 @@
 }
 
 /* Per garantire che tutte le icone abbiano la stessa dimensione e posizione di base */
-#sync-data .menu-icon {
+#sync-data .button-icon {
     display: inline-block;
-    width: 1em;
+    font-size: 2rem;
     text-align: center;
     position: relative;
 }
@@ -79,9 +79,10 @@
 }
 
 /* Stilizzazione del pulsante Sincronizza per migliorare il feedback visivo */
-#sync-data {
+#sync-data .button-icon{
     transition: all 0.3s ease;
     position: relative;
+    font-size: 2rem;
     overflow: hidden; /* Per assicurarsi che l'animazione delle icone sia contenuta */
 }
 

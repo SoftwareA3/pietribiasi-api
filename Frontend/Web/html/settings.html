@@ -48,46 +48,64 @@
 
         <main class="container">
             <div class="card">
-                <div class="card-header">Configurazione Sistema</div>
+                <div class="card-header">
+                    <p>
+                        Configurazione Sistema
+                    </p>
+                </div>
+                <div class="edit-toggle">
+                    <span class="toggle-text">Abilita Modifica</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="edit-toggle" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
                 <form id="settings-form" class="filter-form">
                     <div class="form-group">
                         <label for="settings-url">Url:</label>
-                        <input type="text" id="settings-url" name="url" autocomplete="off"/>
+                        <input type="text" id="settings-url" name="url" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
                         <label for="settings-username">Username:</label>
-                        <input type="text" id="settings-username" name="username" autocomplete="off"/>
+                        <input type="text" id="settings-username" name="username" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
                         <label for="settings-password">Password:</label>
-                        <input type="text" id="settings-password" name="password" autocomplete="off"/>
+                        <input type="text" id="settings-password" name="password" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
                         <label for="settings-company">Company:</label>
-                        <input type="text" id="settings-company" name="company" autocomplete="off"/>
+                        <input type="text" id="settings-company" name="company" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
                         <label for="settings-specificator">Specificator Type:</label>
-                        <input type="text" id="settings-specificator" name="specificatorType" autocomplete="off"/>
+                        <input type="text" id="settings-specificator" name="specificatorType" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
                         <label for="settings-closed">Closed:</label>
-                        <select id="settings-closed" name="closed">
+                        <select id="settings-closed" class="settings-toggle" name="closed" disabled="true">
                             <option value="True">True</option>
                             <option value="False">False</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="settings-causale-pos">Causale Rettifica Positiva:</label>
-                        <input type="text" id="settings-causale-pos" name="causale-rettifica-pos" autocomplete="off"/>
+                        <input type="text" id="settings-causale-pos" name="causale-rettifica-pos" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
                         <label for="settings-causale-neg">Causale Rettifica Negativa:</label>
-                        <input type="text" id="settings-causale-neg" name="causale-rettifica-neg" autocomplete="off"/>
+                        <input type="text" id="settings-causale-neg" name="causale-rettifica-neg" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
                         <label for="settings-deposito">Deposito:</label>
-                        <input type="text" id="settings-deposito" name="deposito" autocomplete="off"/>
+                        <input type="text" id="settings-deposito" name="deposito" autocomplete="off" disabled="true"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-sync-for-all">Sincronizzaizone globale:</label>
+                        <select id="settings-sync-for-all" class="settings-toggle" name="sync-for-all" disabled="true">
+                            <option value="True">True</option>
+                            <option value="False">False</option>
+                        </select>
                     </div>
 
                     <div class="buttons-container">

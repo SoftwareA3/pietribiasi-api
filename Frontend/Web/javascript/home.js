@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         if (response.ok) {
             const data = await response.json();
             console.log("Informazioni sulla sincronizzazione globale:", data);
-            if(data.syncGlobalActive) {
+            if(data.syncGlobalActive || (userCookie && userCookie.tipoUtente === "Amministrazione")) {
                 syncButton.style.display = "flex";
             }
         } else {
