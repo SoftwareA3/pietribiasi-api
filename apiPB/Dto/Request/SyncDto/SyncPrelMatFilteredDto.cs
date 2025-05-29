@@ -11,6 +11,6 @@ namespace apiPB.Dto.Request
     public class SyncPrelMatFilteredDto
     {
         public WorkerIdSyncRequestDto WorkerIdSyncRequestDto { get; set; } = new WorkerIdSyncRequestDto();
-        public List<PrelMatDto> PrelMatDto { get; set; } = new List<PrelMatDto>();
+        public List<PrelMatDto> PrelMatList { get; set; } = new List<PrelMatDto>();
     }
 }

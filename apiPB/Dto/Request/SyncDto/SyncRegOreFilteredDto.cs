@@ -11,6 +11,6 @@ namespace apiPB.Dto.Request
     public class SyncRegOreFilteredDto
     {
         public WorkerIdSyncRequestDto WorkerIdSyncRequestDto { get; set; } = new WorkerIdSyncRequestDto();
-        public List<RegOreDto> RegOreDto { get; set; } = new List<RegOreDto>();
+        public List<RegOreDto> RegOreList { get; set; } = new List<RegOreDto>();
     }
 }

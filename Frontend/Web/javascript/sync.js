@@ -1051,8 +1051,8 @@ async function syncRegOreFiltered() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "workerId": userCookie.workerId,
-                    "viewRegOre": filteredOreList
+                    "WorkerIdSyncRequestDto" : {"workerId": userCookie.workerId},
+                    "RegOreList": filteredOreList
                 })
             });
 
@@ -1135,8 +1135,8 @@ async function syncPrelieviFiltered() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "workerId": userCookie.workerId,
-                    "viewPrelMat": filteredPrelieviList
+                    "WorkerIdSyncRequestDto" : {"workerId": userCookie.workerId},
+                    "PrelMatList": filteredPrelieviList
                 })
             });
 

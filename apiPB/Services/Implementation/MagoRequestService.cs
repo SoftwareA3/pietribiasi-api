@@ -86,10 +86,10 @@ namespace apiPB.Services.Implementation
             List<RegOreDto> syncRegOreRequest;
             bool isFiltered = true;
 
-            if (request.RegOreDto != null)
+            if (request.RegOreList != null)
             {
-                Console.WriteLine($"Filter applied ViewRegOre: {request.RegOreDto}");
-                syncRegOreRequest = request.RegOreDto.ToList();
+                Console.WriteLine($"Filter applied ViewRegOre: {request.RegOreList}");
+                syncRegOreRequest = request.RegOreList.ToList();
 
                 if (syncRegOreRequest == null)
                 {
@@ -183,10 +183,10 @@ namespace apiPB.Services.Implementation
             List<PrelMatDto> syncPrelMatRequest;
             bool isFiltered = true;
 
-            if (request.PrelMatDto != null)
+            if (request.PrelMatList != null)
             {
-                Console.WriteLine($"Filter applied ViewPrelMat: {request.PrelMatDto}");
-                syncPrelMatRequest = request.PrelMatDto.ToList();
+                Console.WriteLine($"Filter applied ViewPrelMat: {request.PrelMatList}");
+                syncPrelMatRequest = request.PrelMatList.ToList();
 
                 if (syncPrelMatRequest == null)
                 {
