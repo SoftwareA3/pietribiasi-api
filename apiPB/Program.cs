@@ -46,7 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IPrelMatRepository, PrelMatRepository>();
     builder.Services.AddScoped<IGiacenzeRepository, GiacenzeRepository>();
     builder.Services.AddScoped<IInventarioRepository, InventarioRepository>();
-    builder.Services.AddScoped<IMagoRepository, MagoRepository>();
+    builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
     builder.Services.AddScoped<IActionMessageRepository, ActionMessageRepository>();
 
     // Services
@@ -61,6 +61,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IGiacenzeRequestService, GiacenzeRequestService>();
     builder.Services.AddScoped<IInventarioRequestService, InventarioRequestService>();
     builder.Services.AddScoped<IMagoRequestService, MagoRequestService>();
+    builder.Services.AddScoped<ISettingsRequestService, SettingsRequestService>();
     builder.Services.AddScoped<IActionMessageRequestService, ActionMessageRequestService>();
 
     builder.Services.AddCors(options =>
