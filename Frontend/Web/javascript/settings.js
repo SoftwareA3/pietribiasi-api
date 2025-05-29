@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     try {
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/get_settings`, {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/settings/get_settings`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.log("Settings to save:", settings);
 
         try {
-            const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/edit_settings`, {
+            const response = await fetchWithAuth(`http://${getIPString()}:5245/api/settings/edit_settings`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
