@@ -1,0 +1,20 @@
+# Ignora i file di mockup
+/Frontend/Web/html/mockup
+
+# Ignora i file di configurazione, binari e di debug nel Backend
+/apiPB/node_modules
+/apiPB/obj
+/apiPB/bin
+/apiPB/package-lock.json
+
+# Ignora i file e alcune cartelle come quelle del Log o delle Query
+/apiPB/Query
+/apiPB/Logs
+/apiPB/scaffold_script.txt
+
+# Ignora i file di configurazione di VS Code
+/.vscode
+/.vs
+
+# Ignora momentaneamente il progetto con i test di unità
+/TestApi.Tests
