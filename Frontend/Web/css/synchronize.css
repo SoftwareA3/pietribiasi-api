@@ -59,10 +59,27 @@
     z-index: 1;
 }
 
-.sync-button {
+#sync-back {
+    font-size: 2rem;
+}
+
+#sync-go-back {
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+}
+
+.buttons-container .button-secondary {
+    margin-right: 0;
+}
+
+.filter-form  .buttons-container {
+    justify-content: flex-start;
+}
+
+/* .sync-button {
     display: flex;
     flex-direction: column;    
-}
+} */
 
 /* #sync-data .button-icon {
     display: inline-block;
@@ -70,19 +87,6 @@
     position: relative;
     font-size: 2rem;
 } */
-
-
-#sync-data {
-    width: 30%;
-    margin: 0 auto;
-    padding: var(--spacing-4);
-}
-
-.sync-data-container .button-secondary {
-    width: 30%;
-    margin: 0 auto;
-    padding: var(--spacing-4);
-}
 
 .tab-content.active {
     display: block;
