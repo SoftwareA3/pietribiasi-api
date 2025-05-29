@@ -38,11 +38,11 @@ let prelieviLists = {
 const ACTION_TYPE_PRELIEVI = 2051538946;
 
 // Tab attiva corrente
-let activeTab = 'inventario';
+let activeTab = 'global';
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Inizializza la gestione delle tab
-    initializeTabs();
+    await initializeTabs();
     
     // Carica i dati iniziali
     await loadInitialData();
@@ -60,12 +60,12 @@ document.addEventListener("DOMContentLoaded", async function() {
 // GESTIONE TAB
 // =====================================================
 
-function initializeTabs() {
+async function initializeTabs() {
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
     
     tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', async function() {
             const tabId = this.getAttribute('data-tab');
             
             // Rimuovi active da tutti i bottoni e contenuti
@@ -77,6 +77,8 @@ function initializeTabs() {
             document.getElementById(`${tabId}-tab`).classList.add('active');
             
             activeTab = tabId;
+            console.log("Tab attiva:", activeTab);
+            await loadInitialData();
         });
     });
 }
@@ -90,44 +92,54 @@ async function loadInitialData() {
         const user = JSON.parse(getCookie("userInfo"));
         const puUser = JSON.parse(getCookie("pu-User"));
         
-        // Carica dati inventario
-        if (user && user.tipoUtente === "Amministrazione" && !puUser) {
-            filteredInventarioList = await fetchAllInventarioNotImported();
-        } else {
-            const userId = puUser?.workerId || user?.workerId;
-            if (userId) {
-                const response = await fetchInventario({ workerId: userId });
-                filteredInventarioList = response || [];
-            }
+        switch (activeTab) {
+            case 'inventario':
+                // Carica dati inventario
+                if (user && user.tipoUtente === "Amministrazione" && !puUser) {
+                    filteredInventarioList = await fetchAllInventarioNotImported();
+                } else {
+                    const userId = puUser?.workerId || user?.workerId;
+                    if (userId) {
+                        const response = await fetchInventario({ workerId: userId });
+                        filteredInventarioList = response || [];
+                    }
+                }
+                populateInventarioList(filteredInventarioList);
+                break;
+            case 'ore':
+                // Carica dati ore
+                if (user && user.tipoUtente === "Amministrazione" && !puUser) {
+                    filteredOreList = await fetchAllOreNotImported();
+                } else {
+                    const userId = puUser?.workerId || user?.workerId;
+                    if (userId) {
+                        const response = await fetchOre({ workerId: userId });
+                        filteredOreList = response || [];
+                    }
+                }
+                populateOreList(filteredOreList);
+                break;
+            case 'prelievi':
+                // Carica dati prelievi
+                if (user && user.tipoUtente === "Amministrazione" && !puUser) {
+                    filteredPrelieviList = await fetchAllPrelieviNotImported();
+                } else {
+                    const userId = puUser?.workerId || user?.workerId;
+                    if (userId) {
+                        const response = await fetchPrelievi({ workerId: userId });
+                        filteredPrelieviList = response || [];
+                    }
+                }
+                populatePrelieviList(filteredPrelieviList);
+                break;
+            case 'global':
+                // Carica dati globali (se necessario)
+                break; // Non fare nulla per la tab globale
+            default:
+                console.error("Tab non riconosciuta:", activeTab);
+                return;
         }
-        
-        // Carica dati ore
-        if (user && user.tipoUtente === "Amministrazione" && !puUser) {
-            filteredOreList = await fetchAllOreNotImported();
-        } else {
-            const userId = puUser?.workerId || user?.workerId;
-            if (userId) {
-                const response = await fetchOre({ workerId: userId });
-                filteredOreList = response || [];
-            }
-        }
-        
-        // Carica dati prelievi
-        if (user && user.tipoUtente === "Amministrazione" && !puUser) {
-            filteredPrelieviList = await fetchAllPrelieviNotImported();
-        } else {
-            const userId = puUser?.workerId || user?.workerId;
-            if (userId) {
-                const response = await fetchPrelievi({ workerId: userId });
-                filteredPrelieviList = response || [];
-            }
-        }
-        
-        // Popola le liste iniziali
-        populateInventarioList(filteredInventarioList);
-        populateOreList(filteredOreList);
-        populatePrelieviList(filteredPrelieviList);
-        
+
         // Inizializza autocomplete per tutte le tab
         await refreshAllAutocompleteData();
         
@@ -147,6 +159,7 @@ function setupInventarioListeners() {
     const filterItem = document.getElementById("filter-inv-item");
     const filterBarcode = document.getElementById("filter-inv-barcode");
     const filterSubmit = document.getElementById("filter-inv-submit");
+    const syncInvButton = document.getElementById("sync-inv-data");
     
     // Event listeners per refresh autocomplete
     [filterDataDa, filterDataA].forEach(element => {
@@ -182,6 +195,16 @@ function setupInventarioListeners() {
             }
         });
     }
+
+    if(syncInvButton) {
+        syncInvButton.addEventListener("click", async () => {
+            syncInvButton.disabled = true;
+            await syncInventarioFiltered();
+            setTimeout(() => {
+                syncInvButton.disabled = false;
+            }, 2500);
+        });
+    }
 }
 
 // =====================================================
@@ -195,6 +218,7 @@ function setupOreListeners() {
     const filterLavorazione = document.getElementById("filter-ore-lavorazione");
     const filterOdp = document.getElementById("filter-ore-odp");
     const filterSubmit = document.getElementById("filter-ore-submit");
+    const syncOreButton = document.getElementById("sync-ore-data");
     
     // Event listeners per refresh autocomplete
     [filterDataDa, filterDataA].forEach(element => {
@@ -230,6 +254,16 @@ function setupOreListeners() {
             }
         });
     }
+
+    if(syncOreButton) {
+        syncOreButton.addEventListener("click", async () => {
+            syncOreButton.disabled = true;
+            await syncRegOreFiltered();
+            setTimeout(() => {
+                syncOreButton.disabled = false;
+            }, 2500);
+        });
+    }
 }
 
 // =====================================================
@@ -262,6 +296,7 @@ function setupPrelieviListeners() {
     const filterItem = document.getElementById("filter-prel-item");
     const filterBarcode = document.getElementById("filter-prel-barcode");
     const filterSubmit = document.getElementById("filter-prel-submit");
+    const syncPrelButton = document.getElementById("sync-prel-data");
     
     // Event listeners per refresh autocomplete
     [filterDataDa, filterDataA].forEach(element => {
@@ -295,6 +330,16 @@ function setupPrelieviListeners() {
                 console.error("Errore durante il filtraggio prelievi:", error);
                 alert("Si è verificato un errore durante il filtraggio.");
             }
+        });
+    }
+
+    if(syncPrelButton) {
+        syncPrelButton.addEventListener("click", async () => {
+            syncPrelButton.disabled = true;
+            await syncPrelieviFiltered();
+            setTimeout(() => {
+                syncPrelButton.disabled = false;
+            }, 2500);
         });
     }
 }
@@ -334,7 +379,7 @@ function createInventarioFilterObject() {
         filteredObject.toDateTime = toDate.toISOString().slice(0, -1);
     }
     
-    if (filterItem?.value) filteredObject.component = filterItem.value;
+    if (filterItem?.value) filteredObject.item = filterItem.value;
     if (filterBarcode?.value) filteredObject.barCode = filterBarcode.value;
     
     return filteredObject;
@@ -559,16 +604,27 @@ async function fetchPrelievi(filteredObject) {
 // =====================================================
 
 async function refreshAllAutocompleteData() {
-    await refreshInventarioAutocomplete();
-    await refreshOreAutocomplete();
-    await refreshPrelieviAutocomplete();
+    switch (activeTab) {
+        case 'inventario':
+            await refreshInventarioAutocomplete();
+            break;
+        case 'ore':
+            await refreshOreAutocomplete();
+            break;
+        case 'prelievi':    
+            await refreshPrelieviAutocomplete();
+            break;
+        case 'global':
+            break; 
+        default:
+            console.error("Tab non riconosciuta per il refresh autocomplete:", activeTab);
+            return;
+    }
 }
 
 async function refreshInventarioAutocomplete() {
     const filteredObject = createInventarioFilterObject();
     // const tempData = await fetchInventario(filteredObject);
-    
-    
     
     const itemInput = document.getElementById("filter-inv-item");
     const barcodeInput = document.getElementById("filter-inv-barcode");
@@ -586,7 +642,7 @@ async function refreshInventarioAutocomplete() {
         tempData = await fetchAllInventarioNotImported();
     }
 
-    inventarioLists.itemList = extractUniqueValues(tempData, 'component');
+    inventarioLists.itemList = extractUniqueValues(tempData, 'item');
     console.log("Lista componenti inventario:", inventarioLists.itemList);
     inventarioLists.barcodeList = extractUniqueValues(tempData, 'barCode');
     console.log("Lista barcode inventario:", inventarioLists.barcodeList);
@@ -909,7 +965,7 @@ async function synchronizeData() {
     console.log("User cookie:", userCookie);
     
     // Inizia l'animazione di caricamento
-    startLoadingAnimation(iconElement);
+    startLoadingAnimation(iconElement, "2rem");
     
     // Garantisce un minimo di tempo di caricamento (1.5 secondi)
     //const minLoadingTime = new Promise(resolve => setTimeout(resolve, 2000));
@@ -918,7 +974,7 @@ async function synchronizeData() {
         console.log("Sincronizzazione dei dati...");
         console.log("User ID:", userCookie.workerId);
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/synchronize`, {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/synchronize_all`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -971,14 +1027,272 @@ async function synchronizeData() {
     }
 }
 
+async function syncRegOreFiltered() {
+    const syncButton = document.getElementById("sync-ore-data");
+    const iconElement = syncButton.querySelector(".button-icon");
+    const filterDataDa = document.getElementById("filter-ore-data-da");
+    const filterDataA = document.getElementById("filter-ore-data-a");
+    const filterCommessa = document.getElementById("filter-ore-commessa");
+    const filterLavorazione = document.getElementById("filter-ore-lavorazione");
+    const filterOdp = document.getElementById("filter-ore-odp");
+    const originalIcon = iconElement.className;
+    const userCookie = JSON.parse(getCookie("userInfo"));
+    console.log("elementi filtrati:", filteredOreList);
+
+    startLoadingAnimation(iconElement, "1.2rem");
+
+    try {
+        console.log("Sincronizzazione delle ore registrate...");
+        console.log("User ID:", userCookie.workerId);
+        // Esegui simultaneamente la richiesta e il timer di caricamento minimo
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/sync_reg_ore_filtered`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "workerId": userCookie.workerId,
+                    "viewRegOre": filteredOreList
+                })
+            });
+
+        // Rimuovi l'animazione di caricamento con effetto
+        iconElement.classList.remove("sync-loading");
+        iconElement.classList.add("sync-shrink-out");
+        
+        // Attendi la fine dell'animazione di riduzione
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        if (response.ok) {
+            console.log("Ore registrate sincronizzate correttamente:", response.statusText);
+            const data = await response.json();
+            console.log("Response DTO:", data);
+            // Mostra l'icona di successo
+            showSuccessIcon(iconElement);
+            // Ripristina i campi di filtro
+            if (filterDataDa) filterDataDa.value = "";
+            if (filterDataA) filterDataA.value = "";
+            if (filterCommessa) filterCommessa.value = "";
+            if (filterLavorazione) filterLavorazione.value = "";
+            if (filterOdp) filterOdp.value = "";
+            filteredOreList = []; // Pulisci la lista filtrata
+            oreLists = []; // Pulisci la lista visualizzata
+            globalOreData = null; // Pulisci i dati globali delle ore
+        } else {
+            console.error("Errore durante la sincronizzazione dei dati:", response.statusText);
+            // Mostra l'icona di errore
+            showErrorIcon(iconElement);
+        }
+        
+        // Ripristina l'icona originale dopo 2 secondi
+        setTimeout(() => {
+            resetIcon(iconElement, originalIcon);
+            loadInitialData();
+        }, 2000);
+    } catch (error) {
+        console.error("Network error:", error);
+        
+        // Rimuovi l'animazione di caricamento con effetto
+        iconElement.classList.remove("sync-loading");
+        iconElement.classList.add("sync-shrink-out");
+        
+        // Attendi la fine dell'animazione di riduzione
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Mostra l'icona di errore
+        showErrorIcon(iconElement);
+        
+        // Ripristina l'icona originale dopo 2 secondi
+        setTimeout(() => {
+            resetIcon(iconElement, originalIcon);
+        }, 2000);
+    }
+}
+
+async function syncPrelieviFiltered() { 
+    const syncButton = document.getElementById("sync-prel-data");
+    const iconElement = syncButton.querySelector(".button-icon");
+    const filterDataDa = document.getElementById("filter-prel-data-da");
+    const filterDataA = document.getElementById("filter-prel-data-a");
+    const itemInput = document.getElementById("filter-prel-item");
+    const barcodeInput = document.getElementById("filter-prel-barcode");
+    const filterCommessa = document.getElementById("filter-prel-commessa");
+    const filterLavorazione = document.getElementById("filter-prel-lavorazione");
+    const filterOdp = document.getElementById("filter-prel-odp");
+    const originalIcon = iconElement.className;
+    const userCookie = JSON.parse(getCookie("userInfo"));
+    console.log("elementi filtrati:", filteredPrelieviList);
+
+    startLoadingAnimation(iconElement, "1.2rem");
+
+    try {
+        console.log("Sincronizzazione dei prelievi...");
+        console.log("User ID:", userCookie.workerId);
+        // Esegui simultaneamente la richiesta e il timer di caricamento minimo
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/sync_prel_mat_filtered`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "workerId": userCookie.workerId,
+                    "viewPrelMat": filteredPrelieviList
+                })
+            });
+
+        // Rimuovi l'animazione di caricamento con effetto
+        iconElement.classList.remove("sync-loading");
+        iconElement.classList.add("sync-shrink-out");
+        
+        // Attendi la fine dell'animazione di riduzione
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        if (response.ok) {
+            console.log("Prelievi sincronizzati correttamente:", response.statusText);
+            const data = await response.json();
+            console.log("Response DTO:", data);
+            // Mostra l'icona di successo
+            showSuccessIcon(iconElement);
+            // Ripristina i campi di filtro
+            if (filterDataDa) filterDataDa.value = "";
+            if (filterDataA) filterDataA.value = "";
+            if (itemInput) itemInput.value = "";
+            if (barcodeInput) barcodeInput.value = "";
+            if (filterCommessa) filterCommessa.value = "";
+            if (filterLavorazione) filterLavorazione.value = "";
+            if (filterOdp) filterOdp.value = "";
+            filteredPrelieviList = []; // Pulisci la lista filtrata
+            prelieviLists = []; // Pulisci la lista visualizzata
+            globalPrelieviData = null; // Pulisci i dati globali dei prelievi
+        } else {
+            console.error("Errore durante la sincronizzazione dei dati:", response.statusText);
+            // Mostra l'icona di errore
+            showErrorIcon(iconElement);
+        }
+        
+        // Ripristina l'icona originale dopo 2 secondi
+        setTimeout(() => {
+            resetIcon(iconElement, originalIcon);
+            loadInitialData();
+        }, 2000);
+    } catch (error) {
+        console.error("Network error:", error);
+        
+        // Rimuovi l'animazione di caricamento con effetto
+        iconElement.classList.remove("sync-loading");
+        iconElement.classList.add("sync-shrink-out");
+        
+        // Attendi la fine dell'animazione di riduzione
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Mostra l'icona di errore
+        showErrorIcon(iconElement);
+        
+        // Ripristina l'icona originale dopo 2 secondi
+        setTimeout(() => {
+            resetIcon(iconElement, originalIcon);
+        }, 2000);
+    }
+}
+
+async function syncInventarioFiltered() {
+    const syncButton = document.getElementById("sync-inv-data");
+    const iconElement = syncButton.querySelector(".button-icon");
+    const filterDataDa = document.getElementById("filter-inv-data-da");
+    const filterDataA = document.getElementById("filter-inv-data-a");
+    const itemInput = document.getElementById("filter-inv-item");
+    const barcodeInput = document.getElementById("filter-inv-barcode");
+    const originalIcon = iconElement.className;
+    const userCookie = JSON.parse(getCookie("userInfo"));
+    console.log("elementi filtrati:", filteredInventarioList);
+    const data = JSON.stringify({
+                    "syncInventarioFilteredDto": {
+                        "workerIdSyncRequestDto" : {"workerId": userCookie.workerId},
+                        "inventarioList": filteredInventarioList
+                    },
+                })
+    console.log("Dati da inviare:", data);
+
+    startLoadingAnimation(iconElement, "1.2rem");
+
+    try {
+        console.log("Sincronizzazione delle movimentazioni di inventario...");
+        console.log("User ID:", userCookie.workerId);
+        console.log("Inventario da sincronizzare:", filteredInventarioList);
+        // Esegui simultaneamente la richiesta e il timer di caricamento minimo
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/sync_inventario_filtered`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "WorkerIdSyncRequestDto" : {"workerId": userCookie.workerId},
+                    "InventarioList": filteredInventarioList
+                })
+            });
+
+        // Rimuovi l'animazione di caricamento con effetto
+        iconElement.classList.remove("sync-loading");
+        iconElement.classList.add("sync-shrink-out");
+        
+        // Attendi la fine dell'animazione di riduzione
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        if (response.ok) {
+            console.log("Inventario sincronizzato correttamente:", response.statusText);
+            const data = await response.json();
+            console.log("Response DTO:", data);
+            // Mostra l'icona di successo
+            showSuccessIcon(iconElement);
+            // Ripristina i campi di filtro
+            if (filterDataDa) filterDataDa.value = "";
+            if (filterDataA) filterDataA.value = "";
+            if (itemInput) itemInput.value = "";
+            if (barcodeInput) barcodeInput.value = "";
+            filteredInventarioList = []; // Pulisci la lista filtrata
+            inventarioLists = []; // Pulisci la lista visualizzata
+            globalInventarioData = null; // Pulisci i dati globali dell'inventario
+        } else {
+            console.error("Errore durante la sincronizzazione dei dati:", response.statusText);
+            // Mostra l'icona di errore
+            showErrorIcon(iconElement);
+        }
+        
+        // Ripristina l'icona originale dopo 2 secondi
+        setTimeout(() => {
+            resetIcon(iconElement, originalIcon);
+            loadInitialData();
+        }, 2000);
+    }
+    catch (error) {
+        console.error("Network error:", error);
+        
+        // Rimuovi l'animazione di caricamento con effetto
+        iconElement.classList.remove("sync-loading");
+        iconElement.classList.add("sync-shrink-out");
+        
+        // Attendi la fine dell'animazione di riduzione
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Mostra l'icona di errore
+        showErrorIcon(iconElement);
+        
+        // Ripristina l'icona originale dopo 2 secondi
+        setTimeout(() => {
+            resetIcon(iconElement, originalIcon);
+        }, 2000);
+    }
+}
+
 /**
  * Avvia l'animazione di rotazione dell'icona durante il caricamento
  * @param {HTMLElement} iconElement - L'elemento icona da animare
+ * @param {string} fontSize - La dimensione del font da applicare all'icona durante l'animazione
  */
-function startLoadingAnimation(iconElement) {
+function startLoadingAnimation(iconElement, fontSize = "2rem") {
     // Rimuovi tutte le classi esistenti e aggiungi fa-arrows-rotate per sicurezza
     iconElement.className = "fa-solid fa-arrows-rotate menu-icon";
-    
+    iconElement.style.fontSize = fontSize; // Imposta la dimensione del font
     // Aggiungi la classe per l'animazione di rotazione
     iconElement.classList.add("sync-loading");
 }
