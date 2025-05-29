@@ -29,9 +29,6 @@
         <script src="../javascript/main.js" type="module" defer></script>
         <script src="../javascript/fetch.js" type="module" defer></script>
         <script src="../javascript/autocomplete.js" type="module"></script>
-        <!-- <script src="../javascript/view_inventario.js" type="module" defer></script>
-        <script src="../javascript/view_ore.js" type="module" defer></script>
-        <script src="../javascript/view_prelievi.js" type="module" defer></script> -->
         <script src="../javascript/sync.js" type="module" defer></script>
     </head>
     <body>
@@ -58,7 +55,11 @@
                 <div class="tabs-container">
                     <!-- Navigazione schede -->
                     <div class="tabs-nav">
-                        <button class="tab-button active" data-tab="inventario">
+                        <button class="tab-button active" data-tab="global">
+                            <i class="fa-solid fa-globe"></i>
+                            Sincronizzazione Generale
+                        </button>
+                        <button class="tab-button" data-tab="inventario">
                             <i class="fa-solid fa-boxes-stacked"></i>
                             Inventario
                         </button>
@@ -70,14 +71,27 @@
                             <i class="fa-solid fa-dolly"></i>
                             Prelievi
                         </button>
-                        <button class="tab-button" data-tab="global">
+                    </div>
+
+                    <!-- Contenuto scheda Sincronizzazione generale -->
+                    <div id="global-tab" class="tab-content active">
+                        <div class="tab-header">
                             <i class="fa-solid fa-globe"></i>
                             Sincronizzazione Generale
-                        </button>
+                        </div>  
+                        <div class="buttons-container sync-data-container">
+                            <button type="button" id="sync-data" class="button sync-button button-primary">
+                                <i class="fa-solid fa-arrows-rotate button-icon"></i>
+                                <span class="menu-button-descr">Sincronizza Dati</span>
+                            </button>
+                            <button type="button" id="sync-go-back" class="button button-secondary" onclick="location.href='home.html'">Indietro
+                                <i id="sync-back" class="fa-solid fa-arrow-left button-icon"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Contenuto scheda Inventario -->
-                    <div id="inventario-tab" class="tab-content active">
+                    <div id="inventario-tab" class="tab-content">
                         <div class="tab-header">
                             <i class="fa-solid fa-boxes-stacked"></i>
                             Visualizza Registrazioni Inventario
@@ -112,6 +126,10 @@
                                 </button>
                                 <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro 
                                     <i class="fa-solid fa-arrow-left button-icon"></i>
+                                </button>
+                                <button type="button" id="sync-inv-data" class="button sync-button button-primary">
+                                    <i class="fa-solid fa-arrows-rotate button-icon"></i>
+                                    <span class="menu-button-descr">Sincronizza Dati</span>
                                 </button>
                             </div>
                         </form>
@@ -166,6 +184,10 @@
                                 </button>
                                 <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro 
                                     <i class="fa-solid fa-arrow-left button-icon"></i>
+                                </button>
+                                <button type="button" id="sync-ore-data" class="button sync-button button-primary">
+                                    <i class="fa-solid fa-arrows-rotate button-icon"></i>
+                                    <span class="menu-button-descr">Sincronizza Dati</span>
                                 </button>
                             </div>
                         </form>
@@ -235,6 +257,10 @@
                                 <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro
                                     <i class="fa-solid fa-arrow-left button-icon"></i>
                                 </button>
+                                <button type="button" id="sync-prel-data" class="button sync-button button-primary">
+                                    <i class="fa-solid fa-arrows-rotate button-icon"></i>
+                                    <span class="menu-button-descr">Sincronizza Dati</span>
+                                </button>
                             </div>
                         </form>
 
@@ -242,23 +268,6 @@
                         </ul>
                         <div id="prelievi-nocontent" class="nocontent">
                             Nessun elemento da visualizzare
-                        </div>
-                    </div>
-
-                    <!-- Contenuto scheda Sincronizzazione generale -->
-                    <div id="global-tab" class="tab-content">
-                        <div class="tab-header">
-                            <i class="fa-solid fa-globe"></i>
-                            Sincronizzazione Generale
-                        </div>  
-                        <div class="buttons-container sync-data-container">
-                            <button type="button" id="sync-data" class="button sync-button button-primary">
-                                <i class="fa-solid fa-arrows-rotate button-icon"></i>
-                                <span class="menu-button-descr">Sincronizza Dati</span>
-                            </button>
-                            <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro
-                                <i class="fa-solid fa-arrow-left button-icon"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
