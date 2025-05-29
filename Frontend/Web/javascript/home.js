@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     try {
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/get_sync_global_active`, {
+        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/settings/get_sync_global_active`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
