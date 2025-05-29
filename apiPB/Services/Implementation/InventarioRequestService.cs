@@ -102,7 +102,7 @@ namespace apiPB.Services.Implementation
             .Select(m => m.ToInventarioDto());
         }
 
-        public IEnumerable<InventarioDto> UpdateImportedById(UpdateImportedIdRequestDto request)
+        public InventarioDto UpdateImportedById(UpdateImportedIdRequestDto request)
         {
             if (request == null)
             {
@@ -112,8 +112,7 @@ namespace apiPB.Services.Implementation
             var filter = _mapper.Map<UpdateImportedIdFilter>(request);
             var result = _repository.UpdateImportedById(filter);
 
-            return result
-            .Select(m => m.ToInventarioDto());
+            return result.ToInventarioDto();
         }
     }
 }

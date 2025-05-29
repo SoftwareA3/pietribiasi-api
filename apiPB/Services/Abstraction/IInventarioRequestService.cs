@@ -57,6 +57,6 @@ namespace apiPB.Services.Abstraction
 
         IEnumerable<InventarioDto> GetNotImportedAppInventarioByFilter(ViewInventarioRequestDto request);
 
-        IEnumerable<InventarioDto> UpdateImportedById(UpdateImportedIdRequestDto request);
+        InventarioDto UpdateImportedById(UpdateImportedIdRequestDto request);
     }
 }

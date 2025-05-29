@@ -7,6 +7,13 @@ using apiPB.Dto.Request;
 
 namespace apiPB.Services.Abstraction
 {
+    /*
+    * Unico servizio più complicato: la responsabilità è la stessa,
+    * ma quando si tratta della sincronizzazione generale, deve occuparsi di chiamare (in SyncronizeAsync):
+    * Repository, Mapper, Servizio e Repository per tutte e 3 le entità (RegOre, PrelMat, Inventario).
+    * Inoltre, siccome le eccezioni non dipendono dai repository, ma dalla chiamata a Mago,
+    * è necessario gestire le eccezioni in modo centralizzato per poi spostarle al controller.
+    */
     public interface IMagoRequestService
     {
         /// <summary>
@@ -14,26 +21,7 @@ namespace apiPB.Services.Abstraction
         /// </summary>
         /// <param name="request">Id del lavoratore che effettua la sincronizzazione</param>
         /// <returns>Ritorna i dati che sono stati sincronizzati</returns>
-        Task<SyncronizedDataDto> SyncronizeAsync(WorkerIdSyncRequestDto request);
-
-        /// <summary>
-        /// Modifica le impostazioni per la connessione a Mago e la sincronizzazione
-        /// </summary>
-        /// <param name="settings">Parametri per la connessione a Mago e parametri di default</param>
-        /// <returns></returns>
-        SettingsDto? EditSettings(SettingsDto settings);
-
-        /// <summary>
-        /// Ritorna le impostazioni per la connessione a Mago e la sincronizzazione
-        /// </summary>
-        /// <returns>Ritorna le impostazioni per la connessione a Mago e la sincronizzazione</returns>
-        SettingsDto? GetSettings();
-
-        /// <summary>
-        /// Ritorna le impostazioni per la sincronizzazione globale
-        /// </summary>
-        /// <returns>Ritorna le impostazioni per la sincronizzazione globale</returns>
-        SyncGobalActiveRequestDto? GetSyncGlobalActive();
+        Task<SyncronizedDataDto> SyncronizeAsync(MagoLoginResponseDto responseDto, SettingsDto settings, WorkerIdSyncRequestDto requestId);
 
         /// <summary>
         /// Effettua la sincronizzazione delle ore registrate
@@ -64,21 +52,21 @@ namespace apiPB.Services.Abstraction
         /// </summary>
         /// <param name="request">Richiesta di sincronizzazione delle ore registrate filtrate</param>
         /// <returns>Ritorna le ore registrate sincronizzate filtrate</returns>
-        Task<SyncRegOreRequestDto> SyncRegOreFiltered(ViewOreRequestDto request);
+        Task<IEnumerable<SyncRegOreRequestDto>> SyncRegOreFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncRegOreFilteredDto? request);
 
         /// <summary>
         /// Effettua la sincronizzazione delle informazioni dei prelievi effettuati filtrate
         /// </summary>
         /// <param name="request">Richiesta di sincronizzazione delle informazioni dei materiali prelevati filtrate</param>
         /// <returns>Ritorna le informazioni dei materiali prelevati sincronizzati filtrati</returns>
-        Task<SyncPrelMatRequestDto> SyncPrelMatFiltered(ViewPrelMatRequestDto request);
+        Task<IEnumerable<SyncPrelMatRequestDto>> SyncPrelMatFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncPrelMatFilteredDto? request);
 
         /// <summary>
         /// Effettua la sincronizzazione delle informazioni delle movimentazioni di inventario filtrate
         /// </summary>
         /// <param name="request">Richiesta di sincronizzazione delle informazioni delle movimentazioni di inventario filtrate</param>
         /// <returns>Ritorna le informazioni delle movimentazioni di inventario sincronizzate filtrate</returns>
-        Task<SyncInventarioRequestDto> SyncInventarioFiltered(ViewInventarioRequestDto request);
+        Task<IEnumerable<SyncInventarioRequestDto>> SyncInventarioFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncInventarioFilteredDto? request);
 
         /// <summary>
         /// Effettua la procedura di login per l'autenticazione a Mago
@@ -86,6 +74,16 @@ namespace apiPB.Services.Abstraction
         /// <param name="request">Richiesta di login</param>
         /// <returns>Ritorna le informazioni restituite dal login, come il token</returns>
         Task<MagoLoginResponseDto?> LoginAsync(MagoLoginRequestDto request);
+
+        /// <summary>
+        /// Effettua la procedura di login per l'autenticazione a Mago con WorkerId
+        /// </summary>
+        /// <param name="request">Richiesta di login con WorkerId</param>
+        /// <returns>Ritorna le informazioni restituite dal login, come il token</returns>
+        /// <remarks>
+        /// Questo metodo è utilizzato per chiamare LoginAsync utilizzando esclusivamente il WorkerId.
+        /// </remarks>
+        Task<(MagoLoginResponseDto? LoginResponse, SettingsDto? Settings)> LoginWithWorkerIdAsync(WorkerIdSyncRequestDto request);
 
         /// <summary>
         /// Effettua la procedura di logoff per disconnettersi da Mago
