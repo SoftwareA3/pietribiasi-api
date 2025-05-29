@@ -185,36 +185,26 @@ namespace apiPB.Repository.Implementation
                 .ToList();
         }
 
-        public IEnumerable<A3AppInventario> UpdateImportedById(UpdateImportedIdFilter filter)
+        public A3AppInventario? UpdateImportedById(UpdateImportedIdFilter filter)
         {
             var notImported = _context.A3AppInventarios
                 .Where(x => x.Imported == false && x.InvId == filter.Id)
-                .ToList();
+                .FirstOrDefault();
 
-            if (notImported.Count == 0)
+            if (notImported == null)
             {
-                return notImported;
+                return null;
             }
 
-            foreach (var item in notImported)
-            {
-                item.Imported = true;
-                item.UserImp = filter.WorkerId.ToString();
-                item.DataImp = DateTime.Now;
+            notImported.Imported = true;
+            notImported.UserImp = filter.WorkerId.ToString();
+            notImported.DataImp = DateTime.Now;
+            _context.A3AppInventarios.Update(notImported);
+            _context.SaveChanges();
 
-                var dbItem = _context.A3AppInventarios.FirstOrDefault(x => x.InvId == item.InvId);
-                if (dbItem != null)
-                {
-                    dbItem.Imported = item.Imported;
-                    dbItem.UserImp = item.UserImp;
-                    dbItem.DataImp = item.DataImp;
 
-                    _context.A3AppInventarios.Update(dbItem);
-                    _context.SaveChanges();
-                }
-            }
             // Ritorna la lista aggiornata
-            return GetInventario();
+            return notImported;
         }
     }
 }

@@ -9,11 +9,11 @@ using apiPB.Dto.Request;
 
 namespace apiPB.Repository.Implementation
 {
-    public class MagoRepository : IMagoRepository
+    public class SettingsRepository : ISettingsRepository
     {
         private readonly ApplicationDbContext _context;
         
-        public MagoRepository(ApplicationDbContext context)
+        public SettingsRepository(ApplicationDbContext context)
         {
             _context = context;
         }

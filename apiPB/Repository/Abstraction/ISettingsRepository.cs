@@ -5,7 +5,7 @@ using apiPB.Dto.Request;
 
 namespace apiPB.Repository.Abstraction
 {
-    public interface IMagoRepository
+    public interface ISettingsRepository
     {
         A3AppSetting EditSettings(SettingsFilter settings);
         SettingsDto? GetSettings();
