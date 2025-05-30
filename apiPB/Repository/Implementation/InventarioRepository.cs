@@ -97,7 +97,8 @@ namespace apiPB.Repository.Implementation
                         && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
                         && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
                         && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
-                        && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode))
+                        && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
+                        && (filter.Imported == null || i.Imported == filter.Imported.Value))
             .ToList();
         }
 

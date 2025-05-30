@@ -108,6 +108,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             importedDataGroup.classList.add("hidden");
         }
         populateInventarioList(filteredList);
+
+        await refreshAutocompleteData();
     });
     
     importedData.addEventListener("change", async function() {
@@ -222,6 +224,8 @@ function createFilterObject() {
     if (filterItem.value) filteredObject.item = filterItem.value;
 
     if(filterBarcode.value) filteredObject.barCode = filterBarcode.value;
+
+    if(showImportedToggle) filteredObject.imported = showImportedToggle.checked ? true : false;
     
     return filteredObject;
 }

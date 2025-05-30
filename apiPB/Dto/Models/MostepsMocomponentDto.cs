@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO per le operazioni di lavoro salvate nella vista vw_api_mosteps_mocomponent.
+    /// Questa tabella è necessaria per il recupero delle informazioni relative al prelievo di materiali
+    /// </summary>
     public class MostepsMocomponentDto
     {
         public string Job { get; set; } = null!;

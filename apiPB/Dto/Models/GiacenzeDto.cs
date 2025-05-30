@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO per le giacenze: recupera le informazioni relative alle giacenze di magazzino
+    /// </summary>
     public class GiacenzeDto
     {
         public string Item { get; set; } = null!;

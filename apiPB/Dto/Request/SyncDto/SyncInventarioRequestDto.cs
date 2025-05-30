@@ -6,6 +6,11 @@ using System.Text.Json.Serialization;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// DTO per l'invio di infomazioni a Mago4 nel formato di sincronizzazione
+    /// Incapsula le informazioni da inviare per sincronizzare l'elemento dell'inventario in un unico DTO
+    /// in modo da poter inviare simultanteamente le informazioni.
+    /// </summary>
     public class SyncInventarioRequestDto
     {
         [JsonPropertyName("MA_InventoryEntries")]

@@ -7,6 +7,9 @@ namespace apiPB.Dto.Request
 {
     public class ActionMessageDetailsDto
     {
+        /// <summary>
+        /// DTO per i dettagli delle operazioni e i messaggi di log associati.
+        /// </summary>
         public int ActionId { get; set; }
         public string? Job { get; set; }
 

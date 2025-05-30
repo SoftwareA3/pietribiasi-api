@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO per il recupero delle informazioni relative alle operazioni di inventario salvate.
+    /// Recupera le informazioni dalla tabella A3_app_inventario.
+    /// </summary>
     public class InventarioDto
     {
         public int InvId { get; set; }

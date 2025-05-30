@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// DTO per l'invio di richieste di creazione di record.
+    /// I parametri presenti sono parametri comuni a tutte le richieste di questo tipo 
+    /// Le classi dei DTO specifici ereditano questa classe per ereditare i parametri comuni.
+    /// </summary>
     public class A3AppBaseRequestDto
     {
         public int WorkerId { get; set; }

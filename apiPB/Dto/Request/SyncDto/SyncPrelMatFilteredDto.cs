@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// Attacca il WorkerId alla lista di PrelMatDto filtrati in modo da sincronizzarne solo di determinati.
+    /// </summary>
     public class SyncPrelMatFilteredDto
     {
         public WorkerIdSyncRequestDto WorkerIdSyncRequestDto { get; set; } = new WorkerIdSyncRequestDto();

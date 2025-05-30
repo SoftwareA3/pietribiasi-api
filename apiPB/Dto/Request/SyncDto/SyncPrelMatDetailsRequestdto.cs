@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// DTO per l'invio di infomazioni a Mago4 nel formato di sincronizzazione
+    /// Contiene informazioni dettagliate sul materiale prelevato.
+    /// </summary>
     public class SyncPrelMatDetailsRequestdto
     {
         public int? Position { get; set; }

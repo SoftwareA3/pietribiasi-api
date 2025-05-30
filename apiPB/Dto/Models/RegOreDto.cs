@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO per il recupero delle informazioni relative alle operazioni di registrazione delle ore salvate.
+    /// Recupera le informazioni dalla tabella A3_app_reg_ore.
+    /// </summary>
     public class RegOreDto
     {
         public int RegOreId { get; set; }

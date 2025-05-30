@@ -7,6 +7,9 @@ using apiPB.Dto.Request;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// DTO per la sincronizzazione delle ore registrate.
+    /// </summary>
     public class SyncRegOreRequestDto
     {
         public bool? Closed { get; set; }

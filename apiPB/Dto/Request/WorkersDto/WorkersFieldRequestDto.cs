@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// DTO contenente le informazioni di un lavoratore.
+    /// </summary>  
     public class WorkersFieldRequestDto
     {
         public int WorkerId { get; set; }

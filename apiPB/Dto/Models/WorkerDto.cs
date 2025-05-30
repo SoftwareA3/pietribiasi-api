@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO per il recupero delle infomrazioni relative ai lavori.
+    /// Recupera le informazioni dalla tabella vw_api_workers.
+    /// Questa vista è necessaria alle operaizioni di login e alla registrazione dell'utente che svolge le operazioni.
+    /// </summary>
     public class WorkerDto
     {
         public int WorkerId { get; set; }

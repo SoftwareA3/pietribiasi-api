@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO per il recupero delle informazioni relative alle operazioni di prelievo dei materiali salvate.
+    /// Recupera le informazioni dalla tabella A3_app_prel_mat.
+    /// </summary>
     public class PrelMatDto
     {
         public int PrelMatId { get; set; }

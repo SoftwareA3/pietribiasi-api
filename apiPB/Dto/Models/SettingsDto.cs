@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO per il recupero e la modifica delle impostazioni dell'applicazione.
+    /// </summary>
     public class SettingsDto
     {
         public string? MagoUrl { get; set; }

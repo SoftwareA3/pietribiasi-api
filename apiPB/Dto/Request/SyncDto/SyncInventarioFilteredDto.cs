@@ -7,6 +7,9 @@ using apiPB.Dto.Request;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// Attacca il WorkerId alla lista di InventarioDto filtrati in modo da sincronizzarne solo di determinati.
+    /// </summary>
     public class SyncInventarioFilteredDto
     {
         public WorkerIdSyncRequestDto WorkerIdSyncRequestDto { get; set; } = new WorkerIdSyncRequestDto();

@@ -76,6 +76,7 @@ namespace apiPB.Repository.Implementation
                 && (string.IsNullOrEmpty(filter.Mono) || i.Mono == filter.Mono)
                 && (string.IsNullOrEmpty(filter.Component) || i.Component == filter.Component)
                 && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
+                && (filter.Imported == null || i.Imported == filter.Imported.Value)
             ).ToList();
         }
 

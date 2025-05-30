@@ -7,6 +7,9 @@ using apiPB.Dto.Request;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// Questo DTO raccoglie le informazioni comuni delle operazioni e i messaggi di log associati.
+    /// </summary>
     public class ActionMessageListDto
     {
         public string? ActionType { get; set; }

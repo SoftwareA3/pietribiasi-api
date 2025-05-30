@@ -8,6 +8,9 @@ using apiPB.Dto.Models;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// Attacca il WorkerId alla lista di RegOreDto filtrati in modo da sincronizzarne solo di determinati.
+    /// </summary>
     public class SyncRegOreFilteredDto
     {
         public WorkerIdSyncRequestDto WorkerIdSyncRequestDto { get; set; } = new WorkerIdSyncRequestDto();

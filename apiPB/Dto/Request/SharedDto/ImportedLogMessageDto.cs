@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
 {
+    /// <summary>
+    /// DTO per la richiesta di importazione dei messaggi di log
+    /// </summary>
     public class ImportedLogMessageDto
     {
         public int? Moid { get; set; }

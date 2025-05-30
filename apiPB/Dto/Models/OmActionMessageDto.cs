@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace apiPB.Dto.Models
 {
+    /// <summary>
+    /// DTO utilizzato per il recupero dei messaggi di debug per le operazioni inviate a MAGO4.
+    /// Recupera le informazioni dalla vista vw_om_action_message.
+    /// </summary>
     public class OmActionMessageDto
     {
         public int ActionId { get; set; }

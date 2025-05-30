@@ -145,6 +145,8 @@ document.addEventListener("DOMContentLoaded", async function() {
             importedDataGroup.classList.add("hidden");
         }
         populateOreList(filteredList);
+
+        await refreshAutocompleteData();
     });
 
     importedData.addEventListener("change", async function() {
@@ -198,6 +200,7 @@ function createFilterObject() {
     if(filterCommessa.value) filteredObject.job = filterCommessa.value;
     if(filterLavorazione.value) filteredObject.operation = filterLavorazione.value;
     if(filterOrdineDiProduzione.value) filteredObject.mono = filterOrdineDiProduzione.value;
+    if(showImportedToggle) filteredObject.imported = showImportedToggle.checked ? true : false;
     
     return filteredObject;
 }
@@ -453,55 +456,46 @@ async function populateOreList(data) {
             logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
             itemActions.appendChild(logButton);
             li.appendChild(itemActions);
-            if(logList)
-            {
-                console.log("Log trovato:", logList);
-                // Controlla se almeno un elemento nella lista interna "actionMessageDetails" ha messageType === "Errore"
-                // Mostra icona di warning se ci sono errori nei log
-                let hasError = false;
 
-                // Controlla errori in actionMessageDetails
-                if (
-                    Array.isArray(logList.actionMessageDetails) &&
-                    logList.actionMessageDetails.some(
-                        detail =>
-                            (typeof detail.actionStatus === "string" &&
-                                (detail.actionStatus.includes("Errore") || detail.actionStatus.includes("Da Fare")))
-                    )
-                ) {
-                    hasError = true;
-                }
+            // Controlla se almeno un elemento nella lista interna "actionMessageDetails" ha messageType === "Errore"
+            // Mostra icona di warning se ci sono errori nei log
+            let hasError = false;
 
-                // Controlla errori in omMessageDetails
-                if (
-                    Array.isArray(logList.omMessageDetails) &&
-                    logList.omMessageDetails.some(
-                        detail =>
-                            (typeof detail.messageType === "string" &&
-                                detail.messageType.includes("Errore"))
-                    )
-                ) {
-                    hasError = true;
-                }
-
-                if (hasError) {
-                    const warningLogMessage = document.createElement("span");
-                    warningLogMessage.className = "log-message";
-                    warningLogMessage.title = "Log di errore rilevato";
-                    warningLogMessage.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                    logButton.style.position = "relative";
-                    logButton.appendChild(warningLogMessage);
-                }
-                logButton.addEventListener("click", () => {
-                    openLogOverlay(logList);
-                });
+            // Controlla errori in actionMessageDetails
+            if (
+                Array.isArray(logList.actionMessageDetails) &&
+                logList.actionMessageDetails.some(
+                    detail =>
+                        (typeof detail.actionStatus === "string" &&
+                            (detail.actionStatus.includes("Errore") || detail.actionStatus.includes("Da Fare")))
+                )
+            ) {
+                hasError = true;
             }
-            else
-            {
-                logButton.addEventListener("click", () => {
-                    alert("Nessun log trovato per questo MoId.");
-                });
+
+            // Controlla errori in omMessageDetails
+            if (
+                Array.isArray(logList.omMessageDetails) &&
+                logList.omMessageDetails.some(
+                    detail =>
+                        (typeof detail.messageType === "string" &&
+                            detail.messageType.includes("Errore"))
+                )
+            ) {
+                hasError = true;
             }
+
+            if (hasError) {
+                const warningLogMessage = document.createElement("span");
+                warningLogMessage.className = "log-message";
+                warningLogMessage.title = "Log di errore rilevato";
+                warningLogMessage.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                logButton.style.position = "relative";
+                logButton.appendChild(warningLogMessage);
+            }
+            logButton.addEventListener("click", () => {
+                openLogOverlay(logList);
+            });
         }
         
         oreList.appendChild(li);
@@ -682,7 +676,7 @@ async function openLogOverlay(logList) {
     const logItem = logList;
     console.log("Log item:", logItem);
 
-    if (logItem) {
+    if (logItem !== null && logItem.actionType !== null && logItem.moid !== null) {
         logMessagesDiv.innerHTML = ""; // Pulisci prima
         // Mostra MoId e MoNo
         logMessagesDiv.innerHTML += `<div class="msg-header"><strong>WorkerId:</strong> ${logItem.workerId}</div>
@@ -729,10 +723,12 @@ async function openLogOverlay(logList) {
                 `;
             });
         } else {
-            logMessagesDiv.innerHTML += `<div><strong>Messaggio:</strong> Nessun messaggio disponibile</div>`;
+            logMessagesDiv.innerHTML += `<div class="msg-header"><strong>Errore!</strong></div>
+                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe essere stata chiusa</div>`;
         }
     } else {
-        logMessagesDiv.innerHTML = "<div>Nessun log trovato per questo MoId.</div>";
+        logMessagesDiv.innerHTML = `<div class="msg-header"><strong>Errore!</strong></div>
+                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe essere stata chiusa</div>`;
     }
 
     // Mostra l'overlay
