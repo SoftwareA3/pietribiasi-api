@@ -48,9 +48,10 @@ namespace apiPB.Controllers
         /// <summary>
         /// Invia la lista di A3AppPrelMat al database
         /// </summary>
-        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
+        /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i record da creare in A3AppPrelMat</param>
         /// <response code="201">Crea delle entry nel database</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult PostPrelMatList([FromBody] IEnumerable<PrelMatRequestDto>? a3AppPrelMatRequestDto)
         {
             if (a3AppPrelMatRequestDto == null || !a3AppPrelMatRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -69,6 +70,7 @@ namespace apiPB.Controllers
         /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Collezione contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna le informazioni della vista A3_app_prel_mat filtrate in base ai parametri opzionali inseriti</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult GetViewPrelMat([FromBody] ViewPrelMatRequestDto? a3AppPrelMatRequestDto)
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -105,6 +107,7 @@ namespace apiPB.Controllers
         /// <param name="IEnumerable<a3AppPrelMatRequestDto>">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna l'elemento eliminato dalla tabella</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult DeletePrelMatId([FromBody] ViewPrelMatDeleteRequestDto? a3AppPrelMatRequestDto)
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -116,6 +119,13 @@ namespace apiPB.Controllers
             return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
         }
 
+        /// <summary>
+        /// Ritorna la lista di A3AppPrelMat filtrati per componente
+        /// Questa API è utilizzata per recuperare le quantità del componente specificato che sono già state salvate.
+        /// Con queste viene poi effettuata una somma nel Frontend per specificare all'utente la quantità totale salvata fin'ora.
+        /// </summary>
+        /// <param name="a3AppPrelMatRequestDto">Identificativo del componente da cercare</param>
+        /// <returns>Ritorna la lista delle richieste filtrate per componente</returns>
         [HttpPost("get_prel_mat_with_component")]
         public IActionResult GetPrelMatWithComponent([FromBody] ComponentRequestDto? a3AppPrelMatRequestDto)
         {
@@ -149,6 +159,7 @@ namespace apiPB.Controllers
         /// /// </summary>
         /// <response code="200">Ritorna la lista di A3AppPrelMat non importati in base al filtro passato</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult GetNotImportedPrelMatWithFilter(ViewPrelMatRequestDto request)
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);

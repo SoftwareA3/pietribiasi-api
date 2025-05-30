@@ -42,11 +42,11 @@ namespace apiPB.Controllers
 
         [HttpPost("post_inventario")]
         /// <summary>
-        /// Invia la lista di Dto al database
+        /// Invia la lista di Dto al database per la creazione o l'aggiornamento dei record di A3AppInventario
         /// </summary>
-        /// <param name="IEnumerable<a3AppInventarioRequestDto>">Collezione contenente i parametri di ricerca</param>
+        /// <param name="IEnumerable<a3AppInventarioRequestDto>">Collezione contenente i parametri dei record da creare o modificare</param>
         /// <response code="201">Crea delle entry nel database. Se le entry esistono, aggiorna alcuni campi</response>
-        /// <response code="404">Non trovato</response>
+        /// <response code="404">Non trovato/non creato/non modificato</response>
         public IActionResult PostInventarioList([FromBody] IEnumerable<InventarioRequestDto>? inventarioRequestDto)
         {
             if (inventarioRequestDto == null || !inventarioRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -80,7 +80,7 @@ namespace apiPB.Controllers
         /// <summary>
         /// Aggiorna il record di A3AppInventario in base al filtro passato
         /// </summary>
-        /// <param name="ViewInventarioPutRequestDto">Oggetto che contiene i parametri di ricerca</param>
+        /// <param name="ViewInventarioPutRequestDto">Oggetto che contiene i parametri di ricerca per trovare e modificare il record</param>
         /// <response code="200">Ritorna l'elemento modificato</response>
         /// <response code="404">Non trovato</response>
         public IActionResult PutViewInventario([FromBody] ViewInventarioPutRequestDto? request)

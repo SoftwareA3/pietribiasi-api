@@ -27,8 +27,8 @@ namespace apiPB.Controllers
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_om_action_messages filtrate in base ai parametri passati
         /// </summary>
-        /// <param name="ImportedLogMessageDto">Collezione contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna tutte le informazioni della vista A3_app_inventario</response>
+        /// <param name="ImportedLogMessageDto">DTO per la richiesta di importazione dei messaggi di log</param>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_om_action_messages</response>
         /// <response code="404">Non trovato</response>
         public IActionResult GetActionMessagesByFilter([FromBody] ImportedLogMessageDto? request)
         {

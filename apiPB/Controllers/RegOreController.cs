@@ -42,9 +42,10 @@ namespace apiPB.Controllers
         /// <summary>
         /// Invia la lista di A3AppRegOre al database
         /// </summary>
-        /// <param name="IEnumerable<a3AppRegOreRequestDto>">Collezione contenente i parametri di ricerca</param>
+        /// <param name="IEnumerable<a3AppRegOreRequestDto>">Collezione contenente i record da creare nel database</param>
         /// <response code="201">Crea delle entry nel database</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult PostRegOreList([FromBody] IEnumerable<RegOreRequestDto>? a3AppRegOreRequestDto)
         {
             if (a3AppRegOreRequestDto == null || !a3AppRegOreRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -63,6 +64,7 @@ namespace apiPB.Controllers
         /// <param name="A3AppViewOreRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna tutte le informazioni della vista A3_app_reg_ore filtrate</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult GetA3AppRegOre([FromBody] ViewOreRequestDto? a3AppViewOreRequestDto)
         {
             if (a3AppViewOreRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -81,6 +83,7 @@ namespace apiPB.Controllers
         /// <param name="A3AppViewOrePutRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna il record modificato della tabella A3_app_reg_ore</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult PutA3AppRegOre([FromBody] ViewOrePutRequestDto? a3AppViewOrePutRequestDto)
         {
             if (a3AppViewOrePutRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -99,6 +102,7 @@ namespace apiPB.Controllers
         /// <param name="A3AppDeleteRequestDto">Oggetto contenente i parametri di ricerca</param>
         /// <response code="200">Ritorna il record eliminato della tabella A3_app_reg_ore</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult DeleteRegOreId([FromBody] ViewOreDeleteRequestDto? a3AppDeleteRequestDto)
         {
             if (a3AppDeleteRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
@@ -132,6 +136,7 @@ namespace apiPB.Controllers
         /// <param name="filter">Filtro per l'esecuzione della query. Richiede le proprietà: WorkerId</param>
         /// <response code="200">Ritorna la lista di A3AppRegOre non importati in base al filtro passato</response>
         /// <response code="404">Non trovato</response>
+        /// <response code="400">Bad Request</response>
         public IActionResult GetNotImportedAppRegOre([FromBody] ViewOreRequestDto? filter)
         {
             if (filter == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);

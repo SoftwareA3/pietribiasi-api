@@ -11,6 +11,7 @@ namespace apiPB.Controllers
 {
     [Route("api/settings")]
     [ApiController]
+    [Authorize]
     public class SettingsController : ControllerBase
     {
         private readonly ISettingsRequestService _settingsService;
@@ -29,7 +30,6 @@ namespace apiPB.Controllers
         /// <response code="200">Ritorna le informazioni della tabella A3AppSettings</response>
         /// <response code="404">Non trovato</response>
         [HttpGet("get_settings")]
-        [Authorize]
         public IActionResult GetSettings()
         {
             var settingsDto = _settingsService.GetSettings();
@@ -46,7 +46,6 @@ namespace apiPB.Controllers
         /// <response code="404">Modifica delle impostazioni non riuscita</response>
         /// <returns>Informazioni di risposta: ritorna le informazioni che sono state modificate</returns>
         [HttpPost("edit_settings")]
-        [Authorize]
         public IActionResult EditSettings([FromBody] SettingsDto? request)
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di modifica delle impostazioni non valida");
@@ -57,8 +56,14 @@ namespace apiPB.Controllers
             return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive, "Impostazioni modificate con successo");
         }
 
+        /// <summary>
+        /// Ritorna le informazioni sulla sincronizzazione globale attiva
+        /// Questa API è utilizzata per verificare se un utente non amministratore 
+        /// ha la possibilità di visualizzare la pagina di sincronizzazione dalla home.
+        /// </summary>
+        /// <response code="200">Ritorna le informazioni della tabella A3AppSyncGlobalActive</response>
+        /// <response code="404">Non trovato</response>
         [HttpGet("get_sync_global_active")]
-        [Authorize]
         public IActionResult GetSyncGlobalActive()
         {
             var syncGlobalActiveDto = _settingsService.GetSyncGlobalActive();

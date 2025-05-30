@@ -26,10 +26,10 @@ namespace apiPB.Controllers
 
         [HttpPost("job")]
         /// <summary>
-        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per Job
+        /// Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents
         /// </summary>
         /// <param name="mostepsMocomponentJobRequestDto">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents</response>
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithJob([FromBody] JobRequestDto? mostepsMocomponentJobRequestDto)
         {
@@ -44,10 +44,10 @@ namespace apiPB.Controllers
 
         [HttpPost("mono")]
         /// <summary>
-        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per Mono
+        /// Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents
         /// </summary>
         /// <param name="mostepsMocomponentMonoRequestDto">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents</response>
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithMono([FromBody] MonoRequestDto? mostepsMocomponentMonoRequestDto)
         {
@@ -62,10 +62,10 @@ namespace apiPB.Controllers
 
         [HttpPost("operation")]
         /// <summary>
-        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per Operation
+        /// Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents 
         /// /// </summary>
         /// <param name="mostepsMocomponentOperationRequestDto">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents</response>
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithOperation([FromBody] OperationRequestDto? mostepsMocomponentOperationRequestDto)
         {
@@ -80,10 +80,10 @@ namespace apiPB.Controllers
 
         [HttpPost("barcode")]
         /// <summary>
-        /// Ritorna tutte le informazioni della vista vw_api_mo_steps_components filtrate per BarCode
+        /// Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents
         /// </summary>
         /// <param name="mostepsMocomponentBarCodeRequestDto">Oggetto contenente i parametri di ricerca</param>
-        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mo_steps_components</response>
+        /// <response code="200">Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents</response>
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithBarCode([FromBody] BarCodeRequestDto? mostepsMocomponentBarCodeRequestDto)
         {
