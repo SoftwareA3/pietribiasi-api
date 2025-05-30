@@ -74,8 +74,6 @@
     align-items: center;
     gap: var(--spacing-3);
     margin-top: var(--spacing-3);
-    background-color: var(--primary-color);
-    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     padding-top: var(--spacing-2);
     padding-left: var(--spacing-3);
     border-radius: var(--border-radius-sm);
@@ -119,20 +117,20 @@
 }
 
 input:checked + .toggle-slider {
-    background-color: var(--gray-200);
+    background-color: var(--primary-color);
 }
 
 input:checked + .toggle-slider:before {
     transform: translateX(26px);
-    background-color: var(--primary-color);
+    background-color: var(--white);
 }
 
 .toggle-label {
     font-size: 1rem;
     color: var(--gray-700);
     margin-bottom: var(--spacing-2);
-    font-weight: 600;
-    color: white;
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-700);
 }
 
 /* Stile per indicatori di stato */
