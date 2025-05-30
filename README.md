@@ -60,7 +60,7 @@ I pulsanti disponibili per tutti gli utenti sono (Titolo - icona):
 - **Visualizza Ore Registrate** - 📄: porta alla pagina [Visualizza Ore Registrate](#visualizza-ore-registrate)
 - **Visualizza Prelievi Effettuati** - 🚚: porta alla pagina [Visualizza Prelievi Effettuati](#visualizza-prelievi-effettuati)
 - **Visualizza Registrazioni Inventario** - 🔍: porta alla pagina [Visualizza Registrazioni Inventario](#visualizza-registrazioni-inventario)
-- **Sincronizza** - 🔄️: attiva la funzione di [Sincronizzazione](#sincronizzazione)
+- **Sincronizza** - 🔄️: porta alla pagina [Sincronizzazione](#sincronizzazione)
 
 Le operazioni aggiuntive disponibili per gli utenti di tipo amministratore sono:
 - **Modalità Power User** - (👤 con un "+"): porta alla pagina [Power User](#power-user)
@@ -247,17 +247,20 @@ La pagina della **Modalità Power User** si presenta nella seguente maniera:
 ---
 
 ## Sincronizzazione
-Nella **Home Page** è disponibile un pulsante **Sincronizza**, per ogni tipo di utente, indicato tramite l'icona 🔄️. Questo pulsante recupera le liste di elementi inseriti tramite l'applicazione (quindi quelli registrati dagli utenti e che hanno il pallino verde nelle pagine di visualizzazione) ed effettua la sincronizzazione delle liste, inviandole a Mago4 e segnalandole come "Importate". 
-Alla pressione del pulsante, l'icona gira per simulare un caricamento ed il pulsante viene disabilitato.
-Al completamento dell'operazione, possono verificarsi due eventi:
-- L'operazione è andata a buon fine: l'icona di caricamento scompare e viene sostituita da un'icona ✔️. L'icona si resetta dopo un paio di secondi.  
-- L'operazione dà esito negativo: l'icona di caricamento scompare e viene sostituita da un'icona ❌. L'icona si resetta dopo un paio di secondi.
+La **sincronizzazione** è una funzionalità che permette di recuperare i dati salvati tramite l'applicazione e inviarli al gestionale **Mago4** per di fatto sincronizzare i dati del gestionale. La pagina si apre con una selezione di schede. La scheda di default è impostata sulla **Sincronizzazione Generale**, indicata anche dall'icona 🌐, la quale dispone del classico pulsante per ritornare alla home e un pulsante per la sincronizzazione dei dati. Alla pressione del pulsante di sincronizzazione, indicato tramite l'icona 🔄️ verrà avviata la procedura di sincronizzazione e l'icona inizierà a roteare. Da qui gli esiti possibili sono due:
+- L'operazione ha successo o non ci sono stati dati da aggiornare: l'icona scompare e viene sostituita da un ✔️ e i dati vengono aggiornati
+- Durante l'operazione si è verificato un errore: l'icona scompare e viene sostituita da una ❌.
+Le icone si resettano dopo un paio di secondi per ritentare la sincronizzazione
+Le altre schede della pagina di sincronizzazione, mettono a disposizione la possibilità di sincronizzare per singola funzione, ossia per **Inventario**, **Ore Registrate** e **Prelievi**. Ognuna di queste pagine si presenta in maniera molto simile a quella delle rispettive pagine di visualizzazione, tolto il toggle per la visualizzazione delle operazioni già sincronizzate e la possibilità di modificare o eliminare gli elementi. L'utente può quindi applicare i filtri come avviene nelle pagine di visualizzazione e premere il tasto "Filtra" per confermare i filtri e aggiornare la lista di elementi. Viene messo a disposizione un pulsante **Sincronizza dati** a fianco al pulsante per tornare alla home. Questo pulsante permette l'aggiornamento della lista di elementi filtrati. Alla pressione, viene quindi avviata la procedura di sincronizzaizone **solo** per gli elementi appartenenti alla lista (quindi anche filtrati in caso di applicazione del filtro). 
+Per inviare tutte le informazioni di un'operazione, è necessario svuotare tutti i campi filtro e premere il pulsante di sincronizzazione. La procedura di sincronizzazione è analoga a quella indicata per la sincronizzazione generale, ma con i vincoli specificati sopra. 
 
 ---
 
 ## Impostazioni
-Nella **Home Page** è disponibile per gli utenti di tipo **Amministrazione** un pulsante **Impostazioni**, rappresentato da un'icona ⚙️. Alla pressione del pulsante, si viene portati in una pagina, nella quale è possibile modificare i campi delle impostazioni. I campi sono degli input nei quali sono inserite le informazioni per la connessione a Mago4 per le richieste API e alcuni campi aggiuntivi che assegnano valori di default per alcune richieste. 
-È possibile modificare ognuno di questi campi. L'inoltro delle modifiche è valido solamente alla pressione del pulsante **Salva**, indicato con un'icona 💾. Se l'invio delle modifiche ha successo, viene mostrato un alert per segnalarlo.
+Nella **Home Page** è disponibile per gli utenti di tipo **Amministrazione** un pulsante **Impostazioni**, rappresentato da un'icona ⚙️. Alla pressione del pulsante, si viene portati in una pagina, nella quale è possibile modificare i campi delle impostazioni. I campi sono degli input nei quali sono inserite le informazioni per la connessione a Mago4 per le richieste API e alcuni campi aggiuntivi che assegnano valori di default per alcune richieste.
+Tutti i campi sono inizialmente disabilitati per evitare modifiche accidentali.
+È possibile modificare ognuno di questi campi, spuntando un toggle **Abilita modifica** che abilita tutti i campi degli input per consentire all'utente di inserire un nuovo input. L'inoltro delle modifiche è valido solamente alla pressione del pulsante **Salva**, indicato con un'icona 💾. Se l'invio delle modifiche ha successo, viene mostrato un alert per segnalarlo.
+All'interno della pagina è presente un input in particolare che ha degli effetti per gli altri utenti: l'input di selezione **Sincronizzazione globale** serve per abilitare o disabilitare la possibilità che tutti gli utenti possano visualizzare e utilizzare la pagina di sincronizzazione. Se la selezione è su **False**, gli utenti di tipo diverso da **Amministrazione** non vedranno la pagina di sincronizzazione all'interno della home e non potranno quindi utilizzarla. Attivandola, ogni utente può visualizzare il pulsante di sincronizzazione. Gli utenti di tipo diverso da **Amministrazione** non potranno comunque visualizzare tutte le operazioni, ma solo quelle svolte da loro.
 
 ---
 
@@ -281,7 +284,7 @@ I controllers inoltre rappresentano il layer di presentazione, ossia si occupano
 ### Classi e Metodi
 #### MagoController
 **ROUTE:** `api/mago_api`
-Si occupa della gestione di login, logoff, sincronizzazione, recupero e modifica delle impostazioni
+Si occupa della gestione di login, logoff, sincronizzazione generale e specifica per le singole operazioni
 
 ---
 
@@ -318,7 +321,7 @@ public async Task<IActionResult> LogOff([FromBody] MagoTokenRequestDto tokenRequ
 ```csharp
 public async Task<IActionResult> Syncronize([FromBody] WorkerIdSyncRequestDto? request)
 ```
-- **Endpoint:** `synchronize`
+- **Endpoint:** `synchronize_all`
 - **Richiesta:** POST
 - **Descrizione:** effettua la sincronizzazione dei dati salvati nelle tabelle `A3_Prel_Mat`; `A3_App_Reg_Ore` e `A3_App_Inventario`
 - **Parametri:**
@@ -329,6 +332,54 @@ public async Task<IActionResult> Syncronize([FromBody] WorkerIdSyncRequestDto? r
     - `404 Not Found` se la richiesta non ha prodotto risultati e la sincronizzazione non è riuscita
 
 ---
+
+```csharp
+public async Task<IActionResult> SyncRegOreFiltered([FromBody] SyncRegOreFilteredDto request)
+```
+- **Endpoint:** `sync_reg_ore_filtered`
+- **Richiesta:** POST
+- **Descrizione:** effettua la sincronizzazione dei dati salvati nelle tabella tabella `A3_app_reg_ore`. Il parametro contiene una lista facoltativa che permette di selezionare record specifici da sincronizzare
+- **Parametri:**
+    - `SyncRegOreFilteredDto` Dto di richiesta contenente l’id dell’utente che effettua la sincronizzazione e un'eventuale lista di record da sincronizzazre
+- **Ritorna:** `Task<IActionResult>`  
+    - `200 Ok` se l'operazione va a buon fine. Ritorna anche le liste delle informazioni che sono state sincronizzate
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati e la sincronizzazione non è riuscita
+
+---
+
+```csharp
+public async Task<IActionResult> SyncPrelMatFiltered([FromBody] SyncPrelMatFilteredDto request)
+```
+- **Endpoint:** `sync_prel_mat_filtered`
+- **Richiesta:** POST
+- **Descrizione:** effettua la sincronizzazione dei dati salvati nelle tabella tabella `A3_app_prel_mat`. Il parametro contiene una lista facoltativa che permette di selezionare record specifici da sincronizzare
+- **Parametri:**
+    - `SyncRegOreFilteredDto` Dto di richiesta contenente l’id dell’utente che effettua la sincronizzazione e un'eventuale lista di record da sincronizzazre
+- **Ritorna:** `Task<IActionResult>`  
+    - `200 Ok` se l'operazione va a buon fine. Ritorna anche le liste delle informazioni che sono state sincronizzate
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati e la sincronizzazione non è riuscita
+
+---
+
+```csharp
+public async Task<IActionResult> SyncInventarioFiltered([FromBody] SyncInventarioFilteredDto request)
+```
+- **Endpoint:** `sync_inventario_filtered`
+- **Richiesta:** POST
+- **Descrizione:** effettua la sincronizzazione dei dati salvati nelle tabella tabella `A3_app_inventario`. Il parametro contiene una lista facoltativa che permette di selezionare record specifici da sincronizzare
+- **Parametri:**
+    - `SyncRegOreFilteredDto` Dto di richiesta contenente l’id dell’utente che effettua la sincronizzazione e un'eventuale lista di record da sincronizzazre
+- **Ritorna:** `Task<IActionResult>`  
+    - `200 Ok` se l'operazione va a buon fine. Ritorna anche le liste delle informazioni che sono state sincronizzate
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati e la sincronizzazione non è riuscita
+
+---
+
+#### SettingsController
+**ROUTE:** `api/settings`
 
 ```csharp
 public IActionResult GetSettings()
@@ -355,6 +406,19 @@ public IActionResult EditSettings([FromBody] SettingsDto? request)
     - `200 Ok` se l'operazione va a buon fine. Ritorna anche le impostazioni modificate
     - `400 Bad Request` se la richiesta ha corpo nullo.
     - `404 Not Found` se la richiesta non ha prodotto risultati e la modifica è fallita
+
+---
+
+```csharp
+public IActionResult GetSyncGlobalActive()
+```
+- **Endpoint:** `get_sync_global_active`
+- **Richiesta:** GET
+- **Descrizione:** Recupera un valore booleano dalla tabella `A3_app_settings` che specifica se le operazioni di sincronizzazione siano utilizzabili da tutti gli utenti o siano visibili solo agli amministratori.
+- **Parametri:**
+- **Ritorna:** `IActionResult`
+    - `200 Ok` se l'operazione va a buon fine. Ritorna il valore richiesto
+    - `404 Not Found` se la richiesta non ha prodotto risultati
 
 ---
 
