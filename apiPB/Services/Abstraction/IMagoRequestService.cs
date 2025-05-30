@@ -20,6 +20,8 @@ namespace apiPB.Services.Abstraction
         /// Effettua la sincronizzazione dei dati salvati con i dati di Mago
         /// </summary>
         /// <param name="request">Id del lavoratore che effettua la sincronizzazione</param>
+        /// <param name="responseDto">Risposta del login a Mago</param>
+        /// <param name="settings">Impostazioni di sincronizzazione</param>
         /// <returns>Ritorna i dati che sono stati sincronizzati</returns>
         Task<SyncronizedDataDto> SyncronizeAsync(MagoLoginResponseDto responseDto, SettingsDto settings, WorkerIdSyncRequestDto requestId);
 
@@ -51,22 +53,31 @@ namespace apiPB.Services.Abstraction
         /// Effettua la sincronizzazione delle ore registrate filtrate
         /// </summary>
         /// <param name="request">Richiesta di sincronizzazione delle ore registrate filtrate</param>
+        /// <param name="isFiltered">Indica se la richiesta viene fatta dalla pagina dell'operazione e con eventuali filtri</param>
+        /// <param name="responseDto">Risposta del login a Mago</param>
+        /// <param name="settings">Impostazioni di sincronizzazione</param>
         /// <returns>Ritorna le ore registrate sincronizzate filtrate</returns>
-        Task<IEnumerable<SyncRegOreRequestDto>> SyncRegOreFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncRegOreFilteredDto? request);
+        Task<IEnumerable<SyncRegOreRequestDto>> SyncRegOreFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncRegOreFilteredDto? request, bool isFiltered = true);
 
         /// <summary>
         /// Effettua la sincronizzazione delle informazioni dei prelievi effettuati filtrate
         /// </summary>
         /// <param name="request">Richiesta di sincronizzazione delle informazioni dei materiali prelevati filtrate</param>
+        /// <param name="isFiltered">Indica se la richiesta viene fatta dalla pagina dell'operazione e con eventuali filtri</param>
+        /// <param name="responseDto">Risposta del login a Mago</param>
+        /// <param name="settings">Impostazioni di sincronizzazione</param>
         /// <returns>Ritorna le informazioni dei materiali prelevati sincronizzati filtrati</returns>
-        Task<IEnumerable<SyncPrelMatRequestDto>> SyncPrelMatFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncPrelMatFilteredDto? request);
+        Task<IEnumerable<SyncPrelMatRequestDto>> SyncPrelMatFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncPrelMatFilteredDto? request, bool isFiltered = true);
 
         /// <summary>
         /// Effettua la sincronizzazione delle informazioni delle movimentazioni di inventario filtrate
         /// </summary>
         /// <param name="request">Richiesta di sincronizzazione delle informazioni delle movimentazioni di inventario filtrate</param>
+        /// <param name="isFiltered">Indica se la richiesta viene fatta dalla pagina dell'operazione e con eventuali filtri</param>
+        /// <param name="responseDto">Risposta del login a Mago</param>
+        /// <param name="settings">Impostazioni di sincronizzazione</param>
         /// <returns>Ritorna le informazioni delle movimentazioni di inventario sincronizzate filtrate</returns>
-        Task<IEnumerable<SyncInventarioRequestDto>> SyncInventarioFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncInventarioFilteredDto? request);
+        Task<IEnumerable<SyncInventarioRequestDto>> SyncInventarioFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncInventarioFilteredDto? request, bool isFiltered = true);
 
         /// <summary>
         /// Effettua la procedura di login per l'autenticazione a Mago

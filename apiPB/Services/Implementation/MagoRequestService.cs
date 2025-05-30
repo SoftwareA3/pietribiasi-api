@@ -48,11 +48,11 @@ namespace apiPB.Services.Implementation
         {
             var syncDataListToReturn = new SyncronizedDataDto();
 
-            var syncRegOreList = await SyncRegOreFiltered(responseDto, settings, new SyncRegOreFilteredDto {WorkerIdSyncRequestDto = requestId });
+            var syncRegOreList = await SyncRegOreFiltered(responseDto, settings, new SyncRegOreFilteredDto {WorkerIdSyncRequestDto = requestId }, false);
 
-            var syncPrelMatList = await SyncPrelMatFiltered(responseDto, settings, new SyncPrelMatFilteredDto { WorkerIdSyncRequestDto = requestId });
+            var syncPrelMatList = await SyncPrelMatFiltered(responseDto, settings, new SyncPrelMatFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
-            var syncInventarioList = await SyncInventarioFiltered(responseDto, settings, new SyncInventarioFilteredDto { WorkerIdSyncRequestDto = requestId });
+            var syncInventarioList = await SyncInventarioFiltered(responseDto, settings, new SyncInventarioFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
             // ======================================================
             // Se le operazioni vanno a buon fine, invia Logout
@@ -77,16 +77,15 @@ namespace apiPB.Services.Implementation
             }
         }
 
-        public async Task<IEnumerable<SyncRegOreRequestDto>> SyncRegOreFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncRegOreFilteredDto? request)
+        public async Task<IEnumerable<SyncRegOreRequestDto>> SyncRegOreFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncRegOreFilteredDto? request, bool isFiltered = true)
         {
             if(string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
             List<RegOreDto> syncRegOreRequest;
-            bool isFiltered = true;
 
-            if (request.RegOreList != null)
+            if (request.RegOreList != null && request.RegOreList.Count > 0 && isFiltered)
             {
                 Console.WriteLine($"Filter applied ViewRegOre: {request.RegOreList}");
                 syncRegOreRequest = request.RegOreList.ToList();
@@ -99,7 +98,6 @@ namespace apiPB.Services.Implementation
             }
             else
             {
-                isFiltered = false;
                 Console.WriteLine("No filter applied, retrieving all records from A3_app_reg_ore");
                 syncRegOreRequest = _regoreRequestService.GetNotImportedAppRegOre().ToList();
 
@@ -138,7 +136,10 @@ namespace apiPB.Services.Implementation
                     }
 
                     // Aggiornamento della lista di record in A3_app_reg_ore
-                    if (!isFiltered)
+                    Console.WriteLine("Updating records in A3_app_reg_ore...");
+                    // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
+                    // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
+                    if (!isFiltered || (!isFiltered && request.RegOreList?.Count == 0))
                     {
                         var regOreListUpdatedByWorkerId = _regoreRequestService.UpdateRegOreImported(request.WorkerIdSyncRequestDto);
                         Console.WriteLine($"RegOreListUpdatedByWorkerId: {regOreListUpdatedByWorkerId}");
@@ -147,6 +148,8 @@ namespace apiPB.Services.Implementation
                             throw new Exception("No records updated in A3_app_reg_ore by WorkerId: logging off...");
                         }
                     }
+                    // In questo caso la lista è una lista filtrata e la sincronizzaiozne non è generale
+                    // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
                     else
                     {
                         foreach (var item in syncRegOreRequest)
@@ -174,16 +177,15 @@ namespace apiPB.Services.Implementation
             }
         }
 
-        public async Task<IEnumerable<SyncPrelMatRequestDto>> SyncPrelMatFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncPrelMatFilteredDto? request)
+        public async Task<IEnumerable<SyncPrelMatRequestDto>> SyncPrelMatFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncPrelMatFilteredDto? request, bool isFiltered = true)
         {
             if(string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
             List<PrelMatDto> syncPrelMatRequest;
-            bool isFiltered = true;
 
-            if (request.PrelMatList != null)
+            if (request.PrelMatList != null && request.PrelMatList.Count > 0 && isFiltered)
             {
                 Console.WriteLine($"Filter applied ViewPrelMat: {request.PrelMatList}");
                 syncPrelMatRequest = request.PrelMatList.ToList();
@@ -196,7 +198,6 @@ namespace apiPB.Services.Implementation
             }
             else
             {
-                isFiltered = false;
                 Console.WriteLine("No filter applied, retrieving all records from A3_app_prel_mat");
                 syncPrelMatRequest = _prelMatRequestService.GetNotImportedPrelMat().ToList();
 
@@ -224,7 +225,9 @@ namespace apiPB.Services.Implementation
 
                     // Aggiornamento della lista di record in A3_app_prel_mat
                     Console.WriteLine("Updating records in A3_app_prel_mat...");
-                    if(!isFiltered)
+                    // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
+                    // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
+                    if (!isFiltered || (!isFiltered && request.PrelMatList?.Count == 0))
                     {
                         var prelMatListUpdated = _prelMatRequestService.UpdatePrelMatImported(request.WorkerIdSyncRequestDto);
                         Console.WriteLine($"PrelMatListUpdated: {prelMatListUpdated}");
@@ -233,9 +236,11 @@ namespace apiPB.Services.Implementation
                             throw new Exception("No records updated in A3_app_prel_mat: logging off...");
                         }
                     }
+                    // In questo caso la lista è una lista filtrata e la sincronizzaiozne non è generale
+                    // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
                     else
                     {
-                        foreach(var item in syncPrelMatRequest)
+                        foreach (var item in syncPrelMatRequest)
                         {
                             _prelMatRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
                             {
@@ -260,16 +265,15 @@ namespace apiPB.Services.Implementation
             }
         }
 
-        public async Task<IEnumerable<SyncInventarioRequestDto>> SyncInventarioFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncInventarioFilteredDto? request)
+        public async Task<IEnumerable<SyncInventarioRequestDto>> SyncInventarioFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncInventarioFilteredDto? request, bool isFiltered = true)
         {
             if (string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
             List<InventarioDto> syncInventarioRequest;
-            bool isFiltered = true;
 
-            if (request.InventarioList != null)
+            if (request.InventarioList != null && request.InventarioList.Count > 0 && isFiltered)
             {
                 syncInventarioRequest = request.InventarioList.ToList();
 
@@ -283,7 +287,6 @@ namespace apiPB.Services.Implementation
             else
             {
                 Console.WriteLine("No filter applied, retrieving all records from A3_app_inventario");
-                isFiltered = false;
                 syncInventarioRequest = _inventarioRequestService.GetNotImportedInventario().ToList();
 
                 if (syncInventarioRequest == null)
@@ -314,7 +317,9 @@ namespace apiPB.Services.Implementation
 
                     // Aggiornamento della lista di record in A3_app_inventario
                     Console.WriteLine("Updating records in A3_app_inventario...");
-                    if (!isFiltered)
+                    // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
+                    // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
+                    if (!isFiltered || (!isFiltered && request.InventarioList?.Count == 0))
                     {
                         var inventarioListUpdated = _inventarioRequestService.UpdateInventarioImported(request.WorkerIdSyncRequestDto);
                         if (inventarioListUpdated == null)
@@ -322,6 +327,8 @@ namespace apiPB.Services.Implementation
                             throw new Exception("No records updated in A3_app_inventario: logging off...");
                         }
                     }
+                    // In questo caso la lista è una lista filtrata e la sincronizzaiozne non è generale
+                    // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
                     else
                     {
                         var inventarioListUpdated = new List<InventarioDto>();
