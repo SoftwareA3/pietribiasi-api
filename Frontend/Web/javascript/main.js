@@ -9,6 +9,14 @@ document.addEventListener("DOMContentLoaded", async function() {
             return;
         }
     }
+
+    // Ottieni riferimento al pulsante
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+    scrollToTopBtn.addEventListener('click', function() {
+        // Chiama la funzione per tornare in cima alla pagina
+        scrollToTop();
+    });
     
     const headerElement = document.getElementsByClassName("app-header")[0]; 
 
@@ -177,4 +185,35 @@ export function parseDateTime(dateString)
         date: parsedDate,
         time: parsedTime
     };
+}
+
+// Funzione per mostrare/nascondere il pulsante in base allo scroll
+window.onscroll = function() {
+    // Mostra il pulsante quando l'utente ha scrollato più di 300px
+    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        scrollToTopBtn.classList.add('show');
+    } else {
+        scrollToTopBtn.classList.remove('show');
+    }
+};
+
+// Funzione per tornare in cima alla pagina
+function scrollToTop() {
+    // Scroll fluido verso l'alto
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Versione alternativa per browser più vecchi (opzionale)
+function scrollToTopAlternative() {
+    const scrollStep = -window.scrollY / (300 / 15);
+    const scrollInterval = setInterval(function(){
+        if (window.scrollY !== 0) {
+            window.scrollBy(0, scrollStep);
+        } else {
+            clearInterval(scrollInterval);
+        }
+    }, 15);
 }
