@@ -5,6 +5,11 @@ using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace apiPB.Mappers.Dto
 {
+    /// <summary>
+    /// Mapper dei messaggi di log delle azioni.
+    /// Vengono realizzati dei dizionari per il mapping dei codici numerici in stringhe leggibili.
+    /// Vengono raggruppati i messaggi per informazioni comuni in modo da evitare duplicazioni.
+    /// </summary>
     public static class ActionMessageMapperDto
     {
         // Dizionari di mapping per codici del log

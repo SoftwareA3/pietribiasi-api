@@ -6,6 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace apiPB.Mappers.Dto
 {
+    /// <summary>
+    /// Mapper per la conversione dei dati di richiesta e sincronizzazione a Mago4.
+    /// Alcuni metodi sono specifici per la sincronizzazione dei dati delle operazioni.
+    /// </summary>
     public static class SyncMapperDto
     {
         public static SettingsDto ToSettingsDto(this A3AppSetting settings)
