@@ -497,7 +497,7 @@ async function populatePrelieviList(data) {
                 logList.actionMessageDetails.some(
                     detail =>
                         (typeof detail.actionStatus === "string" &&
-                            (detail.actionStatus.includes("Errore") || detail.actionStatus.includes("Da Fare")))
+                            (detail.actionStatus.includes("Errore") || detail.actionStatus.includes("Da Fare")|| detail.actionStatus.includes("In Lavorazione") || detail.actionMessage !== ""))
                 )
             ) {
                 hasError = true;
