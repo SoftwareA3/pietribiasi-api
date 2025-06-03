@@ -107,6 +107,7 @@ namespace apiPB.Mappers.Dto
                             WorkerSetupTime = x.WorkerSetupTime,
                             ActualProcessingTime = x.ActualProcessingTime,
                             ActualSetupTime = x.ActualSetupTime,
+                            ActionMessage = x.ActionMessage,
                             Storage = x.Storage,
                             SpecificatorType = x.SpecificatorType,
                             Specificator = x.Specificator,
