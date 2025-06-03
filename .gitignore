@@ -17,8 +17,8 @@
 /.vs
 
 # Ignora i file di configurazione, binari e di debug nei Test
-/TestApi/bin
-/TestApi/obj
+/TestApi.Tests/bin
+/TestApi.Tests/obj
 
 # Ignora momentaneamente il progetto con i test di unità
 # /TestApi.Tests
