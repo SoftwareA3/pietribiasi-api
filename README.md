@@ -1,5 +1,5 @@
 # Pietribiasi APP
-![example branch parameter](https://github.com/SoftwareA3/pietribiasi-api/github/docs/actions/workflows/dotnet.yml/badge.svg?branch=develop)
+![example branch parameter](https://github.com/SoftwareA3/pietribiasi-api/github/actions/workflows/dotnet.yml/badge.svg?branch=develop)
 
 # Indice 
 1. [FrontEnd](#frontend)
