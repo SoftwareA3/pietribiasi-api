@@ -1,5 +1,5 @@
 # Pietribiasi APP
-![dotnet workflow](https://github.com/SoftwareA3/pietribiasi-api/workflows/actions/dotnet.yml/badge.svg?event=push)
+[![dotnet workflow](https://github.com/SoftwareA3/pietribiasi-api/workflows/actions/dotnet.yml/badge.svg?event=push)](https://github.com/SoftwareA3/pietribiasi-api/actions/workflows/dotnet.yml/badge.svg?branch=develop)
 # Indice 
 1. [FrontEnd](#frontend)
    1. [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
