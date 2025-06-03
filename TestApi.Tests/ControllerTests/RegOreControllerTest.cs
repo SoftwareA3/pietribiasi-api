@@ -12,6 +12,7 @@ using apiPB.Dto.Request;
 using apiPB.Services;
 using apiPB.Services.Abstraction;
 using apiPB.Utils.Abstraction;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TestApi.Tests.ControllerTests
 {
@@ -110,10 +111,14 @@ namespace TestApi.Tests.ControllerTests
                 HttpContext = httpContextMock.Object
             };
 
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
                 .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()))
-                .Returns(new NotFoundObjectResult("Non risultato trovato."));
+            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Nessun risultato trovato."))
+                .Returns(new NotFoundObjectResult("Nessun risultato trovato."));
+            _responseHandlerMock.Setup(x => x.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), It.IsAny<bool>(), "Ok"))
+                .Returns(new OkObjectResult(_sampleRegOreDto));
+            _responseHandlerMock.Setup(x => x.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), It.IsAny<bool>(), "Ok"))
+                .Returns(new OkObjectResult(new List<RegOreDto> { _sampleRegOreDto }));
         }
 
         // --- Test per getAllRegOre ---
@@ -123,7 +128,7 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var mockData = new List<RegOreDto> { _sampleRegOreDto };
             _regOreRequestServiceMock.Setup(service => service.GetAppRegOre()).Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false, "Ok"))
                 .Returns(new OkObjectResult(mockData));
 
             // Act
@@ -135,7 +140,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<RegOreDto>>(okResult.Value);
             Assert.Single(returnValue);
             Assert.Equal(_sampleRegOreDto.RegOreId, returnValue.First().RegOreId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -144,6 +149,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var emptyList = new List<RegOreDto>();
             _regOreRequestServiceMock.Setup(service => service.GetAppRegOre()).Returns(emptyList);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetAllRegOre();
@@ -151,7 +158,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         // --- Test per PostRegOreList ---
@@ -163,19 +170,19 @@ namespace TestApi.Tests.ControllerTests
             var responseDtoList = new List<RegOreDto> { _sampleRegOreDto };
             _regOreRequestServiceMock.Setup(service => service.PostAppRegOre(It.IsAny<IEnumerable<RegOreRequestDto>>()))
                 .Returns(responseDtoList);
-            _responseHandlerMock.Setup(log => log.HandleCreated(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false))
-                .Returns(new CreatedAtActionResult("GetAllRegOre", "RegOre", null, responseDtoList));
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false, "Ok"))
+                .Returns(new OkObjectResult(responseDtoList));
 
             // Act
             var result = _controller.PostRegOreList(requestDtoList);
 
             // Assert
-            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            Assert.Equal(201, createdResult.StatusCode);
+            var createdResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, createdResult.StatusCode);
             var returnValue = Assert.IsAssignableFrom<IEnumerable<RegOreDto>>(createdResult.Value);
             Assert.Equal(responseDtoList.Count, returnValue.Count());
             Assert.Equal(responseDtoList.First().RegOreId, returnValue.First().RegOreId);
-            _responseHandlerMock.Verify(log => log.HandleCreated(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -185,6 +192,8 @@ namespace TestApi.Tests.ControllerTests
             var requestDtoList = new List<RegOreRequestDto> { _sampleRegOreRequestDto };
             _regOreRequestServiceMock.Setup(service => service.PostAppRegOre(It.IsAny<IEnumerable<RegOreRequestDto>>()))
                 .Returns(new List<RegOreDto>());
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.PostRegOreList(requestDtoList);
@@ -192,31 +201,39 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         [Fact]
         public void PostRegOreList_ShouldReturnBadRequest_WhenRequestIsNull()
         {
+            // Arrange
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
             // Act
             var result = _controller.PostRegOreList(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         [Fact]
         public void PostRegOreList_ShouldReturnBadRequest_WhenRequestIsEmptyList()
         {
+            // Arrange
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
             // Act
             var result = _controller.PostRegOreList(new List<RegOreRequestDto>());
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         // --- Test per GetA3AppRegOre ---
@@ -227,7 +244,7 @@ namespace TestApi.Tests.ControllerTests
             var mockData = new List<RegOreDto> { _sampleRegOreDto };
             _regOreRequestServiceMock.Setup(service => service.GetAppViewOre(It.IsAny<ViewOreRequestDto>()))
                 .Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false, "Ok"))
                 .Returns(new OkObjectResult(mockData));
 
             // Act
@@ -239,19 +256,23 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<RegOreDto>>(okResult.Value);
             Assert.Equal(mockData.Count, returnValue.Count());
             Assert.Equal(mockData.First().RegOreId, returnValue.First().RegOreId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<RegOreDto>>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
         public void GetA3AppRegOre_ShouldReturnBadRequest_WhenRequestIsNull()
         {
+            // Arrange
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
             // Act
             var result = _controller.GetA3AppRegOre(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -260,6 +281,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _regOreRequestServiceMock.Setup(service => service.GetAppViewOre(It.IsAny<ViewOreRequestDto>()))
                 .Returns(new List<RegOreDto>());
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetA3AppRegOre(_sampleViewRequest);
@@ -267,7 +290,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         // --- Test per PutA3AppRegOre ---
@@ -288,7 +311,7 @@ namespace TestApi.Tests.ControllerTests
             };
             _regOreRequestServiceMock.Setup(service => service.PutAppViewOre(It.IsAny<ViewOrePutRequestDto>()))
                 .Returns(updatedDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false, "Ok"))
                 .Returns(new OkObjectResult(updatedDto));
 
             // Act
@@ -300,19 +323,23 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsType<RegOreDto>(okResult.Value);
             Assert.Equal(updatedDto.RegOreId, returnValue.RegOreId);
             Assert.Equal(updatedDto.WorkingTime, returnValue.WorkingTime);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
         public void PutA3AppRegOre_ShouldReturnBadRequest_WhenRequestIsNull()
         {
+            // Arrange
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
             // Act
             var result = _controller.PutA3AppRegOre(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -321,6 +348,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _regOreRequestServiceMock.Setup(service => service.PutAppViewOre(It.IsAny<ViewOrePutRequestDto>()))
                 .Returns((RegOreDto)null);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.PutA3AppRegOre(_samplePutRequest);
@@ -328,7 +357,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         // --- Test per DeleteRegOreId ---
@@ -339,7 +368,7 @@ namespace TestApi.Tests.ControllerTests
             var deletedDto = _sampleRegOreDto;
             _regOreRequestServiceMock.Setup(service => service.DeleteRegOreId(It.IsAny<ViewOreDeleteRequestDto>()))
                 .Returns(deletedDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false, "Ok"))
                 .Returns(new OkObjectResult(deletedDto));
 
             // Act
@@ -350,19 +379,23 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(200, okResult.StatusCode);
             var returnValue = Assert.IsType<RegOreDto>(okResult.Value);
             Assert.Equal(deletedDto.RegOreId, returnValue.RegOreId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<RegOreDto>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
         public void DeleteRegOreId_ShouldReturnBadRequest_WhenRequestIsNull()
         {
+            // Arrange
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
             // Act
             var result = _controller.DeleteRegOreId(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -371,6 +404,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _regOreRequestServiceMock.Setup(service => service.DeleteRegOreId(It.IsAny<ViewOreDeleteRequestDto>()))
                 .Returns((RegOreDto)null);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.DeleteRegOreId(_sampleDeleteRequest);
@@ -378,7 +413,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
     }
 }

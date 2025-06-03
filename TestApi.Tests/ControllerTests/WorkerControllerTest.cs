@@ -80,10 +80,10 @@ namespace TestApi.Tests.ControllerTests
                 HttpContext = httpContextMock.Object
             };
 
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
                 .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()))
-                .Returns(new NotFoundObjectResult("Non risultato trovato."));
+            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Nessun risultato trovato."))
+                .Returns(new NotFoundObjectResult("Nessun risultato trovato."));
         }
 
         // --- Test per GetAllWorkers ---
@@ -93,7 +93,7 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var mockData = new List<WorkerDto> { _sampleWorkerDto };
             _workerRequestServiceMock.Setup(service => service.GetWorkers()).Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<WorkerDto>>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<WorkerDto>>(), false, "Ok"))
                 .Returns(new OkObjectResult(mockData));
 
             // Act
@@ -105,7 +105,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<List<WorkerDto>>(okResult.Value);
             Assert.Single(returnValue);
             Assert.Equal(_sampleWorkerDto.WorkerId, returnValue.First().WorkerId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<WorkerDto>>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<WorkerDto>>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -114,6 +114,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var emptyList = new List<WorkerDto>();
             _workerRequestServiceMock.Setup(service => service.GetWorkers()).Returns(emptyList);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetAllWorkers();
@@ -121,7 +123,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         // --- I test commentati sono deprecati e non necessari --- //
@@ -212,7 +214,7 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _workerRequestServiceMock.Setup(service => service.LoginWithPassword(It.IsAny<PasswordWorkersRequestDto>()))
                 .Returns(_sampleWorkerDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<WorkerDto>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<WorkerDto>(), false, "Ok"))
                 .Returns(new OkObjectResult(_sampleWorkerDto));
 
             // Act
@@ -223,7 +225,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(200, okResult.StatusCode);
             var returnValue = Assert.IsType<WorkerDto>(okResult.Value);
             Assert.Equal(_sampleWorkerDto.WorkerId, returnValue.WorkerId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<WorkerDto>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<WorkerDto>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -231,6 +233,8 @@ namespace TestApi.Tests.ControllerTests
         {
             // Arrange
             PasswordWorkersRequestDto nullRequest = null;
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
 
             // Act
             var result = _controller.LoginWithPassword(nullRequest);
@@ -238,7 +242,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -247,6 +251,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _workerRequestServiceMock.Setup(service => service.LoginWithPassword(It.IsAny<PasswordWorkersRequestDto>()))
                 .Returns((WorkerDto)null);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.LoginWithPassword(_samplePasswordRequestDto);
@@ -254,7 +260,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
     }
 }

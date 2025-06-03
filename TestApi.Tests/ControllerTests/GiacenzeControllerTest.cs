@@ -82,9 +82,9 @@ namespace TestApi.Tests.ControllerTests
             };
 
             // Setup generico per i metodi di log (_isLogActive è false)
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(_controller.HttpContext, false))
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(_controller.HttpContext, false, "La richiesta non può essere vuota."))
                 .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(_controller.HttpContext, false))
+            _responseHandlerMock.Setup(x => x.HandleNotFound(_controller.HttpContext, false, "Non risultato trovato."))
                 .Returns(new NotFoundObjectResult("Non risultato trovato."));
         }
 
@@ -95,9 +95,9 @@ namespace TestApi.Tests.ControllerTests
             var mockDataList = _sampleGiacenzaDtoList;
             _giacenzeRequestServiceMock.Setup(service => service.GetGiacenze()).Returns(mockDataList);
             _responseHandlerMock.Setup(log => log.HandleOkAndList(
-                _controller.HttpContext, 
-                It.IsAny<List<GiacenzeDto>>(), 
-                false)).Returns(new OkObjectResult(mockDataList));
+                _controller.HttpContext,
+                It.IsAny<List<GiacenzeDto>>(),
+                It.IsAny<bool>(), "Ok")).Returns(new OkObjectResult(mockDataList));
 
             // Act
             var result = _controller.GetGiacenze();
@@ -110,9 +110,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(_sampleGiacenzaDto.Item, returnValue.First().Item);
 
             _responseHandlerMock.Verify(log => log.HandleOkAndList(
-                _controller.HttpContext, 
-                It.IsAny<List<GiacenzeDto>>(), 
-                false), Times.Once);
+                _controller.HttpContext,
+                It.IsAny<List<GiacenzeDto>>(),
+                It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
@@ -121,6 +121,9 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var emptyList = new List<GiacenzeDto>();
             _giacenzeRequestServiceMock.Setup(service => service.GetGiacenze()).Returns(emptyList);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(
+            _controller.HttpContext,
+            It.IsAny<bool>(), "Not Found")).Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetGiacenze();
@@ -130,8 +133,8 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
 
             _responseHandlerMock.Verify(log => log.HandleNotFound(
-                _controller.HttpContext, 
-                false), Times.Once);
+            _controller.HttpContext, 
+            It.IsAny<bool>(), "Not Found"), Times.Once);
         }
     }
 }

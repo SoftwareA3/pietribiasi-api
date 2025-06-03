@@ -22,6 +22,32 @@ namespace TestApi.Tests.Repository
         {
             new A3AppPrelMat
             {
+                PrelMatId = 2,
+                WorkerId = 2,
+                SavedDate = DateTime.Now.AddDays(-1),
+                Job = "Job2",
+                RtgStep = 2,
+                Alternate = "Alt2",
+                AltRtgStep = 3,
+                Operation = "Op2",
+                OperDesc = "Operation 2",
+                Bom = "BOM2",
+                Variant = "Variant2",
+                ItemDesc = "Item Description 2",
+                Moid = 2,
+                Mono = "Mono2",
+                CreationDate = DateTime.Now.AddDays(-1),
+                UoM = "UOM2",
+                ProductionQty = 200,
+                ProducedQty = 100,
+                ResQty = 100,
+                Storage = "Storage2",
+                Wc = "WC2",
+                BarCode = "BarCode2",
+                PrelQty = 20,
+            },
+            new A3AppPrelMat
+            {
                 PrelMatId = 1,
                 WorkerId = 1,
                 SavedDate = new DateTime(2023, 6, 2),
@@ -50,32 +76,6 @@ namespace TestApi.Tests.Repository
                 Imported = false,
                 UserImp = "User1",
                 DataImp = new DateTime(2023, 10, 1),
-            },
-            new A3AppPrelMat
-            {
-                PrelMatId = 2,
-                WorkerId = 2,
-                SavedDate = DateTime.Now.AddDays(-1),
-                Job = "Job2",
-                RtgStep = 2,
-                Alternate = "Alt2",
-                AltRtgStep = 3,
-                Operation = "Op2",
-                OperDesc = "Operation 2",
-                Bom = "BOM2",
-                Variant = "Variant2",
-                ItemDesc = "Item Description 2",
-                Moid = 2,
-                Mono = "Mono2",
-                CreationDate = DateTime.Now.AddDays(-1),
-                UoM = "UOM2",
-                ProductionQty = 200,
-                ProducedQty = 100,
-                ResQty = 100,
-                Storage = "Storage2",
-                Wc = "WC2",
-                BarCode = "BarCode2",
-                PrelQty = 20,
             }
         };
 
@@ -314,8 +314,8 @@ namespace TestApi.Tests.Repository
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_prelMats.First(), result.First());
-            Assert.Equal(_prelMats.First().Job, result.First().Job);
+            Assert.Equal(_prelMats[1], result.First());
+            Assert.Equal(_prelMats[1].Job, result.First().Job);
         }
 
         [Fact]

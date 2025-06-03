@@ -85,9 +85,9 @@ namespace TestApi.Tests.ControllerTests
             };
 
             // Setup ResponseHandler service
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
                 .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Non risultato trovato."))
                 .Returns(new NotFoundObjectResult("Non risultato trovato."));
         }
 
@@ -102,7 +102,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Setup(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<MostepDto>>(), 
-                false)).Returns(new OkObjectResult(mockData));
+                false, "Ok")).Returns(new OkObjectResult(mockData));
 
             // Act
             var result = _controller.GetVwApiMostepWithJob(_sampleJobRequestDto);
@@ -117,7 +117,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Verify(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<MostepDto>>(), 
-                false), Times.Once);
+                false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -126,6 +126,9 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _moStepRequestServiceMock.Setup(service => service.GetMostepWithJob(It.IsAny<JobRequestDto>()))
                 .Returns(new List<MostepDto>());
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(
+                It.IsAny<HttpContext>(), 
+                false, "Bad Request")).Returns(new BadRequestObjectResult("Bad Request"));
 
             // Act
             var result = _controller.GetVwApiMostepWithJob(null);
@@ -135,7 +138,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(400, badRequestResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleBadRequest(
                 It.IsAny<HttpContext>(), 
-                false), Times.Once);
+                false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -145,6 +148,9 @@ namespace TestApi.Tests.ControllerTests
             var emptyList = new List<MostepDto>();
             _moStepRequestServiceMock.Setup(service => service.GetMostepWithJob(It.IsAny<JobRequestDto>()))
                 .Returns(emptyList);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(
+                It.IsAny<HttpContext>(), 
+                false, "Not Found")).Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetVwApiMostepWithJob(_sampleJobRequestDto);
@@ -154,7 +160,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(
                 It.IsAny<HttpContext>(), 
-                false), Times.Once);
+                false, "Not Found"), Times.Once);
         }
 
         // --- Tests for GetMostepWithMono ---
@@ -168,7 +174,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Setup(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<MostepDto>>(), 
-                false)).Returns(new OkObjectResult(mockData));
+                false, "Ok")).Returns(new OkObjectResult(mockData));
 
             // Act
             var result = _controller.GetMostepWithMono(_sampleMonoRequestDto);
@@ -183,7 +189,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Verify(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<MostepDto>>(), 
-                false), Times.Once);
+                false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -192,6 +198,9 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _moStepRequestServiceMock.Setup(service => service.GetMostepWithMono(It.IsAny<MonoRequestDto>()))
                 .Returns(new List<MostepDto>());
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(
+                It.IsAny<HttpContext>(), 
+                false, "Bad Request")).Returns(new BadRequestObjectResult("Bad Request"));
 
             // Act
             var result = _controller.GetMostepWithMono(null);
@@ -201,7 +210,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(400, badRequestResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleBadRequest(
                 It.IsAny<HttpContext>(), 
-                false), Times.Once);
+                false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -211,6 +220,9 @@ namespace TestApi.Tests.ControllerTests
             var emptyList = new List<MostepDto>();
             _moStepRequestServiceMock.Setup(service => service.GetMostepWithMono(It.IsAny<MonoRequestDto>()))
                 .Returns(emptyList);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(
+                It.IsAny<HttpContext>(), 
+                false, "Not Found")).Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetMostepWithMono(_sampleMonoRequestDto);
@@ -220,7 +232,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(
                 It.IsAny<HttpContext>(), 
-                false), Times.Once);
+                false, "Not Found"), Times.Once);
         }
 
         // --- Tests for GetMostepWithOperation ---
@@ -234,7 +246,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Setup(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<MostepDto>>(), 
-                false)).Returns(new OkObjectResult(mockData));
+                false, "Ok")).Returns(new OkObjectResult(mockData));
 
             // Act
             var result = _controller.GetMostepWithOperation(_sampleOperationRequestDto);
@@ -249,7 +261,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Verify(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<MostepDto>>(), 
-                false), Times.Once);
+                false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -258,6 +270,9 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _moStepRequestServiceMock.Setup(service => service.GetMostepWithOperation(It.IsAny<OperationRequestDto>()))
                 .Returns(new List<MostepDto>());
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(
+                It.IsAny<HttpContext>(), 
+                false, "Bad Request")).Returns(new BadRequestObjectResult("Bad Request"));
 
             // Act
             var result = _controller.GetMostepWithOperation(null);
@@ -267,7 +282,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(400, badRequestResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleBadRequest(
                 It.IsAny<HttpContext>(), 
-                false), Times.Once);
+                false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -277,6 +292,9 @@ namespace TestApi.Tests.ControllerTests
             var emptyList = new List<MostepDto>();
             _moStepRequestServiceMock.Setup(service => service.GetMostepWithOperation(It.IsAny<OperationRequestDto>()))
                 .Returns(emptyList);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(
+                It.IsAny<HttpContext>(), 
+                false, "Not Found")).Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetMostepWithOperation(_sampleOperationRequestDto);
@@ -286,7 +304,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(
                 It.IsAny<HttpContext>(), 
-                false), Times.Once);
+                false, "Not Found"), Times.Once);
         }
     }
 }

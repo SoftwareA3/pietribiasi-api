@@ -17,4 +17,4 @@
 /.vs
 
 # Ignora momentaneamente il progetto con i test di unità
-/TestApi.Tests
+# /TestApi.Tests

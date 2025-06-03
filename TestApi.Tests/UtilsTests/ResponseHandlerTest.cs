@@ -43,14 +43,14 @@ namespace TestApi.Tests.UtilsTests
             Assert.NotNull(result);
             Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, result.StatusCode);
-            Assert.Equal("La richiesta non può essere vuota.", result.Value);
+            Assert.Equal("Bad Request", result.Value);
             
             // Verify log service was called
             _mockLogService.Verify(
                 l => l.AppendMessageToLog(
                     It.Is<string>(s => s == "GET api/test"),
                     It.Is<int?>(sc => sc == StatusCodes.Status400BadRequest),
-                    It.Is<string>(sm => sm == "La richiesta non può essere vuota"),
+                    It.Is<string>(sm => sm == "Bad Request"),
                     It.Is<bool>(la => la == true)
                 ),
                 Times.Once
@@ -72,14 +72,14 @@ namespace TestApi.Tests.UtilsTests
             Assert.NotNull(result);
             Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, result.StatusCode);
-            Assert.Equal("Non risultato trovato.", result.Value);
+            Assert.Equal("Not Found", result.Value);
             
             // Verify log service was called
             _mockLogService.Verify(
                 l => l.AppendMessageToLog(
                     It.Is<string>(s => s == "GET api/test"),
                     It.Is<int?>(sc => sc == StatusCodes.Status404NotFound),
-                    It.Is<string>(sm => sm == "Nessun Risultato trovato"),
+                    It.Is<string>(sm => sm == "Not Found"),
                     It.Is<bool>(la => la == true)
                 ),
                 Times.Once

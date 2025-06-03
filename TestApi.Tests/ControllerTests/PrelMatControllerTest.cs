@@ -125,10 +125,12 @@ namespace TestApi.Tests.ControllerTests
                 HttpContext = httpContextMock.Object
             };
 
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
                 .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()))
-                .Returns(new NotFoundObjectResult("Non risultato trovato."));
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
         }
 
         // --- Test per getAllPrelMat ---
@@ -138,7 +140,7 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var mockData = new List<PrelMatDto> { _samplePrelMatDto };
             _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat()).Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"))
                 .Returns(new OkObjectResult(mockData));
 
             // Act
@@ -150,7 +152,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<PrelMatDto>>(okResult.Value);
             Assert.Single(returnValue);
             Assert.Equal(_samplePrelMatDto.PrelMatId, returnValue.First().PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -166,7 +168,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         // --- Test per PostPrelMatList ---
@@ -178,7 +180,7 @@ namespace TestApi.Tests.ControllerTests
             var responseDtoList = new List<PrelMatDto> { _samplePrelMatDto };
             _prelMatRequestServiceMock.Setup(service => service.PostPrelMatList(It.IsAny<IEnumerable<PrelMatRequestDto>>()))
                 .Returns(responseDtoList);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"))
                 .Returns(new OkObjectResult(responseDtoList));
 
             // Act
@@ -190,7 +192,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<PrelMatDto>>(okResult.Value);
             Assert.Equal(responseDtoList.Count, returnValue.Count());
             Assert.Equal(responseDtoList.First().PrelMatId, returnValue.First().PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -202,7 +204,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         [Fact]
@@ -219,7 +221,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         [Fact]
@@ -231,7 +233,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         // --- Test per GetViewPrelMat ---
@@ -242,7 +244,7 @@ namespace TestApi.Tests.ControllerTests
             var mockData = new List<PrelMatDto> { _samplePrelMatDto };
             _prelMatRequestServiceMock.Setup(service => service.GetViewPrelMatList(It.IsAny<ViewPrelMatRequestDto>()))
                 .Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"))
                 .Returns(new OkObjectResult(mockData));
 
             // Act
@@ -254,7 +256,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<PrelMatDto>>(okResult.Value);
             Assert.Equal(mockData.Count, returnValue.Count());
             Assert.Equal(mockData.First().PrelMatId, returnValue.First().PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -270,7 +272,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         [Fact]
@@ -282,7 +284,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
 
         // --- Test per PutViewPrelMat ---
@@ -304,7 +306,7 @@ namespace TestApi.Tests.ControllerTests
             };
             _prelMatRequestServiceMock.Setup(service => service.PutViewPrelMat(It.IsAny<ViewPrelMatPutRequestDto>()))
                 .Returns(updatedDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"))
                 .Returns(new OkObjectResult(updatedDto));
 
             // Act
@@ -316,7 +318,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsType<PrelMatDto>(okResult.Value);
             Assert.Equal(updatedDto.PrelMatId, returnValue.PrelMatId);
             Assert.Equal(updatedDto.PrelQty, returnValue.PrelQty);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -332,7 +334,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         // --- Test per DeletePrelMatId ---
@@ -343,7 +345,7 @@ namespace TestApi.Tests.ControllerTests
             var deletedDto = _samplePrelMatDto;
             _prelMatRequestServiceMock.Setup(service => service.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteRequestDto>()))
                 .Returns(deletedDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false))
+            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"))
                 .Returns(new OkObjectResult(deletedDto));
 
             // Act
@@ -354,7 +356,7 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(200, okResult.StatusCode);
             var returnValue = Assert.IsType<PrelMatDto>(okResult.Value);
             Assert.Equal(deletedDto.PrelMatId, returnValue.PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -370,7 +372,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
         }
 
         [Fact]
@@ -382,7 +384,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
         }
     }
 }

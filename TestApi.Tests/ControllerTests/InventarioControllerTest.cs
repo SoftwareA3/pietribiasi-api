@@ -84,9 +84,9 @@ namespace TestApi.Tests.ControllerTests
                 HttpContext = httpContextMock.Object
             };
 
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
                 .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Non risultato trovato."))
                 .Returns(new NotFoundObjectResult("Non risultato trovato."));
         }
 
@@ -97,7 +97,7 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var mockData = new List<InventarioDto> { _sampleInventarioDto };
             _inventarioRequestServiceMock.Setup(service => service.GetInventario()).Returns(mockData);
-            _responseHandlerMock.Setup(x => x.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>(), "Ok"))
                 .Returns(new OkObjectResult(mockData));
 
             // Act
@@ -109,7 +109,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<InventarioDto>>(okResult.Value);
             Assert.Single(returnValue); 
             Assert.Equal(_sampleInventarioDto.InvId, returnValue.First().InvId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
@@ -118,6 +118,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             var emptyList = new List<InventarioDto>();
             _inventarioRequestServiceMock.Setup(service => service.GetInventario()).Returns(emptyList);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetInventario();
@@ -125,7 +127,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"), Times.Once);
         }
 
         // --- Test per PostInventarioList ---
@@ -137,7 +139,7 @@ namespace TestApi.Tests.ControllerTests
             var responseDtoList = new List<InventarioDto> { _sampleInventarioDto };
             _inventarioRequestServiceMock.Setup(service => service.PostInventarioList(It.IsAny<IEnumerable<InventarioRequestDto>>()))
                 .Returns(responseDtoList);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>(), "Ok"))
                 .Returns(new OkObjectResult(responseDtoList));
 
 
@@ -150,7 +152,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<InventarioDto>>(okResult.Value);
             Assert.Equal(responseDtoList.Count, returnValue.Count());
             Assert.Equal(responseDtoList.First().InvId, returnValue.First().InvId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
@@ -160,6 +162,8 @@ namespace TestApi.Tests.ControllerTests
             var requestDtoList = new List<InventarioRequestDto> { _sampleInventarioRequestDto };
             _inventarioRequestServiceMock.Setup(service => service.PostInventarioList(It.IsAny<IEnumerable<InventarioRequestDto>>()))
                 .Returns(new List<InventarioDto>()); 
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
 
             // Act
@@ -168,19 +172,26 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"), Times.Once);
         }
 
         [Fact]
         public void PostInventarioList_ShouldReturnBadRequest_WhenRequestIsNull()
         {
+            // Arrange
+            _inventarioRequestServiceMock.Setup(service => service.PostInventarioList(It.IsAny<IEnumerable<InventarioRequestDto>>()))
+                .Returns((List<InventarioDto>)null);
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
             // Act
             var result = _controller.PostInventarioList(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
         }
 
 
@@ -192,7 +203,7 @@ namespace TestApi.Tests.ControllerTests
             var mockData = new List<InventarioDto> { _sampleInventarioDto };
             _inventarioRequestServiceMock.Setup(service => service.GetViewInventario(It.IsAny<ViewInventarioRequestDto>()))
                 .Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>(), "Ok"))
                 .Returns(new OkObjectResult(mockData));
 
             // Act
@@ -204,7 +215,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsAssignableFrom<IEnumerable<InventarioDto>>(okResult.Value);
             Assert.Equal(mockData.Count, returnValue.Count());
             Assert.Equal(mockData.First().InvId, returnValue.First().InvId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<InventarioDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
@@ -213,6 +224,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _inventarioRequestServiceMock.Setup(service => service.GetViewInventario(It.IsAny<ViewInventarioRequestDto>()))
                 .Returns(new List<InventarioDto>());
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetViewInventario(_sampleViewRequest);
@@ -220,19 +233,25 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"), Times.Once);
         }
 
         [Fact]
         public void GetViewInventario_ShouldReturnBadRequest_WhenRequestIsNull()
         {
+            // Arrange
+            _inventarioRequestServiceMock.Setup(service => service.GetViewInventario(It.IsAny<ViewInventarioRequestDto>()))
+                .Returns((List<InventarioDto>)null);
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
             // Act
             var result = _controller.GetViewInventario(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"), Times.Once);
         }
 
         // --- Test per PutViewInventario ---
@@ -255,7 +274,7 @@ namespace TestApi.Tests.ControllerTests
             };
             _inventarioRequestServiceMock.Setup(service => service.PutViewInventario(It.IsAny<ViewInventarioPutRequestDto>()))
                 .Returns(updatedDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<InventarioDto>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<InventarioDto>(), It.IsAny<bool>(), "Ok"))
                 .Returns(new OkObjectResult(updatedDto));
 
 
@@ -268,7 +287,7 @@ namespace TestApi.Tests.ControllerTests
             var returnValue = Assert.IsType<InventarioDto>(okResult.Value);
             Assert.Equal(updatedDto.InvId, returnValue.InvId);
             Assert.Equal(updatedDto.BookInv, returnValue.BookInv);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<InventarioDto>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<InventarioDto>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
@@ -277,6 +296,8 @@ namespace TestApi.Tests.ControllerTests
             // Arrange
             _inventarioRequestServiceMock.Setup(service => service.PutViewInventario(It.IsAny<ViewInventarioPutRequestDto>()))
                 .Returns((InventarioDto)null);
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.PutViewInventario(_samplePutRequest);
@@ -284,19 +305,25 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"), Times.Once);
         }
 
         [Fact]
         public void PutViewInventario_ShouldReturnBadRequest_WhenRequestIsNull()
         {
+            // Arrange
+            _inventarioRequestServiceMock.Setup(service => service.PutViewInventario(It.IsAny<ViewInventarioPutRequestDto>()))
+                .Returns((InventarioDto)null);
+            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+            
             // Act
             var result = _controller.PutViewInventario(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"), Times.Once);
         }
     }
 }

@@ -22,34 +22,6 @@ namespace TestApi.Tests.Repository
         {
             new A3AppRegOre
             {
-                RegOreId = 1,
-                WorkerId = 1,
-                SavedDate = new DateTime(2023, 10, 1),
-                Job = "Job1",
-                RtgStep = 1,
-                Alternate = "Alt1",
-                AltRtgStep = 2,
-                Operation = "Op1",
-                OperDesc = "Operation 1",
-                Bom = "BOM1",
-                Variant = "Variant1",
-                ItemDesc = "Item Description 1",
-                Moid = 1,
-                Mono = "Mono1",
-                CreationDate = new DateTime(2023, 10, 1),
-                Uom = "UOM1",
-                ProductionQty = 100,
-                ProducedQty = 50,
-                ResQty = 50,
-                Storage = "Storage1",
-                Wc = "WC1",
-                WorkingTime = 3600,
-                Imported = false,
-                UserImp = "User1",
-                DataImp = new DateTime(2023, 10, 1)
-            },
-            new A3AppRegOre
-            {
                 RegOreId = 2,
                 WorkerId = 2,
                 SavedDate = DateTime.Now.AddDays(-1),
@@ -75,6 +47,34 @@ namespace TestApi.Tests.Repository
                 Imported = true,
                 UserImp = "User2",
                 DataImp = DateTime.Now.AddDays(-1)
+            },
+            new A3AppRegOre
+            {
+                RegOreId = 1,
+                WorkerId = 1,
+                SavedDate = new DateTime(2023, 10, 1),
+                Job = "Job1",
+                RtgStep = 1,
+                Alternate = "Alt1",
+                AltRtgStep = 2,
+                Operation = "Op1",
+                OperDesc = "Operation 1",
+                Bom = "BOM1",
+                Variant = "Variant1",
+                ItemDesc = "Item Description 1",
+                Moid = 1,
+                Mono = "Mono1",
+                CreationDate = new DateTime(2023, 10, 1),
+                Uom = "UOM1",
+                ProductionQty = 100,
+                ProducedQty = 50,
+                ResQty = 50,
+                Storage = "Storage1",
+                Wc = "WC1",
+                WorkingTime = 3600,
+                Imported = false,
+                UserImp = "User1",
+                DataImp = new DateTime(2023, 10, 1)
             }
         };
 

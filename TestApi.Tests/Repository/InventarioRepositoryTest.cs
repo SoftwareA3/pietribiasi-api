@@ -21,21 +21,6 @@ namespace TestApi.Tests.Repository
         private readonly List<A3AppInventario> _inventarioDataSample = new List<A3AppInventario> {
             new A3AppInventario 
             { 
-                InvId = 1,
-                WorkerId = 1,
-                SavedDate = new DateTime(2025, 6, 1),
-                Item = "ITEM001",
-                Description = "Test Item 1",
-                BarCode = "BC001",
-                FiscalYear = 2025,
-                Storage = "STG01",
-                BookInv = 10.5,
-                Imported = false,
-                UserImp = "User001",
-                DataImp = new DateTime(2025, 6, 1)
-            },
-            new A3AppInventario 
-            { 
                 InvId = 2,
                 WorkerId = 2,
                 SavedDate = new DateTime(2025, 6, 2),
@@ -48,27 +33,27 @@ namespace TestApi.Tests.Repository
                 Imported = false,
                 UserImp = "User002",
                 DataImp = new DateTime(2025, 6, 2)
+            },
+            new A3AppInventario
+            {
+                InvId = 1,
+                WorkerId = 1,
+                SavedDate = new DateTime(2025, 6, 1),
+                Item = "ITEM001",
+                Description = "Test Item 1",
+                BarCode = "BC001",
+                FiscalYear = 2025,
+                Storage = "STG01",
+                BookInv = 10.5,
+                Imported = false,
+                UserImp = "User001",
+                DataImp = new DateTime(2025, 6, 1)
             }
         };
 
         private readonly List<InventarioFilter> _inventarioFilterSample = new List<InventarioFilter> {
             new InventarioFilter 
             { 
-                InvId = 1,
-                WorkerId = 1,
-                SavedDate = new DateTime(2025, 6, 1),
-                Item = "ITEM001",
-                Description = "Test Item 1",
-                BarCode = "BC001",
-                FiscalYear = 2025,
-                Storage = "STG01",
-                BookInv = 10.5,
-                Imported = false,
-                UserImp = "User001",
-                DataImp = new DateTime(2025, 6, 1)
-            },
-            new InventarioFilter 
-            { 
                 InvId = 2,
                 WorkerId = 2,
                 SavedDate = new DateTime(2025, 6, 2),
@@ -81,6 +66,21 @@ namespace TestApi.Tests.Repository
                 Imported = false,
                 UserImp = "User002",
                 DataImp = new DateTime(2025, 6, 2)
+            },
+            new InventarioFilter
+            {
+                InvId = 1,
+                WorkerId = 1,
+                SavedDate = new DateTime(2025, 6, 1),
+                Item = "ITEM001",
+                Description = "Test Item 1",
+                BarCode = "BC001",
+                FiscalYear = 2025,
+                Storage = "STG01",
+                BookInv = 10.5,
+                Imported = false,
+                UserImp = "User001",
+                DataImp = new DateTime(2025, 6, 1)
             }
         };
 
@@ -256,17 +256,17 @@ namespace TestApi.Tests.Repository
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_inventarioDataSample.First().Item, result.First().Item);
-            Assert.Equal(_inventarioDataSample.First().BarCode, result.First().BarCode);
-            Assert.Equal(_inventarioDataSample.First().BookInv, result.First().BookInv);
-            Assert.Equal(_inventarioDataSample.First().SavedDate, result.First().SavedDate);
-            Assert.Equal(_inventarioDataSample.First().Description, result.First().Description);
-            Assert.Equal(_inventarioDataSample.First().Storage, result.First().Storage);
-            Assert.Equal(_inventarioDataSample.First().FiscalYear, result.First().FiscalYear);
-            Assert.Equal(_inventarioDataSample.First().WorkerId, result.First().WorkerId);
-            Assert.Equal(_inventarioDataSample.First().Imported, result.First().Imported);
-            Assert.Equal(_inventarioDataSample.First().UserImp, result.First().UserImp);
-            Assert.Equal(_inventarioDataSample.First().DataImp, result.First().DataImp);
+            Assert.Equal(_inventarioDataSample[1].Item, result.First().Item);
+            Assert.Equal(_inventarioDataSample[1].BarCode, result.First().BarCode);
+            Assert.Equal(_inventarioDataSample[1].BookInv, result.First().BookInv);
+            Assert.Equal(_inventarioDataSample[1].SavedDate, result.First().SavedDate);
+            Assert.Equal(_inventarioDataSample[1].Description, result.First().Description);
+            Assert.Equal(_inventarioDataSample[1].Storage, result.First().Storage);
+            Assert.Equal(_inventarioDataSample[1].FiscalYear, result.First().FiscalYear);
+            Assert.Equal(_inventarioDataSample[1].WorkerId, result.First().WorkerId);
+            Assert.Equal(_inventarioDataSample[1].Imported, result.First().Imported);
+            Assert.Equal(_inventarioDataSample[1].UserImp, result.First().UserImp);
+            Assert.Equal(_inventarioDataSample[1].DataImp, result.First().DataImp);
         }
 
         [Fact]

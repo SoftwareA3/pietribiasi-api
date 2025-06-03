@@ -55,10 +55,10 @@ namespace TestApi.Tests.ControllerTests
             };
 
             // Setup generico per i metodi di log (_isLogActive è false nel controller)
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>()))
+            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
                 .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>()))
-                .Returns(new NotFoundObjectResult("Non risultato trovato."));
+            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Nessun risultato trovato."))
+                .Returns(new NotFoundObjectResult("Nessun risultato trovato."));
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Setup(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<JobDto>>(), 
-                false)).Returns(new OkObjectResult(mockDataList));
+                false, "Ok")).Returns(new OkObjectResult(mockDataList));
 
             // Act
             var result = _controller.GetVwApiJobs();
@@ -87,7 +87,7 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Verify(log => log.HandleOkAndList(
                 It.IsAny<HttpContext>(), 
                 It.IsAny<List<JobDto>>(), 
-                false), Times.Once);
+                false, "Ok"), Times.Once);
         }
 
         [Fact]
@@ -95,6 +95,9 @@ namespace TestApi.Tests.ControllerTests
         {
             // Arrange
             _jobRequestServiceMock.Setup(service => service.GetJobs()).Returns(new List<JobDto>()); 
+            _responseHandlerMock.Setup(log => log.HandleNotFound(
+                It.IsAny<HttpContext>(), 
+                false, "Not Found")).Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetVwApiJobs();
@@ -105,7 +108,7 @@ namespace TestApi.Tests.ControllerTests
 
             _responseHandlerMock.Verify(log => log.HandleNotFound(
                 It.IsAny<HttpContext>(), 
-                false), Times.Once);
+                false, "Not Found"), Times.Once);
         }
     }
 }
