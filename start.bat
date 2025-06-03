@@ -12,7 +12,7 @@ echo ===============================================
 echo    CONTROLLO APPLICAZIONE PIETRIBIASI_API
 echo ===============================================
 echo.
-echo 0. Avvia applicazione (apertura automatica su index.html)
+echo 0. Avvia/Riavvia applicazione (apertura automatica su index.html)
 echo 1. Avvia applicazione 
 echo 2. Ferma applicazione  
 echo 3. Riavvia applicazione
@@ -22,7 +22,7 @@ echo 6. Esci
 echo.
 set /p choice="Seleziona un'opzione (0-6): "
 
-if "%choice%"=="0" goto START_APP_WITH_INDEX
+if "%choice%"=="0" goto FORCE_RESTART_WITH_INDEX
 if "%choice%"=="1" goto START_APP
 if "%choice%"=="2" goto STOP_APP
 if "%choice%"=="3" goto RESTART_APP
@@ -31,37 +31,25 @@ if "%choice%"=="5" goto SHOW_IPS
 if "%choice%"=="6" goto EXIT
 goto MENU
 
-:START_APP_WITH_INDEX
+:FORCE_RESTART_WITH_INDEX
 echo.
-echo Avvio dell'applicazione con apertura automatica su index.html...
+echo Riavvio forzato dell'applicazione con apertura automatica su index.html...
 echo.
-REM Controlla se i processi sono già in esecuzione
-call :CHECK_PROCESSES
-if "!BACKEND_RUNNING!"=="1" (
-    echo Backend già in esecuzione!
-) else (
-    echo Avvio del backend...
-    start "Backend Server" cmd /k "cd apiPB && dotnet run"
-    timeout /t 3 >nul
-)
-if "!FRONTEND_RUNNING!"=="1" (
-    echo Frontend già in esecuzione!
-) else (
-    echo Avvio del frontend...
-    timeout /t 2 >nul
-    start "Frontend Server" cmd /k "cd Frontend && http-server -a 0.0.0.0 -p 8080 --cors -o index.html -c-1"
-)
+echo Arresto di eventuali processi in esecuzione...
+call :STOP_APP_SILENT
+timeout /t 2 >nul
 
-REM Se entrambi sono già attivi, apri solo la pagina index.html
-if "!BACKEND_RUNNING!"=="1" if "!FRONTEND_RUNNING!"=="1" (
-    echo Applicazione già attiva. Apro la pagina index.html...
-    start "" "http://localhost:8080/index.html"
-) else (
-    echo.
-    echo Applicazione avviata!
-    call :SHOW_ADDRESSES
-)
+echo Avvio del backend...
+start "Backend Server" cmd /k "cd apiPB && dotnet run"
+timeout /t 5 >nul
 
+echo Avvio del frontend...
+start "Frontend Server" cmd /k "cd Frontend && http-server -a 0.0.0.0 -p 8080 --cors -o index.html -c-1"
+timeout /t 3 >nul
+
+echo.
+echo Applicazione riavviata! Apertura automatica della pagina...
+call :SHOW_ADDRESSES
 echo.
 pause
 goto MENU
