@@ -3,6 +3,7 @@ using apiPB.Models;
 using apiPB.Filters;
 using apiPB.Data;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.EntityFrameworkCore;
 
 namespace apiPB.Repository.Implementation
 {
@@ -17,7 +18,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppInventario> GetInventario()
         {
-            return _context.A3AppInventarios.ToList();
+            return _context.A3AppInventarios.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList();
         }
 
         public IEnumerable<A3AppInventario> PostInventarioList(IEnumerable<InventarioFilter> filterList)
@@ -91,15 +92,23 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppInventario> GetViewInventario(ViewInventarioRequestFilter filter)
         {
-            return _context.A3AppInventarios
+            var query = _context.A3AppInventarios
             .Where(i => (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
                         && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
                         && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
                         && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
                         && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
                         && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
-                        && (filter.Imported == null || i.Imported == filter.Imported.Value))
-            .ToList();
+                        && (filter.Imported == null || i.Imported == filter.Imported.Value)
+                        );
+            if (filter.Imported.HasValue && filter.Imported.Value == true)
+            {
+                return query.OrderByDescending(i => i.DataImp).ToList();
+            }
+            else
+            {
+                return query.OrderByDescending(i => i.SavedDate).ToList();
+            }
         }
 
         public A3AppInventario PutViewInventario(ViewInventarioPutFilter filter)
@@ -144,6 +153,7 @@ namespace apiPB.Repository.Implementation
         {
             return _context.A3AppInventarios
                 .Where(x => x.Imported == false)
+                .OrderByDescending(i => i.SavedDate)
                 .ToList();
         }
 
@@ -183,6 +193,7 @@ namespace apiPB.Repository.Implementation
         {
             return GetViewInventario(filter)
                 .Where(i => i.Imported == false)
+                .OrderByDescending(i => i.SavedDate)
                 .ToList();
         }
 

@@ -17,7 +17,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppPrelMat> GetAppPrelMat()
         {
-            return _context.A3AppPrelMats.AsNoTracking().ToList();
+            return _context.A3AppPrelMats.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList();
         }
 
         public IEnumerable<A3AppPrelMat> PostPrelMatList(IEnumerable<PrelMatFilter> filterList)
@@ -66,7 +66,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppPrelMat> GetViewPrelMat(ViewPrelMatRequestFilter filter)
         {
-            return _context.A3AppPrelMats.Where(i =>
+            var query = _context.A3AppPrelMats.Where(i =>
                 (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
                 && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
                 && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
@@ -77,7 +77,16 @@ namespace apiPB.Repository.Implementation
                 && (string.IsNullOrEmpty(filter.Component) || i.Component == filter.Component)
                 && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
                 && (filter.Imported == null || i.Imported == filter.Imported.Value)
-            ).ToList();
+            );
+
+            if (filter.Imported.HasValue && filter.Imported.Value == true)
+            {
+                return query.OrderByDescending(i => i.DataImp).ToList();
+            }
+            else
+            {
+                return query.OrderByDescending(i => i.SavedDate).ToList();
+            }
         }
 
         public A3AppPrelMat PutViewPrelMat(ViewPrelMatPutFilter filter)
@@ -147,12 +156,14 @@ namespace apiPB.Repository.Implementation
         {
             return _context.A3AppPrelMats
                 .Where(x => x.Imported == false)
+                .OrderByDescending(i => i.SavedDate)
                 .ToList();
         }
         public IEnumerable<A3AppPrelMat> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestFilter filter)
         {
             return GetViewPrelMat(filter)
                 .Where(i => i.Imported == false)
+                .OrderByDescending(i => i.SavedDate)
                 .ToList();
         }
 

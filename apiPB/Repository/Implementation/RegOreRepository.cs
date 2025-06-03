@@ -18,7 +18,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppRegOre> GetAppRegOre()
         {
-            return _context.A3AppRegOres.AsNoTracking().ToList();
+            return _context.A3AppRegOres.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList();
         }
 
         public IEnumerable<A3AppRegOre> PostRegOreList(IEnumerable<RegOreFilter> filterList)
@@ -64,7 +64,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppRegOre> GetAppViewOre(ViewOreRequestFilter filter)
         {
-            return _context.A3AppRegOres.Where(i =>
+            var query = _context.A3AppRegOres.Where(i =>
                 (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
                 && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
                 && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
@@ -73,7 +73,16 @@ namespace apiPB.Repository.Implementation
                 && (string.IsNullOrEmpty(filter.Operation) || i.Operation == filter.Operation)
                 && (string.IsNullOrEmpty(filter.Mono) || i.Mono == filter.Mono)
                 && (filter.Imported == null || i.Imported == filter.Imported.Value)
-            ).ToList();
+            );
+
+            if (filter.Imported.HasValue && filter.Imported.Value == true)
+            {
+                return query.OrderByDescending(i => i.DataImp).ToList();
+            }
+            else
+            {
+                return query.OrderByDescending(i => i.SavedDate).ToList();
+            }
         }
 
         public A3AppRegOre PutAppViewOre(ViewOrePutFilter filter)
@@ -110,6 +119,7 @@ namespace apiPB.Repository.Implementation
         {
             return _context.A3AppRegOres
                 .Where(x => x.Imported == false)
+                .OrderByDescending(i => i.SavedDate)
                 .ToList();
         }
 
@@ -148,6 +158,7 @@ namespace apiPB.Repository.Implementation
         {
             return GetAppViewOre(filter)
                 .Where(i => i.Imported == false)
+                .OrderByDescending(i => i.SavedDate)
                 .ToList();
         }
 
