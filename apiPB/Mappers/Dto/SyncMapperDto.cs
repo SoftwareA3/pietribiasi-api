@@ -61,7 +61,7 @@ namespace apiPB.Mappers.Dto
 
             foreach (var regOre in regOreList)
             {
-                long workingTimeInSeconds = (long)regOre.WorkingTime; // esempio: 542439
+                long workingTimeInSeconds = regOre.WorkingTime ?? 0; // esempio: 542439
                 TimeSpan workingTimeSpan = TimeSpan.FromSeconds(workingTimeInSeconds);
 
                 SyncRegOreRequestDto syncRegOre = new SyncRegOreRequestDto
