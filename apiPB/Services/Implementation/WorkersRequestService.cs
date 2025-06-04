@@ -22,70 +22,146 @@ namespace apiPB.Services.Implementation
 
         public IEnumerable<WorkerDto> GetWorkers()
         {
-            return _workerRepository.GetWorkers()
-            .Select(w => w.ToWorkerDto());
+            try
+            {
+                return _workerRepository.GetWorkers()
+                .Select(w => w.ToWorkerDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
 
-        public WorkerDto? GetWorkerByPassword(PasswordWorkersRequestDto request)
+        public WorkerDto GetWorkerByPassword(PasswordWorkersRequestDto request)
         {
-            var filter = _mapper.Map<PasswordWorkersRequestFilter>(request);
-            var worker = _workerRepository.GetWorkerByPassword(filter);
-            return worker != null ? worker.ToWorkerDto() : null;
+            try
+            {
+                var filter = _mapper.Map<PasswordWorkersRequestFilter>(request);
+                var worker = _workerRepository.GetWorkerByPassword(filter);
+                return worker?.ToWorkerDto() ?? throw new ArgumentNullException("Worker non trovato con la password fornita");
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
 
         public Task CallStoredProcedure(WorkerDto request)
         {
-            var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
-            return _workerRepository.CallStoredProcedure(filter);
+            try
+            {
+                var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
+                return _workerRepository.CallStoredProcedure(filter);
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
 
         public IEnumerable<WorkersFieldDto> GetWorkersFieldsById(WorkersFieldRequestDto request)
         {
-            var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
-            return _workerRepository.GetWorkersFieldsById(filter)
-            .Select(w => w.ToWorkersFieldDto());
+            try
+            {
+                var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
+                return _workerRepository.GetWorkersFieldsById(filter)
+                .Select(w => w.ToWorkersFieldDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
 
         public WorkersFieldDto? GetLastWorkerFieldLine(WorkerDto request)
         {
-            var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
-            var worker = _workerRepository.GetLastWorkerFieldLine(filter);
-            return worker != null ? worker.ToWorkersFieldDto() : null;
+            try
+            {
+                var filter = _mapper.Map<WorkerIdAndValueRequestFilter>(request);
+                var worker = _workerRepository.GetLastWorkerFieldLine(filter);
+                return worker?.ToWorkersFieldDto() ?? throw new ArgumentNullException("Ultimo campo del lavoratore non trovato");
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
 
         public async Task<WorkersFieldDto?> UpdateOrCreateLastLogin(PasswordWorkersRequestDto request)
         {
-            var workerDto = GetWorkerByPassword(request);
-            if (workerDto == null)
+            try
             {
-                return null;
+                var workerDto = GetWorkerByPassword(request) ?? throw new ArgumentNullException("Worker non trovato con la password fornita");
+                var filter = _mapper.Map<PasswordWorkersRequestFilter>(workerDto);
+                await _workerRepository.CreateOrUpdateLastLogin(filter);
+                return GetLastWorkerFieldLine(workerDto);
             }
-            var filter = _mapper.Map<PasswordWorkersRequestFilter>(workerDto);
-            await _workerRepository.CreateOrUpdateLastLogin(filter);
-            return GetLastWorkerFieldLine(workerDto);
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
 
         public WorkerDto? LoginWithPassword(PasswordWorkersRequestDto request)
         {
-            var workerDto = GetWorkerByPassword(request);
-            if (workerDto == null)
+            try
             {
-                return null;
+                var workerDto = GetWorkerByPassword(request) ?? throw new ArgumentNullException("Worker non trovato con la password fornita");
+                UpdateOrCreateLastLogin(request).Wait();
+                return workerDto;
             }
-            UpdateOrCreateLastLogin(request).Wait();
-            return workerDto;
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
 
         public WorkerDto? GetWorkerByIdAndPassword(WorkerIdAndPasswordRequestDto request)
         {
-            var filter = _mapper.Map<WorkerIdAndPasswordFilter>(request);
-            var worker = _workerRepository.GetWorkerByIdAndPassword(filter);
-            if (worker == null)
+            try
             {
-                return null;
+                var filter = _mapper.Map<WorkerIdAndPasswordFilter>(request);
+                var worker = _workerRepository.GetWorkerByIdAndPassword(filter) ?? throw new ArgumentNullException("Worker non trovato con l'ID e la password forniti");
+                UpdateOrCreateLastLogin(new PasswordWorkersRequestDto { Password = request.Password }).Wait();
+                return worker.ToWorkerDto();
             }
-            UpdateOrCreateLastLogin(new PasswordWorkersRequestDto { Password = request.Password }).Wait();
-            return worker.ToWorkerDto();
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in WorkersRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service WorkersRequestService", ex);
+            }
         }
     }
 }

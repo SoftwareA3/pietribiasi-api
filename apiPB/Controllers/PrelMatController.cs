@@ -37,11 +37,20 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetAllPrelMat()
         {
-            var a3AppPrelMatDto = _prelMatRequestService.GetAppPrelMat().ToList();
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.GetAppPrelMat().ToList();
 
-            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
 
         [HttpPost("post_prel_mat")]
@@ -56,11 +65,20 @@ namespace apiPB.Controllers
         {
             if (a3AppPrelMatRequestDto == null || !a3AppPrelMatRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var a3AppPrelMatDto = _prelMatRequestService.PostPrelMatList(a3AppPrelMatRequestDto).ToList();
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.PostPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
 
         [HttpPost("get_view_prel_mat")]
@@ -75,11 +93,20 @@ namespace apiPB.Controllers
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var a3AppPrelMatDto = _prelMatRequestService.GetViewPrelMatList(a3AppPrelMatRequestDto).ToList();
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.GetViewPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
 
         [HttpPut("view_prel_mat/edit_prel_qty")]
@@ -93,11 +120,20 @@ namespace apiPB.Controllers
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var a3AppPrelMatDto = _prelMatRequestService.PutViewPrelMat(a3AppPrelMatRequestDto);
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.PutViewPrelMat(a3AppPrelMatRequestDto);
 
-            if (a3AppPrelMatDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
 
         [HttpDelete("view_prel_mat/delete_prel_mat_id")]
@@ -111,12 +147,20 @@ namespace apiPB.Controllers
         public IActionResult DeletePrelMatId([FromBody] ViewPrelMatDeleteRequestDto? a3AppPrelMatRequestDto)
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.DeletePrelMatId(a3AppPrelMatRequestDto);
 
-            var a3AppPrelMatDto = _prelMatRequestService.DeletePrelMatId(a3AppPrelMatRequestDto);
-
-            if (a3AppPrelMatDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -131,11 +175,20 @@ namespace apiPB.Controllers
         {
             if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var a3AppPrelMatDto = _prelMatRequestService.GetPrelMatWithComponent(a3AppPrelMatRequestDto).ToList();
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.GetPrelMatWithComponent(a3AppPrelMatRequestDto).ToList();
 
-            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
 
         [HttpGet("view_prel_mat/not_imported")]
@@ -146,11 +199,20 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetNotImportedPrelMat()
         {
-            var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedPrelMat().ToList();
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedPrelMat().ToList();
 
-            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
 
         [HttpPost("view_prel_mat/not_imported/filtered")]
@@ -164,11 +226,20 @@ namespace apiPB.Controllers
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedAppPrelMatByFilter(request).ToList();
+            try
+            {
+                var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedAppPrelMatByFilter(request).ToList();
 
-            if (a3AppPrelMatDto == null || !a3AppPrelMatDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+            }
         }
     }
 }

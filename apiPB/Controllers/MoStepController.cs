@@ -32,13 +32,22 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiMostepWithJob([FromBody] JobRequestDto? mostepRequestDto)
         {
-            if(mostepRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var mostepDto = _moStepRequestService.GetMostepWithJob(mostepRequestDto).ToList();
+            try
+            {
+                var mostepDto = _moStepRequestService.GetMostepWithJob(mostepRequestDto).ToList();
 
-            if(mostepDto == null || !mostepDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
+            }
         }
 
         [HttpPost("odp")]
@@ -50,13 +59,22 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepWithMono([FromBody] MonoRequestDto? mostepMonoRequestDto)
         {
-            if(mostepMonoRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepMonoRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var mostepDto = _moStepRequestService.GetMostepWithMono(mostepMonoRequestDto).ToList();
+            try
+            {
+                var mostepDto = _moStepRequestService.GetMostepWithMono(mostepMonoRequestDto).ToList();
 
-            if(mostepDto == null || !mostepDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
+            }
         }
 
         [HttpPost("lavorazioni")]
@@ -70,11 +88,20 @@ namespace apiPB.Controllers
         {
             if(mostepOperationRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var mostepDto = _moStepRequestService.GetMostepWithOperation(mostepOperationRequestDto).ToList();
+            try
+            {
+                var mostepDto = _moStepRequestService.GetMostepWithOperation(mostepOperationRequestDto).ToList();
 
-            if(mostepDto == null || !mostepDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
+            }
         }
     }
 }

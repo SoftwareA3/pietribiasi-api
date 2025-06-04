@@ -35,11 +35,20 @@ namespace apiPB.Controllers
         {
             if (mostepsMocomponentJobRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentJobDistinct(mostepsMocomponentJobRequestDto).ToList();
+            try
+            {
+                var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentJobDistinct(mostepsMocomponentJobRequestDto).ToList();
 
-            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+            }
         }
 
         [HttpPost("mono")]
@@ -53,12 +62,22 @@ namespace apiPB.Controllers
         {
             if (mostepsMocomponentMonoRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentMonoDistinct(mostepsMocomponentMonoRequestDto).ToList();
+            try
+            {
+                var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentMonoDistinct(mostepsMocomponentMonoRequestDto).ToList();
 
-            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+            }
         }
+
 
         [HttpPost("operation")]
         /// <summary>
@@ -71,11 +90,20 @@ namespace apiPB.Controllers
         {
             if (mostepsMocomponentOperationRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentOperationDistinct(mostepsMocomponentOperationRequestDto).ToList();
+            try
+            {
+                var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentOperationDistinct(mostepsMocomponentOperationRequestDto).ToList();
 
-            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+            }
         }
 
         [HttpPost("barcode")]
@@ -89,11 +117,20 @@ namespace apiPB.Controllers
         {
             if (mostepsMocomponentBarCodeRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentBarCodeDistinct(mostepsMocomponentBarCodeRequestDto).ToList();
+            try
+            {
+                var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentBarCodeDistinct(mostepsMocomponentBarCodeRequestDto).ToList();
 
-            if (mostepComponentDto == null || !mostepComponentDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+            }
         }
     }
 }

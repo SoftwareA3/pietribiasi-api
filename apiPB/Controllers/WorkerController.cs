@@ -49,15 +49,22 @@ namespace apiPB.Controllers
         [HttpPost("login")]
         public IActionResult LoginWithPassword([FromBody] PasswordWorkersRequestDto? passwordWorkersRequestDto)
         {
-            string requestPath = $"{HttpContext.Request.Method} {HttpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
-            
-            if(passwordWorkersRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
-            
-            var workerDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
-            
-            if(workerDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-            
-            return _responseHandler.HandleOkAndItem(HttpContext, workerDto, _isLogActive);
+            if (passwordWorkersRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+
+            try
+            {
+                var workerDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
+
+                return _responseHandler.HandleOkAndItem(HttpContext, workerDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio ritorna null in WorkerController: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Errore durante l'esecuzione del Service in WorkerController: {ex.Message}");
+            }
         }
     }
 }

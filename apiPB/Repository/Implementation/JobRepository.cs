@@ -16,7 +16,8 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiJob> GetJobs()
         {
-            return _context.VwApiJobs.AsNoTracking().Distinct().ToList();
+            return _context.VwApiJobs.AsNoTracking().Distinct().ToList()
+                ?? throw new Exception("Nessun risultato trovato per GetJobs in JobRepository");
         }
     }
 }

@@ -36,27 +36,39 @@ namespace apiPB.Services.Implementation
 
         public SettingsDto? GetSettings()
         {
-            var settings = _settingsRepository.GetSettings();
-            if (settings != null)
+            try
             {
+                var settings = _settingsRepository.GetSettings() ?? throw new ArgumentNullException("Nessun risultato per GetSettings in SettingsRequestService");
                 return settings;
             }
-            else
+            catch (ArgumentNullException ex)
             {
-                return null;
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in SettingsRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service SettingsRequestService", ex);
             }
         }
 
         public SyncGobalActiveRequestDto? GetSyncGlobalActive()
         {
-            var appSetting = _settingsRepository.GetSyncGlobalActive();
-            if (appSetting != null && appSetting.SyncGlobalActive != null)
+            try
             {
+                var appSetting = _settingsRepository.GetSyncGlobalActive();
+                if (appSetting == null || appSetting.SyncGlobalActive == null)
+                {
+                    throw new ArgumentNullException("Nessun risultato per GetSyncGlobalActive in SettingsRequestService");
+                }
                 return appSetting;
             }
-            else
+            catch (ArgumentNullException ex)
             {
-                return null;
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in SettingsRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service SettingsRequestService", ex);
             }
         }
     }

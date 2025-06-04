@@ -19,16 +19,27 @@ namespace apiPB.Services.Implementation
 
         public IEnumerable<GiacenzeDto> GetGiacenze()
         {
-            var giacenze = _giacenzeRepository.GetGiacenze();
-            var giacenzeDtoList = new List<GiacenzeDto>();
-
-            foreach (var giacenza in giacenze)
+            try
             {
-                var giacenzaDto = giacenza.ToGiacenzeDto();
-                giacenzeDtoList.Add(giacenzaDto);
-            }
+                var giacenze = _giacenzeRepository.GetGiacenze();
+                var giacenzeDtoList = new List<GiacenzeDto>();
 
-            return giacenzeDtoList;
+                foreach (var giacenza in giacenze)
+                {
+                    var giacenzaDto = giacenza.ToGiacenzeDto();
+                    giacenzeDtoList.Add(giacenzaDto);
+                }
+
+                return giacenzeDtoList;
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in GiacenzeRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service GiacenzeRequestService", ex);
+            }
         }
     }
 }

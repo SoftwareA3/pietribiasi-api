@@ -50,10 +50,20 @@ namespace apiPB.Controllers
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di modifica delle impostazioni non valida");
 
-            var settingsDto = _settingsService.EditSettings(request);
-            if (settingsDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Modifica delle impostazioni non riuscita");
+            try
+            {
+                var settingsDto = _settingsService.EditSettings(request);
 
-            return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive, "Impostazioni modificate con successo");
+                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive, "Impostazioni modificate con successo");
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -66,9 +76,19 @@ namespace apiPB.Controllers
         [HttpGet("get_sync_global_active")]
         public IActionResult GetSyncGlobalActive()
         {
-            var syncGlobalActiveDto = _settingsService.GetSyncGlobalActive();
-            if (syncGlobalActiveDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-            return _responseHandler.HandleOkAndItem(HttpContext, syncGlobalActiveDto, _isLogActive);
+            try
+            {
+                var syncGlobalActiveDto = _settingsService.GetSyncGlobalActive();
+                return _responseHandler.HandleOkAndItem(HttpContext, syncGlobalActiveDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ namespace apiPB.Repository.Abstraction
 
         IEnumerable<A3AppInventario> GetNotImportedInventario();
 
-        IEnumerable<A3AppInventario> UpdateInventarioImported(WorkerIdSyncFilter? filter);
+        IEnumerable<A3AppInventario> UpdateInventarioImported(WorkerIdSyncFilter filter);
 
         IEnumerable<A3AppInventario> GetNotImportedAppInventarioByFilter(ViewInventarioRequestFilter filter);
         

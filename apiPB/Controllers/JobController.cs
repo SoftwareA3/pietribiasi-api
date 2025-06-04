@@ -32,11 +32,20 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiJobs()
         {
-            var jobsDto = _jobRequestService.GetJobs().ToList();
+            try
+            {
+                var jobsDto = _jobRequestService.GetJobs().ToList();
 
-            if (jobsDto == null || jobsDto.Count == 0) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, jobsDto, _isLogActive);  
+                return _responseHandler.HandleOkAndList(HttpContext, jobsDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in JobController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in JobController: " + ex.Message);
+            }  
         }
     }    
 }
