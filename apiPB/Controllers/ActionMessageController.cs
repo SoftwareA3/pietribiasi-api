@@ -34,11 +34,20 @@ namespace apiPB.Controllers
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var actionMessagesDto = _actionMessageRequestService.GetActionMessagesByFilter(request);
+            try
+            {
+                var actionMessagesDto = _actionMessageRequestService.GetActionMessagesByFilter(request);
 
-            if (actionMessagesDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndItem(HttpContext, actionMessagesDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, actionMessagesDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in ActionMessageController" + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in ActionMessageController" + ex.Message);
+            }
         }
     }
 }

@@ -65,7 +65,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat
         /// </returns>
-        IEnumerable<A3AppPrelMat>? GetPrelMatWithComponent(ComponentFilter? filter);
+        IEnumerable<A3AppPrelMat> GetPrelMatWithComponent(ComponentFilter filter);
 
         /// <summary>   
         /// Ritorna la lista di A3AppPrelMat non importati

@@ -26,9 +26,10 @@ namespace apiPB.Repository.Implementation
                             && (string.IsNullOrEmpty(filter.Wc) || x.Wc == filter.Wc)
                             && (string.IsNullOrEmpty(filter.Operation) || x.Operation == filter.Operation)
                             && x.WorkerId == filter.WorkerId
-                            && x.ActionType == filter.ActionType)   
+                            && x.ActionType == filter.ActionType)
                 .OrderByDescending(x => x.ActionId)
-                .ToList();
+                .ToList()
+                    ?? throw new Exception("Nessun risultato trovato per i filtri specificati in ActionMessageRepository");
         }
     }
 }

@@ -19,8 +19,20 @@ namespace apiPB.Services.Implementation
 
         public IEnumerable<JobDto> GetJobs()
         {
-            return _repository.GetJobs()
-            .Select(j => j.ToJobDto());
+            try
+            {
+                return _repository.GetJobs()
+                .Select(j => j.ToJobDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in JobRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service JobRequestService", ex);
+            }
+                
         }
     }
 }

@@ -34,11 +34,20 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetGiacenze()
         {
-            var giacenzeDto = _giacenzeRequestService.GetGiacenze().ToList();
+            try
+            {
+                var giacenzeDto = _giacenzeRequestService.GetGiacenze().ToList();
 
-            if (giacenzeDto == null || !giacenzeDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList<GiacenzeDto>(HttpContext, giacenzeDto, _isLogActive);
+                return _responseHandler.HandleOkAndList<GiacenzeDto>(HttpContext, giacenzeDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in GiacenzeController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in GiacenzeController: " + ex.Message);
+            }
         }
     }
 }

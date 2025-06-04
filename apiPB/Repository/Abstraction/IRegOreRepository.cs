@@ -64,7 +64,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di A3AppRegOre: restituisce una collezione generica di modelli A3AppRegOre, cioè i record modificati
         /// </returns>
-        IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter? filter);
+        IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter filter);
 
         IEnumerable<A3AppRegOre> GetNotImportedAppRegOreByFilter(ViewOreRequestFilter filter);
 

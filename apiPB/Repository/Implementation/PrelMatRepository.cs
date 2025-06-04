@@ -17,7 +17,8 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppPrelMat> GetAppPrelMat()
         {
-            return _context.A3AppPrelMats.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList();
+            return _context.A3AppPrelMats.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList()
+                ?? throw new Exception("Nessun risultato per GetAppPrelMat in PrelMatRepository");
         }
 
         public IEnumerable<A3AppPrelMat> PostPrelMatList(IEnumerable<PrelMatFilter> filterList)
@@ -61,7 +62,7 @@ namespace apiPB.Repository.Implementation
             _context.A3AppPrelMats.AddRange(list);
             _context.SaveChanges();
 
-            return list;
+            return list ?? throw new Exception("Nessun risultato per PostPrelMat in PrelMatRepository");
         }
 
         public IEnumerable<A3AppPrelMat> GetViewPrelMat(ViewPrelMatRequestFilter filter)
@@ -77,7 +78,7 @@ namespace apiPB.Repository.Implementation
                 && (string.IsNullOrEmpty(filter.Component) || i.Component == filter.Component)
                 && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
                 && (filter.Imported == null || i.Imported == filter.Imported.Value)
-            );
+            ) ?? throw new ArgumentNullException("Nessun risultato per GetViewPrelMat in PrelMatRepository");
 
             if (filter.Imported.HasValue && filter.Imported.Value == true)
             {
@@ -95,7 +96,7 @@ namespace apiPB.Repository.Implementation
 
             if (editPrelMat == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(editPrelMat), "L'oggetto A3AppPrelMat non è stato trovato.");
             }
             editPrelMat.SavedDate = DateTime.Now;
             editPrelMat.PrelQty = filter.PrelQty;
@@ -108,7 +109,7 @@ namespace apiPB.Repository.Implementation
             var deletePrelMat = _context.A3AppPrelMats.Find(filter.PrelMatId);
             if (deletePrelMat == null)
             {
-                return null;
+                throw new Exception($"L'oggetto A3AppPrelMat non è stato trovato con l'ID {filter.PrelMatId} per DeletePrelMatId in PrelMatRepository.");
             }
             _context.A3AppPrelMats.Remove(deletePrelMat);
             _context.SaveChanges();
@@ -117,9 +118,13 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter)
         {
+            if (filter == null || filter.WorkerId == null)
+            {
+                throw new ArgumentNullException(nameof(filter), "Il filtro non può essere nullo");
+            }
             var notImported = _context.A3AppPrelMats
                 .Where(x => x.Imported == false)
-                .ToList();
+                .ToList() ?? throw new Exception("Nessun risultato per UpdatePrelMatImported in PrelMatRepository");
 
             if (notImported.Count == 0)
             {
@@ -140,16 +145,10 @@ namespace apiPB.Repository.Implementation
             return GetAppPrelMat();
         }
 
-        public IEnumerable<A3AppPrelMat>? GetPrelMatWithComponent(ComponentFilter? filter)
+        public IEnumerable<A3AppPrelMat> GetPrelMatWithComponent(ComponentFilter filter)
         {
-            if (filter == null || filter.Component == string.Empty)
-            {
-                return null;
-            }
-            else
-            {
-                return _context.A3AppPrelMats.Where(i => i.Component == filter.Component && i.Imported == false).ToList();
-            }
+            return _context.A3AppPrelMats.Where(i => i.Component == filter.Component && i.Imported == false).ToList()
+                ?? throw new Exception("Nessun risultato per GetPrelMatWithComponent in PrelMatRepository");
         }
 
         public IEnumerable<A3AppPrelMat> GetNotImportedPrelMat()
@@ -157,21 +156,28 @@ namespace apiPB.Repository.Implementation
             return _context.A3AppPrelMats
                 .Where(x => x.Imported == false)
                 .OrderByDescending(i => i.SavedDate)
-                .ToList();
+                .ToList()
+                ?? throw new Exception("Nessun risultato per GetNotImportedPrelMat in PrelMatRepository");
         }
         public IEnumerable<A3AppPrelMat> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestFilter filter)
         {
             return GetViewPrelMat(filter)
                 .Where(i => i.Imported == false)
                 .OrderByDescending(i => i.SavedDate)
-                .ToList();
+                .ToList()
+                ?? throw new Exception("Nessun risultato per GetNotImportedAppPrelMatByFilter in PrelMatRepository");
         }
 
         public IEnumerable<A3AppPrelMat> UpdateImportedById(UpdateImportedIdFilter filter)
         {
+            if (filter == null || filter.WorkerId == null)
+            {
+                throw new ArgumentNullException(nameof(filter), "Il filtro non può essere nullo");
+            }
             var notImported = _context.A3AppPrelMats
                 .Where(x => x.Imported == false && x.PrelMatId == filter.Id)
-                .ToList();
+                .ToList()
+                ?? throw new Exception("Nessun risultato per UpdateImportedById in PrelMatRepository");
 
             if (notImported.Count == 0)
             {

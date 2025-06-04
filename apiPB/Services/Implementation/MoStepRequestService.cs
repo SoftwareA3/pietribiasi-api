@@ -20,24 +20,56 @@ namespace apiPB.Services.Implementation
 
         public IEnumerable<MostepDto> GetMostepWithJob(JobRequestDto request)
         {
-            // FIXME controllo su filtro e su metodo di repository
-            var filter = _mapper.Map<JobFilter>(request);
-            return _repository.GetMostepWithJob(filter)
-            .Select(m => m.ToMostepDto());
+            try
+            {
+                var filter = _mapper.Map<JobFilter>(request);
+                return _repository.GetMostepWithJob(filter)
+                .Select(m => m.ToMostepDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in MoStepRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service MoStepRequestService", ex);
+            }
         }
 
         public IEnumerable<MostepDto> GetMostepWithMono(MonoRequestDto request)
         {
-            var filter = _mapper.Map<MonoFilter>(request);
-            return _repository.GetMostepWithMono(filter)
-            .Select(m => m.ToMostepDto());
+            try
+            {
+                var filter = _mapper.Map<MonoFilter>(request);
+                return _repository.GetMostepWithMono(filter)
+                .Select(m => m.ToMostepDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in MoStepRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service MoStepRequestService", ex);
+            }
         }
 
         public IEnumerable<MostepDto> GetMostepWithOperation(OperationRequestDto request)
         {
-            var filter = _mapper.Map<OperationFilter>(request);
-            return _repository.GetMostepWithOperation(filter)
-            .Select(m => m.ToMostepDto());
+            try
+            {
+                var filter = _mapper.Map<OperationFilter>(request);
+                return _repository.GetMostepWithOperation(filter)
+                .Select(m => m.ToMostepDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in MoStepRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service MoStepRequestService", ex);
+            }
         }
     }
 }

@@ -21,98 +21,171 @@ namespace apiPB.Services.Implementation
 
         public IEnumerable<InventarioDto> GetInventario()
         {
-            return _repository.GetInventario()
-            .Select(m => m.ToInventarioDto());
+            try
+            {
+                return _repository.GetInventario()
+                .Select(m => m.ToInventarioDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
 
         public IEnumerable<InventarioDto> PostInventarioList(IEnumerable<InventarioRequestDto> inventarioList)
         {
-            var filterList = new List<InventarioFilter>();
-            foreach (var request in inventarioList)
+            try
             {
-                var filter = _mapper.Map<InventarioFilter>(request);
-                filterList.Add(filter);
-            }
-            var result = _repository.PostInventarioList(filterList);
+                var filterList = new List<InventarioFilter>();
+                foreach (var request in inventarioList)
+                {
+                    var filter = _mapper.Map<InventarioFilter>(request);
+                    filterList.Add(filter);
+                }
+                var result = _repository.PostInventarioList(filterList);
 
-            var resultList = new List<InventarioDto>();
-            foreach (var item in result)
+                var resultList = new List<InventarioDto>();
+                foreach (var item in result)
+                {
+                    var dto = item.ToInventarioDto();
+                    resultList.Add(dto);
+                }
+
+                return resultList;
+            }
+            catch (ArgumentNullException ex)
             {
-                var dto = item.ToInventarioDto();
-                resultList.Add(dto);
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
             }
-
-            return resultList;
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
 
         public IEnumerable<InventarioDto> GetViewInventario(ViewInventarioRequestDto request)
         {
-            var filter = _mapper.Map<ViewInventarioRequestFilter>(request);
-            var result = _repository.GetViewInventario(filter);
-
-            var resultList = new List<InventarioDto>();
-            foreach (var item in result)
+            try
             {
-                var dto = item.ToInventarioDto();
-                resultList.Add(dto);
-            }
+                var filter = _mapper.Map<ViewInventarioRequestFilter>(request);
+                var result = _repository.GetViewInventario(filter);
 
-            return resultList;
+                var resultList = new List<InventarioDto>();
+                foreach (var item in result)
+                {
+                    var dto = item.ToInventarioDto();
+                    resultList.Add(dto);
+                }
+
+                return resultList;
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
 
         public InventarioDto PutViewInventario(ViewInventarioPutRequestDto request)
         {
-            var filter = _mapper.Map<ViewInventarioPutFilter>(request);
-            var result = _repository.PutViewInventario(filter);
+            try
+            {
+                var filter = _mapper.Map<ViewInventarioPutFilter>(request);
+                var result = _repository.PutViewInventario(filter);
 
-            return result.ToInventarioDto();
+                return result.ToInventarioDto();
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
 
         public IEnumerable<InventarioDto> GetNotImportedInventario()
         {
-            return _repository.GetNotImportedInventario()
-            .Select(m => m.ToInventarioDto());
+            try
+            {
+                return _repository.GetNotImportedInventario()
+                .Select(m => m.ToInventarioDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
 
         public IEnumerable<InventarioDto> UpdateInventarioImported(WorkerIdSyncRequestDto? request)
         {
-            if (request == null)
+            try
             {
-                return null;
+                var filter = _mapper.Map<WorkerIdSyncFilter>(request);
+                var result = _repository.UpdateInventarioImported(filter);
+
+                return result
+                .Select(m => m.ToInventarioDto());
             }
-
-            var filter = _mapper.Map<WorkerIdSyncFilter>(request);
-            var result = _repository.UpdateInventarioImported(filter);
-
-            return result
-            .Select(m => m.ToInventarioDto());
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
 
         public IEnumerable<InventarioDto> GetNotImportedAppInventarioByFilter(ViewInventarioRequestDto request)
         {
-            if (request == null)
+            try
             {
-                return null;
+                var filter = _mapper.Map<ViewInventarioRequestFilter>(request);
+                var result = _repository.GetNotImportedAppInventarioByFilter(filter);
+
+                return result
+                .Select(m => m.ToInventarioDto());
             }
-
-            var filter = _mapper.Map<ViewInventarioRequestFilter>(request);
-            var result = _repository.GetNotImportedAppInventarioByFilter(filter);
-
-            return result
-            .Select(m => m.ToInventarioDto());
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
 
         public InventarioDto UpdateImportedById(UpdateImportedIdRequestDto request)
         {
-            if (request == null)
+            try
             {
-                return null;
+                var filter = _mapper.Map<UpdateImportedIdFilter>(request);
+                var result = _repository.UpdateImportedById(filter) ?? throw new Exception("Nessun risultato trovato per l'ID specificato");
+
+                return result.ToInventarioDto();
             }
-
-            var filter = _mapper.Map<UpdateImportedIdFilter>(request);
-            var result = _repository.UpdateImportedById(filter);
-
-            return result.ToInventarioDto();
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in InventarioRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service InventarioRequestService", ex);
+            }
         }
     }
 }

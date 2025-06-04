@@ -51,11 +51,20 @@ namespace apiPB.Controllers
         {
             if (inventarioRequestDto == null || !inventarioRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var inventarioDto = _inventarioRequestService.PostInventarioList(inventarioRequestDto).ToList();
+            try
+            {
+                var inventarioDto = _inventarioRequestService.PostInventarioList(inventarioRequestDto).ToList();
 
-            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in InventarioController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in InventarioController: " + ex.Message);
+            }
         }
 
         [HttpPost("get_view_inventario")]
@@ -69,11 +78,20 @@ namespace apiPB.Controllers
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var inventarioDto = _inventarioRequestService.GetViewInventario(request).ToList();
+            try
+            {
+                var inventarioDto = _inventarioRequestService.GetViewInventario(request).ToList();
 
-            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in InventarioController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in InventarioController: " + ex.Message);
+            }
         }
 
         [HttpPut("view_inventario/edit_book_inv")]
@@ -87,11 +105,20 @@ namespace apiPB.Controllers
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var inventarioDto = _inventarioRequestService.PutViewInventario(request);
+            try
+            {
+                var inventarioDto = _inventarioRequestService.PutViewInventario(request);
 
-            if (inventarioDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndItem(HttpContext, inventarioDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, inventarioDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in InventarioController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in InventarioController: " + ex.Message);
+            }
         }
 
         [HttpGet("get_inventario_not_imported")]
@@ -102,11 +129,20 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetInventarioNotImported()
         {
-            var inventarioDto = _inventarioRequestService.GetNotImportedInventario().ToList();
+            try
+            {
+                var inventarioDto = _inventarioRequestService.GetNotImportedInventario().ToList();
 
-            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in InventarioController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in InventarioController: " + ex.Message);
+            }
         }
 
         [HttpPost("view_inventario/not_imported/filtered")]
@@ -120,11 +156,20 @@ namespace apiPB.Controllers
         {
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
 
-            var inventarioDto = _inventarioRequestService.GetNotImportedAppInventarioByFilter(request).ToList();
+            try
+            {
+                var inventarioDto = _inventarioRequestService.GetNotImportedAppInventarioByFilter(request).ToList();
 
-            if (inventarioDto == null || !inventarioDto.Any()) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, inventarioDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in InventarioController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in InventarioController: " + ex.Message);
+            }
         }
     }
 }

@@ -14,6 +14,10 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiGiacenze> GetGiacenze()
         {
+            if (_context.VwApiGiacenzes == null || !_context.VwApiGiacenzes.Any())
+            {
+                throw new Exception("Nessun risultato trovato per GetGiacenze in GiacenzeRepository");
+            }
             return _context.VwApiGiacenzes.ToList();
         }
     }

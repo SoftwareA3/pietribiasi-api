@@ -30,7 +30,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJobDistinct(JobFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJob(JobFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentMonoFilter
@@ -40,7 +40,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMonoDistinct(MonoFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMono(MonoFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentOperationFilter
@@ -50,7 +50,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperationDistinct(OperationFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperation(OperationFilter filter);
 
         /// <summary>
         /// Restituisce tutte le informazioni della vista vw_api_mo_steps_component, dato MostepsMocomponentBarCodeFilter
@@ -60,6 +60,6 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di VwApiMostepsMocomponent: restituisce una collezione generica di modelli VwApiMostepsMocomponent
         /// </returns>
-        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCodeDistinct(BarCodeFilter filter);
+        IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCode(BarCodeFilter filter);
     }
 }

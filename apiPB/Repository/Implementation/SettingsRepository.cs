@@ -27,7 +27,7 @@ namespace apiPB.Repository.Implementation
             }
             else
             {
-                return null;
+                throw new ArgumentNullException("Nessun risultato per GetSettings in SettingsRepository");
             }
         }
 
@@ -40,7 +40,7 @@ namespace apiPB.Repository.Implementation
             }
             else
             {
-                return null;
+                throw new Exception("A3AppSettings null e SyncGlobalActive null per GetSyncGlobalActive in SettingsRepository");
             }
         }
 

@@ -20,30 +20,74 @@ namespace apiPB.Services.Implementation
 
         public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentJobDistinct(JobRequestDto request)
         {
-            var filter = _mapper.Map<JobFilter>(request);
-            return _repository.GetMostepsMocomponentJobDistinct(filter)
-            .Select(m => m.ToMostepsMocomponentDto());
+            try
+            {
+                var filter = _mapper.Map<JobFilter>(request);
+                return _repository.GetMostepsMocomponentJob(filter)
+                .Select(m => m.ToMostepsMocomponentDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in MostepsMocomponentRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service MostepsMocomponentRequestService", ex);
+            }
         }
 
         public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentMonoDistinct(MonoRequestDto request)
         {
-            var filter = _mapper.Map<MonoFilter>(request);
-            return _repository.GetMostepsMocomponentMonoDistinct(filter)
-            .Select(m => m.ToMostepsMocomponentDto());
+            try
+            {
+                var filter = _mapper.Map<MonoFilter>(request);
+                return _repository.GetMostepsMocomponentMono(filter)
+                .Select(m => m.ToMostepsMocomponentDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in MostepsMocomponentRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service MostepsMocomponentRequestService", ex);
+            }
         }
 
         public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentOperationDistinct(OperationRequestDto request)
         {
-            var filter = _mapper.Map<OperationFilter>(request);
-            return _repository.GetMostepsMocomponentOperationDistinct(filter)
-            .Select(m => m.ToMostepsMocomponentDto());
+            try
+            {
+                var filter = _mapper.Map<OperationFilter>(request);
+                return _repository.GetMostepsMocomponentOperation(filter)
+                .Select(m => m.ToMostepsMocomponentDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in MostepsMocomponentRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service MostepsMocomponentRequestService", ex);
+            }
         }
 
         public IEnumerable<MostepsMocomponentDto> GetMostepsMocomponentBarCodeDistinct(BarCodeRequestDto request)
         {
-            var filter = _mapper.Map<BarCodeFilter>(request);
-            return _repository.GetMostepsMocomponentBarCodeDistinct(filter)
-            .Select(m => m.ToMostepsMocomponentDto());
+            try
+            {
+                var filter = _mapper.Map<BarCodeFilter>(request);
+                return _repository.GetMostepsMocomponentBarCode(filter)
+                .Select(m => m.ToMostepsMocomponentDto());
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in MostepsMocomponentRequestService", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Errore durante l'esecuzione del Service MostepsMocomponentRequestService", ex);
+            }
         }
     }
 }
