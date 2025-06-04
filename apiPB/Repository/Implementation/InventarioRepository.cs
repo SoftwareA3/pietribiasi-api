@@ -103,7 +103,7 @@ namespace apiPB.Repository.Implementation
                         && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
                         && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
                         && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
-                        && (filter.Imported == null || i.Imported == filter.Imported.Value)
+                        // && (filter.Imported == null || i.Imported == filter.Imported.Value)
                         ) ?? throw new ArgumentNullException("Nessun risultato trovato in GetViewInventario in InventarioRepository");
 
             if (filter.Imported.HasValue && filter.Imported.Value == true)
@@ -219,7 +219,7 @@ namespace apiPB.Repository.Implementation
                 ?? throw new Exception("Nessun risultato trovato in GetNotImportedAppInventarioByFilter in InventarioRepository");
         }
 
-        public A3AppInventario? UpdateImportedById(UpdateImportedIdFilter filter)
+        public A3AppInventario UpdateImportedById(UpdateImportedIdFilter filter)
         {
             if (filter == null || filter.WorkerId == null)
             {
