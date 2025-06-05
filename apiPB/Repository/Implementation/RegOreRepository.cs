@@ -74,8 +74,8 @@ namespace apiPB.Repository.Implementation
                 && (string.IsNullOrEmpty(filter.Job) || i.Job == filter.Job)
                 && (string.IsNullOrEmpty(filter.Operation) || i.Operation == filter.Operation)
                 && (string.IsNullOrEmpty(filter.Mono) || i.Mono == filter.Mono)
-                && (filter.Imported == null || i.Imported == filter.Imported.Value)
-            );
+                // && (filter.Imported == null || i.Imported == filter.Imported.Value)
+            ) ?? throw new Exception("Nessun risultato per GetAppViewOre in RegOreRepository");
 
             if (filter.Imported.HasValue && filter.Imported.Value == true)
             {

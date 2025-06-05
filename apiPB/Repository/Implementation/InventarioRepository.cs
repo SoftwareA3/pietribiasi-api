@@ -98,13 +98,14 @@ namespace apiPB.Repository.Implementation
         {
             var query = _context.A3AppInventarios
             .Where(i => (filter.WorkerId == null || i.WorkerId == filter.WorkerId)
-                        && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
-                        && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
-                        && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
-                        && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
-                        && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
-                        && (filter.Imported == null || i.Imported == filter.Imported.Value)
-                        );
+                && (filter.FromDateTime == null || i.SavedDate >= filter.FromDateTime)
+                && (filter.ToDateTime == null || i.SavedDate <= filter.ToDateTime)
+                && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
+                && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
+                && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
+                // && (filter.Imported == null || i.Imported == filter.Imported.Value)
+            ) ?? throw new ArgumentNullException("Nessun risultato trovato in GetViewInventario in InventarioRepository");
+
             if (filter.Imported.HasValue && filter.Imported.Value == true)
             {
                 return query.OrderByDescending(i => i.DataImp).ToList();
