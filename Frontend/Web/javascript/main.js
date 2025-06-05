@@ -12,11 +12,12 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // Ottieni riferimento al pulsante
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-
-    scrollToTopBtn.addEventListener('click', function() {
-        // Chiama la funzione per tornare in cima alla pagina
-        scrollToTop();
-    });
+    if (scrollToTopBtn) {
+        scrollToTopBtn.addEventListener('click', function() {
+            // Chiama la funzione per tornare in cima alla pagina
+            scrollToTop();
+        });
+    }
     
     const headerElement = document.getElementsByClassName("app-header")[0]; 
 
