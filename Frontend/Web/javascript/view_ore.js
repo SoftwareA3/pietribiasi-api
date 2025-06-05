@@ -471,7 +471,7 @@ async function populateOreList(data) {
                     detail =>
                         (typeof detail.actionStatus === "string" &&
                             (detail.actionStatus.includes("Errore") || detail.actionStatus.includes("Da Fare") || detail.actionStatus.includes("In Lavorazione") || detail.actionMessage !== ""))
-                )
+                ) || logList.moid === null || logList.actionType === null
             ) {
                 hasError = true;
             }
@@ -715,7 +715,7 @@ async function openLogOverlay(logList) {
                     <strong class="msg-id"><u>Messaggio #${msg.actionId}:</u></strong> <br>
                     <div class="msg-content">
                         <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
-                        ${msg.actionMessage !== null ? "<strong>Messaggio:</strong>" + msg.actionMessage + "<br>" : "" } 
+                        <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>"}
                         <strong>Stato chiusura:</strong> ${(msg.closed === true || msg.closed === 1) ? "Chiuso" : "Aperto"} <br>
                         <strong>Tipo Specificazione:</strong> ${msg.specificatorType} <br>
                         <strong>Mo Status:</strong> ${msg.mostatus} <br>
