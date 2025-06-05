@@ -60,12 +60,6 @@ namespace apiPB.Services.Implementation
                 // Se le operazioni vanno a buon fine, invia Logout
                 // ======================================================
 
-            
-                await LogoffAsync(new MagoTokenRequestDto
-                {
-                    Token = responseDto.Token
-                });
-
                 // Riassegnazione della lista creata inizialmente (FIXME)
                 syncDataListToReturn = syncDataListToReturn.ToSyncronizedDataDto(syncRegOreList.ToList(), syncPrelMatList.ToList(), syncInventarioList.ToList());
                 Console.WriteLine($"Data sent to Mago and logged off successfully. Data: {syncDataListToReturn}");

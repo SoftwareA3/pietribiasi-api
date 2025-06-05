@@ -95,6 +95,10 @@ namespace apiPB.Controllers
             }
             catch (Exception e)
             {
+                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione non riuscita" + e.Message);
+            }
+            finally
+            {
                 var loginResult = settingsAndResponseTuple.LoginResponse.Token;
                 if (loginResult != null)
                 {
@@ -103,8 +107,6 @@ namespace apiPB.Controllers
                         Token = loginResult
                     });
                 }
-                
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione non riuscita" + e.Message);
             }
         }
 
@@ -130,16 +132,13 @@ namespace apiPB.Controllers
             try
             {
                 var response = await _magoRequestService.SyncRegOreFiltered(settingsAndResponseTuple.LoginResponse, settingsAndResponseTuple.Settings, request);
-                if (response != null)
-                {
-                    await _magoRequestService.LogoffAsync(new MagoTokenRequestDto
-                    {
-                        Token = settingsAndResponseTuple.LoginResponse.Token
-                    });
-                }
                 return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Sincronizzazione delle ore registrate filtrate effettuata con successo");
             }
             catch (Exception e)
+            {
+                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione delle ore registrate filtrate non riuscita: " + e.Message);
+            }
+            finally
             {
                 var loginResult = settingsAndResponseTuple.LoginResponse.Token;
                 if (loginResult != null)
@@ -149,8 +148,6 @@ namespace apiPB.Controllers
                         Token = loginResult
                     });
                 }
-
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione delle ore registrate filtrate non riuscita: " + e.Message);
             }
         }
 
@@ -176,16 +173,13 @@ namespace apiPB.Controllers
             try
             {
                 var response = await _magoRequestService.SyncPrelMatFiltered(settingsAndResponseTuple.LoginResponse, settingsAndResponseTuple.Settings, request);
-                if (response != null)
-                {
-                    await _magoRequestService.LogoffAsync(new MagoTokenRequestDto
-                    {
-                        Token = settingsAndResponseTuple.LoginResponse.Token
-                    });
-                }
                 return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Sincronizzazione dei materiali prelevati filtrati effettuata con successo");
             }
             catch (Exception e)
+            {
+                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione dei materiali prelevati filtrati non riuscita: " + e.Message);
+            }
+            finally
             {
                 var loginResult = settingsAndResponseTuple.LoginResponse.Token;
                 if (loginResult != null)
@@ -195,8 +189,6 @@ namespace apiPB.Controllers
                         Token = loginResult
                     });
                 }
-
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione dei materiali prelevati filtrati non riuscita: " + e.Message);
             }
         }
 
@@ -225,16 +217,13 @@ namespace apiPB.Controllers
             try
             {
                 var response = await _magoRequestService.SyncInventarioFiltered(settingsAndResponseTuple.LoginResponse, settingsAndResponseTuple.Settings, request);
-                if (response != null)
-                {
-                    await _magoRequestService.LogoffAsync(new MagoTokenRequestDto
-                    {
-                        Token = settingsAndResponseTuple.LoginResponse.Token
-                    });
-                }
                 return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Sincronizzazione delle movimentazioni di inventario filtrate effettuata con successo");
             }
             catch (Exception e)
+            {
+                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione delle movimentazioni di inventario filtrate non riuscita: " + e.Message);
+            }
+            finally
             {
                 var loginResult = settingsAndResponseTuple.LoginResponse.Token;
                 if (loginResult != null)
@@ -244,8 +233,6 @@ namespace apiPB.Controllers
                         Token = loginResult
                     });
                 }
-
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione delle movimentazioni di inventario filtrate non riuscita: " + e.Message);
             }
         }
     }
