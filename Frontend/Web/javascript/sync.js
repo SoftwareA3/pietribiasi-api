@@ -1009,6 +1009,8 @@ async function synchronizeData() {
         // Ripristina l'icona originale dopo 2 secondi
         setTimeout(() => {
             resetIcon(iconElement, originalIcon);
+
+            loadInitialData();
         }, 2000);
     } catch (error) {
         console.error("Network error:", error);
@@ -1027,6 +1029,13 @@ async function synchronizeData() {
         setTimeout(() => {
             resetIcon(iconElement, originalIcon);
         }, 2000);
+    }
+    finally
+    {
+        goBackButton.disabled = false;
+
+        // Ricarica i dati iniziali dopo la sincronizzazione
+        await loadInitialData();
     }
 }
 
@@ -1252,12 +1261,6 @@ async function syncInventarioFiltered() {
     const originalIcon = iconElement.className;
     const userCookie = JSON.parse(getCookie("userInfo"));
     console.log("elementi filtrati:", filteredInventarioList);
-    const data = JSON.stringify({
-                    "syncInventarioFilteredDto": {
-                        "workerIdSyncRequestDto" : {"workerId": userCookie.workerId},
-                        "inventarioList": filteredInventarioList
-                    },
-                })
     console.log("Dati da inviare:", data);
 
     barcodeInput.disabled = true; 

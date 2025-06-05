@@ -120,23 +120,12 @@ namespace apiPB.Services.Implementation
                     Console.WriteLine($"SyncRegOreList: {regOreList}");
 
                     var response = await SyncRegOre(regOreList, responseDto.Token);
-
-                    // Aggiornamento della lista di record in A3_app_reg_ore 
-                    // A prescindere dal risultato della chiamata a Mago, aggiorna i record in A3_app_reg_ore
-                    Console.WriteLine("Updating records in A3_app_reg_ore...");
-                    var regOreListUpdated = _regoreRequestService.UpdateRegOreImported(request.WorkerIdSyncRequestDto);
-                    Console.WriteLine($"RegOreListUpdated: {regOreListUpdated}");
-                    if (regOreListUpdated == null)
-                    {
-                        throw new Exception("No records updated in A3_app_reg_ore: logging off...");
-                    }
-
                     if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
                     {
                         throw new Exception("SyncRegOre failed");
                     }
 
-                    // Aggiornamento della lista di record in A3_app_reg_ore
+                    // Aggiornamento della lista di record in A3_app_reg_ore 
                     Console.WriteLine("Updating records in A3_app_reg_ore...");
                     // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
                     // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
