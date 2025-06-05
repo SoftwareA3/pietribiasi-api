@@ -59,6 +59,10 @@ public partial class VwOmActionMessage
 
     public double? ProductionQty { get; set; }
 
+    public DateTime Tbcreated { get; set; }
+
+    public int TbcreatedId { get; set; }
+
     public DateTime? DeliveryDate { get; set; }
 
     public string? ConfirmChildMos { get; set; }

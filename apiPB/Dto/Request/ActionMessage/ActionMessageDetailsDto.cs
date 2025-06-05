@@ -42,6 +42,9 @@ namespace apiPB.Dto.Request
         public double? ProductionQty { get; set; }
 
         public DateTime? DeliveryDate { get; set; }
+        public DateTime Tbcreated { get; set; }
+
+        public int TbcreatedId { get; set; }
 
         public string? ConfirmChildMos { get; set; }
 

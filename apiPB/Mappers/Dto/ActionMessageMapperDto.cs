@@ -116,6 +116,8 @@ namespace apiPB.Mappers.Dto
                             ProductionLotNumber = x.ProductionLotNumber,
                             ProductionQty = x.ProductionQty,
                             DeliveryDate = x.DeliveryDate,
+                            Tbcreated = x.Tbcreated,
+                            TbcreatedId = x.TbcreatedId,
                             ConfirmChildMos = x.ConfirmChildMos,
                             ActionStatus = actionStatusDictionary.TryGetValue(x.ActionStatus ?? 0, out var statoAzione)
                                 ? statoAzione

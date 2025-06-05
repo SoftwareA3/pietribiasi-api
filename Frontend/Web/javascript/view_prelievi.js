@@ -676,19 +676,19 @@ async function openLogOverlay(logList) {
         <div class="msg-header"><strong>MoId:</strong> ${logItem.moid}</div>
         <div class="msg-header"><strong>MoNo:</strong> ${logItem.mono}</div>`;
 
-        const messageDateTime = parseDateTime(logItem.messageDate);
         // Prima mostra gli errori di omMessageDetails
         if(Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails && logItem.omMessageDetails.length > 0) {
             logItem.omMessageDetails.forEach(msg => {
                 if(msg.messageId)
                 {
+                    const messageDateTime = parseDateTime(msg.messageDate);
                     logMessagesDiv.innerHTML += `
                     <div style="margin-bottom:10px;">
                         <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
                         <div class="msg-content">
                             <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
                             <strong>Messaggio:</strong> ${msg.messageText} <br>
-                            <strong>Data:</strong> ${messageDateTime.parsedDate} <br>
+                            <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
                         </div>
                     </div>
                     `;
@@ -699,9 +699,7 @@ async function openLogOverlay(logList) {
         // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
         if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
             logItem.actionMessageDetails.forEach(msg => {
-                // const dateTime = parseDateTime(msg.messageDate);
-                // const createdDateTime = parseDateTime(msg.tbcreated);
-                // const editedDateTime = parseDateTime(msg.tbmodified);
+                const messageDateTimeAction = parseDateTime(msg.tbcreated);
                 logMessagesDiv.innerHTML += `
                 <div style="margin-bottom:10px;">
                     <strong class="msg-id"><u>Messaggio #${msg.actionId}:</u></strong> <br>
@@ -711,6 +709,8 @@ async function openLogOverlay(logList) {
                         <strong>Stato chiusura:</strong> ${(msg.closed === true || msg.closed === 1) ? "Chiuso" : "Aperto"} <br>
                         <strong>Tipo Specificazione:</strong> ${msg.specificatorType} <br>
                         <strong>Mo Status:</strong> ${msg.mostatus} <br>
+                        <strong>Data Messaggio:</strong> ${messageDateTimeAction.date} alle ${messageDateTimeAction.time} <br>
+                        <strong>Sincronizzato da:</strong> ${msg.tbcreatedId} <br>
                     </div>
                 </div>
                 `;

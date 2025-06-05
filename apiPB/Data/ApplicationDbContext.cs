@@ -45,7 +45,7 @@ public partial class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<A3AppInventario>(entity =>
         {
-            entity.HasKey(e => e.InvId).HasName("PK__A3_app_i__9DC82C6A5EAC02C7");
+            entity.HasKey(e => e.InvId).HasName("PK__A3_app_i__9DC82C6AABB1B4A9");
 
             entity.ToTable("A3_app_inventario");
 
@@ -453,6 +453,10 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Storage)
                 .HasMaxLength(8)
                 .IsUnicode(false);
+            entity.Property(e => e.Tbcreated)
+                .HasColumnType("datetime")
+                .HasColumnName("TBCreated");
+            entity.Property(e => e.TbcreatedId).HasColumnName("TBCreatedID");
             entity.Property(e => e.Variant)
                 .HasMaxLength(21)
                 .IsUnicode(false);
