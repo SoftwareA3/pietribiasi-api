@@ -245,7 +245,10 @@ async function refreshAutocompleteData() {
     
     // Ottiene i dati per l'autocomplete
     const filteredObject = createFilterObject();
-    const tempData = await fetchViewPrelievi(filteredObject);
+    var tempData = await fetchViewPrelievi(filteredObject);
+
+    // Effettua un controllo sul toggle per mostrare solo gli elementi dell'autocomplete che sono effettivamente nella lista
+    if(showImportedItems === false) tempData = tempData.filter(item => item.imported === false);
     
     // Estrae i valori unici per ciascuna lista se necessario
     commessaList = extractUniqueValues(tempData, 'job');
@@ -713,12 +716,12 @@ async function openLogOverlay(logList) {
                 `;
             });
         } else {
-            logMessagesDiv.innerHTML += `<div class="msg-header"><strong>Errore!</strong></div>
-                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe essere stata chiusa</div>`;
+            logMessagesDiv.innerHTML += `<div class="msg-header"><strong>Attenzione!</strong></div>
+                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
         }
     } else {
-        logMessagesDiv.innerHTML = `<div class="msg-header"><strong>Errore!</strong></div>
-                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe essere stata chiusa</div>`;
+        logMessagesDiv.innerHTML = `<div class="msg-header"><strong>Attenzione!</strong></div>
+                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
     }
 
     // Mostra l'overlay

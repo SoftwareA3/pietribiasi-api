@@ -161,6 +161,9 @@ async function refreshAutocompleteData() {
         tempData = await fetchAllViewInventario();
     }
 
+    // Effettua un controllo sul toggle per mostrare solo gli elementi dell'autocomplete che sono effettivamente nella lista
+    if(showImportedItems === false) tempData = tempData.filter(item => item.imported === false);
+
     itemList = extractUniqueValues(tempData, 'item');
     barcodeList = extractUniqueValues(tempData, 'barCode');
 

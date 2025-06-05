@@ -960,10 +960,13 @@ function extractUniqueValues(data, field) {
 async function synchronizeData() {
     const syncButton = document.getElementById("sync-data");
     const iconElement = syncButton.querySelector(".button-icon");
+    const goBackButton = document.getElementById("sync-go-back");
     const originalIcon = iconElement.className;
     const userCookie = JSON.parse(getCookie("userInfo"));
     console.log("User cookie:", userCookie);
     
+    goBackButton.disabled = true;
+
     // Inizia l'animazione di caricamento
     startLoadingAnimation(iconElement, "2rem");
     
@@ -1035,9 +1038,19 @@ async function syncRegOreFiltered() {
     const filterCommessa = document.getElementById("filter-ore-commessa");
     const filterLavorazione = document.getElementById("filter-ore-lavorazione");
     const filterOdp = document.getElementById("filter-ore-odp");
+    const goBackButton = document.getElementById("ore-go-back");
+    const filterButton = document.getElementById("filter-ore-submit");
     const originalIcon = iconElement.className;
     const userCookie = JSON.parse(getCookie("userInfo"));
     console.log("elementi filtrati:", filteredOreList);
+
+    filterDataA.disabled = true;
+    filterDataDa.disabled = true;
+    filterCommessa.disabled = true;
+    filterLavorazione.disabled = true;
+    filterOdp.disabled = true;
+    goBackButton.disabled = true;
+    filterButton.disabled = true;
 
     startLoadingAnimation(iconElement, "1.2rem");
 
@@ -1107,6 +1120,15 @@ async function syncRegOreFiltered() {
             resetIcon(iconElement, originalIcon);
         }, 2000);
     }
+    finally {
+        filterDataA.disabled = false;
+        filterDataDa.disabled = false;
+        filterCommessa.disabled = false;
+        filterLavorazione.disabled = false;
+        filterOdp.disabled = false;
+        goBackButton.disabled = false;
+        filterButton.disabled = false;
+    }
 }
 
 async function syncPrelieviFiltered() { 
@@ -1119,9 +1141,21 @@ async function syncPrelieviFiltered() {
     const filterCommessa = document.getElementById("filter-prel-commessa");
     const filterLavorazione = document.getElementById("filter-prel-lavorazione");
     const filterOdp = document.getElementById("filter-prel-odp");
+    const goBackButton = document.getElementById("prel-go-back");
+    const filterButton = document.getElementById("filter-prel-submit");
     const originalIcon = iconElement.className;
     const userCookie = JSON.parse(getCookie("userInfo"));
     console.log("elementi filtrati:", filteredPrelieviList);
+
+    filterDataA.disabled = true;
+    filterDataDa.disabled = true;
+    itemInput.disabled = true;
+    barcodeInput.disabled = true;
+    filterCommessa.disabled = true;
+    filterLavorazione.disabled = true;
+    filterOdp.disabled = true;
+    goBackButton.disabled = true;
+    filterButton.disabled = true;
 
     startLoadingAnimation(iconElement, "1.2rem");
 
@@ -1193,6 +1227,17 @@ async function syncPrelieviFiltered() {
             resetIcon(iconElement, originalIcon);
         }, 2000);
     }
+    finally {
+        filterDataA.disabled = false;
+        filterDataDa.disabled = false;
+        itemInput.disabled = false;
+        barcodeInput.disabled = false;
+        filterCommessa.disabled = false;
+        filterLavorazione.disabled = false;
+        filterOdp.disabled = false;
+        goBackButton.disabled = false;
+        filterButton.disabled = false;
+    }
 }
 
 async function syncInventarioFiltered() {
@@ -1202,6 +1247,8 @@ async function syncInventarioFiltered() {
     const filterDataA = document.getElementById("filter-inv-data-a");
     const itemInput = document.getElementById("filter-inv-item");
     const barcodeInput = document.getElementById("filter-inv-barcode");
+    const goBackButton = document.getElementById("inv-go-back");
+    const filterButton = document.getElementById("filter-inv-submit");
     const originalIcon = iconElement.className;
     const userCookie = JSON.parse(getCookie("userInfo"));
     console.log("elementi filtrati:", filteredInventarioList);
@@ -1213,7 +1260,16 @@ async function syncInventarioFiltered() {
                 })
     console.log("Dati da inviare:", data);
 
+    barcodeInput.disabled = true; 
+    itemInput.disabled = true;
+    filterDataDa.disabled = true;
+    filterDataA.disabled = true;
+    goBackButton.disabled = true;
+    filterButton.disabled = true;
+    
     startLoadingAnimation(iconElement, "1.2rem");
+    
+    
 
     try {
         console.log("Sincronizzazione delle movimentazioni di inventario...");
@@ -1281,6 +1337,14 @@ async function syncInventarioFiltered() {
         setTimeout(() => {
             resetIcon(iconElement, originalIcon);
         }, 2000);
+    }
+    finally {
+        barcodeInput.disabled = false; 
+        itemInput.disabled = false;
+        filterDataDa.disabled = false;
+        filterDataA.disabled = false;
+        goBackButton.disabled = false;
+        filterButton.disabled = false;
     }
 }
 

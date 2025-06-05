@@ -42,6 +42,6 @@ namespace apiPB.Repository.Abstraction
 
         IEnumerable<A3AppInventario> GetNotImportedAppInventarioByFilter(ViewInventarioRequestFilter filter);
         
-        A3AppInventario? UpdateImportedById(UpdateImportedIdFilter filter);
+        A3AppInventario UpdateImportedById(UpdateImportedIdFilter filter);
     }
 }
