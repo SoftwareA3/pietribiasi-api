@@ -11,6 +11,7 @@ using apiPB.Services.Abstraction;
 using apiPB.Services;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Controllers
 {
@@ -47,6 +48,10 @@ namespace apiPB.Controllers
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
+            catch (ExpectedEmptyListException ex)
+            {
+                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
@@ -74,6 +79,10 @@ namespace apiPB.Controllers
             catch (ArgumentNullException ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
@@ -103,6 +112,10 @@ namespace apiPB.Controllers
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
@@ -130,6 +143,10 @@ namespace apiPB.Controllers
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
@@ -156,6 +173,10 @@ namespace apiPB.Controllers
             catch (ArgumentNullException ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
@@ -185,6 +206,10 @@ namespace apiPB.Controllers
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
+            catch (ExpectedEmptyListException ex)
+            {
+                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
@@ -208,6 +233,10 @@ namespace apiPB.Controllers
             catch (ArgumentNullException ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (ExpectedEmptyListException ex)
+            {
+                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
@@ -235,6 +264,10 @@ namespace apiPB.Controllers
             catch (ArgumentNullException ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+            }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {

@@ -1261,7 +1261,7 @@ async function syncInventarioFiltered() {
     const originalIcon = iconElement.className;
     const userCookie = JSON.parse(getCookie("userInfo"));
     console.log("elementi filtrati:", filteredInventarioList);
-    console.log("Dati da inviare:", data);
+    console.log("Dati da inviare:", globalInventarioData);
 
     barcodeInput.disabled = true; 
     itemInput.disabled = true;

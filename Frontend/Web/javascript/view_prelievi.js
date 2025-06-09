@@ -716,10 +716,12 @@ async function openLogOverlay(logList) {
                 `;
             });
         } else {
+            logMessagesDiv.innerHTML += "";
             logMessagesDiv.innerHTML += `<div class="msg-header"><strong>Attenzione!</strong></div>
                 <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
         }
     } else {
+        logMessagesDiv.innerHTML += "";
         logMessagesDiv.innerHTML = `<div class="msg-header"><strong>Attenzione!</strong></div>
                 <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
     }
@@ -796,6 +798,10 @@ async function fetchLog(filterLIst) {
         });
         if (!response.ok) {
             throw new Error("Errore nella risposta del server");
+        }
+        if(response.status === 204)
+        {
+            return [];
         }
         const logData = await response.json();
         return logData;

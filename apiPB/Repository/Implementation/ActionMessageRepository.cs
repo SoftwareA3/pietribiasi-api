@@ -2,6 +2,7 @@ using apiPB.Repository.Abstraction;
 using apiPB.Models;
 using apiPB.Filters;
 using apiPB.Data;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Repository.Implementation
 {
@@ -15,7 +16,7 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwOmActionMessage> GetActionMessagesByFilter(ImportedLogMessageFilter filter)
         {
-            return _context.VwOmActionMessages
+            var query = _context.VwOmActionMessages
                 .Where(x => x.Moid == filter.Moid
                             && x.RtgStep == filter.RtgStep
                             && x.Alternate == filter.Alternate
@@ -28,8 +29,11 @@ namespace apiPB.Repository.Implementation
                             && x.WorkerId == filter.WorkerId
                             && x.ActionType == filter.ActionType)
                 .OrderByDescending(x => x.ActionId)
-                .ToList()
-                    ?? throw new Exception("Nessun risultato trovato per i filtri specificati in ActionMessageRepository");
+                .ToList();
+
+            ApplicationExceptionHandler.ValidateEmptyList(query, nameof(ActionMessageRepository), nameof(GetActionMessagesByFilter));
+
+            return query;
         }
     }
 }

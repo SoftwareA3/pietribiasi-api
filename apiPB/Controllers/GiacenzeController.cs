@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using apiPB.Services.Abstraction;
 using apiPB.Utils.Abstraction;
 using apiPB.Dto.Models;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Controllers
 {
@@ -43,6 +44,10 @@ namespace apiPB.Controllers
             catch (ArgumentNullException ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in GiacenzeController: " + ex.Message);
+            }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in GiacenzeController: " + ex.Message);
             }
             catch (Exception ex)
             {

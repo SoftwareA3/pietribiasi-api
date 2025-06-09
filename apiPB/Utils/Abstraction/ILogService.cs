@@ -17,6 +17,8 @@ namespace apiPB.Utils.Abstraction
         /// <remarks>Il log è attivo se isActive è true</remarks>
         void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive);
 
+        void AppendWarningToLog(string warningMessage);
+
         void AppendErrorToLog(string errorMessage);
 
         /// <summary>

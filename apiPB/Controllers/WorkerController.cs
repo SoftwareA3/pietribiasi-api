@@ -8,6 +8,7 @@ using apiPB.Dto.Models;
 using apiPB.Services.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Controllers
 {
@@ -35,11 +36,24 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetAllWorkers()
         {
-            var workersDto = _workerRequestService.GetWorkers().ToList();
+            try
+            {
+                var workersDto = _workerRequestService.GetWorkers().ToList();
 
-            if (workersDto == null || workersDto.Count == 0) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-
-            return _responseHandler.HandleOkAndList(HttpContext, workersDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, workersDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio ritorna null in WorkerController: {ex.Message}");
+            }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio non ha trovato dati in WorkerController: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Errore durante l'esecuzione del Service in WorkerController: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -60,6 +74,10 @@ namespace apiPB.Controllers
             catch (ArgumentNullException ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio ritorna null in WorkerController: {ex.Message}");
+            }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio non ha trovato dati in WorkerController: {ex.Message}");
             }
             catch (Exception ex)
             {

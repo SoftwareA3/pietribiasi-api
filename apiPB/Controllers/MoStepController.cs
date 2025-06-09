@@ -5,6 +5,7 @@ using apiPB.Dto.Request;
 using Microsoft.IdentityModel.Tokens;
 using apiPB.Services.Abstraction;
 using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Controllers
 {
@@ -44,6 +45,10 @@ namespace apiPB.Controllers
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
             }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
@@ -71,6 +76,10 @@ namespace apiPB.Controllers
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
             }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
@@ -97,6 +106,10 @@ namespace apiPB.Controllers
             catch (ArgumentNullException ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
+            }
+            catch (EmptyListException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
             }
             catch (Exception ex)
             {

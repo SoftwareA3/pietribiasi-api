@@ -4,7 +4,7 @@ using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Filters;
 using System.Linq.Expressions;
-using Azure;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Repository.Implementation
 {
@@ -19,20 +19,23 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiMostep> GetMostepWithJob(JobFilter filter)
         {
-            return _context.VwApiMosteps.Where(m => m.Job == filter.Job).Distinct().ToList()
-                ?? throw new Exception("Nessun risoltato trovato per GetMostepWithJob in MoStepRepository");
+            var query = _context.VwApiMosteps.Where(m => m.Job == filter.Job).Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MoStepRepository), nameof(GetMostepWithJob));
+            return query;
         }
 
         public IEnumerable<VwApiMostep> GetMostepWithMono(MonoFilter filter)
         {
-            return _context.VwApiMosteps.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate).Distinct().ToList()
-                ?? throw new Exception("Nessun risoltato trovato per GetMostepWithMono in MoStepRepository");
+            var query = _context.VwApiMosteps.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate).Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MoStepRepository), nameof(GetMostepWithMono));
+            return query;
         }
 
         public IEnumerable<VwApiMostep> GetMostepWithOperation(OperationFilter filter)
         {
-            return _context.VwApiMosteps.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation).Distinct().ToList()
-                ?? throw new Exception("Nessun risoltato trovato per GetMostepWithOperation in MoStepRepository");
+            var query = _context.VwApiMosteps.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation).Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MoStepRepository), nameof(GetMostepWithOperation));
+            return query; 
         }
     }
 }

@@ -93,12 +93,27 @@ namespace apiPB.Utils.Implementation
 
             using var fileStream = new FileStream(_logErrorFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
-            string message = $"=== ERROR MESSAGE ===\n{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - ErrorMessage:\n{errorMessage}\n=== END ERROR MESSAGE ===";
+            string message = $"===== ERROR =====\n{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - ErrorMessage:\n{errorMessage}\n===== END ERROR =====\n";
             
             // Scrive il messaggio di errore nella console
             Console.WriteLine(message);
 
             // Scrive il messaggio di errore nel file di log
+            writer.WriteLine(message);
+        }
+
+        public void AppendWarningToLog(string warningMessage)
+        {
+            CreateErrorLogFile();
+
+            using var fileStream = new FileStream(_logErrorFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(fileStream);
+            string message = $"===== WARNING =====\n{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - WarningMessage:\n{warningMessage}\n===== END WARNING =====\n";
+            
+            // Scrive il messaggio di attenzione nella console
+            Console.WriteLine(message);
+
+            // Scrive il messaggio di attenizione nel file di log
             writer.WriteLine(message);
         }
 

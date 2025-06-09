@@ -72,6 +72,7 @@ namespace apiPB.Utils.Implementation
         {
             string requestPath = BuildHttpContextString(httpContext);
             _logService.AppendMessageToLog(requestPath, StatusCodes.Status204NoContent, message, isLogActive);
+            _logService.AppendWarningToLog(message);
             return new NoContentResult();
         }
     }

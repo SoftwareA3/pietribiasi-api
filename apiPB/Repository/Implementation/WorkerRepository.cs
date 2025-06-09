@@ -3,6 +3,7 @@ using apiPB.Data;
 using apiPB.Repository.Abstraction;
 using apiPB.Filters;
 using Microsoft.EntityFrameworkCore;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Repository.Implementation
 {
@@ -17,14 +18,15 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiWorker> GetWorkers()
         {
-            return _context.VwApiWorkers.AsNoTracking().ToList()
-                ?? throw new Exception("Nessun risultato per GetWorkers in WorkerRepository");
+            var query = _context.VwApiWorkers.AsNoTracking().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(WorkerRepository), nameof(GetWorkers));
+            return query;
         }
 
         public VwApiWorker GetWorkerByPassword(PasswordWorkersRequestFilter filter)
         {
             return _context.VwApiWorkers.AsNoTracking().FirstOrDefault(w => w.Password == filter.Password)
-                ?? throw new Exception("Nessun risultato per GetWorkerByPassword in WorkerRepository.");
+                ?? throw new ArgumentNullException("Nessun risultato per GetWorkerByPassword in WorkerRepository.");
         }
 
         public Task CallStoredProcedure(WorkerIdAndValueRequestFilter filter)
@@ -47,11 +49,12 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiWorkersfield> GetWorkersFieldsById(WorkerIdAndValueRequestFilter filter)
         {
-            return _context.VwApiWorkersfields
-            .Where(w => w.WorkerId == filter.WorkerId)
-            .AsNoTracking()
-            .ToList()
-                ?? throw new Exception("Nessun risultato per GetWorkersFieldById in WorkerRepository");
+            var query = _context.VwApiWorkersfields
+                .Where(w => w.WorkerId == filter.WorkerId)
+                .AsNoTracking()
+                .ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(WorkerRepository), nameof(GetWorkersFieldsById));
+            return query;
         }
 
         public VwApiWorkersfield? GetLastWorkerFieldLine(WorkerIdAndValueRequestFilter filter)
@@ -62,7 +65,7 @@ namespace apiPB.Repository.Implementation
             .OrderByDescending(w => w.Line)
             .AsNoTracking()
             .FirstOrDefault()
-                ?? throw new Exception("Nessun risultato per GetLastWorkerFieldLine in WorkerRepository");
+                ?? throw new ArgumentNullException("Nessun risultato per GetLastWorkerFieldLine in WorkerRepository");
         }
 
         public VwApiWorker GetWorkerByIdAndPassword(WorkerIdAndPasswordFilter filter)
@@ -71,7 +74,7 @@ namespace apiPB.Repository.Implementation
             .Where(w => w.WorkerId == filter.WorkerId && w.Password == filter.Password)
             .AsNoTracking()
             .FirstOrDefault()
-                ?? throw new Exception("Nessun risultato per GetWorkerByIdAndPassword in WorkerRepository");
+                ?? throw new ArgumentNullException("Nessun risultato per GetWorkerByIdAndPassword in WorkerRepository");
         }
     }
 }
