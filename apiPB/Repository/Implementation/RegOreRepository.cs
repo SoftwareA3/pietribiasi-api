@@ -3,6 +3,7 @@ using apiPB.Models;
 using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Filters;
+using apiPB.Utils.Implementation;
 
 
 namespace apiPB.Repository.Implementation
@@ -18,8 +19,9 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppRegOre> GetAppRegOre()
         {
-            return _context.A3AppRegOres.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList()
-                ?? throw new Exception("Nessun risultato per GetAppRegOre in RegOreRepository");
+            var query = _context.A3AppRegOres.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList();
+            ApplicationExceptionHandler.ValidateEmptyList(query, nameof(RegOreRepository), nameof(GetAppRegOre));
+            return query;
         }
 
         public IEnumerable<A3AppRegOre> PostRegOreList(IEnumerable<RegOreFilter> filterList)
@@ -60,8 +62,9 @@ namespace apiPB.Repository.Implementation
             _context.A3AppRegOres.AddRange(list);
             _context.SaveChanges();
 
-            return list
-                ?? throw new Exception("Nessun risultato per PostRegOreList in RegOreRepository");
+            ApplicationExceptionHandler.ValidateEmptyList(list, nameof(RegOreRepository), nameof(PostRegOreList));
+
+            return list;
         }
 
         public IEnumerable<A3AppRegOre> GetAppViewOre(ViewOreRequestFilter filter)
@@ -74,8 +77,10 @@ namespace apiPB.Repository.Implementation
                 && (string.IsNullOrEmpty(filter.Job) || i.Job == filter.Job)
                 && (string.IsNullOrEmpty(filter.Operation) || i.Operation == filter.Operation)
                 && (string.IsNullOrEmpty(filter.Mono) || i.Mono == filter.Mono)
-                // && (filter.Imported == null || i.Imported == filter.Imported.Value)
-            ) ?? throw new Exception("Nessun risultato per GetAppViewOre in RegOreRepository");
+            // && (filter.Imported == null || i.Imported == filter.Imported.Value)
+            );
+
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(RegOreRepository), nameof(GetAppViewOre));
 
             if (filter.Imported.HasValue && filter.Imported.Value == true)
             {
@@ -89,12 +94,9 @@ namespace apiPB.Repository.Implementation
 
         public A3AppRegOre PutAppViewOre(ViewOrePutFilter filter)
         {
-            var editRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId);
+            var editRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId)
+                ?? throw new ArgumentNullException($"Registrazione ore non trovata per l'aggiornamento con l'ID specificato {filter.RegOreId} per PutAppViewOre in in RegOreRepository.");
 
-            if (editRegOre == null)
-            {
-                throw new Exception("Nessun risultato per PutAppViewOre in RegOreRepository");    
-            }
             editRegOre.SavedDate = DateTime.Now;
             editRegOre.WorkingTime = filter.WorkingTime;
             _context.SaveChanges();
@@ -104,12 +106,8 @@ namespace apiPB.Repository.Implementation
 
         public A3AppRegOre DeleteRegOreId(ViewOreDeleteRequestFilter filter)
         {
-            var deleteRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId);
-
-            if (deleteRegOre == null)
-            {
-                throw new Exception($"RegOre non esiste con l'ID specificato {filter.RegOreId} per DeleteRegOreId in RegOreRepository.");
-            }
+            var deleteRegOre = _context.A3AppRegOres.FirstOrDefault(m => m.RegOreId == filter.RegOreId)
+                ?? throw new ArgumentNullException($"Registrazione ore non trovata per l'eliminazione con l'ID specificato {filter.RegOreId} per DeleteRegOreId in RegOreRepository.");
 
             _context.A3AppRegOres.Remove(deleteRegOre);
             _context.SaveChanges();
@@ -119,11 +117,12 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppRegOre> GetNotImportedRegOre()
         {
-            return _context.A3AppRegOres
+            var query = _context.A3AppRegOres
                 .Where(x => x.Imported == false)
                 .OrderByDescending(i => i.SavedDate)
-                .ToList()
-                ?? throw new Exception("Nessun risultato per GetNotImportedRegOre in RegOreRepository");
+                .ToList();
+            ApplicationExceptionHandler.ValidateEmptyList(query, nameof(RegOreRepository), nameof(GetNotImportedRegOre));
+            return query;
         }
 
         public IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter? filter)
@@ -134,13 +133,15 @@ namespace apiPB.Repository.Implementation
             }
             var notImported = _context.A3AppRegOres
                 .Where(x => x.Imported == false)
-                .ToList()
-                ?? throw new Exception("Nessun risultato per UpdateRegOreImported in RegOreRepository");
+                .ToList();
+            
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(notImported, nameof(RegOreRepository), nameof(UpdateRegOreImported));
 
-            if (notImported.Count == 0)
-            {
-                return notImported;
-            }
+            // Deprecato: gestito da un'eccezione che viene lanciata se non ci sono elementi da importare
+            // if (notImported.Count == 0)
+            // {
+            //     return notImported;
+            // }
 
             foreach (var item in notImported)
             {
@@ -164,11 +165,12 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppRegOre> GetNotImportedAppRegOreByFilter(ViewOreRequestFilter filter)
         {
-            return GetAppViewOre(filter)
+            var query =  GetAppViewOre(filter)
                 .Where(i => i.Imported == false)
                 .OrderByDescending(i => i.SavedDate)
-                .ToList()
-                ?? throw new Exception("Nessun risultato per GetNotImportedAppRegOreByFilter in RegOreRepository");
+                .ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(RegOreRepository), nameof(GetNotImportedAppRegOreByFilter));
+            return query;
         }
 
         public IEnumerable<A3AppRegOre> UpdateImportedById(UpdateImportedIdFilter filter)
@@ -179,13 +181,14 @@ namespace apiPB.Repository.Implementation
             }
             var notImported = _context.A3AppRegOres
                 .Where(x => x.Imported == false && x.RegOreId == filter.Id)
-                .ToList()
-                ?? throw new Exception("Nessun risultato per UpdateImportedById in RegOreRepository");
+                .ToList();
+            
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(notImported, nameof(RegOreRepository), nameof(UpdateImportedById));
 
-            if (notImported.Count == 0)
-            {
-                return notImported;
-            }
+            // if (notImported.Count == 0)
+            // {
+            //     return notImported;
+            // }
 
             foreach (var item in notImported)
             {

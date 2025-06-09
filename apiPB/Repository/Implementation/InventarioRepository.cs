@@ -4,6 +4,8 @@ using apiPB.Filters;
 using apiPB.Data;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
+using apiPB.Utils.Implementation;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace apiPB.Repository.Implementation
 {
@@ -18,11 +20,9 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppInventario> GetInventario()
         {
-            if (_context.A3AppInventarios == null || !_context.A3AppInventarios.Any())
-            {
-                throw new ArgumentNullException("Nessun risultato trovato in GetInventario in InventarioRepository");
-            }
-            return _context.A3AppInventarios.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList();
+            var query = _context.A3AppInventarios.AsNoTracking();
+            ApplicationExceptionHandler.ValidateEmptyList(nameof(query), nameof(InventarioRepository), nameof(GetInventario));
+            return query.AsNoTracking().OrderByDescending(i => i.SavedDate).ToList();
         }
 
         public IEnumerable<A3AppInventario> PostInventarioList(IEnumerable<InventarioFilter> filterList)
@@ -40,6 +40,7 @@ namespace apiPB.Repository.Implementation
                     m.Item == filter.Item &&
                     (string.IsNullOrEmpty(filter.BarCode) || m.BarCode == filter.BarCode) &&
                     m.Imported == false).FirstOrDefault();
+
                 if (existingItem != null)
                 {
                     Console.WriteLine("Match in ExistingItem");
@@ -91,7 +92,9 @@ namespace apiPB.Repository.Implementation
                 inventarioList.AddRange(editedList);
             }
 
-            return inventarioList ?? throw new Exception("Errore durante l'esecuzione di PostInventarioList in InventarioRepository");
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(inventarioList, nameof(InventarioRepository), nameof(PostInventarioList));
+
+            return inventarioList;
         }
 
         public IEnumerable<A3AppInventario> GetViewInventario(ViewInventarioRequestFilter filter)
@@ -103,8 +106,10 @@ namespace apiPB.Repository.Implementation
                 && (filter.DataImp == null || i.DataImp >= filter.DataImp.Value.Date)
                 && (string.IsNullOrEmpty(filter.Item) || i.Item == filter.Item)
                 && (string.IsNullOrEmpty(filter.BarCode) || i.BarCode == filter.BarCode)
-                // && (filter.Imported == null || i.Imported == filter.Imported.Value)
-            ) ?? throw new ArgumentNullException("Nessun risultato trovato in GetViewInventario in InventarioRepository");
+            // && (filter.Imported == null || i.Imported == filter.Imported.Value)
+            );
+
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(InventarioRepository), nameof(GetViewInventario));
 
             if (filter.Imported.HasValue && filter.Imported.Value == true)
             {
@@ -118,13 +123,8 @@ namespace apiPB.Repository.Implementation
 
         public A3AppInventario PutViewInventario(ViewInventarioPutFilter filter)
         {
-            var inventario = _context.A3AppInventarios.FirstOrDefault(m => m.InvId == filter.InvId);
-
-            if (inventario == null)
-            {
-                throw new Exception($"Inventario non trovato per l'aggiornamento con l'ID specificato {filter.InvId} in PutViewInventario.");
-            }
-
+            var inventario = _context.A3AppInventarios.FirstOrDefault(m => m.InvId == filter.InvId)
+                ?? throw new ArgumentNullException($"Inventario non trovato per l'aggiornamento con l'ID specificato {filter.InvId} in PutViewInventario.");
             inventario.SavedDate = DateTime.Now;
             inventario.BookInv = filter.BookInv;
             CalculateBookInvDiff(inventario);
@@ -160,11 +160,13 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppInventario> GetNotImportedInventario()
         {
-            return _context.A3AppInventarios
-                .Where(x => x.Imported == false)
-                .OrderByDescending(i => i.SavedDate)
-                .ToList()
-                ?? throw new Exception("Nessun risultato trovato in GetNotImportedInventario in InventarioRepository");
+            var query = _context.A3AppInventarios.AsNoTracking().Where(i => i.Imported == false)
+                    .OrderByDescending(i => i.SavedDate)
+                    .ToList();
+            
+            ApplicationExceptionHandler.ValidateEmptyList(query, nameof(InventarioRepository), nameof(GetNotImportedInventario));
+
+            return query;
         }
 
         public IEnumerable<A3AppInventario> UpdateInventarioImported(WorkerIdSyncFilter filter)
@@ -176,13 +178,15 @@ namespace apiPB.Repository.Implementation
 
             var notImported = _context.A3AppInventarios
                 .Where(x => x.Imported == false)
-                .ToList()
-                ?? throw new Exception("Nessun risultato trovato in UpdateInventarioImported");
+                .ToList();
+            
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(notImported, nameof(InventarioRepository), nameof(UpdateInventarioImported));
 
-            if (notImported.Count == 0)
-            {
-                return notImported;
-            }
+            // Deprecato: gestito da un'eccezione che viene lanciata se non ci sono elementi da importare
+            // if (notImported.Count == 0)
+            // {
+            //     return notImported;
+            // }
 
             foreach (var item in notImported)
             {
@@ -207,16 +211,14 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<A3AppInventario> GetNotImportedAppInventarioByFilter(ViewInventarioRequestFilter filter)
         {
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter), "Il filtro non può essere nullo in GetNotImportedAppInventarioByFilter.");
-            }
-
-            return GetViewInventario(filter)
+            var query = GetViewInventario(filter)
                 .Where(i => i.Imported == false)
                 .OrderByDescending(i => i.SavedDate)
-                .ToList()
-                ?? throw new Exception("Nessun risultato trovato in GetNotImportedAppInventarioByFilter in InventarioRepository");
+                .ToList();
+
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(InventarioRepository), nameof(GetNotImportedAppInventarioByFilter));
+
+            return query;
         }
 
         public A3AppInventario UpdateImportedById(UpdateImportedIdFilter filter)

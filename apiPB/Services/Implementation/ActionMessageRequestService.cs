@@ -5,6 +5,7 @@ using apiPB.Dto.Request;
 using apiPB.Filters;
 using AutoMapper;
 using apiPB.Services.Abstraction;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Services.Implementation
 {
@@ -21,21 +22,10 @@ namespace apiPB.Services.Implementation
 
         public ActionMessageListDto GetActionMessagesByFilter(ImportedLogMessageDto request)
         {
-            try
-            {
-                var filter = _mapper.Map<ImportedLogMessageFilter>(request);
-                var messageList = _repository.GetActionMessagesByFilter(filter);
+            var filter = _mapper.Map<ImportedLogMessageFilter>(request);
+            var messageList = _repository.GetActionMessagesByFilter(filter);
 
-                return messageList.ToList().ToOmActionMessageDto();
-            }
-            catch (ArgumentNullException ex)
-            {
-                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in ActionMessageRequestService", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Errore durante l'esecuzione del Service ActionMessageRequestService", ex);
-            }
+            return messageList.ToList().ToOmActionMessageDto();
         }
     }
 }

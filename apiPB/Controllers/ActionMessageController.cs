@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using apiPB.Dto.Request;
 using apiPB.Services.Abstraction;
 using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Controllers
 {
@@ -36,7 +37,12 @@ namespace apiPB.Controllers
 
             try
             {
-                var actionMessagesDto = _actionMessageRequestService.GetActionMessagesByFilter(request);
+                var actionMessagesDto = _actionMessageRequestService.GetActionMessagesByFilter(request); 
+
+                if (actionMessagesDto == null)
+                {
+                    return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Nessun messaggio di azione trovato con i filtri specificati.");
+                }
 
                 return _responseHandler.HandleOkAndItem(HttpContext, actionMessagesDto, _isLogActive);
             }

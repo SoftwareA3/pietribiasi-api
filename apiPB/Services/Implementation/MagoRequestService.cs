@@ -50,7 +50,7 @@ namespace apiPB.Services.Implementation
             {
                 var syncDataListToReturn = new SyncronizedDataDto();
 
-                var syncRegOreList = await SyncRegOreFiltered(responseDto, settings, new SyncRegOreFilteredDto {WorkerIdSyncRequestDto = requestId }, false);
+                var syncRegOreList = await SyncRegOreFiltered(responseDto, settings, new SyncRegOreFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
                 var syncPrelMatList = await SyncPrelMatFiltered(responseDto, settings, new SyncPrelMatFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
@@ -68,7 +68,9 @@ namespace apiPB.Services.Implementation
             catch (Exception ex)
             {
                 _logService.AppendErrorToLog($"Error in SynchronizeAsync: {ex.Message}");
-                throw new Exception("Global Synchronization failed", ex);
+                Console.WriteLine("Global Synchronization failed" + ex.Message);
+
+                throw;
             }
         }
 
@@ -145,13 +147,15 @@ namespace apiPB.Services.Implementation
                             });
                         }
                     }
-                    
+
                     return regOreList;
                 }
                 catch (Exception ex)
                 {
                     _logService.AppendErrorToLog($"Error in SyncRegOre: {ex.Message}");
-                    throw new Exception("Error sending data to Mago: logging off..." + ex.Message, ex);
+                    Console.WriteLine("Error sending data to Mago: logging off..." + ex.Message);
+
+                    throw;
                 }
             }
             else
@@ -239,7 +243,9 @@ namespace apiPB.Services.Implementation
                 catch (Exception ex)
                 {
                     _logService.AppendErrorToLog($"Error in SyncPrelMat: {ex.Message}");
-                    throw new Exception("Error sending data to Mago: logging off..." + ex.Message, ex);
+                    Console.WriteLine("Error sending data to Mago: logging off..." + ex.Message);
+
+                    throw;
                 }
             }
             else
@@ -333,7 +339,9 @@ namespace apiPB.Services.Implementation
                 catch (Exception ex)
                 {
                     _logService.AppendErrorToLog($"Error in SyncInventario: {ex.Message}");
-                    throw new Exception("Error sending data to Mago: logging off..." + ex.Message, ex);
+                    Console.WriteLine("Error sending data to Mago: logging off..." + ex.Message);
+
+                    throw;
                 }
             }
             else
@@ -424,7 +432,7 @@ namespace apiPB.Services.Implementation
                 var result = await response.Content.ReadFromJsonAsync<MagoLoginResponseDto>();
                 if (result == null)
                 {
-                    return null;
+                    throw new Exception("Login response is null");
                 }
 
                 return result;

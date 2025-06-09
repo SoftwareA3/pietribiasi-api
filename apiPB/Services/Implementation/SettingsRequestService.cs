@@ -25,7 +25,7 @@ namespace apiPB.Services.Implementation
             _settingsRepository = settingsRepository;
             _mapper = mapper;
         }
-        
+
         public SettingsDto EditSettings(SettingsDto settings)
         {
             var filter = _mapper.Map<SettingsFilter>(settings);
@@ -36,40 +36,14 @@ namespace apiPB.Services.Implementation
 
         public SettingsDto? GetSettings()
         {
-            try
-            {
-                var settings = _settingsRepository.GetSettings() ?? throw new ArgumentNullException("Nessun risultato per GetSettings in SettingsRequestService");
-                return settings;
-            }
-            catch (ArgumentNullException ex)
-            {
-                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in SettingsRequestService", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Errore durante l'esecuzione del Service SettingsRequestService", ex);
-            }
+            var settings = _settingsRepository.GetSettings();
+            return settings;
         }
 
         public SyncGobalActiveRequestDto? GetSyncGlobalActive()
         {
-            try
-            {
-                var appSetting = _settingsRepository.GetSyncGlobalActive();
-                if (appSetting == null || appSetting.SyncGlobalActive == null)
-                {
-                    throw new ArgumentNullException("Nessun risultato per GetSyncGlobalActive in SettingsRequestService");
-                }
-                return appSetting;
-            }
-            catch (ArgumentNullException ex)
-            {
-                throw new ArgumentNullException("Repository o Mapper ritornano valore nullo in SettingsRequestService", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Errore durante l'esecuzione del Service SettingsRequestService", ex);
-            }
+            var appSetting = _settingsRepository.GetSyncGlobalActive();
+            return appSetting;
         }
     }
 }

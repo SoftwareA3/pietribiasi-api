@@ -40,7 +40,7 @@ namespace apiPB.Repository.Implementation
             }
             else
             {
-                throw new Exception("A3AppSettings null e SyncGlobalActive null per GetSyncGlobalActive in SettingsRepository");
+                throw new ArgumentNullException("A3AppSettings null e SyncGlobalActive null per GetSyncGlobalActive in SettingsRepository");
             }
         }
 

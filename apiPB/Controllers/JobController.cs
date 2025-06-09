@@ -42,6 +42,10 @@ namespace apiPB.Controllers
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in JobController: " + ex.Message);
             }
+            catch (InvalidOperationException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in JobController: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in JobController: " + ex.Message);

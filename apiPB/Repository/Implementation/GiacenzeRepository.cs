@@ -1,6 +1,7 @@
 using apiPB.Repository.Abstraction;
 using apiPB.Models;
 using apiPB.Data;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Repository.Implementation
 {
@@ -14,11 +15,9 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiGiacenze> GetGiacenze()
         {
-            if (_context.VwApiGiacenzes == null || !_context.VwApiGiacenzes.Any())
-            {
-                throw new Exception("Nessun risultato trovato per GetGiacenze in GiacenzeRepository");
-            }
-            return _context.VwApiGiacenzes.ToList();
+            var query = _context.VwApiGiacenzes;
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(GiacenzeRepository), nameof(GetGiacenze));
+            return query.ToList();
         }
     }
 }

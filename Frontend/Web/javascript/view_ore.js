@@ -515,7 +515,7 @@ async function populateOreList(data) {
         pagination.updatePaginationControls();
     }
 
-    if(data.length < 6)
+    if(displayData.length < 6)
     {
         const paginationContainer = document.querySelector('.pagination-controls');
         if (paginationContainer) {
@@ -726,10 +726,12 @@ async function openLogOverlay(logList) {
                 `;
             });
         } else {
+            logMessagesDiv.innerHTML += "";
             logMessagesDiv.innerHTML += `<div class="msg-header"><strong>Attenzione!</strong></div>
                 <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
         }
     } else {
+        logMessagesDiv.innerHTML += "";
         logMessagesDiv.innerHTML = `<div class="msg-header"><strong>Attenzione!</strong></div>
                 <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
     }

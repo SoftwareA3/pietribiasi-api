@@ -2,6 +2,7 @@ using apiPB.Data;
 using apiPB.Models;
 using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Repository.Implementation
 {
@@ -16,8 +17,9 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiJob> GetJobs()
         {
-            return _context.VwApiJobs.AsNoTracking().Distinct().ToList()
-                ?? throw new Exception("Nessun risultato trovato per GetJobs in JobRepository");
+            var query = _context.VwApiJobs.AsNoTracking().Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(JobRepository), nameof(GetJobs));
+            return query;
         }
     }
 }

@@ -4,6 +4,7 @@ using apiPB.Repository.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using apiPB.Filters;
 using System.Linq.Expressions;
+using apiPB.Utils.Implementation;
 
 namespace apiPB.Repository.Implementation
 {
@@ -18,26 +19,30 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentJob(JobFilter filter)
         {
-            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job).Distinct().ToList()
-                ?? throw new Exception("Nessun risultato trovato per GetMostepsMocomponentJob in MostepsMocomponentRepository");
+            var query = _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job).Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MostepsMocomponentRepository), nameof(GetMostepsMocomponentJob));
+            return query;
         }
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentMono(MonoFilter filter)
         {
-            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate).Distinct().ToList()
-                ?? throw new Exception("Nessun risultato trovato per GetMostepsMocomponentMono in MostepsMocomponentRepository");
+            var query = _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate).Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MostepsMocomponentRepository), nameof(GetMostepsMocomponentMono));
+            return query;
         }
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentOperation(OperationFilter filter)
         {
-            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.CreationDate == filter.CreationDate).Distinct().ToList()
-                ?? throw new Exception("Nessun risultato trovato per GetMostepsMocomponentOperation in MostepsMocomponentRepository");
+            var query = _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation).Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MostepsMocomponentRepository), nameof(GetMostepsMocomponentOperation));
+            return query; 
         }
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCode(BarCodeFilter filter)
         {
-            return _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode).Distinct().ToList()
-                ?? throw new Exception("Nessun risultato trovato per GetMostepsMocomponentBarCode in MostepsMocomponentRepository");
+            var query = _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode).Distinct().ToList();
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MostepsMocomponentRepository), nameof(GetMostepsMocomponentBarCode));
+            return query;
         }
     }
 }
