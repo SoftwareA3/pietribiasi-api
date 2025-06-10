@@ -34,8 +34,10 @@ var builder = WebApplication.CreateBuilder(args);
     // Swagger
     builder.Services.AddSwaggerGen();
 
-    // DbContext
-    builder.Services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("LocalA3Db")); });
+    // DbContext - Usa la connection string dalla configurazione
+    builder.Services.AddDbContext<ApplicationDbContext>(options => { 
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); 
+    });
 
     // Repositories
     builder.Services.AddScoped<IWorkerRepository, WorkerRepository>();
@@ -74,7 +76,6 @@ var builder = WebApplication.CreateBuilder(args);
         });
     });
 
-
     // AutoMappers
     builder.Services.AddAutoMapper(typeof(WorkerMapperFilters));
     builder.Services.AddAutoMapper(typeof(JobMapperFilters));
@@ -100,12 +101,17 @@ var app = builder.Build();
 
     app.UseCors("AllowAll");
 
+    app.UseDefaultFiles(); 
+    
+    app.UseStaticFiles();
+
     app.UseAuthentication();
     app.UseAuthorization();
 
-    // app.Urls.Add("http://localhost:5245");
-    // app.Urls.Add("http://192.168.100.113:5246");
-    app.Urls.Add("http://0.0.0.0:5245");
+    // Correctly use the backend URL from command-line arguments or defaults from build.json
+    var backendHost = app.Configuration.GetValue<string>("server:backend:host", "localhost");
+    var backendPort = app.Configuration.GetValue<int>("server:backend:port", 5001);
+    app.Urls.Add($"http://{backendHost}:{backendPort}");
 
     app.MapControllers();
 

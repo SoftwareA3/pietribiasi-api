@@ -1093,7 +1093,7 @@ echo ----------------------------------------------
 ```
 
 In caso di modifiche, cambiare:
-- La funzione `getIPString()` in `main.js` e adattarla con l'IP per la comunicazione con il backend
+- La funzione `getApiUrl()` in `main.js` e adattarla con l'IP per la comunicazione con il backend
 - Le stringhe di connessione nel Backend (apiPB) in `Properties/launchsettings.json`
 - L'URL aggiunto nel Backend in `apiPB/Program.cs`
 - Il file `start.bat` per configurare gli IP per la comunicazione dell'applicazione

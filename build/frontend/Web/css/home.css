@@ -1,0 +1,117 @@
+/* home-desktop.css - Stili desktop specifici per la home page */
+
+/* Main Content */
+.container {
+    padding-top: 80px;
+    max-width: 1200px;
+}
+
+.home-card {
+    animation: slideIn 0.5s ease;
+    max-width: 1000px;
+    margin: var(--spacing-4) auto;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#menu-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 2px solid var(--gray-200);
+    color: var(--primary-color);
+}
+
+.home-menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-3);
+}
+
+.menu-button {
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-4);
+    border-radius: var(--border-radius);
+    color: var(--white);
+    transition: all 0.3s ease;
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    border: none;
+}
+
+.menu-button:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.menu-button span {
+    margin-top: var(--spacing-2);
+    font-weight: var(--font-weight-bold);
+    z-index: 1;
+}
+
+.menu-button-descr
+{
+    font-size: 1.2rem;
+}
+
+.menu-icon{
+    font-size: 2.2rem;
+    font-style: normal;
+    margin-bottom: var(--spacing-2);
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+.menu-button:hover .menu-icon {
+    transform: scale(1.2);
+}
+
+/* Menu button colors */
+.menu-button.primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.menu-button.primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+}
+
+.menu-button.secondary {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+}
+
+.menu-button.secondary:hover {
+    background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary-color) 100%);
+}
+
+.menu-button.poweruser {
+    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
+}
+
+.menu-button.poweruser:hover {
+    background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
+}
+
+#goto-poweruser-login {
+    display: none;
+}
+
+#goto-settings {
+    display: none;
+}
+
+#sync-data {
+    display: none;
+}

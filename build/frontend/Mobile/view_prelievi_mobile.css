@@ -1,0 +1,68 @@
+/* Stili mobile specifici per pagina prelievi */
+/* .item-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+} */
+
+/* Gruppo info commessa */
+.commessa-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-1);
+    padding-bottom: var(--spacing-1);
+}
+
+/* Info articolo */
+.articolo-group {
+    margin-bottom: var(--spacing-1);
+    padding-bottom: var(--spacing-1);
+}
+
+/* Info lavorazione e ODP */
+.lav-odp-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-1);
+    font-size: 0.85rem;
+}
+
+/* Info quantità e data */
+.qty-data-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Badge quantità */
+.qty-badge {
+    font-size: 0.85rem;
+}
+
+/* Data */
+.data-info {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}
+
+/* Adattamenti per schermi molto piccoli */
+@media screen and (max-width: 360px) {
+    .commessa-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+    
+    .lav-odp-info {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .qty-data-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+}
