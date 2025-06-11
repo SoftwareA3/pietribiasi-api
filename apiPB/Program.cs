@@ -108,9 +108,10 @@ var app = builder.Build();
     app.UseAuthentication();
     app.UseAuthorization();
 
-    // Correctly use the backend URL from command-line arguments or defaults from build.json
-    var backendHost = app.Configuration.GetValue<string>("server:backend:host", "localhost");
-    var backendPort = app.Configuration.GetValue<int>("server:backend:port", 5001);
+    // Legge la configurazione del server da appsettings.json
+    var backendHost = app.Configuration.GetValue<string>("Server:Backend:Host", "localhost");
+    var backendPort = app.Configuration.GetValue<int>("Server:Backend:Port", 5001);
+    
     app.Urls.Add($"http://{backendHost}:{backendPort}");
 
     app.MapControllers();
