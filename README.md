@@ -1065,7 +1065,7 @@ Comando per installare ```npx```: ```npm install -g serve```
 Questo comando funziona solo per avviare l'applicazione localmente.
 
 ### Avvio Applicazione tramite il file bash
-Per avviare l'applicazione tramite il file con estensione `.bat` è sufficiente spostarsi nella directory contenente il file. Da lì, bisogna digitare il comando `./start.bat`. Il comando serve per avviare sia il Backend che il Frontend e inizializzare l'applicazione in `index.html`. Momentaneamente nel Frontend in `main.js` ho scritto una funzione per ritornare una stringa con il mio IP che poi viene chiamata in ogni chiamata API prima dell'inserimento della porta e dell'endpoint. Il file è sufficiente per avviare l'applicazione e per tanto la soluzione usata con **NodeJs** è deprecata. Il Frontend ora utilizza `http-server` globalmente per la demo 
+Per avviare l'applicazione tramite il file con estensione `.bat` è sufficiente spostarsi nella directory contenente il file. Da lì, bisogna digitare il comando `./Pietribiasi_App_start.bat`. Il comando serve per avviare sia il Backend che il Frontend e inizializzare l'applicazione in `index.html`. Momentaneamente nel Frontend in `main.js` ho scritto una funzione per ritornare una stringa con il mio IP che poi viene chiamata in ogni chiamata API prima dell'inserimento della porta e dell'endpoint. Il file è sufficiente per avviare l'applicazione e per tanto la soluzione usata con **NodeJs** è deprecata. Il Frontend ora utilizza `http-server` globalmente per la demo 
 
 ``` bash
 @echo off
@@ -1096,4 +1096,4 @@ In caso di modifiche, cambiare:
 - La funzione `getApiUrl()` in `main.js` e adattarla con l'IP per la comunicazione con il backend
 - Le stringhe di connessione nel Backend (apiPB) in `Properties/launchsettings.json`
 - L'URL aggiunto nel Backend in `apiPB/Program.cs`
-- Il file `start.bat` per configurare gli IP per la comunicazione dell'applicazione
+- Il file `Pietribiasi_App_start.bat` per configurare gli IP per la comunicazione dell'applicazione
