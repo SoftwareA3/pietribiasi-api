@@ -1,25 +1,9 @@
 import { deleteCookie, getCookie } from "./cookies.js";
 
-// API configuration placeholder to be replaced by the build script
-const API_CONFIG = {
-    baseUrl: 'http://192.168.100.113:5245',
-    
-    // Helper to get the full API URL
-    getApiUrl: function(endpoint = '') {
-        return `${this.baseUrl}${endpoint}`;
-    }
-};
-
-// Async function to initialize API configuration (can be adapted for other needs)
-async function initializeApiConfig() {
-    // This function can be expanded if configuration needs to be fetched dynamically
-    console.log('API base URL configured:', API_CONFIG.baseUrl);
-}
+// API configuration - this placeholder will be replaced by the build script
+const API_BASE_URL = 'http://192.168.100.113:5245';
 
 document.addEventListener("DOMContentLoaded", async function() {
-    // Initialize API configuration
-    await initializeApiConfig();
-    
     // Check if the user is authenticated
     if (sessionStorage.getItem("login") !== "true") {
         if (!window.location.href.includes("login.html")) {
@@ -35,47 +19,10 @@ document.addEventListener("DOMContentLoaded", async function() {
             scrollToTop();
         });
     }
-    
-    const headerElement = document.getElementsByClassName("app-header")[0]; 
 
     setupLogoutButton();
     await loadWorkerInfo();
-    
-    // Setup configuration button if in Electron
-    if (window.electronAPI) {
-        setupConfigButton();
-    }
 });
-
-// Setup for the configuration button in Electron
-function setupConfigButton() {
-    const header = document.querySelector('.app-header');
-    if (header && !document.getElementById('config-btn')) {
-        const configBtn = document.createElement('button');
-        configBtn.id = 'config-btn';
-        configBtn.innerHTML = '⚙️ Configurazione';
-        configBtn.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 100px;
-            padding: 8px 16px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        `;
-        
-        configBtn.addEventListener('click', () => {
-            if (window.electronAPI && window.electronAPI.openConfig) {
-                window.electronAPI.openConfig();
-            }
-        });
-        
-        header.appendChild(configBtn);
-    }
-}
 
 // Setup for the logout button, including cookie deletion
 function setupLogoutButton() {
@@ -83,8 +30,7 @@ function setupLogoutButton() {
     if (logoutButton) {
         logoutButton.addEventListener("click", function() {
             const pu = JSON.parse(getCookie("pu-User"));
-            if(pu)
-            {
+            if(pu) {
                 deleteCookie("pu-User");
             }
             deleteCookie("basicAuthCredentials");
@@ -98,13 +44,15 @@ function setupLogoutButton() {
 
 // Function to get the API base URL
 export function getApiBaseUrl() {
-    return Promise.resolve(API_CONFIG.baseUrl);
+    return API_BASE_URL;
 }
 
 // Function to get the full API URL with an endpoint
-export async function getApiUrl(endpoint = '') {
-    const baseUrl = await getApiBaseUrl();
-    return `${baseUrl}${endpoint}`;
+export function getApiUrl(endpoint = '') {
+    const baseUrl = getApiBaseUrl();
+    const fullUrl = endpoint ? `${baseUrl}/${endpoint}` : baseUrl;
+    console.log(`Using API URL: ${fullUrl}`);
+    return fullUrl;
 }
 
 // Function to load authenticated worker information and populate the header
