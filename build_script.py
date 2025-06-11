@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import json
 import zipfile
+import socket
 from pathlib import Path
 from datetime import datetime
 
@@ -520,6 +521,53 @@ kill $FRONTEND_PID
         with open(launcher_path, 'w', encoding='utf-8', newline='\n') as f:
             f.write(launcher_content)
         os.chmod(launcher_path, 0o755)
+    
+    def get_local_ip(self):
+        """Restituisce l'indirizzo IPv4 locale del dispositivo (non localhost)."""
+        try:
+            # Usa una connessione UDP fittizia per determinare l'IP locale
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+                s.connect(('8.8.8.8', 80))
+                ip = s.getsockname()[0]
+                # Verifica che non sia localhost
+                if ip.startswith("127."):
+                    raise Exception("Indirizzo locale è localhost")
+                return ip
+        except Exception:
+            # Fallback: cerca tra le interfacce di rete
+            try:
+                hostname = socket.gethostname()
+                ips = socket.gethostbyname_ex(hostname)[2]
+                for ip in ips:
+                    if not ip.startswith("127."):
+                        return ip
+            except Exception:
+                pass
+            return '127.0.0.1'
+
+    def update_frontend_host_ip(self, build_json_path):
+        """Aggiorna server.frontend.host con l'IP locale."""
+        with open(build_json_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        automatic_ip = config['server']['frontend']['local_ip_automatically']
+        if automatic_ip:
+            local_ip = self.get_local_ip()
+            config['server']['frontend']['host'] = local_ip
+            with open(build_json_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4, ensure_ascii=False)
+            print(f"✅ server.frontend.host aggiornato a {local_ip}")
+
+    def update_backend_host_ip(self, build_json_path):
+        """Aggiorna server.backend.host con l'IP locale."""
+        with open(build_json_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        automatic_ip = config['server']['backend']['local_ip_automatically']
+        if automatic_ip:
+            local_ip = self.get_local_ip()
+            config['server']['backend']['host'] = local_ip
+            with open(build_json_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4, ensure_ascii=False)
+            print(f"✅ server.backend.host aggiornato a {local_ip}")
 
     def create_zip_archive(self):
         """Crea l'archivio ZIP finale"""
@@ -539,6 +587,12 @@ kill $FRONTEND_PID
         """Esegue l'intero processo di build"""
         try:
             print(f"=== Build di {self.config['app']['name']} ===")
+
+            # Inserisce l'IP locale per il Frontend nel file build.json se configurato per farlo
+            self.update_frontend_host_ip("build.json")
+
+            # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
+            self.update_backend_host_ip("build.json")
             
             # Aggiorna i file di configurazione PRIMA del build
             self.update_appsettings()

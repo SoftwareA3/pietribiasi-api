@@ -40,7 +40,7 @@ echo Caricamento configurazione da build.json...
 REM Valori di default nel caso build.json non sia disponibile
 set FRONTEND_PORT=8080
 set BACKEND_PORT=5245  
-set SERVER_IP=192.168.100.113
+set SERVER_IP=
 
 REM Verifica se build.json esiste
 if not exist "build.json" (
