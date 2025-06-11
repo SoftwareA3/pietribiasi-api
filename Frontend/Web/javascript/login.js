@@ -1,6 +1,6 @@
 import { fetchWithAuth } from "./fetch.js";
 import { setCookie, deleteCookie, getCookie } from "./cookies.js";
-import { getIPString } from "./main.js";
+import { getApiUrl } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.getElementById("login-form");
@@ -68,9 +68,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 console.log("Invio richiesta di login...");
+
+                console.log("API URL:", getApiUrl("api/worker/login"));
                 
                 // Prima richiesta: ottieni workerId
-                const request = await fetch(`http://${getIPString()}:5245/api/worker/login`, {
+                const request = await fetch(getApiUrl("api/worker/login"), {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -123,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("Validazione credenziali...");
                 
                 // Seconda richiesta: valida le credenziali
-                const validationResponse = await fetchWithAuth(`http://${getIPString()}:5245/api/auth/validate`, {
+                const validationResponse = await fetchWithAuth(getApiUrl("api/auth/validate"), {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"

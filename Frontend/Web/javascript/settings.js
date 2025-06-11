@@ -1,6 +1,6 @@
 import { fetchWithAuth } from "./fetch.js";
 import { getCookie } from "./cookies.js";
-import { getIPString } from "./main.js";
+import { getApiUrl } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", async function() {
     const urlInput = document.getElementById("settings-url");
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     try {
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/settings/get_settings`, {
+        const response = await fetchWithAuth(getApiUrl("api/settings/get_settings"), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.log("Settings to save:", settings);
 
         try {
-            const response = await fetchWithAuth(`http://${getIPString()}:5245/api/settings/edit_settings`, {
+            const response = await fetchWithAuth(getApiUrl("api/settings/edit_settings"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

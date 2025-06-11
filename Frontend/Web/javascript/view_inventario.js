@@ -2,7 +2,7 @@ import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import {createPagination} from "./pagination.js";
 import { getCookie } from "./cookies.js";
-import { getIPString } from "./main.js";
+import { getApiUrl } from "./main.js";
 
 let globalAllData = null;
 let showImportedItems = false;
@@ -426,7 +426,7 @@ async function saveInvEdit(item, data) {
     };
 
     try {
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/inventario/view_inventario/edit_book_inv`, {
+        const response = await fetchWithAuth(getApiUrl("api/inventario/view_inventario/edit_book_inv"), {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -506,7 +506,7 @@ async function fetchAllViewInventario() {
     };
     try {
         //console.log("CARICAMENTO DI TUTTI I DATI");
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/inventario/get_all`, {
+        const response = await fetchWithAuth(getApiUrl("api/inventario/get_all"), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -526,7 +526,7 @@ async function fetchAllViewInventario() {
 async function fetchViewInventario(filteredObject) {
     try {
         console.log("Chiamata API con oggetto filtro:", filteredObject);
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/inventario/get_view_inventario`, {
+        const request = await fetchWithAuth(getApiUrl("api/inventario/get_view_inventario"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

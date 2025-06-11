@@ -2,7 +2,7 @@ import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import { createPagination } from "./pagination.js";
 import { getCookie } from "./cookies.js";
-import { getIPString, parseDateTime } from "./main.js";
+import { getApiUrl, parseDateTime } from "./main.js";
 
 // Variabili globali per mantenere lo stato
 let globalInventarioData = null;
@@ -475,7 +475,7 @@ function createPrelieviFilterObject() {
 async function fetchAllInventarioNotImported() {
     if (globalInventarioData) return globalInventarioData;
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/inventario/get_inventario_not_imported`, {
+        const request = await fetchWithAuth(getApiUrl("api/inventario/get_inventario_not_imported"), {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         });
@@ -496,7 +496,7 @@ async function fetchAllInventarioNotImported() {
 
 async function fetchInventario(filteredObject) {
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/inventario/view_inventario/not_imported/filtered`, {
+        const request = await fetchWithAuth(getApiUrl("api/inventario/view_inventario/not_imported/filtered"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(filteredObject)
@@ -518,7 +518,7 @@ async function fetchInventario(filteredObject) {
 async function fetchAllOreNotImported() {
     if (globalOreData) return globalOreData;
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore/not_imported`, {
+        const request = await fetchWithAuth(getApiUrl("api/reg_ore/view_ore/not_imported"), {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         });
@@ -538,7 +538,7 @@ async function fetchAllOreNotImported() {
 
 async function fetchOre(filteredObject) {
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore/not_imported/filtered`, {
+        const request = await fetchWithAuth(getApiUrl("api/reg_ore/view_ore/not_imported/filtered"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(filteredObject)
@@ -560,7 +560,7 @@ async function fetchOre(filteredObject) {
 async function fetchAllPrelieviNotImported() {
     if (globalPrelieviData) return globalPrelieviData;
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/view_prel_mat/not_imported`, {
+        const request = await fetchWithAuth(getApiUrl("api/prel_mat/view_prel_mat/not_imported"), {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         });
@@ -581,7 +581,7 @@ async function fetchAllPrelieviNotImported() {
 
 async function fetchPrelievi(filteredObject) {
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/prel_mat/view_prel_mat/not_imported/filtered`, {
+        const request = await fetchWithAuth(getApiUrl("api/prel_mat/view_prel_mat/not_imported/filtered"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(filteredObject)
@@ -977,7 +977,7 @@ async function synchronizeData() {
         console.log("Sincronizzazione dei dati...");
         console.log("User ID:", userCookie.workerId);
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/synchronize_all`, {
+        const response = await fetchWithAuth(getApiUrl("api/mago_api/synchronize_all"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -1067,7 +1067,7 @@ async function syncRegOreFiltered() {
         console.log("Sincronizzazione delle ore registrate...");
         console.log("User ID:", userCookie.workerId);
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/sync_reg_ore_filtered`, {
+        const response = await fetchWithAuth(getApiUrl("api/mago_api/sync_reg_ore_filtered"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -1172,7 +1172,7 @@ async function syncPrelieviFiltered() {
         console.log("Sincronizzazione dei prelievi...");
         console.log("User ID:", userCookie.workerId);
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/sync_prel_mat_filtered`, {
+        const response = await fetchWithAuth(getApiUrl("api/mago_api/sync_prel_mat_filtered"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -1279,7 +1279,7 @@ async function syncInventarioFiltered() {
         console.log("User ID:", userCookie.workerId);
         console.log("Inventario da sincronizzare:", filteredInventarioList);
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/mago_api/sync_inventario_filtered`, {
+        const response = await fetchWithAuth(getApiUrl("api/mago_api/sync_inventario_filtered"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -1,7 +1,7 @@
 import { fetchWithAuth } from "./fetch.js";
 import { getCookie } from "./cookies.js";
 import { setupAutocomplete } from "./autocomplete.js";
-import { getIPString } from "./main.js";
+import { getApiUrl } from "./main.js";
 
 let globalAllData = null;
 
@@ -401,7 +401,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
             console.log("Lista con Worker ID:", dataResultList);
             try {
-                const response = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/post_reg_ore`, {
+                const response = await fetchWithAuth(getApiUrl("api/reg_ore/post_reg_ore"), {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -586,7 +586,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 // Funzioni di fetch
 async function fetchJobMostep(job) {
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/mostep/job`, {
+        const request = await fetchWithAuth(getApiUrl("api/mostep/job"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -609,7 +609,7 @@ async function fetchJobMostep(job) {
 
 async function fetchJobsByOdp(job, mono, creationDate) {
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/mostep/odp`, {
+        const request = await fetchWithAuth(getApiUrl("api/mostep/odp"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -638,7 +638,7 @@ async function fetchJobsByOdp(job, mono, creationDate) {
 async function fetchAllJobs() {
     if(globalAllData) return globalAllData;
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/job`, {
+        const request = await fetchWithAuth(getApiUrl("api/job"), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -660,7 +660,7 @@ async function fetchAllJobs() {
 
 async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/mostep/lavorazioni`, {
+        const request = await fetchWithAuth(getApiUrl("api/mostep/lavorazioni"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

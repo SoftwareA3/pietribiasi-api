@@ -16,6 +16,10 @@
 /.vscode
 /.vs
 
+# Ignora le cartelle realizzate con lo script di build
+/dist
+/build
+
 # Ignora i file di configurazione, binari e di debug nei Test
 /TestApi.Tests/bin
 /TestApi.Tests/obj

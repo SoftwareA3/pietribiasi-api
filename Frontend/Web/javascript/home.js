@@ -1,6 +1,6 @@
 import { getCookie } from "./cookies.js";
 import { fetchWithAuth } from "./fetch.js";
-import { getIPString } from "./main.js";
+import { getApiUrl } from "./main.js";
 
 document.addEventListener("DOMContentLoaded", async function() {
     const puButton = document.getElementById("goto-poweruser-login")
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     try {
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/settings/get_sync_global_active`, {
+        const response = await fetchWithAuth(getApiUrl("api/settings/get_sync_global_active"), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

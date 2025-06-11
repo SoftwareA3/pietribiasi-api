@@ -2,7 +2,7 @@ import { fetchWithAuth } from "./fetch.js";
 import { setupAutocomplete } from "./autocomplete.js";
 import {createPagination} from "./pagination.js";
 import { getCookie } from "./cookies.js";
-import { getIPString, parseDateTime } from "./main.js";
+import { getApiUrl, parseDateTime } from "./main.js";
 
 // Variabili globali per mantenere lo stato
 let globalAllData = null;
@@ -261,7 +261,7 @@ function extractUniqueValues(data, field) {
 async function fetchAllViewOre() {
     if(globalAllData) return globalAllData;
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/get_all`, {
+        const request = await fetchWithAuth(getApiUrl("api/reg_ore/get_all"), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -285,7 +285,7 @@ async function fetchViewOre(filteredObject) {
     console.log("Chiamata API con filtri:", filteredObject);
 
     try {
-        const request = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore`, {
+        const request = await fetchWithAuth(getApiUrl("api/reg_ore/view_ore"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -566,7 +566,7 @@ async function saveOreEdit(item, data) {
     };
     
     try {
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore/edit_working_time`, {
+        const response = await fetchWithAuth(getApiUrl("api/reg_ore/view_ore/edit_working_time"), {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -632,7 +632,7 @@ async function deleteOre(item) {
     // Inserire body e non ID
     
     try {
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/reg_ore/view_ore/delete_reg_ore_id`, {
+        const response = await fetchWithAuth(getApiUrl("api/reg_ore/view_ore/delete_reg_ore_id"), {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
@@ -764,7 +764,7 @@ async function fetchLog(filterLIst) {
 
     try {
         console.log("MoId da cercare:", data);
-        const response = await fetchWithAuth(`http://${getIPString()}:5245/api/action_message/get_action_messages_filtered`, {
+        const response = await fetchWithAuth(getApiUrl("api/action_message/get_action_messages_filtered"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
