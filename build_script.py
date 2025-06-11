@@ -76,6 +76,11 @@ class AppBuilder:
                 "Host": self.config['server']['frontend']['host'],
                 "Port": self.config['server']['frontend']['port']
             }
+
+            appsettings['ConnectionStrings'] = {
+                "LocalA3Db": self.config['server']['backend']['connection_string']
+            }
+
             
             # Scrivi il file aggiornato
             with open(appsettings_path, 'w', encoding='utf-8') as f:
@@ -148,7 +153,22 @@ class AppBuilder:
         
         backend_path = self.project_root / self.config['build']['backend_project']
         build_output = self.build_dir / "backend"
+
+        # Leggi la connection string dal file build.json
+        connection_string = self.config['server']['backend']['connection_string']
+        print(f"Connection string backend: {connection_string}")
         
+        # Se connection_string esiste, imposta i secrets prima del publish
+        if connection_string:
+            # Inizializza i secrets
+            subprocess.run([
+            'dotnet', 'user-secrets', 'init'
+            ], cwd=str(backend_path), check=True)
+            # Imposta la connection string
+            subprocess.run([
+            'dotnet', 'user-secrets', 'set', 'ConnectionStrings:LocalA3Db', connection_string
+            ], cwd=str(backend_path), check=True)
+
         cmd = [
             'dotnet', 'publish', str(backend_path),
             '-c', 'Release',
@@ -596,7 +616,7 @@ kill $FRONTEND_PID
             
             # Aggiorna i file di configurazione PRIMA del build
             self.update_appsettings()
-            self.update_start_bat()
+            #self.update_start_bat()
             
             self.clean()
             
