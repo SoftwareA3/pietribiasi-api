@@ -68,6 +68,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 console.log("Invio richiesta di login...");
+
+                console.log("API URL:", getApiUrl("api/worker/login"));
                 
                 // Prima richiesta: ottieni workerId
                 const request = await fetch(getApiUrl("api/worker/login"), {
