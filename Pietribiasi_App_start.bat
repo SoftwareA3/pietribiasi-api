@@ -6,41 +6,47 @@ REM Variabili per memorizzare i PID dei processi
 set BACKEND_PID=
 set FRONTEND_PID=
 
+REM Variabili di configurazione (valori di default)
+set APP_NAME=Pietribiasi App
+set BACKEND_PROJECT=apiPB
+set FRONTEND_PORT=8080
+set BACKEND_PORT=5245
+set SERVER_IP=192.168.100.113
+
 REM Carica la configurazione da build.json
 call :LOAD_CONFIG_FROM_BUILD_JSON
 
 :MENU
 cls
 echo ===============================================
-echo    CONTROLLO APPLICAZIONE PIETRIBIASI_API
+echo    CONTROLLO APPLICAZIONE !APP_NAME!
 echo ===============================================
 echo.
 echo 0. Avvia/Riavvia applicazione (apertura automatica su index.html)
 echo 1. Avvia applicazione 
-echo 2. Ferma applicazione  
-echo 3. Riavvia applicazione
-echo 4. Stato applicazione
-echo 5. Mostra indirizzi IP
-echo 6. Esci
+echo 2. Avvia solo il Frontend (apre la pagina index.html)
+echo 3. Avvia solo il Backend
+echo 4. Ferma applicazione  
+echo 5. Riavvia applicazione
+echo 6. Stato applicazione
+echo 7. Mostra indirizzi IP
+echo 8. Esci
 echo.
-set /p choice="Seleziona un'opzione (0-6): "
+set /p choice="Seleziona un'opzione (0-8): "
 
 if "%choice%"=="0" goto FORCE_RESTART_WITH_INDEX
 if "%choice%"=="1" goto START_APP
-if "%choice%"=="2" goto STOP_APP
-if "%choice%"=="3" goto RESTART_APP
-if "%choice%"=="4" goto STATUS_APP
-if "%choice%"=="5" goto SHOW_IPS
-if "%choice%"=="6" goto EXIT
+if "%choice%"=="2" goto START_FRONTEND_ONLY
+if "%choice%"=="3" goto START_BACKEND_ONLY
+if "%choice%"=="4" goto STOP_APP
+if "%choice%"=="5" goto RESTART_APP
+if "%choice%"=="6" goto STATUS_APP
+if "%choice%"=="7" goto SHOW_IPS
+if "%choice%"=="8" goto EXIT
 goto MENU
 
 :LOAD_CONFIG_FROM_BUILD_JSON
 echo Caricamento configurazione da build.json...
-
-REM Valori di default nel caso build.json non sia disponibile
-set FRONTEND_PORT=8080
-set BACKEND_PORT=5245  
-set SERVER_IP=
 
 REM Verifica se build.json esiste
 if not exist "build.json" (
@@ -49,14 +55,18 @@ if not exist "build.json" (
 )
 
 REM Estrae i valori da build.json usando PowerShell
-for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.backend.host } catch { Write-Output '192.168.100.113' }"') do set SERVER_IP=%%i
+for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.app.name } catch { Write-Output 'Pietribiasi App' }"') do set APP_NAME=%%i
+for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.build.backend_project } catch { Write-Output 'apiPB' }"') do set BACKEND_PROJECT=%%i
+for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.backend.host } catch { Write-Output 'localhost' }"') do set SERVER_IP=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.backend.port } catch { Write-Output '5245' }"') do set BACKEND_PORT=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.frontend.port } catch { Write-Output '8080' }"') do set FRONTEND_PORT=%%i
 
 echo Configurazione caricata:
-echo   SERVER_IP: %SERVER_IP%
-echo   BACKEND_PORT: %BACKEND_PORT%
-echo   FRONTEND_PORT: %FRONTEND_PORT%
+echo   APP_NAME: !APP_NAME!
+echo   BACKEND_PROJECT: !BACKEND_PROJECT!
+echo   SERVER_IP: !SERVER_IP!
+echo   BACKEND_PORT: !BACKEND_PORT!
+echo   FRONTEND_PORT: !FRONTEND_PORT!
 echo.
 
 goto :eof
@@ -66,21 +76,15 @@ echo.
 echo Riavvio forzato dell'applicazione con apertura automatica su index.html...
 echo.
 echo Arresto di eventuali processi in esecuzione...
-call :STOP_APP_SILENT
+call :STOP_APP_ENHANCED
 timeout /t 2 >nul
 
-echo Configurazione dell'API URL...
-call :UPDATE_API_CONFIG
-
-echo Aggiornamento appsettings.json...
-call :UPDATE_APPSETTINGS
-
 echo Avvio del backend...
-start "Backend Server" cmd /k "cd apiPB && dotnet run"
+start "Backend Server" cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
 timeout /t 5 >nul
 
 echo Avvio del frontend...
-start "Frontend Server" cmd /k "cd Frontend && http-server -a 0.0.0.0 -p %FRONTEND_PORT% --cors -o index.html -c-1"
+start "Frontend Server" cmd /c "npx http-server ./frontend -a !SERVER_IP! -p !FRONTEND_PORT! --cors -o index.html -c-1"
 timeout /t 3 >nul
 
 echo.
@@ -100,14 +104,8 @@ call :CHECK_PROCESSES
 if "!BACKEND_RUNNING!"=="1" (
     echo Backend già in esecuzione!
 ) else (
-    echo Configurazione dell'API URL...
-    call :UPDATE_API_CONFIG
-    
-    echo Aggiornamento appsettings.json...
-    call :UPDATE_APPSETTINGS
-    
     echo Avvio del backend...
-    start "Backend Server" cmd /k "cd apiPB && dotnet run"
+    start "Backend Server" cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
     timeout /t 3 >nul
 )
 
@@ -116,7 +114,7 @@ if "!FRONTEND_RUNNING!"=="1" (
 ) else (
     echo Avvio del frontend...
     timeout /t 2 >nul
-    start "Frontend Server" cmd /k "cd Frontend && http-server -a 0.0.0.0 -p %FRONTEND_PORT% --cors index.html -c-1"
+    start "Frontend Server" cmd /c "npx http-server ./frontend -a !SERVER_IP! -p !FRONTEND_PORT! --cors index.html -c-1"
 )
 
 echo.
@@ -126,35 +124,59 @@ echo.
 pause
 goto MENU
 
+:START_FRONTEND_ONLY
+echo.
+echo Avvio del solo Frontend...
+echo.
+
+call :CHECK_PROCESSES
+if "!FRONTEND_RUNNING!"=="1" (
+    echo Frontend già in esecuzione!
+) else (
+    echo Avvio del frontend con apertura automatica su index.html...
+    start "Frontend Server" cmd /c "npx http-server ./frontend -a !SERVER_IP! -p !FRONTEND_PORT! --cors -o index.html -c-1"
+    timeout /t 3 >nul
+    echo Frontend avviato!
+)
+
+echo.
+echo Frontend disponibile su:
+echo   http://localhost:!FRONTEND_PORT!
+echo   http://!SERVER_IP!:!FRONTEND_PORT!
+echo.
+pause
+goto MENU
+
+:START_BACKEND_ONLY
+echo.
+echo Avvio del solo Backend...
+echo.
+
+call :CHECK_PROCESSES
+if "!BACKEND_RUNNING!"=="1" (
+    echo Backend già in esecuzione!
+) else (
+    echo Avvio del backend...
+    start "Backend Server" cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
+    timeout /t 3 >nul
+    echo Backend avviato!
+)
+
+echo.
+echo Backend disponibile su:
+echo   http://localhost:!BACKEND_PORT!
+echo   http://!SERVER_IP!:!BACKEND_PORT!
+echo.
+pause
+goto MENU
+
 :STOP_APP
 echo.
-echo Arresto dell'applicazione...
+echo Arresto completo dell'applicazione...
 echo.
-
-REM Termina i processi dotnet
-echo Chiusura backend...
-taskkill /f /im dotnet.exe 2>nul
-if %errorlevel%==0 (
-    echo Backend chiuso con successo.
-) else (
-    echo Nessun processo backend da chiudere.
-)
-
-REM Termina i processi http-server
-echo Chiusura frontend...
-taskkill /f /im node.exe 2>nul
-if %errorlevel%==0 (
-    echo Frontend chiuso con successo.
-) else (
-    echo Nessun processo frontend da chiudere.
-)
-
-REM Chiudi le finestre cmd specifiche
-taskkill /fi "WindowTitle eq Backend Server*" /f 2>nul
-taskkill /fi "WindowTitle eq Frontend Server*" /f 2>nul
-
+call :STOP_APP_ENHANCED
 echo.
-echo Applicazione arrestata!
+echo Applicazione arrestata completamente!
 echo.
 pause
 goto MENU
@@ -162,15 +184,44 @@ goto MENU
 :RESTART_APP
 echo.
 echo Riavvio dell'applicazione...
-call :STOP_APP_SILENT
+call :STOP_APP_ENHANCED
 timeout /t 2 >nul
 goto START_APP
 
-:STOP_APP_SILENT
-taskkill /f /im dotnet.exe 2>nul
+:STOP_APP_ENHANCED
+REM Funzione migliorata per chiusura completa
+
+echo Chiusura completa di processi e finestre console...
+
+REM 1. Prima terminiamo i processi applicazione
+echo Terminazione processi backend...
+taskkill /f /im !BACKEND_PROJECT!.exe 2>nul
+
+echo Terminazione processi frontend...
 taskkill /f /im node.exe 2>nul
+
+REM 2. Attendiamo che i processi terminino completamente
+echo Attesa terminazione processi...
+timeout /t 3 >nul
+
+REM 3. Ora cerchiamo e chiudiamo le finestre CMD per comando di avvio
+echo Chiusura finestre console backend...
+wmic process where "name='cmd.exe' and commandline like '%%Backend Server%%'" delete 2>nul
+
+echo Chiusura finestre console frontend...  
+wmic process where "name='cmd.exe' and commandline like '%%Frontend Server%%'" delete 2>nul
+
+REM 4. Metodo PowerShell per trovare finestre CMD con i nostri comandi
+echo Pulizia finale finestre CMD...
+powershell -Command "Get-WmiObject Win32_Process | Where-Object { $_.Name -eq 'cmd.exe' -and ($_.CommandLine -like '*cd backend*!BACKEND_PROJECT!.exe*' -or $_.CommandLine -like '*npx http-server*frontend*' -or $_.CommandLine -like '*Backend Server*' -or $_.CommandLine -like '*Frontend Server*') } | ForEach-Object { try { Write-Host \"Chiusura finestra CMD PID: $($_.ProcessId)\"; $_.Terminate() } catch {} }" 2>nul
+
+REM 5. Metodo finale: cerca finestre che potrebbero essere tornate al titolo originale
+timeout /t 1 >nul
 taskkill /fi "WindowTitle eq Backend Server*" /f 2>nul
 taskkill /fi "WindowTitle eq Frontend Server*" /f 2>nul
+
+echo Pulizia completata.
+
 goto :eof
 
 :STATUS_APP
@@ -200,85 +251,13 @@ goto MENU
 set BACKEND_RUNNING=0
 set FRONTEND_RUNNING=0
 
-REM Controlla se dotnet è in esecuzione
-tasklist | findstr "dotnet.exe" >nul 2>&1
+REM Controlla se il backend è in esecuzione
+tasklist | findstr "!BACKEND_PROJECT!.exe" >nul 2>&1
 if %errorlevel%==0 set BACKEND_RUNNING=1
 
 REM Controlla se http-server è in esecuzione
 tasklist | findstr "node.exe" >nul 2>&1
 if %errorlevel%==0 set FRONTEND_RUNNING=1
-
-goto :eof
-
-:UPDATE_APPSETTINGS
-echo Aggiornamento appsettings.json con configurazione da build.json...
-
-set APPSETTINGS_PATH=apiPB\appsettings.json
-
-if not exist "%APPSETTINGS_PATH%" (
-    echo ERRORE: File appsettings.json non trovato in %APPSETTINGS_PATH%
-    goto :eof
-)
-
-REM Crea uno script PowerShell temporaneo
-set PS_SCRIPT=%TEMP%\update_appsettings.ps1
-
-echo try { > "%PS_SCRIPT%"
-echo     $appsettings = Get-Content '%APPSETTINGS_PATH%' ^| ConvertFrom-Json >> "%PS_SCRIPT%"
-echo     if (-not $appsettings.Server) { $appsettings ^| Add-Member -MemberType NoteProperty -Name 'Server' -Value @{} } >> "%PS_SCRIPT%"
-echo     if (-not $appsettings.Server.Backend) { $appsettings.Server ^| Add-Member -MemberType NoteProperty -Name 'Backend' -Value @{} } >> "%PS_SCRIPT%"
-echo     if (-not $appsettings.Server.Frontend) { $appsettings.Server ^| Add-Member -MemberType NoteProperty -Name 'Frontend' -Value @{} } >> "%PS_SCRIPT%"
-echo     $appsettings.Server.Backend.Host = '%SERVER_IP%' >> "%PS_SCRIPT%"
-echo     $appsettings.Server.Backend.Port = [int]'%BACKEND_PORT%' >> "%PS_SCRIPT%"
-echo     $appsettings.Server.Frontend.Host = '%SERVER_IP%' >> "%PS_SCRIPT%"
-echo     $appsettings.Server.Frontend.Port = [int]'%FRONTEND_PORT%' >> "%PS_SCRIPT%"
-echo     $appsettings ^| ConvertTo-Json -Depth 10 ^| Set-Content '%APPSETTINGS_PATH%' -Encoding UTF8 >> "%PS_SCRIPT%"
-echo     Write-Output 'appsettings.json aggiornato con successo' >> "%PS_SCRIPT%"
-echo } catch { >> "%PS_SCRIPT%"
-echo     Write-Output 'Errore durante aggiornamento appsettings.json: ' + $_.Exception.Message >> "%PS_SCRIPT%"
-echo } >> "%PS_SCRIPT%"
-
-REM Esegui lo script PowerShell
-powershell -ExecutionPolicy Bypass -File "%PS_SCRIPT%"
-
-REM Pulisci il file temporaneo
-del "%PS_SCRIPT%" 2>nul
-
-goto :eof
-
-:UPDATE_API_CONFIG
-echo Aggiornamento configurazione API...
-
-REM Percorso del file main.js
-set MAIN_JS_PATH=Frontend\Web\javascript\main.js
-
-REM Verifica che il file esista
-if not exist "%MAIN_JS_PATH%" (
-    echo ERRORE: File main.js non trovato in %MAIN_JS_PATH%
-    pause
-    goto MENU
-)
-
-REM Crea una copia di backup
-copy "%MAIN_JS_PATH%" "%MAIN_JS_PATH%.bak" >nul 2>&1
-
-REM URL del backend
-set BACKEND_URL=http://%SERVER_IP%:%BACKEND_PORT%
-
-REM Crea un file temporaneo per la sostituzione
-set TEMP_FILE=%TEMP%\main_js_temp.js
-
-REM Sostituisce il placeholder con l'URL effettivo del backend
-powershell -Command "(Get-Content '%MAIN_JS_PATH%') -replace '##API_BASE_URL##', '%BACKEND_URL%' | Set-Content '%TEMP_FILE%'"
-
-REM Verifica se la sostituzione è andata a buon fine
-if exist "%TEMP_FILE%" (
-    move "%TEMP_FILE%" "%MAIN_JS_PATH%" >nul
-    echo API URL configurato: %BACKEND_URL%
-) else (
-    echo ERRORE: Impossibile aggiornare la configurazione API
-    pause
-)
 
 goto :eof
 
@@ -295,12 +274,12 @@ echo.
 echo Indirizzi IP disponibili:
 ipconfig | findstr IPv4
 echo.
-echo Backend:  http://localhost:%BACKEND_PORT%
-echo Frontend: http://localhost:%FRONTEND_PORT%
+echo Backend:  http://localhost:!BACKEND_PORT!
+echo Frontend: http://localhost:!FRONTEND_PORT!
 echo.
 echo Dall'esterno della rete:
-echo Backend:  http://%SERVER_IP%:%BACKEND_PORT%
-echo Frontend: http://%SERVER_IP%:%FRONTEND_PORT%
+echo Backend:  http://!SERVER_IP!:!BACKEND_PORT!
+echo Frontend: http://!SERVER_IP!:!FRONTEND_PORT!
 echo ----------------------------------------------
 goto :eof
 
@@ -308,8 +287,11 @@ goto :eof
 echo.
 set /p confirm="Vuoi chiudere anche l'applicazione in esecuzione? (s/n): "
 if /i "%confirm%"=="s" (
-    call :STOP_APP_SILENT
-    echo Applicazione chiusa.
+    echo.
+    echo Chiusura completa dell'applicazione...
+    call :STOP_APP_ENHANCED
+    timeout /t 2 >nul
+    echo Pulizia completata.
 )
 echo.
 echo Arrivederci!

@@ -224,262 +224,28 @@ class AppBuilder:
             
     
     def create_advanced_start_bat(self):
-        """Crea lo script Pietribiasi_App_start.bat avanzato basato su quello esistente ma con configurazioni da build.json"""
-        print("Creazione dello script di controllo avanzato...")
+        """Copia il template Pietribiasi_App_start.bat nella directory di build"""
+        print("Copia del template script di controllo...")
         
-        backend_config = self.config['server']['backend']
-        frontend_config = self.config['server']['frontend']
-        app_name = self.config['app']['name']
-        backend_project = self.config['build']['backend_project']
+        # Path del template nella root del progetto
+        template_path = self.project_root / "Pietribiasi_App_start.bat"
+        # Path di destinazione nella cartella di build
+        destination_path = self.build_dir / "Pietribiasi_App_start.bat"
         
-        start_bat_content = f'''@echo off
-setlocal enabledelayedexpansion
-title Controllo Applicazione
-
-REM Variabili per memorizzare i PID dei processi
-set BACKEND_PID=
-set FRONTEND_PID=
-
-REM Carica la configurazione da build.json
-call :LOAD_CONFIG_FROM_BUILD_JSON
-
-:MENU
-cls
-echo ===============================================
-echo    CONTROLLO APPLICAZIONE {app_name.upper()}
-echo ===============================================
-echo.
-echo 0. Avvia/Riavvia applicazione (apertura automatica su index.html)
-echo 1. Avvia applicazione 
-echo 2. Ferma applicazione  
-echo 3. Riavvia applicazione
-echo 4. Stato applicazione
-echo 5. Mostra indirizzi IP
-echo 6. Esci
-echo.
-set /p choice="Seleziona un'opzione (0-6): "
-
-if "%choice%"=="0" goto FORCE_RESTART_WITH_INDEX
-if "%choice%"=="1" goto START_APP
-if "%choice%"=="2" goto STOP_APP
-if "%choice%"=="3" goto RESTART_APP
-if "%choice%"=="4" goto STATUS_APP
-if "%choice%"=="5" goto SHOW_IPS
-if "%choice%"=="6" goto EXIT
-goto MENU
-
-:LOAD_CONFIG_FROM_BUILD_JSON
-echo Caricamento configurazione da build.json...
-
-REM Valori di default (caricati da build.json)
-set FRONTEND_PORT={frontend_config['port']}
-set BACKEND_PORT={backend_config['port']}
-set SERVER_IP={backend_config['host']}
-
-REM Verifica se build.json esiste
-if not exist "build.json" (
-    echo ATTENZIONE: build.json non trovato, uso configurazione embedded
-    goto :eof
-)
-
-REM Estrae i valori da build.json usando PowerShell
-for /f "delims=" %%i in ('powershell -Command "try {{ $$json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $$json.server.backend.host }} catch {{ Write-Output '{backend_config['host']}' }}"') do set SERVER_IP=%%i
-for /f "delims=" %%i in ('powershell -Command "try {{ $$json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $$json.server.backend.port }} catch {{ Write-Output '{backend_config['port']}' }}"') do set BACKEND_PORT=%%i
-for /f "delims=" %%i in ('powershell -Command "try {{ $$json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $$json.server.frontend.port }} catch {{ Write-Output '{frontend_config['port']}' }}"') do set FRONTEND_PORT=%%i
-
-echo Configurazione caricata:
-echo   SERVER_IP: %SERVER_IP%
-echo   BACKEND_PORT: %BACKEND_PORT%
-echo   FRONTEND_PORT: %FRONTEND_PORT%
-echo.
-
-goto :eof
-
-:FORCE_RESTART_WITH_INDEX
-echo.
-echo Riavvio forzato dell'applicazione con apertura automatica su index.html...
-echo.
-echo Arresto di eventuali processi in esecuzione...
-call :STOP_APP_ENHANCED
-timeout /t 2 >nul
-
-echo Avvio del backend...
-start "Backend Server" cmd /c "cd backend && {backend_project}.exe --urls=http://%SERVER_IP%:%BACKEND_PORT%"
-timeout /t 5 >nul
-
-echo Avvio del frontend...
-start "Frontend Server" cmd /c "npx http-server ./frontend -a %SERVER_IP% -p %FRONTEND_PORT% --cors -o index.html -c-1"
-timeout /t 3 >nul
-
-echo.
-echo Applicazione riavviata! Apertura automatica della pagina...
-call :SHOW_ADDRESSES
-echo.
-pause
-goto MENU
-
-:START_APP
-echo.
-echo Avvio dell'applicazione...
-echo.
-
-REM Controlla se i processi sono già in esecuzione
-call :CHECK_PROCESSES
-if "!BACKEND_RUNNING!"=="1" (
-    echo Backend già in esecuzione!
-) else (
-    echo Avvio del backend...
-    start "Backend Server" cmd /c "cd backend && {backend_project}.exe --urls=http://%SERVER_IP%:%BACKEND_PORT%"
-    timeout /t 3 >nul
-)
-
-if "!FRONTEND_RUNNING!"=="1" (
-    echo Frontend già in esecuzione!
-) else (
-    echo Avvio del frontend...
-    timeout /t 2 >nul
-    start "Frontend Server" cmd /c "npx http-server ./frontend -a %SERVER_IP% -p %FRONTEND_PORT% --cors index.html -c-1"
-)
-
-echo.
-echo Applicazione avviata!
-call :SHOW_ADDRESSES
-echo.
-pause
-goto MENU
-
-:STOP_APP
-echo.
-echo Arresto completo dell'applicazione...
-echo.
-call :STOP_APP_ENHANCED
-echo.
-echo Applicazione arrestata completamente!
-echo.
-pause
-goto MENU
-
-:RESTART_APP
-echo.
-echo Riavvio dell'applicazione...
-call :STOP_APP_ENHANCED
-timeout /t 2 >nul
-goto START_APP
-
-:STOP_APP_ENHANCED
-REM Funzione migliorata per chiusura completa
-
-echo Chiusura completa di processi e finestre console...
-
-REM 1. Prima terminiamo i processi applicazione
-echo Terminazione processi backend...
-taskkill /f /im {backend_project}.exe 2>nul
-
-echo Terminazione processi frontend...
-taskkill /f /im node.exe 2>nul
-
-REM 2. Attendiamo che i processi terminino completamente
-echo Attesa terminazione processi...
-timeout /t 3 >nul
-
-REM 3. Ora cerchiamo e chiudiamo le finestre CMD per comando di avvio
-echo Chiusura finestre console backend...
-wmic process where "name='cmd.exe' and commandline like '%%Backend Server%%'" delete 2>nul
-
-echo Chiusura finestre console frontend...  
-wmic process where "name='cmd.exe' and commandline like '%%Frontend Server%%'" delete 2>nul
-
-REM 4. Metodo PowerShell per trovare finestre CMD con i nostri comandi
-echo Pulizia finale finestre CMD...
-powershell -Command "Get-WmiObject Win32_Process | Where-Object {{ $$_.Name -eq 'cmd.exe' -and ($$_.CommandLine -like '*cd backend*{backend_project}.exe*' -or $$_.CommandLine -like '*npx http-server*frontend*' -or $$_.CommandLine -like '*Backend Server*' -or $$_.CommandLine -like '*Frontend Server*') }} | ForEach-Object {{ try {{ Write-Host \"Chiusura finestra CMD PID: $$($$_.ProcessId)\"; $$_.Terminate() }} catch {{}} }}" 2>nul
-
-REM 5. Metodo finale: cerca finestre che potrebbero essere tornate al titolo originale
-timeout /t 1 >nul
-taskkill /fi "WindowTitle eq Backend Server*" /f 2>nul
-taskkill /fi "WindowTitle eq Frontend Server*" /f 2>nul
-
-echo Pulizia completata.
-
-goto :eof
-
-:STATUS_APP
-echo.
-echo Stato dell'applicazione:
-echo.
-
-call :CHECK_PROCESSES
-
-if "!BACKEND_RUNNING!"=="1" (
-    echo [ATTIVO] Backend Server
-) else (
-    echo [INATTIVO] Backend Server
-)
-
-if "!FRONTEND_RUNNING!"=="1" (
-    echo [ATTIVO] Frontend Server
-) else (
-    echo [INATTIVO] Frontend Server
-)
-
-echo.
-pause
-goto MENU
-
-:CHECK_PROCESSES
-set BACKEND_RUNNING=0
-set FRONTEND_RUNNING=0
-
-REM Controlla se il backend è in esecuzione
-tasklist | findstr "{backend_project}.exe" >nul 2>&1
-if %errorlevel%==0 set BACKEND_RUNNING=1
-
-REM Controlla se http-server è in esecuzione
-tasklist | findstr "node.exe" >nul 2>&1
-if %errorlevel%==0 set FRONTEND_RUNNING=1
-
-goto :eof
-
-:SHOW_IPS
-call :SHOW_ADDRESSES
-pause
-goto MENU
-
-:SHOW_ADDRESSES
-echo.
-echo ----------------------------------------------
-echo Per accedere all'applicazione:
-echo.
-echo Indirizzi IP disponibili:
-ipconfig | findstr IPv4
-echo.
-echo Backend:  http://localhost:%BACKEND_PORT%
-echo Frontend: http://localhost:%FRONTEND_PORT%
-echo.
-echo Dall'esterno della rete:
-echo Backend:  http://%SERVER_IP%:%BACKEND_PORT%
-echo Frontend: http://%SERVER_IP%:%FRONTEND_PORT%
-echo ----------------------------------------------
-goto :eof
-
-:EXIT
-echo.
-set /p confirm="Vuoi chiudere anche l'applicazione in esecuzione? (s/n): "
-if /i "%confirm%"=="s" (
-    echo.
-    echo Chiusura completa dell'applicazione...
-    call :STOP_APP_ENHANCED
-    timeout /t 2 >nul
-    echo Pulizia completata.
-)
-echo.
-echo Arrivederci!
-timeout /t 2 >nul
-exit'''
-
-        # Scrivi il file Pietribiasi_App_start.bat nella directory di build
-        start_bat_path = self.build_dir / "Pietribiasi_App_start.bat"
-        with open(start_bat_path, 'w', encoding='utf-8') as f:
-            f.write(start_bat_content)
+        if not template_path.exists():
+            print(f"❌ ERRORE: Template {template_path} non trovato!")
+            print("Assicurati che il file Pietribiasi_App_start.bat sia presente nella root del progetto.")
+            return False
+        
+        try:
+            # Copia il template nella cartella di build
+            shutil.copy2(template_path, destination_path)
+            print(f"✅ Template copiato da {template_path} a {destination_path}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Errore durante la copia del template: {e}")
+            return False
 
     def copy_build_json_to_build(self):
         """Copia build.json nella cartella di build per permettere la riconfigurazione runtime"""
@@ -491,11 +257,13 @@ exit'''
         if build_json_src.exists():
             shutil.copy2(build_json_src, build_json_dst)
             print("✅ build.json copiato nella cartella di build")
+            return True
         else:
             # Crea un build.json con la configurazione corrente
             with open(build_json_dst, 'w', encoding='utf-8') as f:
                 json.dump(self.config, f, indent=2, ensure_ascii=False)
             print("✅ build.json generato nella cartella di build")
+            return True
 
     def create_launcher_script(self, target):
         """Crea lo script di avvio avanzato per una specifica piattaforma"""
@@ -641,7 +409,7 @@ kill $FRONTEND_PID
                 print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante in build.json")
                 return False
             
-            # self.copy_build_json_to_build()
+            self.copy_build_json_to_build()
 
             self.create_launcher_script(target)
 
