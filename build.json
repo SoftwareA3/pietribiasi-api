@@ -30,7 +30,7 @@
     ],
     "packaging": {
         "create_installer": true,
-        "create_portable": true,
+        "create_portable": false,
         "compression_level": 6
     },
     "server": {

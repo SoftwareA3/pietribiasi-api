@@ -6,6 +6,7 @@ import json
 import zipfile
 import socket
 from pathlib import Path
+import asyncio
 from datetime import datetime
 
 class AppBuilder:
@@ -48,50 +49,58 @@ class AppBuilder:
             }
         }
     
-    def update_appsettings(self):
-        """Aggiorna appsettings.json con i valori da build.json"""
+    async def update_appsettings(self):
+        """Aggiorna appsettings.json in apiPB/ con i valori da build.json nella root"""
         print("Aggiornamento di appsettings.json...")
-        
-        appsettings_path = self.project_root / self.config['build']['backend_project'] / "appsettings.json"
-        
+
+        # Carica la configurazione da build.json nella root
+        build_json_path = self.project_root / "build.json"
+        if not build_json_path.exists():
+            print(f"ATTENZIONE: {build_json_path} non trovato.")
+            return
+
+        with open(build_json_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+
+        # Percorsi dei file da aggiornare
+        appsettings_path = self.project_root / "apiPB" / "appsettings.json"
+
         if not appsettings_path.exists():
             print(f"ATTENZIONE: {appsettings_path} non trovato.")
-            return
-        
+
         try:
             # Leggi il file appsettings.json esistente
-            with open(appsettings_path, 'r', encoding='utf-8') as f:
+            with open(appsettings_path, 'r', encoding='utf-8-sig') as f:
                 appsettings = json.load(f)
-            
+
             # Aggiungi/aggiorna la sezione server
             if 'Server' not in appsettings:
                 appsettings['Server'] = {}
-            
+
             appsettings['Server']['Backend'] = {
-                "Host": self.config['server']['backend']['host'],
-                "Port": self.config['server']['backend']['port']
+                "Host": config['server']['backend']['host'],
+                "Port": config['server']['backend']['port']
             }
-            
+
             appsettings['Server']['Frontend'] = {
-                "Host": self.config['server']['frontend']['host'],
-                "Port": self.config['server']['frontend']['port']
+                "Host": config['server']['frontend']['host'],
+                "Port": config['server']['frontend']['port']
             }
 
             appsettings['ConnectionStrings'] = {
-                "LocalA3Db": self.config['server']['backend']['connection_string']
+                "LocalA3Db": config['server']['backend'].get('connection_string', '')
             }
 
-            
             # Scrivi il file aggiornato
-            with open(appsettings_path, 'w', encoding='utf-8') as f:
+            with open(appsettings_path, 'w', encoding='utf-8-sig') as f:
                 json.dump(appsettings, f, indent=2, ensure_ascii=False)
-            
-            print(f"✅ appsettings.json aggiornato con:")
-            print(f"   Backend: {self.config['server']['backend']['host']}:{self.config['server']['backend']['port']}")
-            print(f"   Frontend: {self.config['server']['frontend']['host']}:{self.config['server']['frontend']['port']}")
-            
+
+            print(f"✅ appsettings.json aggiornato in {appsettings_path}:")
+            print(f"   Backend: {config['server']['backend']['host']}:{config['server']['backend']['port']}")
+            print(f"   Frontend: {config['server']['frontend']['host']}:{config['server']['frontend']['port']}")
+
         except Exception as e:
-            print(f"❌ Errore durante l'aggiornamento di appsettings.json: {e}")
+            print(f"❌ Errore durante l'aggiornamento di {appsettings_path}: {e}")
 
     def update_start_bat(self):
         """Aggiorna Pietribiasi_App_start.bat con i valori da build.json"""
@@ -136,7 +145,7 @@ class AppBuilder:
         except Exception as e:
             print(f"❌ Errore durante l'aggiornamento di Pietribiasi_App_start.bat: {e}")
         
-    def clean(self):
+    async def clean(self):
         """Pulisce le directory di build e di distribuzione"""
         print("Pulizia delle directory in corso...")
         if self.build_dir.exists():
@@ -147,7 +156,7 @@ class AppBuilder:
         self.build_dir.mkdir(exist_ok=True)
         self.dist_dir.mkdir(exist_ok=True)
     
-    def build_backend_for_target(self, target):
+    async def build_backend_for_target(self, target):
         """Compila il backend per una specifica piattaforma"""
         print(f"Compilazione del backend per {target['name']}...")
         
@@ -157,17 +166,6 @@ class AppBuilder:
         # Leggi la connection string dal file build.json
         connection_string = self.config['server']['backend']['connection_string']
         print(f"Connection string backend: {connection_string}")
-        
-        # Se connection_string esiste, imposta i secrets prima del publish
-        if connection_string:
-            # Inizializza i secrets
-            subprocess.run([
-            'dotnet', 'user-secrets', 'init'
-            ], cwd=str(backend_path), check=True)
-            # Imposta la connection string
-            subprocess.run([
-            'dotnet', 'user-secrets', 'set', 'ConnectionStrings:LocalA3Db', connection_string
-            ], cwd=str(backend_path), check=True)
 
         cmd = [
             'dotnet', 'publish', str(backend_path),
@@ -183,7 +181,7 @@ class AppBuilder:
         
         return build_output
     
-    def copy_and_configure_frontend(self):
+    async def copy_and_configure_frontend(self):
         """Copia il frontend e configura l'URL dell'API in main.js"""
         print("Copia e configurazione del frontend...")
         # La cartella sorgente del frontend
@@ -565,7 +563,7 @@ kill $FRONTEND_PID
                 pass
             return '127.0.0.1'
 
-    def update_frontend_host_ip(self, build_json_path):
+    async def update_frontend_host_ip(self, build_json_path):
         """Aggiorna server.frontend.host con l'IP locale."""
         with open(build_json_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
@@ -577,7 +575,7 @@ kill $FRONTEND_PID
                 json.dump(config, f, indent=4, ensure_ascii=False)
             print(f"✅ server.frontend.host aggiornato a {local_ip}")
 
-    def update_backend_host_ip(self, build_json_path):
+    async def update_backend_host_ip(self, build_json_path):
         """Aggiorna server.backend.host con l'IP locale."""
         with open(build_json_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
@@ -603,31 +601,52 @@ kill $FRONTEND_PID
         
         return zip_path
     
-    def build(self):
+    async def build(self):
         """Esegue l'intero processo di build"""
         try:
             print(f"=== Build di {self.config['app']['name']} ===")
 
+            await self.clean()
+
             # Inserisce l'IP locale per il Frontend nel file build.json se configurato per farlo
-            self.update_frontend_host_ip("build.json")
+            await self.update_frontend_host_ip("build.json")
 
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
-            self.update_backend_host_ip("build.json")
+            await self.update_backend_host_ip("build.json")
             
             # Aggiorna i file di configurazione PRIMA del build
-            self.update_appsettings()
+            await self.update_appsettings()
             #self.update_start_bat()
-            
-            self.clean()
+
+            with open("build.json", "r", encoding="utf-8") as f:
+                self.config = json.load(f)
             
             target = self.config['targets'][0] 
             
-            self.build_backend_for_target(target)
-            self.copy_and_configure_frontend()
-            # self.copy_build_json_to_build()  # Nuovo: copia build.json
-            self.create_launcher_script(target)
+            # Controlla che i valori necessari siano presenti in build.json
+            backend_host = self.config['server']['backend'].get('host')
+            backend_port = self.config['server']['backend'].get('port')
+            frontend_host = self.config['server']['frontend'].get('host')
+            frontend_port = self.config['server']['frontend'].get('port')
+
+            # Controlla che host e port non siano stringhe vuote
+            if any(x in ("", None) for x in [backend_host, backend_port, frontend_host, frontend_port]):
+                print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante o vuoto in build.json")
+                return False
+
+            if all([backend_host, backend_port, frontend_host, frontend_port]):
+                await self.build_backend_for_target(target)
+                await self.copy_and_configure_frontend()
+            else:
+                print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante in build.json")
+                return False
             
-            zip_path = self.create_zip_archive()
+            # self.copy_build_json_to_build()
+
+            self.create_launcher_script(target)
+
+            if self.config['packaging'].get('create_portable', True):
+                zip_path = self.create_zip_archive()
             
             print(f"\n✅ Build completato con successo!")
             print(f"📦 Archivio creato in: {zip_path}")
@@ -642,4 +661,4 @@ kill $FRONTEND_PID
 
 if __name__ == "__main__":
     builder = AppBuilder()
-    builder.build()
+    asyncio.run(builder.build())
