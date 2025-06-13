@@ -1,0 +1,225 @@
+import shutil
+from pathlib import Path
+import socket
+import json
+import os
+import asyncio
+import zipfile
+
+async def clean(obj):
+    """Pulisce le directory di build e di distribuzione"""
+    print("Pulizia delle directory in corso...")
+    if obj.build_dir.exists():
+        shutil.rmtree(obj.build_dir)
+    if obj.dist_dir.exists():
+        shutil.rmtree(obj.dist_dir)
+    
+    obj.build_dir.mkdir(exist_ok=True)
+    obj.dist_dir.mkdir(exist_ok=True)
+
+async def copy_and_configure_frontend(obj, build_name):
+    """Copia il frontend e configura l'URL dell'API in main.js"""
+    print("Copia e configurazione del frontend...")
+    # La cartella sorgente del frontend
+    frontend_src = obj.project_root / obj.config[build_name]['frontend_path']
+    # La cartella di destinazione nella build
+    frontend_dst = obj.build_dir / "frontend"
+    
+    if frontend_dst.exists():
+        shutil.rmtree(frontend_dst)
+    shutil.copytree(frontend_src, frontend_dst)
+    
+    # Il file main.js si trova ora in frontend/Web/javascript/main.js
+    main_js_path = frontend_dst / "Web" / "javascript" / "main.js"
+
+    if not main_js_path.exists():
+        print(f"ATTENZIONE: {main_js_path} non trovato. Configurazione saltata.")
+        return
+
+    print(f"Configurazione dell'URL API in {main_js_path}...")
+
+    # Usa la configurazione del backend remoto
+    if obj.config.get('remote_backend', {}).get('enabled', False):
+        remote_config = obj.config['remote_backend']
+        api_base_url = f"{remote_config['protocol']}://{remote_config['host']}:{remote_config['port']}"
+    else:
+        # Fallback alla configurazione normale
+        backend_config = obj.config['server']['backend']
+        api_base_url = f"http://{backend_config['host']}:{backend_config['port']}"
+    
+    try:
+        with open(main_js_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        updated_content = content.replace('##API_BASE_URL##', api_base_url)
+
+        if content == updated_content:
+            print(f"ATTENZIONE: Il segnaposto '##API_BASE_URL##' non è stato trovato in main.js.")
+        else:
+            print(f"URL API impostato a: {api_base_url}")
+
+        with open(main_js_path, 'w', encoding='utf-8') as f:
+            f.write(updated_content)
+
+    except Exception as e:
+        print(f"❌ Errore durante la configurazione di main.js: {e}")
+
+def get_local_ip():
+    """Restituisce l'indirizzo IPv4 locale del dispositivo (non localhost)."""
+    try:
+        # Usa una connessione UDP fittizia per determinare l'IP locale
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(('8.8.8.8', 80))
+            ip = s.getsockname()[0]
+            # Verifica che non sia localhost
+            if ip.startswith("127."):
+                raise Exception("Indirizzo locale è localhost")
+            return ip
+    except Exception:
+        # Fallback: cerca tra le interfacce di rete
+        try:
+            hostname = socket.gethostname()
+            ips = socket.gethostbyname_ex(hostname)[2]
+            for ip in ips:
+                if not ip.startswith("127."):
+                    return ip
+        except Exception:
+            pass
+        return '127.0.0.1'
+
+async def update_frontend_host_ip(build_json_path):
+    """Aggiorna server.frontend.host con l'IP locale."""
+    with open(build_json_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    automatic_ip = config['server']['frontend']['local_ip_automatically']
+    if automatic_ip:
+        local_ip = get_local_ip()
+        config['server']['frontend']['host'] = local_ip
+        with open(build_json_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)
+        print(f"✅ server.frontend.host aggiornato a {local_ip}")
+
+def create_zip_archive(obj):
+    """Crea l'archivio ZIP finale"""
+    print("Creazione dell'archivio ZIP...")
+    zip_path = obj.dist_dir / f"{obj.config['app']['name']}_v{obj.config['app']['version']}.zip"
+    
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for root, _, files in os.walk(obj.build_dir):
+            for file in files:
+                file_path = Path(root) / file
+                arc_path = file_path.relative_to(obj.build_dir)
+                zf.write(file_path, arc_path)
+
+    return zip_path
+
+def copy_build_json_to_build(obj):
+    """Copia build.json nella cartella di build per permettere la riconfigurazione runtime"""
+    print("Copia di build.json nella cartella di build...")
+    
+    build_json_src = obj.project_root / "Scripts/build.json"
+    build_json_dst = obj.build_dir / "build.json"
+    
+    if build_json_src.exists():
+        shutil.copy2(build_json_src, build_json_dst)
+        print("✅ build.json copiato nella cartella di build")
+        return True
+    else:
+        # Crea un build.json con la configurazione corrente
+        with open(build_json_dst, 'w', encoding='utf-8') as f:
+            json.dump(obj.config, f, indent=2, ensure_ascii=False)
+        print("✅ build.json generato nella cartella di build")
+        return True
+        
+def default_config():
+    """Configurazione di default"""
+    return {
+        "app": {
+            "name": "Pietribiasi App",
+            "version": "1.0.0"
+        },
+        "build": {
+            "backend_project": "apiPB",
+            "frontend_path": "Frontend",
+            "output_dir": "dist",
+            "temp_dir": "build"
+        },
+        "targets": [
+            {
+                "name": "Windows",
+                "runtime": "win-x64",
+                "executable_extension": ".exe"
+            }
+        ],
+        "server": {
+            "backend": {"host": "localhost", "port": 5001, "local_ip_automatically": True},
+            "frontend": {"host": "localhost", "port": 8080, "local_ip_automatically": True}
+        },
+        "remote_backend": {
+            "enabled": True,
+            "host": "192.168.100.113",
+            "port": 5245,
+            "protocol": "http",
+            "health_endpoint": "/health",
+            "timeout_seconds": 30
+        }
+    }
+
+async def update_appsettings(obj):
+    """Aggiorna appsettings.json in apiPB/ con i valori da build.json nella root"""
+    print("Aggiornamento di appsettings.json...")
+
+    # Carica la configurazione da build.json nella root
+    build_json_path = obj.project_root / "Scripts/build.json"
+    if not build_json_path.exists():
+        print(f"ATTENZIONE: {build_json_path} non trovato.")
+        return
+
+    with open(build_json_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+
+    # Percorsi dei file da aggiornare
+    appsettings_path = obj.project_root / "apiPB" / "appsettings.json"
+
+    if not appsettings_path.exists():
+        print(f"ATTENZIONE: {appsettings_path} non trovato.")
+
+    try:
+        # Leggi il file appsettings.json esistente
+        with open(appsettings_path, 'r', encoding='utf-8-sig') as f:
+            appsettings = json.load(f)
+
+        # Aggiungi/aggiorna la sezione server
+        if 'Server' not in appsettings:
+            appsettings['Server'] = {}
+
+        appsettings['Server']['Backend'] = {
+            "Host": config['server']['backend']['host'],
+            "Port": config['server']['backend']['port']
+        }
+
+        appsettings['Server']['Frontend'] = {
+            "Host": config['server']['frontend']['host'],
+            "Port": config['server']['frontend']['port']
+        }
+
+        appsettings['ConnectionStrings'] = {
+            "LocalA3Db": config['server']['backend'].get('connection_string', '')
+        }
+
+        # Scrivi il file aggiornato
+        with open(appsettings_path, 'w', encoding='utf-8-sig') as f:
+            json.dump(appsettings, f, indent=2, ensure_ascii=False)
+
+        print(f"✅ appsettings.json aggiornato in {appsettings_path}:")
+        print(f"   Backend: {config['server']['backend']['host']}:{config['server']['backend']['port']}")
+        print(f"   Frontend: {config['server']['frontend']['host']}:{config['server']['frontend']['port']}")
+
+    except Exception as e:
+        print(f"❌ Errore durante l'aggiornamento di {appsettings_path}: {e}")
+
+def create_build_and_distr_dir(obj, build_name):
+    build_and_distr = obj.project_root / "BuildAndDistr"
+    build_and_distr.mkdir(exist_ok=True)
+    obj.build_dir = build_and_distr / obj.config[build_name]['temp_dir']
+    obj.dist_dir = build_and_distr / obj.config[build_name]['output_dir']
