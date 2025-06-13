@@ -22,7 +22,7 @@ class AppBuilder:
             
         self.build_dir = self.project_root / self.config['build']['temp_dir']
         self.dist_dir = self.project_root / self.config['build']['output_dir']
-        
+
     def default_config(self):
         """Configurazione di default"""
         return {
@@ -44,8 +44,16 @@ class AppBuilder:
                 }
             ],
             "server": {
-                "backend": {"host": "localhost", "port": 5001},
-                "frontend": {"host": "localhost", "port": 8080}
+                "backend": {"host": "localhost", "port": 5001, "local_ip_automatically": True},
+                "frontend": {"host": "localhost", "port": 8080, "local_ip_automatically": True}
+            },
+            "remote_backend": {
+                "enabled": True,
+                "host": "192.168.100.113",
+                "port": 5245,
+                "protocol": "http",
+                "health_endpoint": "/health",
+                "timeout_seconds": 30
             }
         }
     
@@ -202,8 +210,14 @@ class AppBuilder:
 
         print(f"Configurazione dell'URL API in {main_js_path}...")
 
-        backend_config = self.config['server']['backend']
-        api_base_url = f"http://{backend_config['host']}:{backend_config['port']}"
+        # Usa la configurazione del backend remoto
+        if self.config.get('remote_backend', {}).get('enabled', False):
+            remote_config = self.config['remote_backend']
+            api_base_url = f"{remote_config['protocol']}://{remote_config['host']}:{remote_config['port']}"
+        else:
+            # Fallback alla configurazione normale
+            backend_config = self.config['server']['backend']
+            api_base_url = f"http://{backend_config['host']}:{backend_config['port']}"
         
         try:
             with open(main_js_path, 'r', encoding='utf-8') as f:

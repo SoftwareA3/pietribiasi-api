@@ -30,7 +30,7 @@
     ],
     "packaging": {
         "create_installer": true,
-        "create_portable": false,
+        "create_portable": true,
         "compression_level": 6
     },
     "server": {
@@ -44,7 +44,14 @@
             "host": "192.168.100.113",
             "port": 8080,
             "local_ip_automatically": true
-        },
-        "health_endpoint": "/health"
+        }
+    },
+    "remote_backend": {
+        "enabled": true,
+        "host": "192.168.100.113",
+        "port": 5245,
+        "protocol": "http",
+        "health_endpoint": "/health",
+        "timeout_seconds": 30
     }
 }

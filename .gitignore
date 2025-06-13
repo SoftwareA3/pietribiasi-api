@@ -17,12 +17,14 @@
 /.vs
 
 # Ignora le cartelle realizzate con lo script di build
-/dist
-/build
+/BuildAndDistr
 
 # Ignora i file di configurazione, binari e di debug nei Test
 /TestApi.Tests/bin
 /TestApi.Tests/obj
+
+# Ignora la cache di python
+/Scripts/_pycache_
 
 # Ignora momentaneamente il progetto con i test di unità
 # /TestApi.Tests
