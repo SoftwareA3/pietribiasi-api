@@ -1,0 +1,85 @@
+/* Stili mobile specifici per la pagina prelievo materiali */
+#prel-mat-form input {
+    height: 44px; /* Altezza ottimale per input touch */
+}
+
+#prel-mat-articolo-desc,
+#prel-mat-commessa-desc {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-top: var(--spacing-1);
+}
+
+/* Evidenziazione tipo movimento adattata */
+form p strong {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: var(--spacing-2) 0;
+    padding: var(--spacing-2);
+    font-size: 0.95rem;
+}
+
+/* Adattamento campo quantità */
+#prel-mat-quantita {
+    max-width: 100% !important;
+    font-size: 1.1rem;
+    background-color: var(--gray-50);
+    text-align: center;
+    font-weight: var(--font-weight-bold);
+}
+
+/* Adattamento stile lista prelievi */
+#prel-mat-lista-temp .item-content {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+#prel-mat-lista-temp strong {
+    display: inline-block;
+    align-self: flex-end;
+    margin-top: var(--spacing-1);
+    font-size: 1.05rem;
+}
+
+/* Layout migliorato per tablet */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+    /* Layout a due colonne per form su tablet */
+    #prel-mat-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-2);
+    }
+    
+    #prel-mat-form .form-group:nth-child(1),
+    #prel-mat-form .form-group:nth-child(2) {
+        grid-column: span 2;
+    }
+    
+    #prel-mat-form p {
+        grid-column: span 2;
+    }
+    
+    #prel-mat-form .button-group {
+        grid-column: span 2;
+    }
+    
+    /* Lista prelievi orizzontale */
+    #prel-mat-lista-temp .item-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+/* Effetto quando si aggiunge un articolo */
+.pulse-effect {
+    animation: pulse-mobile 0.5s ease-in-out;
+}
+
+@keyframes pulse-mobile {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}

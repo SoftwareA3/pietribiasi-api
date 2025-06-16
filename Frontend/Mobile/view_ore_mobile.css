@@ -1,0 +1,52 @@
+/* Stili mobile specifici per pagina ore */
+
+/* .item-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    white-space: nowrap;
+    flex-wrap: nowrap;
+} */
+
+/* Gruppo principale info */
+.ore-main-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-1);
+}
+
+/* Info commessa e lavorazione */
+.commessa-lav-info {
+    margin-bottom: var(--spacing-1);
+}
+
+/* Info ODP e data */
+.odp-data-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}
+
+/* Dimensione badge ore */
+.ore-extra, .ore-standard {
+    font-size: 0.8rem;
+}
+
+/* Adattamento stati */
+.status-indicator {
+    margin-right: var(--spacing-1);
+}
+
+/* Adattamenti per schermi molto piccoli */
+@media screen and (max-width: 360px) {
+    .ore-value {
+        font-size: 1rem;
+    }
+    
+    .odp-data-info {
+        flex-direction: column;
+        gap: 2px;
+    }
+}

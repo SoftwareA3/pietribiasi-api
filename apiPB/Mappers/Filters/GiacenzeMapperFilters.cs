@@ -1,0 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+
+namespace apiPB.Mappers.Filters
+{
+    public class GiacenzeMapperFilters : Profile
+    {
+        public GiacenzeMapperFilters()
+        {
+            //Mappa automaticamente i Dto nei Filters
+
+            // Classe placeholder per la mappatura dei filtri
+        }
+    }
+}

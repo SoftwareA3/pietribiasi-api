@@ -1,0 +1,101 @@
+/* Stili comuni mobile per le pagine di visualizzazione */
+
+/* Sistemazione layout filter form */
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-2);
+    gap: var(--spacing-2);
+}
+
+.filter-form .form-group {
+    margin-bottom: var(--spacing-2);
+}
+
+.item-list {
+    min-height: auto;
+    max-height: none;
+}
+
+/* Sistemazione elementi lista */
+.item-list li {
+    padding: var(--spacing-2);
+}
+
+.item-content {
+    margin-bottom: var(--spacing-3);
+    width: 100%;
+    max-width: 90%;
+}
+
+/* Organizzazione pulsanti azione */
+.item-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+    margin-bottom: var(--spacing-1);
+}
+
+/* Adattamento status indicator */
+.status-tooltip:hover::after {
+    left: 10px;
+    top: 18px;
+}
+
+.toggle-container {
+    padding-left: var(--spacing-2);
+}
+
+.toggle-label {
+    font-size: 0.9rem;
+}
+
+/* Adattamento tooltip */
+.detail-tooltip {
+    left: auto;
+    right: 0;
+    width: 200px;
+}
+
+/* Badge più piccoli su mobile */
+.recent-date, .qty-badge, .ore-extra, .ore-standard {
+    font-size: 0.75rem;
+    padding: 1px 4px;
+}
+
+/* Dimensione icone pulsanti */
+.icon-button {
+    font-size: 1.1rem;
+    padding: var(--spacing-1);
+}
+
+/* Riposizionamento tooltip */
+.item-info-tooltip:hover::after {
+    left: auto;
+    right: 0;
+    width: 200px;
+}
+
+
+/* Adattamenti per schermi molto piccoli */
+@media screen and (max-width: 360px) {
+    .item-list li {
+        padding: var(--spacing-1);
+    }
+
+    .item-content {
+        column-gap: 10px;
+        row-gap: 5px;
+        margin-bottom: var(--spacing-3);
+        align-items: end;
+    }
+    
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .icon-button {
+        font-size: 1rem;
+    }
+}
