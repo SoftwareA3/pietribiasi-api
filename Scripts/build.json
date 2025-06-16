@@ -35,8 +35,18 @@
     ],
     "packaging": {
         "create_installer": true,
-        "create_portable": true,
+        "create_portable": false,
         "compression_level": 6
+    },
+    "launcher": {
+        "create_exe_launcher": true,
+        "create_alternative_launchers": true,
+        "launcher_name": "PietribiasApp_Launcher",
+        "pyinstaller_options": {
+            "console": true,
+            "onefile": true,
+            "icon": null
+        }
     },
     "server": {
         "backend": {
@@ -46,7 +56,7 @@
             "connection_string": "Data Source=SRV2022MES\\SQLEXPRESS;Initial Catalog=PIETRIBIASISRLM4;User ID=sa;Password=sa_2022;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
         },
         "frontend": {
-            "host": "192.168.100.113",
+            "host": "localhost",
             "port": 8080,
             "local_ip_automatically": true
         }

@@ -22,7 +22,7 @@ class AppBuilder:
         else:
             self.config = script_utils.default_config()
             
-        script_utils.create_build_and_distr_dir(self, "build")
+        self.build_dir, self.dist_dir = script_utils.create_build_and_distr_dir(self, "build")
 
     async def build_backend_for_target(self, target):
         """Compila il backend per una specifica piattaforma"""
@@ -79,6 +79,7 @@ class AppBuilder:
         print(f"Creazione dello script di controllo per {target['name']}...")
         
         if target['runtime'].startswith('win'):
+            # Copia il file BAT principale
             self.create_advanced_start_bat()
         else:
             self.create_unix_launcher()  # Mantieni il launcher Unix esistente
@@ -169,17 +170,18 @@ kill $FRONTEND_PID
                 print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante in build.json")
                 return False
             
-            script_utils.copy_build_json_to_build(self)
+            script_utils.copy_build_json_to_build(self, True)
 
             self.create_launcher_script(target)
 
+            script_utils.create_executable_from_batchscript(self)
+
+            print(f"\n✅ Build completato con successo!")
             if self.config['packaging'].get('create_portable', True):
                 zip_path = script_utils.create_zip_archive(self)
-            
-            print(f"\n✅ Build completato con successo!")
-            print(f"📦 Archivio creato in: {zip_path}")
-            print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
-            print(f"🚀 Usa 'Pietribiasi_App_start.bat' per controllare l'applicazione")
+                print(f"📦 Archivio creato in: {zip_path}")
+                print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
+            print(f"🚀 Script terminato!")
             
         except Exception as e:
             print(f"❌ Build fallito: {e}")

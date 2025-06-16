@@ -2,9 +2,10 @@ import shutil
 from pathlib import Path
 import socket
 import json
-import os
 import asyncio
 import zipfile
+import os
+import subprocess
 
 async def clean(obj):
     """Pulisce le directory di build e di distribuzione"""
@@ -113,23 +114,31 @@ def create_zip_archive(obj):
 
     return zip_path
 
-def copy_build_json_to_build(obj):
-    """Copia build.json nella cartella di build per permettere la riconfigurazione runtime"""
+def copy_build_json_to_build(obj, filter_frontend=True):
+    """Copia build.json nella cartella di build, scegliendo se rimuovere la connection_string"""
     print("Copia di build.json nella cartella di build...")
     
     build_json_src = obj.project_root / "Scripts/build.json"
     build_json_dst = obj.build_dir / "build.json"
     
-    if build_json_src.exists():
-        shutil.copy2(build_json_src, build_json_dst)
-        print("✅ build.json copiato nella cartella di build")
-        return True
-    else:
-        # Crea un build.json con la configurazione corrente
-        with open(build_json_dst, 'w', encoding='utf-8') as f:
-            json.dump(obj.config, f, indent=2, ensure_ascii=False)
-        print("✅ build.json generato nella cartella di build")
-        return True
+    # Legge il file build.json originale
+    with open(build_json_src, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    
+    # Rimuove la connection_string se presente
+    if filter_frontend and ('server' in config and 'backend' in config['server']):
+        if 'connection_string' in config['server']['backend']:
+            del config['server']['backend']
+
+    if filter_frontend and ('build' in config):
+        del config['build']
+    
+    # Scrive il file senza connection_string
+    with open(build_json_dst, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=4, ensure_ascii=False)
+    
+    print("✅ build.json copiato nella cartella di build")
+    return True
         
 def default_config():
     """Configurazione di default"""
@@ -221,5 +230,105 @@ async def update_appsettings(obj):
 def create_build_and_distr_dir(obj, build_name):
     build_and_distr = obj.project_root / "BuildAndDistr"
     build_and_distr.mkdir(exist_ok=True)
-    obj.build_dir = build_and_distr / obj.config[build_name]['temp_dir']
-    obj.dist_dir = build_and_distr / obj.config[build_name]['output_dir']
+    build_dir = build_and_distr / obj.config[build_name]['temp_dir']
+    dist_dir = build_and_distr / obj.config[build_name]['output_dir']
+    return build_dir, dist_dir
+
+def create_executable_from_batchscript(obj):
+    """Crea un eseguibile PowerShell da uno script .ps1 usando ps2exe"""
+    print("Creazione eseguibile PowerShell...")
+    
+    # Percorsi dei file
+    bat_file = obj.build_dir / "Pietribiasi_App_start.bat"
+    ps1_file = obj.build_dir / "Pietribiasi_App.ps1"
+    exe_file = obj.build_dir / "Pietribiasi_App.exe"
+    
+    # Verifica che il file .bat esista
+    if not bat_file.exists():
+        print(f"❌ ERRORE: File {bat_file} non trovato!")
+        return False
+    
+    # Creazione del file PowerShell (.ps1) che esegue il .bat
+    ps1_content = '''
+# Script PowerShell per avviare Pietribiasi App
+Write-Host "Avvio Pietribiasi App..."
+
+# Ottieni la directory dello script in modo robusto
+$scriptPath = ""
+if ($PSScriptRoot) {
+    $scriptPath = $PSScriptRoot
+} elseif ($MyInvocation.MyCommand.Path) {
+    $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+} else {
+    # Fallback per eseguibili ps2exe
+    $scriptPath = [System.IO.Path]::GetDirectoryName([System.Reflection.Assembly]::GetExecutingAssembly().Location)
+}
+
+Write-Host "Directory script: $scriptPath"
+
+$batPath = [System.IO.Path]::Combine($scriptPath, "Pietribiasi_App_start.bat")
+Write-Host "Percorso file bat: $batPath"
+
+if (Test-Path $batPath) {
+    Write-Host "File trovato, avvio in corso..."
+    try {
+        # Avvia il processo e chiudi la console corrente
+        Start-Process -FilePath $batPath -WindowStyle Normal
+        exit
+    } catch {
+        Write-Host "ERRORE durante l'avvio: $($_.Exception.Message)" -ForegroundColor Red
+        Read-Host "Premi INVIO per chiudere"
+    }
+} else {
+    Write-Host "ERRORE: File $batPath non trovato!" -ForegroundColor Red
+    Write-Host "Verifica che il file Pietribiasi_App_start.bat sia nella stessa directory dell'eseguibile." -ForegroundColor Yellow
+    Read-Host "Premi INVIO per chiudere"
+}
+'''
+    
+    try:
+        # Scrivi il file .ps1
+        with open(ps1_file, 'w', encoding='utf-8') as f:
+            f.write(ps1_content)
+        print(f"✅ File PowerShell creato: {ps1_file}")
+        
+        # Comando PowerShell per convertire .ps1 in .exe con opzioni migliorate
+        cmd = f'Invoke-ps2exe -inputFile "{ps1_file}" -outputFile "{exe_file}" -noConsole:$false -title "Pietribiasi App" -version "1.0.0.0" -copyright "Pietribiasi" -iconFile $null'
+        
+        print(f"Esecuzione comando: {cmd}")
+        result = subprocess.run(
+            ["powershell", "-ExecutionPolicy", "Bypass", "-Command", cmd], 
+            check=True, 
+            capture_output=True, 
+            text=True,
+            cwd=str(obj.build_dir)
+        )
+        
+        if result.returncode == 0:
+            print("✅ Comando ps2exe eseguito con successo")
+            if result.stdout:
+                print(f"Output: {result.stdout}")
+        else:
+            print(f"❌ Errore nell'esecuzione: {result.stderr}")
+            return False
+        
+        # Verifica che l'eseguibile sia stato creato
+        if exe_file.exists():
+            print(f"✅ Eseguibile creato con successo: {exe_file}")
+            print(f"📁 Dimensione file: {exe_file.stat().st_size / 1024:.1f} KB")
+            return True
+        else:
+            print("❌ L'eseguibile non è stato creato")
+            return False
+            
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Errore durante l'esecuzione del comando PowerShell:")
+        print(f"   Codice di uscita: {e.returncode}")
+        if e.stdout:
+            print(f"   Stdout: {e.stdout}")
+        if e.stderr:
+            print(f"   Stderr: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"❌ Errore generico: {e}")
+        return False

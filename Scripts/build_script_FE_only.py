@@ -24,7 +24,7 @@ class FrontendOnlyBuilder:
         else:
             self.config = script_utils.default_config()
             
-        script_utils.create_build_and_distr_dir(self, "build_FE")
+        self.build_dir, self.dist_dir = script_utils.create_build_and_distr_dir(self, "build_FE")
     
     def copy_python_server(self):
         """Copia python_server.py nella cartella di build per permettere la riconfigurazione runtime"""
@@ -124,6 +124,13 @@ class FrontendOnlyBuilder:
         template_path = self.project_root / "Scripts/Frontend_Pietribiasi_App_start.bat"
         # Path di destinazione nella cartella di build
         destination_path = self.build_dir / "Pietribiasi_App_start.bat"
+
+        # exe_created = script_utils.create_launcher_exe(self, "build_FE")
+            
+        # if exe_created:
+        #     print("✅ Launcher eseguibile (.exe) creato con successo!")
+        # else:
+        #     print("⚠️  Launcher eseguibile non creato, ma sono disponibili alternative (.bat, .cmd, .vbs)")
         
         if not template_path.exists():
             print(f"❌ ERRORE: Template {template_path} non trovato!")
@@ -140,64 +147,64 @@ class FrontendOnlyBuilder:
             print(f"❌ Errore durante la copia del template: {e}")
             return False
 
-    def create_configuration_file(self):
-        """Crea un file di configurazione leggibile per l'utente finale"""
-        config_content = f"""# Configurazione {self.config['app']['name']}
+#     def create_configuration_file(self):
+#         """Crea un file di configurazione leggibile per l'utente finale"""
+#         config_content = f"""# Configurazione {self.config['app']['name']}
 
-## Backend Remoto
-- Host: {self.config.get('remote_backend', {}).get('host', 'N/A')}
-- Porta: {self.config.get('remote_backend', {}).get('port', 'N/A')}
-- URL completo: {self.config.get('remote_backend', {}).get('protocol', 'http')}://{self.config.get('remote_backend', {}).get('host', 'localhost')}:{self.config.get('remote_backend', {}).get('port', '5245')}
+# ## Backend Remoto
+# - Host: {self.config.get('remote_backend', {}).get('host', 'N/A')}
+# - Porta: {self.config.get('remote_backend', {}).get('port', 'N/A')}
+# - URL completo: {self.config.get('remote_backend', {}).get('protocol', 'http')}://{self.config.get('remote_backend', {}).get('host', 'localhost')}:{self.config.get('remote_backend', {}).get('port', '5245')}
 
-## Frontend Locale  
-- Host: {self.config['server']['frontend']['host']}
-- Porta: {self.config['server']['frontend']['port']}
-- URL locale: http://{self.config['server']['frontend']['host']}:{self.config['server']['frontend']['port']}
+# ## Frontend Locale  
+# - Host: {self.config['server']['frontend']['host']}
+# - Porta: {self.config['server']['frontend']['port']}
+# - URL locale: http://{self.config['server']['frontend']['host']}:{self.config['server']['frontend']['port']}
 
-## Istruzioni
-1. Assicurati che il backend remoto sia in esecuzione
-2. Avvia il frontend usando lo script .bat
-3. Apri il browser all'indirizzo del frontend locale
+# ## Istruzioni
+# 1. Assicurati che il backend remoto sia in esecuzione
+# 2. Avvia il frontend usando lo script .bat
+# 3. Apri il browser all'indirizzo del frontend locale
 
-## Requisiti
-- Node.js installato (per http-server)
-- Connessione di rete al backend remoto
-- Browser web moderno
+# ## Requisiti
+# - Node.js installato (per http-server)
+# - Connessione di rete al backend remoto
+# - Browser web moderno
 
-## Note
-- Il frontend comunica direttamente con il backend remoto
-- Non è necessario installare il backend localmente
-- Assicurati che il firewall permetta le connessioni al backend remoto
-"""
+# ## Note
+# - Il frontend comunica direttamente con il backend remoto
+# - Non è necessario installare il backend localmente
+# - Assicurati che il firewall permetta le connessioni al backend remoto
+# """
         
-        config_path = self.build_dir / "CONFIGURAZIONE.md"
-        with open(config_path, 'w', encoding='utf-8') as f:
-            f.write(config_content)
+#         config_path = self.build_dir / "CONFIGURAZIONE.md"
+#         with open(config_path, 'w', encoding='utf-8') as f:
+#             f.write(config_content)
         
-        print("✅ File di configurazione creato: CONFIGURAZIONE.md")
+#         print("✅ File di configurazione creato: CONFIGURAZIONE.md")
 
-    def create_package_json(self):
-        """Crea un package.json per le dipendenze del frontend"""
-        package_json = {
-            "name": self.config['app']['name'].lower().replace(' ', '-'),
-            "version": self.config['app']['version'],
-            "description": f"Frontend per {self.config['app']['name']}",
-            "scripts": {
-                "start": f"http-server ./frontend -a {self.config['server']['frontend']['host']} -p {self.config['server']['frontend']['port']} --cors -o -c-1",
-                "install-deps": "npm install -g http-server"
-            },
-            "dependencies": {},
-            "devDependencies": {
-                "http-server": "^14.1.1"
-            },
-            "private": True
-        }
+#     def create_package_json(self):
+#         """Crea un package.json per le dipendenze del frontend"""
+#         package_json = {
+#             "name": self.config['app']['name'].lower().replace(' ', '-'),
+#             "version": self.config['app']['version'],
+#             "description": f"Frontend per {self.config['app']['name']}",
+#             "scripts": {
+#                 "start": f"http-server ./frontend -a {self.config['server']['frontend']['host']} -p {self.config['server']['frontend']['port']} --cors -o -c-1",
+#                 "install-deps": "npm install -g http-server"
+#             },
+#             "dependencies": {},
+#             "devDependencies": {
+#                 "http-server": "^14.1.1"
+#             },
+#             "private": True
+#         }
         
-        package_path = self.build_dir / "package.json"
-        with open(package_path, 'w', encoding='utf-8') as f:
-            json.dump(package_json, f, indent=2, ensure_ascii=False)
+#         package_path = self.build_dir / "package.json"
+#         with open(package_path, 'w', encoding='utf-8') as f:
+#             json.dump(package_json, f, indent=2, ensure_ascii=False)
         
-        print("✅ package.json creato per le dipendenze")
+#         print("✅ package.json creato per le dipendenze")
     
     async def build(self):
         """Esegue l'intero processo di build per il solo frontend"""
@@ -218,23 +225,22 @@ class FrontendOnlyBuilder:
             await self.copy_and_configure_frontend()
 
             self.copy_python_server()
-            script_utils.copy_build_json_to_build(self)
+            script_utils.copy_build_json_to_build(self, False)
 
             
             # Crea gli script e file di supporto
             self.create_frontend_launcher()
-            self.create_configuration_file()
-            self.create_package_json()
+            # self.create_configuration_file()
+            # self.create_package_json()
+
+            script_utils.create_executable_from_batchscript(self)
             
             # Crea l'archivio
+            print(f"\n✅ Build frontend completato con successo!")
             if self.config['packaging'].get('create_portable', True):
                 zip_path = script_utils.create_zip_archive(self)
-            
-            print(f"\n✅ Build frontend completato con successo!")
-            print(f"📦 Archivio creato in: {zip_path}")
-            if self.config['packaging'].get('create_portable', True):
+                print(f"📦 Archivio creato in: {zip_path}")
                 print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
-            print(f"🚀 Usa lo script .bat per avviare il frontend")
             print(f"🌐 Il frontend si connetterà al backend remoto:")
             
             if self.config.get('remote_backend', {}).get('enabled', False):
@@ -245,6 +251,8 @@ class FrontendOnlyBuilder:
                 backend_url = f"http://{backend_config['host']}:{backend_config['port']}"
             
             print(f"    {backend_url}")
+
+            print(f"🚀 Script terminato!")
             
         except Exception as e:
             print(f"❌ Build fallito: {e}")
