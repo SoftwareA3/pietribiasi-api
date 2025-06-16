@@ -13,8 +13,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install pywebview
+
       - name: Run configure and build script
         run: |
           cd Scripts
-          config_and_build_script.bat
-        shell: cmd
+          python build_script.py --mode full
+          python build_script_FE_only.py --mode full
+        shell: bash
