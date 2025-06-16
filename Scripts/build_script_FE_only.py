@@ -252,6 +252,8 @@ class FrontendOnlyBuilder:
             
             print(f"    {backend_url}")
 
+            script_utils.clear_build_config("build.json")
+
             print(f"🚀 Script terminato!")
             
         except Exception as e:
