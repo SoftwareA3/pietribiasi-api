@@ -332,14 +332,3 @@ if (Test-Path $batPath) {
     except Exception as e:
         print(f"❌ Errore generico: {e}")
         return False
-    
-def clear_build_config(build_json_path):
-    with open(build_json_path, 'r', encoding='utf-8') as f:
-        config = json.load(f)
-
-    if config['clear_after_build'] :
-        config['server']['backend']['host'] = 'localhost'
-        config['server']['frontend']['host'] = 'localhost'
-    
-    with open(build_json_path, 'w', encoding='utf-8') as f:
-            json.dump(config, f, indent=4, ensure_ascii=False)

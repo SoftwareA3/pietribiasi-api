@@ -182,8 +182,6 @@ kill $FRONTEND_PID
                 print(f"📦 Archivio creato in: {zip_path}")
                 print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
             
-            script_utils.clear_build_config("build.json")
-
             print(f"🚀 Script terminato!")
             
         except Exception as e:
