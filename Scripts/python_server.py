@@ -128,7 +128,6 @@ class PietribasiApp:
             'shadow': True,
             'on_top': False,
         }
-        #'icon': 'icon.png'  # Percorso all'icona (PNG, ICO, o file compatibile)
         
         # Crea e mostra la finestra
         try:

@@ -26,48 +26,6 @@ class FrontendOnlyBuilder:
             
         self.build_dir, self.dist_dir = script_utils.create_build_and_distr_dir(self, "build_FE")
     
-    def copy_python_server(self):
-        """Copia python_server.py nella cartella di build per permettere la riconfigurazione runtime"""
-        print("Copia di python_server.py nella cartella di build...")
-        
-        python_server_src = self.project_root / "Scripts/python_server.py"
-        python_server_dst = self.build_dir / "python_server.py"
-        
-        if python_server_src.exists():
-            shutil.copy2(python_server_src, python_server_dst)
-            print("✅ python_server.py copiato nella cartella di build")
-            return True
-        else:
-            # Crea un build.json con la configurazione corrente
-            with open(python_server_dst, 'w', encoding='utf-8') as f:
-                json.dump(self.config, f, indent=2, ensure_ascii=False)
-            print("✅ python_server.py generato nella cartella di build")
-            return True
-    
-    # async def test_backend_connection(self):
-    #     """Testa la connessione al backend remoto"""
-    #     if not self.config.get('remote_backend', {}).get('enabled', False):
-    #         return True
-            
-    #     backend_config = self.config['remote_backend']
-    #     test_url = f"{backend_config['protocol']}://{backend_config['host']}:{backend_config['port']}"
-    #     health_endpoint = backend_config.get('health_endpoint', '/health')
-    #     timeout = backend_config.get('timeout_seconds', 10)
-        
-    #     print(f"Test connessione al backend remoto: {test_url}")
-        
-    #     try:
-    #         response = requests.get(f"{test_url}{health_endpoint}", timeout=timeout)
-    #         if response.status_code == 200:
-    #             print("✅ Backend remoto raggiungibile")
-    #             return True
-    #         else:
-    #             print(f"⚠️ Backend remoto risponde con status {response.status_code}")
-    #             return False
-    #     except requests.exceptions.RequestException as e:
-    #         print(f"❌ Backend remoto non raggiungibile: {e}")
-    #         return False
-    
     async def copy_and_configure_frontend(self):
         """Copia il frontend e configura l'URL dell'API remoto"""
         print("Copia e configurazione del frontend...")
@@ -124,13 +82,6 @@ class FrontendOnlyBuilder:
         template_path = self.project_root / "Scripts/Frontend_Pietribiasi_App_start.bat"
         # Path di destinazione nella cartella di build
         destination_path = self.build_dir / "Pietribiasi_App_start.bat"
-
-        # exe_created = script_utils.create_launcher_exe(self, "build_FE")
-            
-        # if exe_created:
-        #     print("✅ Launcher eseguibile (.exe) creato con successo!")
-        # else:
-        #     print("⚠️  Launcher eseguibile non creato, ma sono disponibili alternative (.bat, .cmd, .vbs)")
         
         if not template_path.exists():
             print(f"❌ ERRORE: Template {template_path} non trovato!")
@@ -146,65 +97,6 @@ class FrontendOnlyBuilder:
         except Exception as e:
             print(f"❌ Errore durante la copia del template: {e}")
             return False
-
-#     def create_configuration_file(self):
-#         """Crea un file di configurazione leggibile per l'utente finale"""
-#         config_content = f"""# Configurazione {self.config['app']['name']}
-
-# ## Backend Remoto
-# - Host: {self.config.get('remote_backend', {}).get('host', 'N/A')}
-# - Porta: {self.config.get('remote_backend', {}).get('port', 'N/A')}
-# - URL completo: {self.config.get('remote_backend', {}).get('protocol', 'http')}://{self.config.get('remote_backend', {}).get('host', 'localhost')}:{self.config.get('remote_backend', {}).get('port', '5245')}
-
-# ## Frontend Locale  
-# - Host: {self.config['server']['frontend']['host']}
-# - Porta: {self.config['server']['frontend']['port']}
-# - URL locale: http://{self.config['server']['frontend']['host']}:{self.config['server']['frontend']['port']}
-
-# ## Istruzioni
-# 1. Assicurati che il backend remoto sia in esecuzione
-# 2. Avvia il frontend usando lo script .bat
-# 3. Apri il browser all'indirizzo del frontend locale
-
-# ## Requisiti
-# - Node.js installato (per http-server)
-# - Connessione di rete al backend remoto
-# - Browser web moderno
-
-# ## Note
-# - Il frontend comunica direttamente con il backend remoto
-# - Non è necessario installare il backend localmente
-# - Assicurati che il firewall permetta le connessioni al backend remoto
-# """
-        
-#         config_path = self.build_dir / "CONFIGURAZIONE.md"
-#         with open(config_path, 'w', encoding='utf-8') as f:
-#             f.write(config_content)
-        
-#         print("✅ File di configurazione creato: CONFIGURAZIONE.md")
-
-#     def create_package_json(self):
-#         """Crea un package.json per le dipendenze del frontend"""
-#         package_json = {
-#             "name": self.config['app']['name'].lower().replace(' ', '-'),
-#             "version": self.config['app']['version'],
-#             "description": f"Frontend per {self.config['app']['name']}",
-#             "scripts": {
-#                 "start": f"http-server ./frontend -a {self.config['server']['frontend']['host']} -p {self.config['server']['frontend']['port']} --cors -o -c-1",
-#                 "install-deps": "npm install -g http-server"
-#             },
-#             "dependencies": {},
-#             "devDependencies": {
-#                 "http-server": "^14.1.1"
-#             },
-#             "private": True
-#         }
-        
-#         package_path = self.build_dir / "package.json"
-#         with open(package_path, 'w', encoding='utf-8') as f:
-#             json.dump(package_json, f, indent=2, ensure_ascii=False)
-        
-#         print("✅ package.json creato per le dipendenze")
     
     async def build(self):
         """Esegue l'intero processo di build per il solo frontend"""
@@ -224,7 +116,7 @@ class FrontendOnlyBuilder:
             # Copia e configura il frontend
             await self.copy_and_configure_frontend()
 
-            self.copy_python_server()
+            script_utils.copy_python_server(self)
             script_utils.copy_build_json_to_build(self, False)
 
             

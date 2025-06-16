@@ -22,7 +22,6 @@ echo ===============================================
 echo    CONTROLLO APPLICAZIONE !APP_NAME!
 echo ===============================================
 echo.
-echo 0. Avvia/Riavvia applicazione (apertura automatica su index.html)
 echo 1. Avvia applicazione 
 echo 2. Avvia solo il Frontend (apre la pagina index.html)
 echo 3. Avvia solo il Backend
@@ -71,29 +70,6 @@ echo.
 
 goto :eof
 
-:FORCE_RESTART_WITH_INDEX
-echo.
-echo Riavvio forzato dell'applicazione con apertura automatica su index.html...
-echo.
-echo Arresto di eventuali processi in esecuzione...
-call :STOP_APP_ENHANCED
-timeout /t 2 >nul
-
-echo Avvio del backend...
-start "Backend Server" cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
-timeout /t 5 >nul
-
-echo Avvio del frontend...
-start "Frontend Server" cmd /c "npx http-server ./frontend -a !SERVER_IP! -p !FRONTEND_PORT! --cors -o index.html -c-1"
-timeout /t 3 >nul
-
-echo.
-echo Applicazione riavviata! Apertura automatica della pagina...
-call :SHOW_ADDRESSES
-echo.
-pause
-goto MENU
-
 :START_APP
 echo.
 echo Avvio dell'applicazione...
@@ -114,7 +90,7 @@ if "!FRONTEND_RUNNING!"=="1" (
 ) else (
     echo Avvio del frontend...
     timeout /t 2 >nul
-    start "Frontend Server" cmd /c "npx http-server ./frontend -a !SERVER_IP! -p !FRONTEND_PORT! --cors index.html -c-1"
+    pythonw python_server.py
 )
 
 echo.
@@ -134,16 +110,11 @@ if "!FRONTEND_RUNNING!"=="1" (
     echo Frontend già in esecuzione!
 ) else (
     echo Avvio del frontend con apertura automatica su index.html...
-    start "Frontend Server" cmd /c "npx http-server ./frontend -a !SERVER_IP! -p !FRONTEND_PORT! --cors -o index.html -c-1"
+    pythonw python_server.py
     timeout /t 3 >nul
     echo Frontend avviato!
 )
 
-echo.
-echo Frontend disponibile su:
-echo   http://localhost:!FRONTEND_PORT!
-echo   http://!SERVER_IP!:!FRONTEND_PORT!
-echo.
 pause
 goto MENU
 

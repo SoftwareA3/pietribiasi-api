@@ -332,3 +332,21 @@ if (Test-Path $batPath) {
     except Exception as e:
         print(f"❌ Errore generico: {e}")
         return False
+
+def copy_python_server(obj):
+        """Copia python_server.py nella cartella di build per permettere la riconfigurazione runtime"""
+        print("Copia di python_server.py nella cartella di build...")
+        
+        python_server_src = obj.project_root / "Scripts/python_server.py"
+        python_server_dst = obj.build_dir / "python_server.py"
+        
+        if python_server_src.exists():
+            shutil.copy2(python_server_src, python_server_dst)
+            print("✅ python_server.py copiato nella cartella di build")
+            return True
+        else:
+            # Crea un build.json con la configurazione corrente
+            with open(python_server_dst, 'w', encoding='utf-8') as f:
+                json.dump(obj.config, f, indent=2, ensure_ascii=False)
+            print("✅ python_server.py generato nella cartella di build")
+            return True

@@ -170,6 +170,7 @@ kill $FRONTEND_PID
                 print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante in build.json")
                 return False
             
+            script_utils.copy_python_server(self)
             script_utils.copy_build_json_to_build(self, True)
 
             self.create_launcher_script(target)
