@@ -24,7 +24,7 @@
 /TestApi.Tests/obj
 
 # Ignora la cache di python
-/Scripts/_pycache_
+/Scripts/__pycache__
 
 # Ignora momentaneamente il progetto con i test di unità
 # /TestApi.Tests

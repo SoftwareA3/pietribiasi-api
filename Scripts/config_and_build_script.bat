@@ -11,8 +11,6 @@ echo.
 echo Questo script installerà i prerequisiti necessari per il build.
 echo Verranno installati:
 echo - ps2exe ^(PowerShell to EXE converter^)
-echo - PyInstaller ^(Python to EXE converter^)
-echo - psutil ^(Python library^)
 echo - pywebview ^(Python library^)
 echo.
 
@@ -104,29 +102,6 @@ IF %ERRORLEVEL% NEQ 0 (
     echo [OK] pywebview già installato.
 )
 
-echo [INFO] Controllo presenza di PyInstaller...
-python -m pip show pyinstaller >nul 2>&1
-if errorlevel 1 (
-    echo [INFO] PyInstaller non trovato. Installazione in corso...
-    echo [INFO] Aggiornamento pip...
-    python -m pip install --upgrade pip
-    if errorlevel 1 (
-        echo [ERRORE] Impossibile aggiornare pip.
-        pause
-        exit /b 1
-    )
-    
-    echo [INFO] Installazione PyInstaller...
-    python -m pip install pyinstaller
-    if errorlevel 1 (
-        echo [ERRORE] Impossibile installare PyInstaller. Verifica la connessione a Internet o i permessi.
-        pause
-        exit /b 1
-    )
-    echo [OK] PyInstaller installato con successo.
-) else (
-    echo [OK] PyInstaller già installato.
-)
 echo.
 echo.
 echo ---------------------------------
