@@ -102,11 +102,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     if (typeof bookInvValue === 'string') {
                         bookInvValue = parseFloat(bookInvValue.replace(',', '.'));
                     }
-                    
+
                     // Verifica se è un numero finito e non NaN
                     if (!isNaN(bookInvValue) && isFinite(bookInvValue)) {
-                        // Arrotonda a due decimali per evitare problemi di precisione
-                        bookInvValue = Math.round((bookInvValue + Number.EPSILON) * 100) / 100;
+                        // Usa toFixed per arrotondare correttamente
+                        bookInvValue = Number(bookInvValue.toFixed(4));
                     } else {
                         console.warn("bookInv non è un numero valido:", selectedItem.bookInv);
                         bookInvValue = 0;
