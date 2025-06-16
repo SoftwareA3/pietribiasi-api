@@ -15,6 +15,6 @@ jobs:
 
       - name: Run configure and build script
         run: |
-          cd Script
+          cd Scripts
           configure_and_build_script.bat
         shell: cmd
