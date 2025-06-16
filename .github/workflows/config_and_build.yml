@@ -1,0 +1,20 @@
+name: Build App on Develop Push
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run configure and build script
+        run: |
+          cd Script
+          configure_and_build_script.bat
+        shell: cmd
