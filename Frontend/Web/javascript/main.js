@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             window.location.reload();
         }
     });
-
     // Reference to the scroll-to-top button
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
     if (scrollToTopBtn) {

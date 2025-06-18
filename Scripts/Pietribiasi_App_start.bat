@@ -97,6 +97,7 @@ if "!FRONTEND_RUNNING!"=="1" (
 echo.
 echo Applicazione avviata!
 call :SHOW_ADDRESSES
+
 echo.
 pause
 goto MENU
