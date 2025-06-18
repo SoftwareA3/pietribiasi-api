@@ -177,6 +177,8 @@ Una volta finita la build per il Frontend, verrà generata la cartella `build_FE
 Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
 Il file batch avvia delle console che vengono chiuse subito per aprire la finestra con la WebApp.
 
+---
+
 # FrontEnd
 
 ## Accesso e validazione delle credenziali
@@ -387,6 +389,7 @@ La pagina della **Modalità Power User** si presenta nella seguente maniera:
 La **sincronizzazione** è una funzionalità che permette di recuperare i dati salvati tramite l'applicazione e inviarli al gestionale **Mago4** per di fatto sincronizzare i dati del gestionale. La pagina si apre con una selezione di schede. La scheda di default è impostata sulla **Sincronizzazione Generale**, indicata anche dall'icona 🌐, la quale dispone del classico pulsante per ritornare alla home e un pulsante per la sincronizzazione dei dati. Alla pressione del pulsante di sincronizzazione, indicato tramite l'icona 🔄️ verrà avviata la procedura di sincronizzazione e l'icona inizierà a roteare. Da qui gli esiti possibili sono due:
 - L'operazione ha successo o non ci sono stati dati da aggiornare: l'icona scompare e viene sostituita da un ✔️ e i dati vengono aggiornati
 - Durante l'operazione si è verificato un errore: l'icona scompare e viene sostituita da una ❌.
+
 Le icone si resettano dopo un paio di secondi per ritentare la sincronizzazione
 Le altre schede della pagina di sincronizzazione, mettono a disposizione la possibilità di sincronizzare per singola funzione, ossia per **Inventario**, **Ore Registrate** e **Prelievi**. Ognuna di queste pagine si presenta in maniera molto simile a quella delle rispettive pagine di visualizzazione, tolto il toggle per la visualizzazione delle operazioni già sincronizzate e la possibilità di modificare o eliminare gli elementi. L'utente può quindi applicare i filtri come avviene nelle pagine di visualizzazione e premere il tasto "Filtra" per confermare i filtri e aggiornare la lista di elementi. Viene messo a disposizione un pulsante **Sincronizza dati** a fianco al pulsante per tornare alla home. Questo pulsante permette l'aggiornamento della lista di elementi filtrati. Alla pressione, viene quindi avviata la procedura di sincronizzaizone **solo** per gli elementi appartenenti alla lista (quindi anche filtrati in caso di applicazione del filtro). 
 Per inviare tutte le informazioni di un'operazione, è necessario svuotare tutti i campi filtro e premere il pulsante di sincronizzazione. La procedura di sincronizzazione è analoga a quella indicata per la sincronizzazione generale, ma con i vincoli specificati sopra. 
