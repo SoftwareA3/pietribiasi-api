@@ -12,6 +12,13 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     }
 
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+R o F5 per refresh
+        if ((e.ctrlKey && e.key === 'r') || e.key === 'F5') {
+            e.preventDefault();
+            window.location.reload();
+        }
+    });
     // Reference to the scroll-to-top button
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
     if (scrollToTopBtn) {
