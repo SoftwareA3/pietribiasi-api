@@ -1,7 +1,12 @@
 # Pietribiasi APP
 [![dotnet workflow](https://github.com/SoftwareA3/pietribiasi-api/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/SoftwareA3/pietribiasi-api/actions/workflows/dotnet.yml)
 # Indice 
-1. [FrontEnd](#frontend)
+1. [Configurazione (dopo aver clonato la repository)](#configurazione-dopo-aver-clonato-la-repository)
+   1. [File build.json](#file-buildjson)
+   2. [Build](#build)
+   3. [Avvio Applicazione con build (Avvio Frontend e Backend)](#avvio-applicazione-con-build-avvio-frontend-e-backend)
+   4. [Avvio FrontEnd con build_FE](#avvio-applicazione-con-build-avvio-frontend-e-backend)
+2. [FrontEnd](#frontend)
    1. [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
    2. [Home](#home)
    3. [Registrazione Ore Commessa](#registrazione-ore-commessa)
@@ -13,7 +18,7 @@
    9. [Power User](#power-user)
    10. [Sincronizzazione](#sincronizzazione)
    11. [Impostazioni](#impostazioni)
-2. [Backend](#backend)
+3. [Backend](#backend)
    1. [Divisione](#divisione)
    2. [Controllers](#controllers)
    3. [Authentication](#authentication)
@@ -32,13 +37,145 @@
        - [Richieste POST](#richieste-post)
        - [Richieste DELETE](#richieste-delete)
        - [Richieste PUT](#richieste-put)
-3. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
-4. [Comandi](#comandi)
+4. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
+5. [Comandi](#comandi)
    1. [Avvio API](#avvio-api)
    2. [Scaffolding](#scaffolding)
-   3. [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale)
-   4. [Avvio FrontEnd con NodeJs](#avvio-frontend-con-nodejs)
-   5. [Avvio Applicazione tramite il file bash](#avvio-applicazione-tramite-il-file-bash) 
+   3. [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale) 
+
+# Configurazione (dopo aver clonato la repository)
+La configurazione dell'applicazione è definita nella cartella `Scripts`. In questa cartella sono situati sia i file di configurazione dell'applicazione, che gli script che poi verranno copiati nelle cartelle di build per l'avvio dell'applicazione. 
+I file verranno descritti brevemente di seguito:
+- `build_script_FE_only.py`: script che serve per la configurazione e la costruzione delle cartelle `build_FE` (per la costruzione della WebApp Frontend) e `dist_FE` con il file compresso di build_FE;
+- `build_scritp.py`: script che serve per la configurazione e la costruzione delle cartelle `build` (per la costruzione della console per l'avvio di Frontend e Backend) e `dist` con il file compresso di build;
+- `build.json`: file di configurazione dell'applicazione che verrà descritto in seguito con una sezione apposita. Viene copiato, filtrato e usato in entrambe le cartelle di build;
+- `Frontend_Pietribiasi_App_start.bat`: script batch per l'avvio del Frontend. Viene usato per creare l'eseguibile col quale eseguire `python_server.py`. Viene copiato, rinominato e usato in `build_FE`;
+- `Pietribiasi_App_start.bat`: script batch per l'avvio della console dell'applicazione, con la quale avviare Frontend e/o Backend. Viene usato per creare l'eseguibile col quale aprire la console dell'applicazione. Viene copiato e usato in `build_FE`
+- `config_and_build_script.bat`: script che si occupa di installare le dipendenze per poi far scegliere se eseguire `build_script_FE_only.py`, `build_script.py` o entrambi. È lo script da avviare dopo la clonazione della repository. Verrà descritto meglio in una sezione dedicata;
+- `python_server.py`: script che si occupa dell'apertura della finestra per il Frontend. La finestra si rpesenta come la finestra di un'applicazione. Viene copiato e usato in entrambe le cartelle di build;
+- `script_utils.py`: file contenente funzioni usate sia da `build_script_FE_only.py` che da `build_script.py`. Viene usato per evitare la duplicazione di codice;
+- `server_only.py`: script che si occupa dell'avvio del server e non dell'apertura dell'applicazione. Viene copiato e usato in `build` per aprire il server Frontend senza dover per forza avviare la finestra con l'applicazione.
+
+Di seguito viene approfondito il file `build.json`
+
+## File build.json
+
+``` json
+{
+    "app": {
+        "name": "Pietribiasi App",
+        "version": "1.0.0",
+        "description": "Applicazione Pietribiasi",
+        "author": "A3 Soluzioni Informatiche"
+    },
+    "build": {
+        "backend_project": "apiPB",
+        "frontend_path": "Frontend",
+        "output_dir": "dist",
+        "temp_dir": "build"
+    },
+    "build_FE": {
+        "frontend_path": "Frontend",
+        "output_dir": "dist_FE",
+        "temp_dir": "build_FE"
+    },
+    "targets": [
+        {
+            "name": "Windows",
+            "runtime": "win-x64",
+            "executable_extension": ".exe"
+        },
+        {
+            "name": "Linux",
+            "runtime": "linux-x64",
+            "executable_extension": ""
+        },
+        {
+            "name": "macOS",
+            "runtime": "osx-x64",
+            "executable_extension": ""
+        }
+    ],
+    "packaging": {
+        "create_installer": true,
+        "create_portable": true,
+        "compression_level": 6
+    },
+    "server": {
+        "backend": {
+            "host": "localhost",
+            "port": 5245,
+            "local_ip_automatically": false,
+            "connection_string": "connectionstring"
+        },
+        "frontend": {
+            "host": "localhost",
+            "port": 8080,
+            "local_ip_automatically": false
+        }
+    },
+    "remote_backend": {
+        "enabled": true,
+        "host": "localhost",
+        "port": 5245,
+        "protocol": "http",
+        "health_endpoint": "/health",
+        "timeout_seconds": 30
+    }
+}
+```
+- `app`: contiene le informazioni relative all'app:
+    - Nome
+    - Versione
+    - Descrizione
+    - Autore
+- `build`: indica quali cartelle contengono il `frontend` e il `backend` per poi copiarli nelle cartelle `output_dir` e `temp_dir` e come chiamare queste cartelle. Al momento il loro nome è `build` e `dist` rispettivamente;
+- `build_FE`: indica quali cartelle contengono il `frontend` per poi copiarlo nelle cartelle `output_dir` e `temp_dir` e come chiamare queste cartelle. Al momento il loro nome è `build_FE` e `dist_FE` rispettivamente;
+- `targets`: contengono le informazioni sul sistema dove viene fatta la distribuzione. Al momento gli script hanno distribuzione Windows e alcune impostazioni per gli altri sistemi (sono state aggiunte per manutenibilità);
+- `packaging`: 
+    - `"create_installer": true` -> consente la creazione della cartella distribuibile (`build`);
+    - `"create_portable": true` -> consente la creazione della cartella `dist` contenente i file di `build` in forma compressa
+    - `"compression_level": 6` -> indica il livello di compressione
+    - Queste configurazioni valgono sia per `build` e `dist` che per `build_FE` e `dist_FE`.
+- `server`: contiene le informazioni su:
+    - Porte
+    - IP
+    - Se l'IP dev'essere risolto in maniera automatica (prende l'IP del dispositivo) o se viene solamente letto dalle configurazioni
+    - Per il backend viene aggiunta la stringa di connessione.
+    - Le informazioni del Backend vengono copiate e inserite in `appsettings.json` nel backend, per consentire di creare il server e stabilire la connessione al database
+    - Le informazioni del backend vengono rimosse qualora sia disponibile la configurazione `remote_backend` e in generale per nascondere informazioni relative solo al backend, come la stringa di connessione
+- `remote_backend`: se `"enabled": true` vengono indicate le impostazioni quali l'IP e la porta per connettersi al server remoto. Viene usato dal Frontend per avere informazioni sulla connessione e in particolare dallo script `python_server.py` per creare la WebApp.
+
+## Build
+Per costruire l'applicazione, bisogna spostarsi nella cartella `Scripts` ed eseguire lo script batch `config_and_build.bat`. Lo script chiedera i permessi di amministratore per scaricare le dipendenze dell'applicazione, quali: 
+- `python`: per il comando `python`, indispensabile per l'esecuzione degli script di build; 
+- `ps2exe`: per la conversione dei file .ps1 (creati con gli script python per le build dai file batch) in file eseguibili; 
+- `pywebview`: una libreria python utilizzata per la costruzione della finestra per la WebApp.
+
+Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
+1. Esecuzione di `build_script.py` (per la costruzione di Frontend e Backend in `build`);
+2. Esecuzione di `build_script_FE_only.py` (per la costruzione del Frontend in `build_FE`);
+3. Esecuzione di entrambi gli sctipt;
+4. Per uscire dall'applicazione.
+
+# Avvio Applicazione con build (Avvio Frontend e Backend)
+Una volta finita la build per Frontend e Backend, verrà generata la cartella `build` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist`.
+Aperta la cartella `build`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
+Viene aperta una console con le seguenti opzioni:
+0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è messa per testare il Frontend;
+1. Avvia l'applicazione, inizializzando i server Frontend e Backend, senza però aprire la finestra con l'applicazione
+2. Avvia solo il server Frontend
+3. Avvia solo il server Backend
+4. Ferma i server
+5. Riavvia i server
+6. Mostra lo stato dei server
+7. Mostra gli IP dove sono disponibili i server Frontend e Backend
+8. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server e la console.
+
+# Avvio FrontEnd con build_FE
+Una volta finita la build per il Frontend, verrà generata la cartella `build_FE` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist_FE`.
+Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
+Il file batch avvia delle console che vengono chiuse subito per aprire la finestra con la WebApp.
 
 # FrontEnd
 
@@ -1058,42 +1195,3 @@ E nel file di contesto del database:
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:YourDatabaseAlias");
 ```
-
-### Avvio FrontEnd con NodeJs
-Per avviare il FrontEnd, bisogna posizionarsi con terminale nella cartella dov'è situato il FrontEnd e avviarlo tramite il comando ```npx serve .``` che avvia un server statico per testare il FrontEnd.
-Comando per installare ```npx```: ```npm install -g serve``` 
-Questo comando funziona solo per avviare l'applicazione localmente.
-
-### Avvio Applicazione tramite il file bash
-Per avviare l'applicazione tramite il file con estensione `.bat` è sufficiente spostarsi nella directory contenente il file. Da lì, bisogna digitare il comando `./Pietribiasi_App_start.bat`. Il comando serve per avviare sia il Backend che il Frontend e inizializzare l'applicazione in `index.html`. Momentaneamente nel Frontend in `main.js` ho scritto una funzione per ritornare una stringa con il mio IP che poi viene chiamata in ogni chiamata API prima dell'inserimento della porta e dell'endpoint. Il file è sufficiente per avviare l'applicazione e per tanto la soluzione usata con **NodeJs** è deprecata. Il Frontend ora utilizza `http-server` globalmente per la demo 
-
-``` bash
-@echo off
-echo Avvio dell'applicazione...
-
-REM Avvia il backend
-start cmd /k "cd apiPB && dotnet run"
-
-REM Attendi qualche secondo per assicurarti che il backend sia avviato
-timeout /t 5
-
-REM Avvia il frontend
-start cmd /k "cd Frontend && http-server -a 0.0.0.0 -p 8080 --cors -o index.html -c-1"
-
-REM Mostra gli indirizzi IP disponibili
-echo.
-echo ----------------------------------------------
-echo Per accedere all'applicazione dall'esterno:
-echo.
-ipconfig | findstr IPv4
-echo.
-echo Backend: http://LOCAL_IP:5245
-echo Frontend: http://LOCAL_IP:8080
-echo ---------------------------------------------- 
-```
-
-In caso di modifiche, cambiare:
-- La funzione `getApiUrl()` in `main.js` e adattarla con l'IP per la comunicazione con il backend
-- Le stringhe di connessione nel Backend (apiPB) in `Properties/launchsettings.json`
-- L'URL aggiunto nel Backend in `apiPB/Program.cs`
-- Il file `Pietribiasi_App_start.bat` per configurare gli IP per la comunicazione dell'applicazione
