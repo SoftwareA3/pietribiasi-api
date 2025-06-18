@@ -1,0 +1,87 @@
+/* Stile per schermi mobile */
+.container {
+    padding-right: var(--spacing-2);
+    padding-left: var(--spacing-2);
+}
+
+.card {
+    margin-top: 0.5rem;
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-3);
+    font-size: small;
+}
+
+.card-header {
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-2);
+}
+
+.button-group {
+    flex-direction: column;
+    gap: var(--spacing-2);
+    width: 100%;
+}
+
+.button {
+    width: 100%;
+    justify-content: center;
+    padding: var(--spacing-2);
+    font-size: 0.9rem;
+}
+
+/* .button-icon
+{
+    color: var(--white);
+} */
+
+.input-group {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.input-group input {
+    margin-bottom: var(--spacing-2);
+    width: 100%;
+}
+
+.input-group .button {
+    width: 100%;
+}
+
+/* Fai eccezione per piccoli input numerici */
+input[type="number"] {
+    width: 100%;
+    max-width: 100% !important;
+}
+
+/* Lista oggetti inventariati */
+.item-list li {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* .item-content {
+    margin-bottom: var(--spacing-2);
+    width: 100%;
+} */
+
+.item-actions {
+    width: 100%;
+    justify-content: flex-end;
+}
+
+/* Adattamenti per schermi molto piccoli */
+@media screen and (max-width: 360px) {
+    .card {
+        padding: var(--spacing-2);
+    }
+    
+    .form-group {
+        margin-bottom: var(--spacing-2);
+    }
+    
+    .field-description {
+        font-size: 0.8rem;
+    }
+}

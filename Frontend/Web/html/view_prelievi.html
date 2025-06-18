@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pietribiasi App - Visualizzazione Materiali Prelevati</title>
+        <!-- Stili comuni -->
+        <link rel="stylesheet" href="../css/root.css">
+        <!-- Stili comuni -->
+        <link rel="stylesheet" href="../css/root.css">
+        <!-- Stili desktop -->
+        <link rel="stylesheet" href="../css/cards_style.css">
+        <link rel="stylesheet" href="../css/view_common.css">
+        <link rel="stylesheet" href="../css/view_prelievi.css">
+        <link rel="stylesheet" href="../css/log_overlay.css">
+        <!-- Stili mobile comuni-->
+        <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
+        <link rel="stylesheet" href="../../Mobile/cards_style_mobile.css" media="screen and (max-width: 768px)">
+        <link rel="stylesheet" href="../../Mobile/view_common_mobile.css" media="screen and (max-width: 768px)">
+        <!-- Stili mobile -->
+        <link rel="stylesheet" href="../../Mobile/view_prelievi_mobile.css" media="screen and (max-width: 768px)">
+        <!-- Font Awesome per icone moderne -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <!-- Script (caricati in modo asincrono) -->
+        <script src="../javascript/main.js" type="module" defer></script>
+        <script src="../javascript/fetch.js" type="module" defer></script>
+        <script src="../javascript/autocomplete.js" type="module"></script>
+        <script src="../javascript/view_prelievi.js" type="module" defer></script>
+    </head>
+    <body>
+        <header class="app-header" id="main-app-header">
+            <div class="header-left">
+                <div id="logo" class="logo">P</div>
+                <h1 id="header-title">Pietribiasi App</h1>
+            </div>
+            
+            <div class="user-info">
+                <span id="current-user">
+                    <span class="username-text"></span>
+                </span>
+                <i class="fa-solid fa-user"></i>
+                <button onclick="location.href = '../html/login.html';" id="logout" class="btn btn-secondary">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                    <span class="btn-text">Logout</span>
+                </button>
+            </div>
+        </header>
+        <main class="container">
+            <div class="card">
+                <div class="card-header">Visualizza Prelievi Effettuati</div>
+                <form id="filter-prelievi-form" class="filter-form"> <div class="form-group">
+                        <label for="filter-prel-data-da">Data Da:</label>
+                        <input type="date" id="filter-prel-data-da" name="filter-prel-data-da">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-data-a">Data A:</label>
+                        <input type="date" id="filter-prel-data-a" name="filter-prel-data-a">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-commessa">Commessa:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-commessa" name="filter-prel-commessa" autocomplete="off">
+                            <div id="filter-prel-commessa-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-item">Item:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-item" name="filter-prel-item" autocomplete="off">
+                            <div id="filter-prel-item-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-barcode">Barcode:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-barcode" name="filter-prel-barcode" autocomplete="off">
+                            <div id="filter-prel-barcode-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-lavorazione">Lavorazione:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-lavorazione" name="filter-prel-lavorazione" autocomplete="off">
+                            <div id="filter-prel-lavorazione-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-prel-odp">Ordine Produzione:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="filter-prel-odp" name="filter-prel-odp" autocomplete="off">
+                            <div id="filter-prel-odp-autocomplete-list" class="autocomplete-items hidden"></div>
+                        </div>
+                    </div>
+                    <div id="filter-prel-mat-imp-group" class="form-group hidden">
+                        <label for="filter-prel-mat-data-imp">Importato il:</label>
+                        <input type="date" id="filter-prel-mat-data-imp" name="filter-prel-mat-data-imp">
+                    </div>
+                    <div class="buttons-container">
+                        <button type="button" id="filter-prel-submit" class="button button-primary">Filtra 
+                            <i class="fa-solid fa-filter button-icon"></i>
+                        </button>
+                        <button type="button" class="button button-secondary" onclick="location.href='home.html'">Indietro
+                            <i class="fa-solid fa-arrow-left button-icon"></i>
+                        </button>
+                    </div>
+                    <div class="toggle-container">
+                        <span class="toggle-label">Visualizza elementi importati</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show-imported">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </form>
+
+                <ul id="prelievi-list" class="item-list" style="margin-top: 20px;">
+                </ul>
+                <div id="nocontent" class="nocontent">
+                    Nessun elemento da visualizzare
+                </div>
+            </div>
+        </main>
+        <footer class="app-footer" id="app-main-footer">
+            <p>Pietribiasi Michelangelo S.r.l.</p>
+            <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>
+        </footer>
+
+        <button id="scrollToTopBtn" title="Torna in cima">
+            <div class="arrow-up"></div>
+        </button>
+    </body>
+</html>

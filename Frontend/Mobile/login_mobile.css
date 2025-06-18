@@ -1,0 +1,75 @@
+/* login-mobile.css - Stili mobile specifici per la pagina di login */
+
+body {
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+}
+
+.container {
+    padding: var(--spacing-3);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    padding: var(--spacing-4);
+    margin: 0;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-3);
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+}
+
+h1 {
+    color: var(--primary-color);
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-3);
+}
+
+label {
+    font-size: 0.95rem;
+}
+
+input {
+    padding: 12px;
+    font-size: 1rem;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    margin-top: var(--spacing-2);
+}
+
+.message {
+    font-size: 0.9rem;
+}
+
+.login-footer {
+    margin-top: var(--spacing-4);
+    text-align: center;
+    font-size: 0.8rem;
+    line-height: 1.3;
+}

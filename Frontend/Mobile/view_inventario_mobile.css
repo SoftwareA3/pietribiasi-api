@@ -1,0 +1,49 @@
+/* Stili mobile specifici per pagina inventario */
+/* Adattamento layout elementi */
+.item-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+/* Gruppo di info articolo */
+.articolo-info {
+    display: block;
+    margin-bottom: var(--spacing-1);
+}
+
+/* Gruppo di info quantità */
+.quantita-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+/* Dimensione badge quantità */
+.quantity-badge {
+    font-size: 0.85rem;
+}
+
+/* Data su nuova riga */
+.data-info {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}
+
+/* Adattamento tooltip dettaglio */
+.detail-tooltip {
+    width: 180px;
+}
+
+/* Adattamenti per schermi molto piccoli */
+@media screen and (max-width: 360px) {
+    .quantity-badge {
+        font-size: 0.8rem;
+        padding: 1px 3px;
+    }
+    
+    .barcode-prodotto {
+        font-size: 0.85rem;
+    }
+}

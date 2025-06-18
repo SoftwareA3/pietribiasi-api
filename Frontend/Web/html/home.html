@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pietribiasi App - Home Page</title>
+    <!-- Stili comuni -->
+    <link rel="stylesheet" href="../css/root.css">
+    <!-- Stili desktop -->
+    <link rel="stylesheet" href="../css/home.css" media="screen and (min-width: 769px)">
+    <!-- Stili mobile -->
+    <link rel="stylesheet" href="../../Mobile/home_mobile.css" media="screen and (max-width: 768px)">
+    <!-- Stili mobile comuni-->
+    <link rel="stylesheet" href="../../Mobile/main_mobile.css" media="screen and (max-width: 768px)">
+    <!-- Font Awesome per icone moderne -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Script (caricati in modo asincrono) -->
+    <script src="../javascript/login.js" type="module" defer></script>
+    <script src="../javascript/main.js" type="module" defer></script>
+    <script src="../javascript/fetch.js" type="module" defer></script>
+    <script src="../javascript/home.js" type="module" defer></script>
+</head>
+<body>
+    <header class="app-header" id="main-app-header">
+        <div class="header-left">
+            <div id="logo" class="logo">P</div>
+            <h1 id="header-title">Pietribiasi App</h1>
+        </div>
+        
+        <div class="user-info">
+            <span id="current-user">
+                <span class="username-text"></span>
+            </span>
+            <i class="fa-solid fa-user"></i>
+            <button onclick="location.href = '../html/login.html';" id="logout" class="btn btn-secondary">
+                <i class="fa-solid fa-sign-out-alt"></i>
+                <span class="btn-text">Logout</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card home-card" id="home-card">
+            <h2 id="menu-title">Menu Principale</h2>
+            
+            <div class="home-menu">
+                <!-- Funzioni primarie -->
+                <button onclick="location.href='reg_ore.html'" id="goto-reg-ore" class="menu-button primary">
+                    <i class="fa-solid fa-clock menu-icon"></i>
+                    <span class="menu-button-descr">Registrazione Ore Commessa</span>
+                </button>
+                
+                <button onclick="location.href='prelievo_mat.html'" id="goto-prel-mat" class="menu-button primary">
+                    <i class="fa-solid fa-box menu-icon"></i>
+                    <span class="menu-button-descr">Prelievo Materiali Produzione</span>
+                </button>
+                
+                <button onclick="location.href='inventario.html'" id="goto-inventario" class="menu-button primary">
+                    <i class="fa-solid fa-clipboard-list menu-icon"></i>
+                    <span class="menu-button-descr">Inventario</span>
+                </button>
+                
+                <!-- Funzioni secondarie -->
+                <button onclick="location.href='view_ore.html'" id="goto-view-ore" class="menu-button secondary">
+                    <i class="fa-solid fa-chart-bar menu-icon"></i>
+                    <span class="menu-button-descr">Visualizza Ore Registrate</span>
+                </button>
+                
+                <button onclick="location.href='view_prelievi.html'" id="goto-view-prelievi" class="menu-button secondary">
+                    <i class="fa-solid fa-truck menu-icon"></i>
+                    <span class="menu-button-descr">Visualizza Prelievi Effettuati</span>
+                </button>
+                
+                <button onclick="location.href='view_inventario.html'" id="goto-view-inventario" class="menu-button secondary">
+                    <i class="fa-solid fa-search menu-icon"></i>
+                    <span class="menu-button-descr">Visualizza Inventario</span>
+                </button>
+                
+                <button onclick="location.href='pwr_user.html'" id="goto-poweruser-login" class="menu-button poweruser">
+                    <i class="fa-solid fa-user-plus menu-icon"></i>
+                    <span class="menu-button-descr">Modalità Power User</span>
+                </button>
+
+                <button onclick="location.href='settings.html'" id="goto-settings" class="menu-button poweruser">
+                    <i class="fa-solid fa-gear menu-icon"></i>
+                    <span class="menu-button-descr">Impostazioni</span>
+                </button>
+
+                <button onclick="location.href='synchronize.html'" id="sync-data" class="menu-button poweruser">
+                    <i class="fa-solid fa-arrows-rotate menu-icon"></i>
+                    <span class="menu-button-descr">Sincronizza</span>
+                </button>
+            </div>  
+        </div>
+    </main>
+
+    <footer class="app-footer" id="app-main-footer">
+        <p>Pietribiasi Michelangelo S.r.l.</p>
+        <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>
+    </footer>
+
+    <button id="scrollToTopBtn" title="Torna in cima">
+        <div class="arrow-up"></div>
+    </button>
+</body>
+</html>

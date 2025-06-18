@@ -1,0 +1,26 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace apiPB.Dto.Models
+{
+    /// <summary>
+    /// DTO per le giacenze: recupera le informazioni relative alle giacenze di magazzino
+    /// </summary>
+    public class GiacenzeDto
+    {
+        public string Item { get; set; } = null!;
+
+        public string? Description { get; set; }
+
+        public string? BarCode { get; set; }
+
+        public short FiscalYear { get; set; }
+
+        public string Storage { get; set; } = null!;
+
+        public double? BookInv { get; set; }
+        public string UoM { get; set; } = null!;
+    }
+}
