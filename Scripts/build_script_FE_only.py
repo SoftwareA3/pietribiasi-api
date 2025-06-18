@@ -105,7 +105,7 @@ class FrontendOnlyBuilder:
 
             await script_utils.clean(self)
 
-            await script_utils.update_frontend_host_ip("build.json")
+            #await script_utils.update_frontend_host_ip("build.json")
             
             # Aggiorna i file di configurazione PRIMA del build
             await script_utils.update_appsettings(self)
@@ -117,7 +117,7 @@ class FrontendOnlyBuilder:
             await self.copy_and_configure_frontend()
 
             script_utils.copy_python_server(self)
-            script_utils.copy_build_json_to_build(self, False)
+            script_utils.copy_build_json_to_build(self, True)
 
             
             # Crea gli script e file di supporto

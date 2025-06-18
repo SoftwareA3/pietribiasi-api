@@ -18,9 +18,32 @@ class WebServer:
         self.httpd = None
         self.server_thread = None
         self.host = "localhost"
-        self.port = 8080
+        self.port = 8
         
-    def load_config(self, config_path="build.json"):
+    def get_local_ip(self):
+        """Restituisce l'indirizzo IPv4 locale del dispositivo (non localhost)."""
+        try:
+            # Usa una connessione UDP fittizia per determinare l'IP locale
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+                s.connect(('8.8.8.8', 80))
+                ip = s.getsockname()[0]
+                # Verifica che non sia localhost
+                if ip.startswith("127."):
+                    raise Exception("Indirizzo locale è localhost")
+                return ip
+        except Exception:
+            # Fallback: cerca tra le interfacce di rete
+            try:
+                hostname = socket.gethostname()
+                ips = socket.gethostbyname_ex(hostname)[2]
+                for ip in ips:
+                    if not ip.startswith("127."):
+                        return ip
+            except Exception:
+                pass
+            return '127.0.0.1'
+        
+    def load_config_from_build_json(self, config_path="build.json"):
         """Carica la configurazione dal file build.json"""
         try:
             if Path(config_path).exists():
@@ -37,14 +60,43 @@ class WebServer:
                 
         except Exception as e:
             print(f"Errore nel caricamento configurazione: {e}")
+        
+    def load_config_from_local_ip(self, config_path="build.json"):
+        """Carica la configurazione per la porta dal file build.json e l'IP locale"""
+        try:
+            # Ottiene l'IP locale
+            self.host = self.get_local_ip()
+            print(f"IP locale rilevato: {self.host}")
 
-    def start_server(self):
+            # Carica la configurazione dal file build.json
+            if Path(config_path).exists():
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                
+                frontend_config = config.get('server', {}).get('frontend', {})
+                self.port = frontend_config.get("port", 8080)
+
+                print(f"Configurazione caricata: {self.host}:{self.port}")
+            else:
+                print("File di configurazione non trovato, uso valori predefiniti")
+        except Exception as e:
+            print(f"Errore nel caricamento configurazione: {e}")
+
+    def start_server(self, config_path="build.json"):
         """Avvia il server HTTP in un thread separato"""
         if not Path(DIRECTORY).exists():
             print(f"Errore: Directory '{DIRECTORY}' non trovata!")
             return False
             
-        self.load_config()
+
+        if Path(config_path).exists():
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+        
+        if config['server']['frontend']['local_ip_automatically'] == True or "true":
+            self.load_config_from_local_ip(config_path)
+        else:
+            self.load_config_from_build_json(config_path)
         
         class HTTPServerHandler(http.server.SimpleHTTPRequestHandler):
             def __init__(self, *args, **kwargs):

@@ -180,6 +180,7 @@ if errorlevel 1 (
     echo [ERRORE] Errore durante l'esecuzione di build_script.py
     pause
 )
+pause
 goto menu
 
 :build_fe
@@ -193,6 +194,7 @@ if errorlevel 1 (
     echo [ERRORE] Errore durante l'esecuzione di build_script_FE_only.py
     pause
 )
+pause
 goto menu
 
 :exit_script

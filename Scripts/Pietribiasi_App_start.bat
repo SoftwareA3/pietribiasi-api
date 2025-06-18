@@ -22,8 +22,9 @@ echo ===============================================
 echo    CONTROLLO APPLICAZIONE !APP_NAME!
 echo ===============================================
 echo.
+echo 0. Avvia Frontend con Finestra Desktop (WebView)
 echo 1. Avvia applicazione 
-echo 2. Avvia solo il Frontend (apre la pagina index.html)
+echo 2. Avvia solo il Server Frontend (per connessioni remote)
 echo 3. Avvia solo il Backend
 echo 4. Ferma applicazione  
 echo 5. Riavvia applicazione
@@ -33,9 +34,9 @@ echo 8. Esci
 echo.
 set /p choice="Seleziona un'opzione (0-8): "
 
-if "%choice%"=="0" goto FORCE_RESTART_WITH_INDEX
+if "%choice%"=="0" goto START_APP_FRONTEND_WINDOWED
 if "%choice%"=="1" goto START_APP
-if "%choice%"=="2" goto START_FRONTEND_ONLY
+if "%choice%"=="2" goto START_FRONTEND_SERVER_ONLY
 if "%choice%"=="3" goto START_BACKEND_ONLY
 if "%choice%"=="4" goto STOP_APP
 if "%choice%"=="5" goto RESTART_APP
@@ -70,6 +71,30 @@ echo.
 
 goto :eof
 
+:START_APP_FRONTEND_WINDOWED
+echo.
+echo Avvio Frontend con Finestra Desktop...
+echo.
+
+call :CHECK_PROCESSES
+if "!FRONTEND_RUNNING!"=="1" (
+    echo Frontend già in esecuzione!
+) else (
+    echo Avvio del frontend con finestra desktop (WebView)...
+    start "Pietribiasi Frontend Desktop" python python_server.py
+    timeout /t 3 >nul
+    echo Frontend desktop avviato!
+)
+
+echo.
+echo Frontend disponibile come applicazione desktop
+echo e anche su:
+echo   http://localhost:!FRONTEND_PORT!
+echo   http://!SERVER_IP!:!FRONTEND_PORT!
+echo.
+pause
+goto MENU
+
 :START_APP
 echo.
 echo Avvio dell'applicazione...
@@ -90,7 +115,7 @@ if "!FRONTEND_RUNNING!"=="1" (
 ) else (
     echo Avvio del frontend...
     timeout /t 2 >nul
-    pythonw python_server.py
+    start "Pietribiasi Frontend Server" python server_only.py
 )
 
 echo.
@@ -100,21 +125,29 @@ echo.
 pause
 goto MENU
 
-:START_FRONTEND_ONLY
+:START_FRONTEND_SERVER_ONLY
 echo.
-echo Avvio del solo Frontend...
+echo Avvio del Server Frontend (solo per connessioni remote)...
 echo.
 
 call :CHECK_PROCESSES
 if "!FRONTEND_RUNNING!"=="1" (
     echo Frontend già in esecuzione!
 ) else (
-    echo Avvio del frontend con apertura automatica su index.html...
-    pythonw python_server.py
+    echo Avvio del server frontend (modalità server)...
+    start "Pietribiasi Frontend Server" python server_only.py
     timeout /t 3 >nul
-    echo Frontend avviato!
+    echo Server frontend avviato!
 )
 
+echo.
+echo Server frontend disponibile su:
+echo   http://localhost:!FRONTEND_PORT!
+echo   http://!SERVER_IP!:!FRONTEND_PORT!
+echo.
+echo Altre macchine possono ora connettersi usando python_server.py
+echo o aprendo l'URL nel browser.
+echo.
 pause
 goto MENU
 
@@ -162,34 +195,47 @@ goto START_APP
 :STOP_APP_ENHANCED
 REM Funzione migliorata per chiusura completa
 
-echo Chiusura completa di processi e finestre console...
+echo Chiusura completa di processi e finestre...
 
-REM 1. Prima terminiamo i processi applicazione
+REM 1. Termina i processi Python (python_server.py)
+echo Terminazione processi frontend Python...
+taskkill /f /im python.exe 2>nul
+taskkill /f /im pythonw.exe 2>nul
+
+REM 2. Termina i processi backend
 echo Terminazione processi backend...
 taskkill /f /im !BACKEND_PROJECT!.exe 2>nul
 
-echo Terminazione processi frontend...
-taskkill /f /im node.exe 2>nul
+REM 3. Termina eventuali processi WebView (nel caso il frontend usi webview)
+echo Terminazione processi WebView...
+taskkill /f /im "Microsoft Edge WebView2" 2>nul
+taskkill /f /im msedgewebview2.exe 2>nul
 
-REM 2. Attendiamo che i processi terminino completamente
+REM 4. Attendiamo che i processi terminino completamente
 echo Attesa terminazione processi...
 timeout /t 3 >nul
 
-REM 3. Ora cerchiamo e chiudiamo le finestre CMD per comando di avvio
+REM 5. Chiusura finestre console specifiche
 echo Chiusura finestre console backend...
 wmic process where "name='cmd.exe' and commandline like '%%Backend Server%%'" delete 2>nul
 
 echo Chiusura finestre console frontend...  
-wmic process where "name='cmd.exe' and commandline like '%%Frontend Server%%'" delete 2>nul
+wmic process where "name='cmd.exe' and commandline like '%%Pietribiasi Frontend%%'" delete 2>nul
 
-REM 4. Metodo PowerShell per trovare finestre CMD con i nostri comandi
+REM 6. Metodo PowerShell per trovare finestre CMD con i nostri comandi
 echo Pulizia finale finestre CMD...
-powershell -Command "Get-WmiObject Win32_Process | Where-Object { $_.Name -eq 'cmd.exe' -and ($_.CommandLine -like '*cd backend*!BACKEND_PROJECT!.exe*' -or $_.CommandLine -like '*npx http-server*frontend*' -or $_.CommandLine -like '*Backend Server*' -or $_.CommandLine -like '*Frontend Server*') } | ForEach-Object { try { Write-Host \"Chiusura finestra CMD PID: $($_.ProcessId)\"; $_.Terminate() } catch {} }" 2>nul
+powershell -Command "Get-WmiObject Win32_Process | Where-Object { $_.Name -eq 'cmd.exe' -and ($_.CommandLine -like '*cd backend*!BACKEND_PROJECT!.exe*' -or $_.CommandLine -like '*python python_server.py*' -or $_.CommandLine -like '*Backend Server*' -or $_.CommandLine -like '*Pietribiasi Frontend*') } | ForEach-Object { try { Write-Host \"Chiusura finestra CMD PID: $($_.ProcessId)\"; $_.Terminate() } catch {} }" 2>nul
 
-REM 5. Metodo finale: cerca finestre che potrebbero essere tornate al titolo originale
+REM 7. Metodo finale: cerca finestre che potrebbero essere tornate al titolo originale
 timeout /t 1 >nul
 taskkill /fi "WindowTitle eq Backend Server*" /f 2>nul
-taskkill /fi "WindowTitle eq Frontend Server*" /f 2>nul
+taskkill /fi "WindowTitle eq Pietribiasi Frontend*" /f 2>nul
+
+REM 8. Termina eventuali processi Python rimasti che potrebbero essere il server
+echo Pulizia finale processi Python...
+for /f "tokens=2" %%a in ('tasklist /fi "imagename eq python.exe" /fo csv ^| findstr python_server') do (
+    taskkill /f /pid %%a 2>nul
+)
 
 echo Pulizia completata.
 
@@ -209,9 +255,9 @@ if "!BACKEND_RUNNING!"=="1" (
 )
 
 if "!FRONTEND_RUNNING!"=="1" (
-    echo [ATTIVO] Frontend Server
+    echo [ATTIVO] Frontend Server Python
 ) else (
-    echo [INATTIVO] Frontend Server
+    echo [INATTIVO] Frontend Server Python
 )
 
 echo.
@@ -226,9 +272,29 @@ REM Controlla se il backend è in esecuzione
 tasklist | findstr "!BACKEND_PROJECT!.exe" >nul 2>&1
 if %errorlevel%==0 set BACKEND_RUNNING=1
 
-REM Controlla se http-server è in esecuzione
-tasklist | findstr "node.exe" >nul 2>&1
-if %errorlevel%==0 set FRONTEND_RUNNING=1
+REM Controlla se il processo Python (python_server.py) è in esecuzione
+REM Metodo 1: Cerca python.exe o pythonw.exe
+tasklist | findstr "python.exe" >nul 2>&1
+if %errorlevel%==0 (
+    REM Verifica che sia proprio il nostro script
+    wmic process where "name='python.exe' and commandline like '%%python_server.py%%'" get processid >nul 2>&1
+    if %errorlevel%==0 set FRONTEND_RUNNING=1
+)
+
+REM Metodo 2: Controlla anche pythonw.exe (processo in background)
+if "!FRONTEND_RUNNING!"=="0" (
+    tasklist | findstr "pythonw.exe" >nul 2>&1
+    if %errorlevel%==0 (
+        wmic process where "name='pythonw.exe' and commandline like '%%python_server.py%%'" get processid >nul 2>&1
+        if %errorlevel%==0 set FRONTEND_RUNNING=1
+    )
+)
+
+REM Metodo 3: Controlla la porta (alternativo)
+if "!FRONTEND_RUNNING!"=="0" (
+    netstat -an | findstr ":!FRONTEND_PORT!" | findstr "LISTENING" >nul 2>&1
+    if %errorlevel%==0 set FRONTEND_RUNNING=1
+)
 
 goto :eof
 

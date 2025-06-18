@@ -15,6 +15,7 @@
 # Ignora i file di configurazione di VS Code
 /.vscode
 /.vs
+/.venv
 
 # Ignora le cartelle realizzate con lo script di build
 /BuildAndDistr

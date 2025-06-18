@@ -129,6 +129,24 @@ kill $FRONTEND_PID
             with open(build_json_path, 'w', encoding='utf-8') as f:
                 json.dump(config, f, indent=4, ensure_ascii=False)
             print(f"✅ server.backend.host aggiornato a {local_ip}")
+        
+    def copy_python_server_only(self):
+        """Copia server_only.py nella cartella di build per permettere la riconfigurazione runtime"""
+        print("Copia di server_only.py nella cartella di build...")
+        
+        server_only_src = self.project_root / "Scripts/server_only.py"
+        server_only_dst = self.build_dir / "server_only.py"
+        
+        if server_only_src.exists():
+            shutil.copy2(server_only_src, server_only_dst)
+            print("✅ server_only.py copiato nella cartella di build")
+            return True
+        else:
+            # Crea un build.json con la configurazione corrente
+            with open(server_only_dst, 'w', encoding='utf-8') as f:
+                json.dump(self.config, f, indent=2, ensure_ascii=False)
+            print("✅ server_only.py generato nella cartella di build")
+            return True
     
     async def build(self):
         """Esegue l'intero processo di build"""
@@ -138,7 +156,7 @@ kill $FRONTEND_PID
             await script_utils.clean(self)
 
             # Inserisce l'IP locale per il Frontend nel file build.json se configurato per farlo
-            script_utils.update_frontend_host_ip("build.json")
+            # script_utils.update_frontend_host_ip("build.json")
 
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
             await self.update_backend_host_ip("build.json")
@@ -171,6 +189,7 @@ kill $FRONTEND_PID
                 return False
             
             script_utils.copy_python_server(self)
+            self.copy_python_server_only()
             script_utils.copy_build_json_to_build(self, True)
 
             self.create_launcher_script(target)
