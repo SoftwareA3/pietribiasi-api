@@ -76,21 +76,27 @@ echo.
 echo Avvio Frontend con Finestra Desktop...
 echo.
 
+REM Controlla se i processi sono già in esecuzione
 call :CHECK_PROCESSES
+if "!BACKEND_RUNNING!"=="1" (
+    echo Backend già in esecuzione!
+) else (
+    echo Avvio del backend...
+    start "Backend Server" cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
+    timeout /t 3 >nul
+)
+
 if "!FRONTEND_RUNNING!"=="1" (
     echo Frontend già in esecuzione!
 ) else (
-    echo Avvio del frontend con finestra desktop (WebView)...
-    start "Pietribiasi Frontend Desktop" python python_server.py
-    timeout /t 3 >nul
-    echo Frontend desktop avviato!
+    echo Avvio del frontend...
+    timeout /t 2 >nul
+    start "Pietribiasi Frontend Server" python python_server.py
 )
 
 echo.
-echo Frontend disponibile come applicazione desktop
-echo e anche su:
-echo   http://localhost:!FRONTEND_PORT!
-echo   http://!SERVER_IP!:!FRONTEND_PORT!
+echo Applicazione avviata!
+call :SHOW_ADDRESSES
 echo.
 pause
 goto MENU
