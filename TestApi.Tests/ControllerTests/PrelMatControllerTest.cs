@@ -12,6 +12,9 @@ using apiPB.Dto.Request;
 using apiPB.Services;
 using apiPB.Services.Abstraction;
 using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
+using Microsoft.AspNetCore.Http.HttpResults;
+using apiPB.Filters;
 
 namespace TestApi.Tests.ControllerTests
 {
@@ -38,23 +41,24 @@ namespace TestApi.Tests.ControllerTests
             Bom = "BOM123",
             Variant = "VAR1",
             ItemDesc = "Item Description",
-            Moid = 100,
-            Mono = "MO123",
-            CreationDate = new DateTime(2023, 9, 1),
-            UoM = "PCS",
-            ProductionQty = 100,
-            ProducedQty = 75,
-            ResQty = 25,
-            Storage = "WH01",
-            BarCode = "BC123456789",
-            Wc = "WC01",
-            PrelQty = 10,
             Imported = false,
-            UserImp = "User123",
-            DataImp = new DateTime(2023, 10, 1, 12, 0, 0)
+            UserImp = null,
+            DataImp = null
         };
 
-        private readonly PrelMatRequestDto _samplePrelMatRequestDto = new PrelMatRequestDto
+        private readonly ComponentRequestDto _sampleComponentRequest = new ComponentRequestDto
+        {
+            Component = "COMP456"
+        };
+
+        private readonly ViewPrelMatRequestDto _sampleViewRequest = new ViewPrelMatRequestDto
+        {
+            WorkerId = 43,
+            FromDateTime = new DateTime(2023, 1, 1),
+            ToDateTime = new DateTime(2023, 12, 31)
+        };
+
+        private readonly PrelMatRequestDto _samplePostRequest = new PrelMatRequestDto
         {
             WorkerId = 43,
             Job = "JOB123",
@@ -63,41 +67,22 @@ namespace TestApi.Tests.ControllerTests
             AltRtgStep = 2,
             Operation = "OP123",
             OperDesc = "Operation Description",
+            Position = 1,
+            Component = "COMP456",
             Bom = "BOM123",
             Variant = "VAR1",
             ItemDesc = "Item Description",
-            Moid = 100,
-            Mono = "MO123",
-            CreationDate = new DateTime(2023, 9, 1),
-            ProductionQty = 100,
-            ProducedQty = 75,
-            ResQty = 25,
-            Storage = "WH01",
-            Wc = "WC01",
-            Imported = false,
-            PrelQty = 10,
-            UoM = "PCS",
-            BarCode = "BC123456789",
-            Position = 1,
-            Component = "COMP456"
         };
 
-        private readonly ViewPrelMatRequestDto _sampleViewRequest = new ViewPrelMatRequestDto
+        private readonly UpdateImportedIdRequestDto _sampleUpdateRequest = new UpdateImportedIdRequestDto
         {
-            WorkerId = 43,
-            FromDateTime = new DateTime(2023, 10, 1, 12, 0, 0).AddDays(-1),
-            ToDateTime = new DateTime(2023, 10, 1, 12, 0, 0).AddDays(1),
-            Job = "JOB123",
-            Operation = "OP123",
-            Mono = "MO123",
-            Component = "COMP456",
-            BarCode = "BC123456789"
+            Id = 1
         };
 
         private readonly ViewPrelMatPutRequestDto _samplePutRequest = new ViewPrelMatPutRequestDto
         {
             PrelMatId = 1,
-            PrelQty = 15
+            PrelQty = 10.0
         };
 
         private readonly ViewPrelMatDeleteRequestDto _sampleDeleteRequest = new ViewPrelMatDeleteRequestDto
@@ -109,58 +94,61 @@ namespace TestApi.Tests.ControllerTests
         {
             _prelMatRequestServiceMock = new Mock<IPrelMatRequestService>();
             _responseHandlerMock = new Mock<IResponseHandler>();
-
             _controller = new PrelMatController(_responseHandlerMock.Object, _prelMatRequestServiceMock.Object);
 
-            var httpContextMock = new Mock<HttpContext>();
-            var httpRequestMock = new Mock<HttpRequest>();
-
-            // Impostazioni predefinite per Metodo, Path e tipo di richiesta
-            httpRequestMock.Setup(r => r.Method).Returns("GET");
-            httpRequestMock.Setup(r => r.Path).Returns(new PathString("/api/prel_mat/test"));
-            httpContextMock.Setup(c => c.Request).Returns(httpRequestMock.Object);
-
+            // Setup per HttpContext (necessario per HandleOkAndList/HandleOkAndItem, ecc.)
+            var httpContext = new DefaultHttpContext();
+            httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(ClaimTypes.Name, "testuser"),
+            }, "mock"));
             _controller.ControllerContext = new ControllerContext()
             {
-                HttpContext = httpContextMock.Object
+                HttpContext = httpContext
             };
 
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
-                .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Bad Request"))
+            // Setup di default per i metodi del response handler che restituiscono IActionResult
+            _responseHandlerMock.Setup(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns((HttpContext ctx, IEnumerable<PrelMatDto> list, bool logActive, string message) => new OkObjectResult(list));
+            _responseHandlerMock.Setup(rh => rh.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns((HttpContext ctx, PrelMatDto item, bool logActive, string message) => new OkObjectResult(item));
+            _responseHandlerMock.Setup(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NoContentResult());
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new BadRequestObjectResult("Bad Request"));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Not Found"))
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new NotFoundObjectResult("Not Found"));
         }
 
-        // --- Test per getAllPrelMat ---
         [Fact]
-        public void GetAllPrelMat_ShouldReturnOkResult_WhenDataExists()
+        public void GetAllPrelMat_ShouldReturnOk_WhenServiceReturnsData()
         {
             // Arrange
-            var mockData = new List<PrelMatDto> { _samplePrelMatDto };
-            _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat()).Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"))
-                .Returns(new OkObjectResult(mockData));
+            var expectedList = new List<PrelMatDto> { _samplePrelMatDto };
+            _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat())
+                .Returns(expectedList);
 
             // Act
             var result = _controller.GetAllPrelMat();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<PrelMatDto>>(okResult.Value);
             Assert.Equal(200, okResult.StatusCode);
-            var returnValue = Assert.IsAssignableFrom<IEnumerable<PrelMatDto>>(okResult.Value);
             Assert.Single(returnValue);
-            Assert.Equal(_samplePrelMatDto.PrelMatId, returnValue.First().PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
+
         [Fact]
-        public void GetAllPrelMat_ShouldReturnNotFound_WhenNoDataExists()
+        public void GetAllPrelMat_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
         {
             // Arrange
-            var emptyList = new List<PrelMatDto>();
-            _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat()).Returns(emptyList);
+            _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat())
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.GetAllPrelMat();
@@ -168,35 +156,190 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
-        // --- Test per PostPrelMatList ---
         [Fact]
-        public void PostPrelMatList_ShouldReturnOkResult_WhenDataIsProcessed()
+        public void GetAllPrelMat_ShouldReturnNoContent_WhenServiceThrowsExpectedEmptyListException()
         {
             // Arrange
-            var requestDtoList = new List<PrelMatRequestDto> { _samplePrelMatRequestDto };
-            var responseDtoList = new List<PrelMatDto> { _samplePrelMatDto };
-            _prelMatRequestServiceMock.Setup(service => service.PostPrelMatList(It.IsAny<IEnumerable<PrelMatRequestDto>>()))
-                .Returns(responseDtoList);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"))
-                .Returns(new OkObjectResult(responseDtoList));
+            _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat())
+                .Throws(new ExpectedEmptyListException("PrelMatController", "GetAllPrelMat", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NoContentResult());
 
             // Act
-            var result = _controller.PostPrelMatList(requestDtoList);
+            var result = _controller.GetAllPrelMat();
+
+            // Assert
+            var noContentResult = Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, noContentResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetAllPrelMat_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat())
+                .Throws(new EmptyListException("PrelMatController", "GetAllPrelMat", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found")); // Mock specifico per questo caso
+
+            // Act
+            var result = _controller.GetAllPrelMat();
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetAllPrelMat_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetAppPrelMat())
+                .Throws(new Exception("Test exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found")); // Mock specifico per questo caso
+
+            // Act
+            var result = _controller.GetAllPrelMat();
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMatWithFilter_ShouldReturnOk_WhenServiceReturnsData()
+        {
+            // Arrange
+            var expectedList = new List<PrelMatDto> { _samplePrelMatDto };
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestDto>()))
+                .Returns(expectedList);
+
+            // Act
+            var result = _controller.GetNotImportedPrelMatWithFilter(_sampleViewRequest);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<PrelMatDto>>(okResult.Value);
             Assert.Equal(200, okResult.StatusCode);
-            var returnValue = Assert.IsAssignableFrom<IEnumerable<PrelMatDto>>(okResult.Value);
-            Assert.Equal(responseDtoList.Count, returnValue.Count());
-            Assert.Equal(responseDtoList.First().PrelMatId, returnValue.First().PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"), Times.Once);
+            Assert.Single(returnValue);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
-        public void PostPrelMatList_ShouldReturnBadRequest_WhenRequestIsNull()
+        public void GetNotImportedPrelMatWithFilter_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Act
+            var result = _controller.GetNotImportedPrelMatWithFilter(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMatWithFilter_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestDto>()))
+                .Throws(new EmptyListException("PrelMatController", "GetNotImportedPrelMatWithFilter", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMatWithFilter(_sampleViewRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMatWithFilter_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestDto>()))
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMatWithFilter(_sampleViewRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMatWithFilter_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestDto>()))
+                .Throws(new Exception("Generic exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMatWithFilter(_sampleViewRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+
+        [Fact]
+        public void PostPrelMatList_ShouldReturnOk_WhenServiceReturnsData()
+        {
+            // Arrange
+            var requestList = new List<PrelMatRequestDto> { _samplePostRequest };
+            var expectedResult = new List<PrelMatDto> { _samplePrelMatDto };
+            _prelMatRequestServiceMock.Setup(service => service.PostPrelMatList(It.IsAny<IEnumerable<PrelMatRequestDto>>()))
+                .Returns(expectedResult);
+
+            // Act
+            var result = _controller.PostPrelMatList(requestList);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<PrelMatDto>>(okResult.Value);
+            Assert.Equal(200, okResult.StatusCode);
+            Assert.Single(returnValue);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
+        }
+
+        [Fact]
+        public void PostPrelMatList_ShouldReturnNotFound_WhenServiceThrowsEmptyListException()
+        {
+            // Arrange
+            var requestList = new List<PrelMatRequestDto> { _samplePostRequest };
+            _prelMatRequestServiceMock.Setup(service => service.PostPrelMatList(It.IsAny<IEnumerable<PrelMatRequestDto>>()))
+                .Throws(new EmptyListException("PrelMatController", "PostPrelMatList", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.PostPrelMatList(requestList);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void PostPrelMatList_ShouldReturnBadRequest_WhenRequestListIsNull()
         {
             // Act
             var result = _controller.PostPrelMatList(null);
@@ -204,28 +347,11 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
-        public void PostPrelMatList_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
-        {
-            // Arrange
-            var requestDtoList = new List<PrelMatRequestDto> { _samplePrelMatRequestDto };
-            _prelMatRequestServiceMock.Setup(service => service.PostPrelMatList(It.IsAny<IEnumerable<PrelMatRequestDto>>()))
-                .Returns(new List<PrelMatDto>());
-
-            // Act
-            var result = _controller.PostPrelMatList(requestDtoList);
-
-            // Assert
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
-        }
-
-        [Fact]
-        public void PostPrelMatList_ShouldReturnBadRequest_WhenRequestIsEmptyList()
+        public void PostPrelMatList_ShouldReturnBadRequest_WhenRequestListIsEmpty()
         {
             // Act
             var result = _controller.PostPrelMatList(new List<PrelMatRequestDto>());
@@ -233,46 +359,66 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
-        // --- Test per GetViewPrelMat ---
+
         [Fact]
-        public void GetViewPrelMat_ShouldReturnOkResult_WhenDataExists()
+        public void PostPrelMatList_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
         {
             // Arrange
-            var mockData = new List<PrelMatDto> { _samplePrelMatDto };
+            var requestList = new List<PrelMatRequestDto> { _samplePostRequest };
+            _prelMatRequestServiceMock.Setup(service => service.PostPrelMatList(It.IsAny<IEnumerable<PrelMatRequestDto>>()))
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.PostPrelMatList(requestList);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void PostPrelMatList_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            var requestList = new List<PrelMatRequestDto> { _samplePostRequest };
+            _prelMatRequestServiceMock.Setup(service => service.PostPrelMatList(It.IsAny<IEnumerable<PrelMatRequestDto>>()))
+                .Throws(new Exception("Generic exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.PostPrelMatList(requestList);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        // -- Test per GetViewPrelMat --
+        [Fact]
+        public void GetViewPrelMat_ShouldReturnOk_WhenServiceReturnsData()
+        {
+            // Arrange
+            var expectedList = new List<PrelMatDto> { _samplePrelMatDto };
             _prelMatRequestServiceMock.Setup(service => service.GetViewPrelMatList(It.IsAny<ViewPrelMatRequestDto>()))
-                .Returns(mockData);
-            _responseHandlerMock.Setup(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"))
-                .Returns(new OkObjectResult(mockData));
+                .Returns(expectedList);
 
             // Act
             var result = _controller.GetViewPrelMat(_sampleViewRequest);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<PrelMatDto>>(okResult.Value);
             Assert.Equal(200, okResult.StatusCode);
-            var returnValue = Assert.IsAssignableFrom<IEnumerable<PrelMatDto>>(okResult.Value);
-            Assert.Equal(mockData.Count, returnValue.Count());
-            Assert.Equal(mockData.First().PrelMatId, returnValue.First().PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), false, "Ok"), Times.Once);
-        }
-
-        [Fact]
-        public void GetViewPrelMat_ShouldReturnNotFound_WhenNoDataExists()
-        {
-            // Arrange
-            _prelMatRequestServiceMock.Setup(service => service.GetViewPrelMatList(It.IsAny<ViewPrelMatRequestDto>()))
-                .Returns(new List<PrelMatDto>());
-
-            // Act
-            var result = _controller.GetViewPrelMat(_sampleViewRequest);
-
-            // Assert
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
+            Assert.Single(returnValue);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
@@ -284,49 +430,103 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
-        // --- Test per PutViewPrelMat ---
         [Fact]
-        public void PutViewPrelMat_ShouldReturnOkResult_WhenDataIsUpdated()
+        public void GetViewPrelMat_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
         {
             // Arrange
-            var updatedDto = new PrelMatDto
-            {
-                PrelMatId = _samplePutRequest.PrelMatId,
-                PrelQty = _samplePutRequest.PrelQty,
-                WorkerId = _samplePrelMatDto.WorkerId,
-                SavedDate = DateTime.Now,
-                Job = _samplePrelMatDto.Job,
-                Operation = _samplePrelMatDto.Operation,
-                Bom = _samplePrelMatDto.Bom,
-                Variant = _samplePrelMatDto.Variant,
-                BarCode = _samplePrelMatDto.BarCode
-            };
+            _prelMatRequestServiceMock.Setup(service => service.GetViewPrelMatList(It.IsAny<ViewPrelMatRequestDto>()))
+                .Throws(new EmptyListException("PrelMatController", "GetViewPrelMat", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetViewPrelMat(_sampleViewRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetViewPrelMat_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetViewPrelMatList(It.IsAny<ViewPrelMatRequestDto>()))
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetViewPrelMat(_sampleViewRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetViewPrelMat_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetViewPrelMatList(It.IsAny<ViewPrelMatRequestDto>()))
+                .Throws(new Exception("Generic exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetViewPrelMat(_sampleViewRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        // -- Test per PutViewPrelMat --
+
+        [Fact]
+        public void PutViewPrelMat_ShouldReturnOk_WhenServiceReturnsData()
+        {
+            // Arrange
+            var expectedList = _samplePrelMatDto;
             _prelMatRequestServiceMock.Setup(service => service.PutViewPrelMat(It.IsAny<ViewPrelMatPutRequestDto>()))
-                .Returns(updatedDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"))
-                .Returns(new OkObjectResult(updatedDto));
+                .Returns(expectedList);
 
             // Act
             var result = _controller.PutViewPrelMat(_samplePutRequest);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, okResult.StatusCode);
             var returnValue = Assert.IsType<PrelMatDto>(okResult.Value);
-            Assert.Equal(updatedDto.PrelMatId, returnValue.PrelMatId);
-            Assert.Equal(updatedDto.PrelQty, returnValue.PrelQty);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"), Times.Once);
+            Assert.Equal(200, okResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
-        public void PutViewPrelMat_ShouldReturnNotFound_WhenServiceReturnsNull()
+        public void PutViewPrelMat_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Act
+            var result = _controller.PutViewPrelMat(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void PutViewPrelMat_ShouldReturnNotFound_WhenServiceThrowsEmptyListException()
         {
             // Arrange
             _prelMatRequestServiceMock.Setup(service => service.PutViewPrelMat(It.IsAny<ViewPrelMatPutRequestDto>()))
-                .Returns((PrelMatDto)null);
+                .Throws(new EmptyListException("PrelMatController", "PutViewPrelMat", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.PutViewPrelMat(_samplePutRequest);
@@ -334,37 +534,203 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
-        // --- Test per DeletePrelMatId ---
         [Fact]
-        public void DeletePrelMatId_ShouldReturnOkResult_WhenDataIsDeleted()
+        public void PutViewPrelMat_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.PutViewPrelMat(It.IsAny<ViewPrelMatPutRequestDto>()))
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.PutViewPrelMat(_samplePutRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void PutViewPrelMat_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.PutViewPrelMat(It.IsAny<ViewPrelMatPutRequestDto>()))
+                .Throws(new Exception("Generic exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.PutViewPrelMat(_samplePutRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        // -- Test per GetNotImportedPrelMat --
+
+        [Fact]
+        public void GetNotImportedPrelMat_ShouldReturnOk_WhenServiceReturnsData()
+        {
+            // Arrange
+            var expectedList = new List<PrelMatDto> { _samplePrelMatDto };
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedPrelMat())
+                .Returns(expectedList);
+
+            // Act
+            var result = _controller.GetNotImportedPrelMat();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<PrelMatDto>>(okResult.Value);
+            Assert.Equal(200, okResult.StatusCode);
+            Assert.Single(returnValue);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMat_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedPrelMat())
+                .Throws(new EmptyListException("PrelMatController", "GetNotImportedPrelMat", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMat();
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMat_ShouldReturnNoContent_WhenServiceThrowsExpectedEmptyListException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedPrelMat())
+                .Throws(new ExpectedEmptyListException("PrelMatController", "GetNotImportedPrelMat", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NoContentResult());
+
+            // Act
+            var result = _controller.GetNotImportedPrelMat();
+
+            // Assert
+            var noContentResult = Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, noContentResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMat_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedPrelMat())
+                .Throws(new Exception("Test exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMat();
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMat_ShouldReturnBadRequest_WhenServiceThrowsArgumentNullException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedPrelMat())
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMat();
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMat_ShouldReturnNotFound_WhenServiceThrowsEmptyListException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedPrelMat())
+                .Throws(new EmptyListException("PrelMatController", "GetNotImportedPrelMat", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMat();
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMat_ShouldReturnNotFound_WhenServiceThrowsExeption()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetNotImportedPrelMat())
+                .Throws(new Exception("Test exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetNotImportedPrelMat();
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        // -- Test per DeletePrelMatId --
+
+        [Fact]
+        public void DeletePrelMatId_ShouldReturnOk_WhenServiceDeletesSuccessfully()
         {
             // Arrange
             var deletedDto = _samplePrelMatDto;
             _prelMatRequestServiceMock.Setup(service => service.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteRequestDto>()))
                 .Returns(deletedDto);
-            _responseHandlerMock.Setup(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"))
-                .Returns(new OkObjectResult(deletedDto));
 
             // Act
             var result = _controller.DeletePrelMatId(_sampleDeleteRequest);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, okResult.StatusCode);
             var returnValue = Assert.IsType<PrelMatDto>(okResult.Value);
+            Assert.Equal(200, okResult.StatusCode);
             Assert.Equal(deletedDto.PrelMatId, returnValue.PrelMatId);
-            _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), false, "Ok"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<PrelMatDto>(), It.IsAny<bool>(), "Ok"), Times.Once);
         }
 
         [Fact]
-        public void DeletePrelMatId_ShouldReturnNotFound_WhenServiceReturnsNull()
+        public void DeletePrelMatId_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
         {
             // Arrange
             _prelMatRequestServiceMock.Setup(service => service.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteRequestDto>()))
-                .Returns((PrelMatDto)null);
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
             var result = _controller.DeletePrelMatId(_sampleDeleteRequest);
@@ -372,7 +738,7 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
@@ -384,7 +750,235 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
+            _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void DeletePrelMatId_ShouldReturnNotFound_WhenServiceReturnsNull()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteRequestDto>()))
+                .Throws(new NullReferenceException("No PrelMat found with the given ID"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.DeletePrelMatId(_sampleDeleteRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void DeletePrelMatId_ShouldReturnNotFound_WhenServiceThrowsEmptyListException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteRequestDto>()))
+                .Throws(new EmptyListException("PrelMatController", "DeletePrelMatId", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.DeletePrelMatId(_sampleDeleteRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void DeletePrelMatId_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteRequestDto>()))
+                .Throws(new Exception("Test exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.DeletePrelMatId(_sampleDeleteRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        // [Fact]
+        // public void UpdatePrelMatImported_ShouldReturnOk_WhenServiceReturnsData()
+        // {
+        //     // Arrange
+        //     var request = new WorkerIdSyncRequestDto { WorkerId = 43 };
+        //     var expectedList = new List<PrelMatDto> { _samplePrelMatDto };
+        //     _prelMatRequestServiceMock.Setup(service => service.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>()))
+        //         .Returns(expectedList);
+
+        //     // Act
+        //     var result = _controller.UpdatePrelMatImported(request);
+
+        //     // Assert
+        //     var okResult = Assert.IsType<OkObjectResult>(result);
+        //     var returnValue = Assert.IsType<List<PrelMatDto>>(okResult.Value);
+        //     Assert.Equal(200, okResult.StatusCode);
+        //     Assert.Single(returnValue);
+        //     _responseHandlerMock.Verify(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<IEnumerable<PrelMatDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
+        // }
+
+        // [Fact]
+        // public void UpdatePrelMatImported_ShouldReturnBadRequest_WhenRequestIsNull()
+        // {
+        //     // Act
+        //     var result = _controller.UpdatePrelMatImported(null);
+
+        //     // Assert
+        //     var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        //     Assert.Equal(400, badRequestResult.StatusCode);
+        //     _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        // }
+
+        // [Fact]
+        // public void UpdatePrelMatImported_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
+        // {
+        //     // Arrange
+        //     var request = new WorkerIdSyncRequestDto { WorkerId = 43 };
+        //     _prelMatRequestServiceMock.Setup(service => service.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>()))
+        //         .Returns(new List<PrelMatDto>());
+        //     _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+        //         .Returns(new NotFoundObjectResult("Not Found"));
+
+        //     // Act
+        //     var result = _controller.UpdatePrelMatImported(request);
+
+        //     // Assert
+        //     var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        //     Assert.Equal(404, notFoundResult.StatusCode);
+        //     _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        // }
+
+        // [Fact]
+        // public void UpdatePrelMatImported_ShouldReturnNotFound_WhenServiceThrowsException()
+        // {
+        //     // Arrange
+        //     var request = new WorkerIdSyncRequestDto { WorkerId = 43 };
+        //     _prelMatRequestServiceMock.Setup(service => service.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>()))
+        //         .Throws(new Exception("Test exception"));
+        //     _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+        //         .Returns(new NotFoundObjectResult("Not Found"));
+
+        //     // Act
+        //     var result = _controller.(request);
+
+        //     // Assert
+        //     var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        //     Assert.Equal(404, notFoundResult.StatusCode);
+        //     _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        // }
+
+        // -- Test per GetPrelMatWithComponent --
+        [Fact]
+        public void GetPrelMatWithComponent_ShouldReturnOk_WhenServiceReturnsData()
+        {
+            // Arrange
+            var expectedList = new List<PrelMatDto> { _samplePrelMatDto };
+            _prelMatRequestServiceMock.Setup(service => service.GetPrelMatWithComponent(It.IsAny<ComponentRequestDto>()))
+                .Returns(expectedList);
+
+            // Act
+            var result = _controller.GetPrelMatWithComponent(_sampleComponentRequest);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<PrelMatDto>>(okResult.Value);
+            Assert.Equal(200, okResult.StatusCode);
+            Assert.Single(returnValue);
+            _responseHandlerMock.Verify(rh => rh.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<PrelMatDto>>(), It.IsAny<bool>(), "Ok"), Times.Once);
+        }
+
+        [Fact]
+        public void GetPrelMatWithComponent_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Act
+            var result = _controller.GetPrelMatWithComponent(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetPrelMatWithComponent_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetPrelMatWithComponent(It.IsAny<ComponentRequestDto>()))
+                .Throws(new EmptyListException("PrelMatController", "GetPrelMatWithComponent", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetPrelMatWithComponent(_sampleComponentRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetPrelMatWithComponent_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetPrelMatWithComponent(It.IsAny<ComponentRequestDto>()))
+                .Throws(new ArgumentNullException("service"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetPrelMatWithComponent(_sampleComponentRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetPrelMatWithComponent_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetPrelMatWithComponent(It.IsAny<ComponentRequestDto>()))
+                .Throws(new Exception("Generic exception"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.GetPrelMatWithComponent(_sampleComponentRequest);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetPrelMatWithComponent_ShouldReturnNoContent_WhenServiceThrowsExpectedEmptyListException()
+        {
+            // Arrange
+            _prelMatRequestServiceMock.Setup(service => service.GetPrelMatWithComponent(It.IsAny<ComponentRequestDto>()))
+                .Throws(new ExpectedEmptyListException("PrelMatController", "GetPrelMatWithComponent", "Lista vuota"));
+            _responseHandlerMock.Setup(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NoContentResult());
+
+            // Act
+            var result = _controller.GetPrelMatWithComponent(_sampleComponentRequest);
+
+            // Assert
+            var noContentResult = Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, noContentResult.StatusCode);
+            _responseHandlerMock.Verify(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
     }
 }

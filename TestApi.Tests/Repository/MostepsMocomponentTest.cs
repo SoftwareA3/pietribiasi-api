@@ -103,7 +103,7 @@ namespace TestApi.Tests.Repository
         }
 
         [Fact]
-        public void GetMostepsMocomponentJobDistinct_ReturnsDistinctResults_WhenDataExists()
+        public void GetMostepsMocomponentJob_ReturnsDistinctResults_WhenDataExists()
         {
             // Arrange
             _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
@@ -114,7 +114,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentJobDistinct(_jobFilter);
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentJob(_jobFilter);
 
             // Assert
             Assert.NotNull(result);
@@ -133,7 +133,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentJobDistinct(new JobFilter { Job = "NonExistentJob" });
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentJob(new JobFilter { Job = "NonExistentJob" });
 
             // Assert
             Assert.NotNull(result);
@@ -152,7 +152,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentMonoDistinct(_monoFilter);
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentMono(_monoFilter);
 
             // Assert
             Assert.NotNull(result);
@@ -171,7 +171,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentMonoDistinct(new MonoFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now });
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentMono(new MonoFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now });
 
             // Assert
             Assert.NotNull(result);
@@ -190,7 +190,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentOperationDistinct(_operationFilter);
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentOperation(_operationFilter);
 
             // Assert
             Assert.NotNull(result);
@@ -209,7 +209,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentOperationDistinct(new OperationFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation" });
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentOperation(new OperationFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation" });
 
             // Assert
             Assert.NotNull(result);
@@ -228,7 +228,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentBarCodeDistinct(_barCodeFilter);
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentBarCode(_barCodeFilter);
 
             // Assert
             Assert.NotNull(result);
@@ -247,7 +247,7 @@ namespace TestApi.Tests.Repository
             _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentBarCodeDistinct(new BarCodeFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation", BarCode = "NonExistentBarCode" });
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentBarCode(new BarCodeFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation", BarCode = "NonExistentBarCode" });
 
             // Assert
             Assert.NotNull(result);
