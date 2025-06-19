@@ -20,34 +20,16 @@ namespace apiPB.Services.Implementation
 
         public IEnumerable<MostepDto> GetMostepWithJob(JobRequestDto request)
         {
-            try
-            {
-                var filter = _mapper.Map<JobFilter>(request);
-                return _repository.GetMostepWithJob(filter)
-                .Select(m => m.ToMostepDto());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Errore durante l'esecuzione di {nameof(GetMostepWithJob)}" + ex.Message);
-
-                throw;
-            }
+            var filter = _mapper.Map<JobFilter>(request);
+            return _repository.GetMostepWithJob(filter)
+            .Select(m => m.ToMostepDto());
         }
 
         public IEnumerable<MostepDto> GetMostepWithMono(MonoRequestDto request)
         {
-            try
-            {
-                var filter = _mapper.Map<MonoFilter>(request);
-                return _repository.GetMostepWithMono(filter)
-                .Select(m => m.ToMostepDto());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Errore durante l'esecuzione di {nameof(GetMostepWithMono)}" + ex.Message);
-
-                throw;
-            }
+            var filter = _mapper.Map<MonoFilter>(request);
+            return _repository.GetMostepWithMono(filter)
+            .Select(m => m.ToMostepDto());
         }
 
         public IEnumerable<MostepDto> GetMostepWithOperation(OperationRequestDto request)
