@@ -6,7 +6,8 @@
    2. [Build](#build)
    3. [Avvio Applicazione con build (Avvio Frontend e Backend)](#avvio-applicazione-con-build-avvio-frontend-e-backend)
    4. [Avvio FrontEnd con build_FE](#avvio-applicazione-con-build-avvio-frontend-e-backend)
-2. [FrontEnd](#frontend)
+2. [Documentazione API](#documentazione-api)
+3. [FrontEnd](#frontend)
    1. [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
    2. [Home](#home)
    3. [Registrazione Ore Commessa](#registrazione-ore-commessa)
@@ -18,7 +19,7 @@
    9. [Power User](#power-user)
    10. [Sincronizzazione](#sincronizzazione)
    11. [Impostazioni](#impostazioni)
-3. [Backend](#backend)
+4. [Backend](#backend)
    1. [Divisione](#divisione)
    2. [Controllers](#controllers)
    3. [Authentication](#authentication)
@@ -37,8 +38,8 @@
        - [Richieste POST](#richieste-post)
        - [Richieste DELETE](#richieste-delete)
        - [Richieste PUT](#richieste-put)
-4. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
-5. [Comandi](#comandi)
+5. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
+6. [Comandi](#comandi)
    1. [Avvio API](#avvio-api)
    2. [Scaffolding](#scaffolding)
    3. [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale) 
@@ -176,6 +177,12 @@ Viene aperta una console con le seguenti opzioni:
 Una volta finita la build per il Frontend, verrà generata la cartella `build_FE` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist_FE`.
 Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
 Il file batch avvia delle console che vengono chiuse subito per aprire la finestra con la WebApp.
+
+---
+
+# Documentazione API
+Il link permette di scaricare il pdf con la documentazione dell'API. La documentazione è presa dal client Swagger, generato nel backend tramite il comando `dotnet run watch` e disponibile all'IP esposto nella console. All'URL dell'IP esposto, è necessario aggiungere l'endpoint `/swagger`.
+[📄 Scarica la documentazione API in PDF](assets/documentazione_api.pdf)
 
 ---
 
