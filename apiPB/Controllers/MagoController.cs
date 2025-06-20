@@ -85,7 +85,7 @@ namespace apiPB.Controllers
             if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Dati della sincronizzazione non validi");
 
             var settingsAndResponseTuple = await _magoRequestService.LoginWithWorkerIdAsync(request);
-            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Login non riuscito durante la sincronizzazione");
+            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Login non riuscito durante la sincronizzazione");
             if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Impostazioni non trovate durante la sincronizzazione");
 
             try
