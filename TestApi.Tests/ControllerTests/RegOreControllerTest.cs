@@ -719,7 +719,7 @@ namespace TestApi.Tests.ControllerTests
         public void GetNotImportedAppRegOre_ShouldReturnNotFound_WhenServiceReturnsEmptyList()
         {
             // Arrange
-            _regOreRequestServiceMock.Setup(service => service.GetNotImportedAppRegOre())
+            _regOreRequestServiceMock.Setup(service => service.GetNotImportedAppRegOreByFilter(_sampleViewRequest))
                 .Throws(new EmptyListException("RegOreController", "GetNotImportedAppRegOre", "Lista vuota"));
             _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new NotFoundObjectResult("Not Found"));
@@ -737,7 +737,7 @@ namespace TestApi.Tests.ControllerTests
         public void GetNotImportedAppRegOre_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
         {
             // Arrange
-            _regOreRequestServiceMock.Setup(service => service.GetNotImportedAppRegOre())
+            _regOreRequestServiceMock.Setup(service => service.GetNotImportedAppRegOreByFilter(_sampleViewRequest))
                 .Throws(new ArgumentNullException("Service error"));
             _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new NotFoundObjectResult("Not Found"));
@@ -771,7 +771,7 @@ namespace TestApi.Tests.ControllerTests
         public void GetNotImportedAppRegOre_ShouldReturnNotFound_WhenServiceThrowsException()
         {
             // Arrange
-            _regOreRequestServiceMock.Setup(service => service.GetNotImportedAppRegOre())
+            _regOreRequestServiceMock.Setup(service => service.GetNotImportedAppRegOreByFilter(_sampleViewRequest))
                 .Throws(new Exception("Service error"));
             _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new NotFoundObjectResult("Not Found"));
