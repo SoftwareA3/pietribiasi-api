@@ -32,9 +32,19 @@ namespace apiPB.Controllers
         [HttpGet("get_settings")]
         public IActionResult GetSettings()
         {
-            var settingsDto = _settingsService.GetSettings();
-            if (settingsDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive);
-            return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive);
+            try
+            {
+                var settingsDto = _settingsService.GetSettings();
+                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+            }
         }
 
         /// <summary>
