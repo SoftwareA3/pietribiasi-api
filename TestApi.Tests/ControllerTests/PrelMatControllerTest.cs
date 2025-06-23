@@ -32,6 +32,10 @@ namespace TestApi.Tests.ControllerTests
             SavedDate = new DateTime(2023, 10, 1, 12, 0, 0),
             Job = "JOB123",
             RtgStep = 1,
+            Moid = 1001,
+            Mono = "MONO123",
+            CreationDate = new DateTime(2023, 10, 1, 11, 0, 0),
+            UoM = "pcs",
             Alternate = "ALT1",
             AltRtgStep = 2,
             Operation = "OP123",
@@ -41,9 +45,16 @@ namespace TestApi.Tests.ControllerTests
             Bom = "BOM123",
             Variant = "VAR1",
             ItemDesc = "Item Description",
+            PrelQty = 10.0,
             Imported = false,
             UserImp = null,
-            DataImp = null
+            DataImp = null,
+            ProductionQty = 100.0,
+            ProducedQty = 50.0,
+            ResQty = 50.0,
+            Storage = "STORAGE1",
+            BarCode = "BARCODE123",
+            Wc = "WC1"
         };
 
         private readonly ComponentRequestDto _sampleComponentRequest = new ComponentRequestDto
@@ -55,7 +66,9 @@ namespace TestApi.Tests.ControllerTests
         {
             WorkerId = 43,
             FromDateTime = new DateTime(2023, 1, 1),
-            ToDateTime = new DateTime(2023, 12, 31)
+            ToDateTime = new DateTime(2023, 12, 31),
+            Component = "COMP456",
+            BarCode = "BARCODE123",
         };
 
         private readonly PrelMatRequestDto _samplePostRequest = new PrelMatRequestDto
@@ -65,6 +78,8 @@ namespace TestApi.Tests.ControllerTests
             RtgStep = 1,
             Alternate = "ALT1",
             AltRtgStep = 2,
+            UoM = "pcs",
+            CreationDate = new DateTime(2023, 10, 1, 11, 0, 0),
             Operation = "OP123",
             OperDesc = "Operation Description",
             Position = 1,
@@ -72,6 +87,16 @@ namespace TestApi.Tests.ControllerTests
             Bom = "BOM123",
             Variant = "VAR1",
             ItemDesc = "Item Description",
+            ProductionQty = 100.0,
+            ProducedQty = 50.0,
+            ResQty = 50.0,
+            Storage = "STORAGE1",
+            BarCode = "BARCODE123",
+            Wc = "WC1",
+            PrelQty = 10.0,
+            Imported = false,
+            UserImp = null,
+            DataImp = null
         };
 
         private readonly UpdateImportedIdRequestDto _sampleUpdateRequest = new UpdateImportedIdRequestDto

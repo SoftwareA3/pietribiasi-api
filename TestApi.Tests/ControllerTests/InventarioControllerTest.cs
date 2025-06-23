@@ -37,7 +37,11 @@ namespace TestApi.Tests.ControllerTests
             BookInv = 1,
             Imported = false,
             UserImp = "UserTest",
-            DataImp = new DateTime(2023, 10, 1, 12, 0, 0)
+            DataImp = new DateTime(2023, 10, 1, 12, 0, 0),
+            PrevBookInv = 0,
+            BookInvDiff = 1,
+            InvRsn = false,
+            UoM = "Unit",
         };
 
         private readonly InventarioRequestDto _sampleInventarioRequestDto = new InventarioRequestDto
@@ -53,7 +57,11 @@ namespace TestApi.Tests.ControllerTests
             BookInv = 1,
             Imported = false,
             UserImp = "UserTest",
-            DataImp = new DateTime(2023, 10, 1, 12, 0, 0)
+            DataImp = new DateTime(2023, 10, 1, 12, 0, 0),
+            PrevBookInv = 0,
+            BookInvDiff = 1,
+            InvRsn = false,
+            UoM = "Unit"
         };
 
         private readonly ViewInventarioRequestDto _sampleViewRequest = new ViewInventarioRequestDto
@@ -61,6 +69,7 @@ namespace TestApi.Tests.ControllerTests
             WorkerId = 43,
             FromDateTime = new DateTime(2023, 10, 1, 12, 0, 0).AddDays(-1),
             ToDateTime = new DateTime(2023, 10, 1, 12, 0, 0).AddDays(1),
+            DataImp = new DateTime(2023, 10, 1, 12, 0, 0),
             Item = "123ABC123Item",
             BarCode = "123ABC123Barcode"
         };

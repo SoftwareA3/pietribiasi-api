@@ -384,7 +384,7 @@ namespace TestApi.Tests.ServicesTests
             var request = new ViewPrelMatPutRequestDto();
 
             _prelMatRepositoryMock.Setup(repo => repo.PutViewPrelMat(It.IsAny<ViewPrelMatPutFilter>())).Returns((A3AppPrelMat)null);
-            _mapperMock.Setup(m => m.Map<ViewPrelMatPutFilter>(It.IsAny<ViewPrelMatPutRequestDto>())).Returns(filter);
+            _mapperMock.Setup(m => m.Map<ViewPrelMatPutRequestDto>(It.IsAny<ViewPrelMatPutFilter>())).Returns(request);
 
             // Act
             var result = _prelMatService.PutViewPrelMat(request);

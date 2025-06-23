@@ -43,7 +43,11 @@ namespace TestApi.Tests.ControllerTests
             ResQty = 5.0,
             Storage = "MAIN",
             BarCode = "BC123456",
-            Wc = "WC1"
+            Wc = "WC1",
+            PrelUoM = "PCS",
+            PrelNeededQty = 10.0,
+            PickedQuantity = 5.0,
+            PrelResQty = 5.0
         };
 
         private readonly JobRequestDto _sampleJobRequestDto = new JobRequestDto

@@ -453,16 +453,13 @@ namespace TestApi.Tests.ControllerTests
         [Fact]
         public async Task SyncRegOreFiltered_ShouldReturnOk_WhenSyncIsSuccessful()
         {
-            // Arrange
-            var loginResponseTuple = (_testMagoLoginResponse, _testSettingsDto);
-
-            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
-                .Returns(Task.FromResult(loginResponseTuple));
-            _magoRequestServiceMock.Setup(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)))
-                .Returns(Task.CompletedTask);
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testSyncRegOreFilteredDto.WorkerIdSyncRequestDto))
+                .Returns(Task.FromResult((_testMagoLoginResponse, _testSettingsDto)));
             _magoRequestServiceMock.Setup(s => s.SyncRegOreFiltered(_testMagoLoginResponse, _testSettingsDto, _testSyncRegOreFilteredDto, true))
                 .Returns(Task.FromResult<IEnumerable<SyncRegOreRequestDto>>(new List<SyncRegOreRequestDto> { _testSyncRegOreRequest }));
-            _responseHandlerMock.Setup(rh => rh.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<SyncRegOreRequestDto>, It.IsAny<bool>(), It.IsAny<string>()))
+            _magoRequestServiceMock.Setup(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)))
+                .Returns(Task.CompletedTask);
+            _responseHandlerMock.Setup(rh => rh.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<object>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new OkObjectResult("Sync successful"));
 
             // Act
@@ -471,6 +468,360 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal("Sync successful", okResult.Value);
+            _magoRequestServiceMock.Verify(s => s.SyncRegOreFiltered(_testMagoLoginResponse, _testSettingsDto, _testSyncRegOreFilteredDto, true), Times.Once);
         }
+
+        [Fact]
+        public async Task SyncRegOreFiltered_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Arrange
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncRegOreFiltered(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncRegOreFiltered_ShouldReturnNotFound_WhenLoginFails()
+        {
+            // Arrange
+            (MagoLoginResponseDto, SettingsDto) loginResponseTuple = (null, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncRegOreFiltered(_testSyncRegOreFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncRegOreFiltered_ShouldReturnBadRequest_WhenSettingsAreNull()
+        {
+            // Arrange
+            (MagoLoginResponseDto, SettingsDto) loginResponseTuple = (_testMagoLoginResponse, null);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncRegOreFiltered(_testSyncRegOreFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncRegOreFiltered_ShouldReturnBadRequest_WhenServiceThrowsException()
+        {
+            // Arrange
+            var loginResponseTuple = (_testMagoLoginResponse, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testSyncRegOreFilteredDto.WorkerIdSyncRequestDto))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _magoRequestServiceMock.Setup(s => s.SyncRegOreFiltered(_testMagoLoginResponse, _testSettingsDto, _testSyncRegOreFilteredDto, It.IsAny<bool>()))
+                .Throws(new Exception("Sync failed"));
+            _magoRequestServiceMock.Setup(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)))
+                .Returns(Task.CompletedTask);
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncRegOreFiltered(_testSyncRegOreFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+            
+            // Verify logoff was called even on exception
+            _magoRequestServiceMock.Verify(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)), Times.Once);
+        }
+
+        // Test per SyncPrelMatFiltered
+        [Fact]
+        public async Task SyncPrelMatFiltered_ShouldReturnOk_WhenSyncIsSuccessful()
+        {
+            // Arrange
+            var testSyncPrelMatFilteredDto = new SyncPrelMatFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                PrelMatList = new List<PrelMatDto>()
+            };
+
+            var loginResponseTuple = (_testMagoLoginResponse, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _magoRequestServiceMock.Setup(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)))
+                .Returns(Task.CompletedTask);
+            _magoRequestServiceMock.Setup(s => s.SyncPrelMatFiltered(_testMagoLoginResponse, _testSettingsDto, testSyncPrelMatFilteredDto, true))
+                .Returns(Task.FromResult<IEnumerable<SyncPrelMatRequestDto>>(new List<SyncPrelMatRequestDto> { _testSyncPrelMatRequest }));
+            _responseHandlerMock.Setup(rh => rh.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<object>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new OkObjectResult("Sync successful"));
+
+            // Act
+            var result = await _controller.SyncPrelMatFiltered(testSyncPrelMatFilteredDto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal("Sync successful", okResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncPrelMatFiltered_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Arrange
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncPrelMatFiltered(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncPrelMatFiltered_ShouldReturnNotFound_WhenLoginFails()
+        {
+            // Arrange
+            var testSyncPrelMatFilteredDto = new SyncPrelMatFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                PrelMatList = new List<PrelMatDto>()
+            };
+
+            (MagoLoginResponseDto, SettingsDto) loginResponseTuple = (null, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncPrelMatFiltered(testSyncPrelMatFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncPrelMatFiltered_ShouldReturnBadRequest_WhenSettingsAreNull()
+        {
+            // Arrange
+            var testSyncPrelMatFilteredDto = new SyncPrelMatFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                PrelMatList = new List<PrelMatDto>()
+            };
+
+            (MagoLoginResponseDto, SettingsDto) loginResponseTuple = (_testMagoLoginResponse, null);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncPrelMatFiltered(testSyncPrelMatFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncPrelMatFiltered_ShouldReturnBadRequest_WhenServiceThrowsException()
+        {
+            // Arrange
+            var testSyncPrelMatFilteredDto = new SyncPrelMatFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                PrelMatList = new List<PrelMatDto>()
+            };
+
+            var loginResponseTuple = (_testMagoLoginResponse, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _magoRequestServiceMock.Setup(s => s.SyncPrelMatFiltered(_testMagoLoginResponse, _testSettingsDto, testSyncPrelMatFilteredDto, true))
+                .Throws(new Exception("Sync failed"));
+            _magoRequestServiceMock.Setup(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)))
+                .Returns(Task.CompletedTask);
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncPrelMatFiltered(testSyncPrelMatFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+            
+            // Verify logoff was called even on exception
+            _magoRequestServiceMock.Verify(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)), Times.Once);
+        }
+
+        // Test per SyncInventarioFiltered
+        [Fact]
+        public async Task SyncInventarioFiltered_ShouldReturnOk_WhenSyncIsSuccessful()
+        {
+            // Arrange
+            var testSyncInventarioFilteredDto = new SyncInventarioFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                InventarioList = new List<InventarioDto>()
+            };
+
+            var loginResponseTuple = (_testMagoLoginResponse, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _magoRequestServiceMock.Setup(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)))
+                .Returns(Task.CompletedTask);
+            _magoRequestServiceMock.Setup(s => s.SyncInventarioFiltered(_testMagoLoginResponse, _testSettingsDto, testSyncInventarioFilteredDto, true))
+                .Returns(Task.FromResult<IEnumerable<SyncInventarioRequestDto>>(new List<SyncInventarioRequestDto> { _testSyncInventarioRequest }));
+            _responseHandlerMock.Setup(rh => rh.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<object>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new OkObjectResult("Sync successful"));
+
+            // Act
+            var result = await _controller.SyncInventarioFiltered(testSyncInventarioFilteredDto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal("Sync successful", okResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncInventarioFiltered_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Arrange
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncInventarioFiltered(null);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncInventarioFiltered_ShouldReturnBadRequest_WhenWorkerIdSyncRequestDtoIsNull()
+        {
+            // Arrange
+            var testSyncInventarioFilteredDto = new SyncInventarioFilteredDto
+            {
+                WorkerIdSyncRequestDto = null,
+                InventarioList = new List<InventarioDto>()
+            };
+
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncInventarioFiltered(testSyncInventarioFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncInventarioFiltered_ShouldReturnNotFound_WhenLoginFails()
+        {
+            // Arrange
+            var testSyncInventarioFilteredDto = new SyncInventarioFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                InventarioList = new List<InventarioDto>()
+            };
+
+            (MagoLoginResponseDto, SettingsDto) loginResponseTuple = (null, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = await _controller.SyncInventarioFiltered(testSyncInventarioFilteredDto);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("Not Found", notFoundResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncInventarioFiltered_ShouldReturnBadRequest_WhenSettingsAreNull()
+        {
+            // Arrange
+            var testSyncInventarioFilteredDto = new SyncInventarioFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                InventarioList = new List<InventarioDto>()
+            };
+
+            (MagoLoginResponseDto, SettingsDto) loginResponseTuple = (_testMagoLoginResponse, null);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncInventarioFiltered(testSyncInventarioFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task SyncInventarioFiltered_ShouldReturnBadRequest_WhenServiceThrowsException()
+        {
+            // Arrange
+            var testSyncInventarioFilteredDto = new SyncInventarioFilteredDto
+            {
+                WorkerIdSyncRequestDto = _testWorkerIdSyncRequest,
+                InventarioList = new List<InventarioDto>()
+            };
+
+            var loginResponseTuple = (_testMagoLoginResponse, _testSettingsDto);
+
+            _magoRequestServiceMock.Setup(s => s.LoginWithWorkerIdAsync(_testWorkerIdSyncRequest))
+                .Returns(Task.FromResult(loginResponseTuple));
+            _magoRequestServiceMock.Setup(s => s.SyncInventarioFiltered(_testMagoLoginResponse, _testSettingsDto, testSyncInventarioFilteredDto, true))
+                .Throws(new Exception("Sync failed"));
+            _magoRequestServiceMock.Setup(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)))
+                .Returns(Task.CompletedTask);
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+
+            // Act
+            var result = await _controller.SyncInventarioFiltered(testSyncInventarioFilteredDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Bad Request", badRequestResult.Value);
+            _magoRequestServiceMock.Verify(s => s.LogoffAsync(It.Is<MagoTokenRequestDto>(dto => dto.Token == _testMagoLoginResponse.Token)), Times.Once);
+        }
+
     }
 }

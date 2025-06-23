@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using apiPB.Data;
 using apiPB.Models;
 using apiPB.Repository.Implementation;
+using apiPB.Utils.Implementation;
 using apiPB.Filters;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -30,6 +31,7 @@ namespace TestApi.Tests.Repository
                 FiscalYear = 2025,
                 Storage = "STG02",
                 BookInv = 20.0,
+                PrevBookInv = 15.0,
                 Imported = false,
                 UserImp = "User002",
                 DataImp = new DateTime(2025, 6, 2)
@@ -163,6 +165,7 @@ namespace TestApi.Tests.Repository
                     FiscalYear = 2025,
                     Storage = "STG03",
                     BookInv = 30.0,
+                    PrevBookInv = 25.0,
                     Imported = false,
                     UserImp = "User003",
                     DataImp = new DateTime(2025, 6, 3)
@@ -199,6 +202,11 @@ namespace TestApi.Tests.Repository
                     Item = "ITEM001",
                     Description = "Test Item 1",
                     BarCode = "BC001",
+                    SavedDate = new DateTime(2025, 6, 1),
+                    Imported = false,
+                    UserImp = "User001",
+                    DataImp = new DateTime(2025, 6, 1),
+                    PrevBookInv = 10.0,
                     FiscalYear = 2025,
                     Storage = "STG01",
                     BookInv = 15.0
@@ -223,19 +231,14 @@ namespace TestApi.Tests.Repository
         }
 
         [Fact]
-        public void PostInventarioList_ShouldReturnEmptyList_WhenNoDataExists()
+        public void PostInventarioList_ShouldThrowEmptyListException_WhenNoDataExists()
         {
             // Arrange
             var inventarioFilter = new List<InventarioFilter>();
 
-            _mockContext.Setup(c => c.A3AppInventarios).Returns(_mockSet.Object);
-
-            // Act
-            var result = _inventarioRepository.PostInventarioList(inventarioFilter);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _inventarioRepository.PostInventarioList(inventarioFilter));
+            Assert.Equal("La collezione non può essere vuota", exception.Message);
         }
 
         [Fact]
@@ -270,7 +273,7 @@ namespace TestApi.Tests.Repository
         }
 
         [Fact]
-        public void GetInventarioByFilter_ShouldReturnEmptyList_WhenNoDataExists()
+        public void GetInventarioByFilter_ShouldThrowEmptyListException_WhenNoDataExist()
         {
             // Arrange
             var inventarioData = new List<A3AppInventario>().AsQueryable();
@@ -282,12 +285,9 @@ namespace TestApi.Tests.Repository
 
             _mockContext.Setup(c => c.A3AppInventarios).Returns(_mockSet.Object);
 
-            // Act
-            var result = _inventarioRepository.GetViewInventario(_inventarioRequestFilterSample);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _inventarioRepository.GetViewInventario(_inventarioRequestFilterSample));
+            Assert.Equal("La collezione non può essere vuota", exception.Message);
         }
 
         [Fact]
@@ -312,7 +312,7 @@ namespace TestApi.Tests.Repository
         }
 
         [Fact]
-        public void GetInventarioByFilter_ShouldReturnEmptyList_WhenNoDataExistsWithBarCode()
+        public void GetInventarioByFilter_ShouldThrowEmptyListException_WhenNoDataExistsWithBarCode()
         {
             // Arrange
             var inventarioData = new List<A3AppInventario>().AsQueryable();
@@ -324,12 +324,9 @@ namespace TestApi.Tests.Repository
 
             _mockContext.Setup(c => c.A3AppInventarios).Returns(_mockSet.Object);
 
-            // Act
-            var result = _inventarioRepository.GetViewInventario(_inventarioRequestFilterSample);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _inventarioRepository.GetViewInventario(_inventarioRequestFilterSample));
+            Assert.Equal("La collezione non può essere vuota", exception.Message);
         }
 
         [Fact]
