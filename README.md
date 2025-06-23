@@ -152,6 +152,7 @@ Per costruire l'applicazione, bisogna spostarsi nella cartella `Scripts` ed eseg
 - `python`: per il comando `python`, indispensabile per l'esecuzione degli script di build; 
 - `ps2exe`: per la conversione dei file .ps1 (creati con gli script python per le build dai file batch) in file eseguibili; 
 - `pywebview`: una libreria python utilizzata per la costruzione della finestra per la WebApp.
+- `flask` e `flask_cors`: per la configurazione e l'avvio del server Frontend.
 
 Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
 1. Esecuzione di `build_script.py` (per la costruzione di Frontend e Backend in `build`);
