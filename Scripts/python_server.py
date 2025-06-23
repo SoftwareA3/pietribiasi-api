@@ -5,20 +5,22 @@ import threading
 import time
 import json
 from pathlib import Path
-import http.server
-import socketserver
 import socket
 import sys
 import os
+
+# Importazioni Flask
+from flask import Flask, send_from_directory, request
+from flask_cors import CORS
 
 DIRECTORY = "frontend"
 
 class WebServer:
     def __init__(self):
-        self.httpd = None
+        self.app = None
         self.server_thread = None
         self.host = "localhost"
-        self.port = 8
+        self.port = 8080
         
     def get_local_ip(self):
         """Restituisce l'indirizzo IPv4 locale del dispositivo (non localhost)."""
@@ -82,69 +84,91 @@ class WebServer:
         except Exception as e:
             print(f"Errore nel caricamento configurazione: {e}")
 
+    def create_flask_app(self):
+        """Crea e configura l'applicazione Flask"""
+        app = Flask(__name__)
+        CORS(app)  # Abilita CORS per tutte le route
+        
+        # Disabilita il logging di Flask per mantenere l'output pulito
+        import logging
+        log = logging.getLogger('werkzeug')
+        log.setLevel(logging.ERROR)
+        
+        # Disabilita il caching
+        @app.after_request
+        def after_request(response):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+            return response
+        
+        # Serve i file statici
+        @app.route('/', defaults={'path': ''})
+        @app.route('/<path:path>')
+        def serve_static(path):
+            if path == "":
+                path = "index.html"
+            try:
+                return send_from_directory(DIRECTORY, path)
+            except FileNotFoundError:
+                # Fallback per SPA (Single Page Application)
+                return send_from_directory(DIRECTORY, 'index.html')
+        
+        # Gestisci le richieste API che non esistono (evita errori 404 nel frontend)
+        @app.route('/api/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+        def api_not_found(path):
+            return {"error": "API endpoint not found", "path": path}, 404
+        
+        return app
+
     def start_server(self, config_path="build.json"):
-        """Avvia il server HTTP in un thread separato"""
+        """Avvia il server Flask in un thread separato"""
         if not Path(DIRECTORY).exists():
             print(f"Errore: Directory '{DIRECTORY}' non trovata!")
             return False
             
-
+        # Carica configurazione
         if Path(config_path).exists():
-                with open(config_path, 'r', encoding='utf-8') as f:
-                    config = json.load(f)
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
         
         if config['server']['frontend']['local_ip_automatically'] == True or "true":
             self.load_config_from_local_ip(config_path)
         else:
             self.load_config_from_build_json(config_path)
         
-        class HTTPServerHandler(http.server.SimpleHTTPRequestHandler):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, directory=DIRECTORY, **kwargs)
-            
-            def end_headers(self):
-                # CORS headers
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-                self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-                
-                # Cache disabilitato
-                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
-                self.send_header("Pragma", "no-cache")
-                self.send_header("Expires", "0")
-                
-                super().end_headers()
-            
-            def do_OPTIONS(self):
-                self.send_response(200)
-                self.end_headers()
-            
-            def log_message(self, format, *args):
-                # Log silenzioso in modalità desktop
-                pass
+        # Crea l'app Flask
+        self.app = self.create_flask_app()
+        
+        def run_flask():
+            """Funzione per eseguire Flask nel thread separato"""
+            try:
+                self.app.run(
+                    host=self.host, 
+                    port=self.port, 
+                    debug=False, 
+                    threaded=True,
+                    use_reloader=False 
+                )
+            except Exception as e:
+                print(f"Errore nell'esecuzione del server Flask: {e}")
         
         try:
-            self.httpd = socketserver.TCPServer((self.host, self.port), HTTPServerHandler)
-            self.server_thread = threading.Thread(target=self.httpd.serve_forever, daemon=True)
+            self.server_thread = threading.Thread(target=run_flask, daemon=True)
             self.server_thread.start()
-            print(f"Server avviato su http://{self.host}:{self.port}")
+            print(f"Server Flask avviato su http://{self.host}:{self.port}")
             return True
             
-        except OSError as e:
-            if "Address already in use" in str(e):
-                print(f"Errore: Porta {self.port} già in uso")
-            else:
-                print(f"Errore avvio server: {e}")
+        except Exception as e:
+            print(f"Errore avvio server Flask: {e}")
             return False
     
     def stop_server(self):
-        """Ferma il server HTTP"""
-        if self.httpd:
-            print("Arresto del server...")
-            self.httpd.shutdown()
-            self.httpd.server_close()
-            if self.server_thread:
-                self.server_thread.join(timeout=2)
+        """Ferma il server Flask"""
+        print("Arresto del server...")
+        # Con Flask in modalità threaded, il thread si chiude automaticamente
+        # quando l'applicazione principale termina (daemon=True)
+        if self.server_thread:
             print("Server arrestato")
 
 class PietribasiApp:
@@ -155,6 +179,11 @@ class PietribasiApp:
         """Callback chiamato quando la finestra viene chiusa"""
         print("Finestra chiusa, arresto dell'applicazione...")
         self.web_server.stop_server()
+    
+    def get_icon_path(self, use_absolute=True):
+        icon_path = Path("frontend/assets/icon.ico")
+        absolute_path = os.path.abspath(icon_path)
+        return str(absolute_path) if use_absolute else str(icon_path)
         
     def run(self):
         """Avvia l'applicazione desktop"""
@@ -164,7 +193,7 @@ class PietribasiApp:
             return
         
         # Attende che il server sia pronto
-        time.sleep(1)
+        time.sleep(2)  # Aumentato il tempo di attesa per Flask
         
         # URL dell'applicazione
         url = f"http://{self.web_server.host}:{self.web_server.port}/index.html"
@@ -181,17 +210,34 @@ class PietribasiApp:
             'on_top': False,
         }
         
+        # Aggiungi l'icona solo se esiste
+        # Usa use_absolute=False per percorso relativo
+        icon_path = self.get_icon_path(use_absolute=True)
+        
         # Crea e mostra la finestra
         try:
-            webview.create_window(
-                url=url,
-                **window_config
-            )
+            # Prova prima con l'icona, se fallisce riprova senza
+            try:
+                webview.create_window(
+                    url=url,
+                    **window_config,  
+                )
+            except TypeError as e:
+                if 'icon' in str(e) and 'icon' in window_config:
+                    print(f"Avviso: Parametro 'icon' non supportato in questa versione di pywebview,{str(e)}")
+                    # Rimuovi l'icona e riprova
+                    window_config_no_icon = {k: v for k, v in window_config.items() if k != 'icon'}
+                    webview.create_window(
+                        url=url,
+                        **window_config_no_icon
+                    )
+                else:
+                    raise e
             
             # Avvia l'applicazione (blocca fino alla chiusura)
             webview.start(
                 debug=False,  # Imposta True per debug
-                http_server=False  # Usiamo il nostro server
+                http_server=False,  # Usiamo il nostro server
             )
             
         except Exception as e:
@@ -208,6 +254,16 @@ def main():
     if not Path("frontend").exists():
         print("Errore: Directory 'frontend' non trovata!")
         print("Assicurati di eseguire lo script dalla directory principale del progetto.")
+        input("Premi INVIO per uscire...")
+        return
+    
+    # Controlla se Flask è installato
+    try:
+        import flask
+        import flask_cors
+    except ImportError:
+        print("Errore: Flask non è installato!")
+        print("Installa le dipendenze con: pip install flask flask-cors")
         input("Premi INVIO per uscire...")
         return
     

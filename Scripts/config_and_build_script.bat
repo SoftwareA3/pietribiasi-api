@@ -82,6 +82,8 @@ if errorlevel 1 (
         pause
         exit /b 1
     )
+    echo [OK] ps2exe installato e verificato con successo.
+    goto menu
 ) else (
     echo [OK] ps2exe già installato.
     powershell -Command "try { $module = Get-Module -ListAvailable -Name ps2exe; Write-Host 'Versione installata: ' $module.Version -ForegroundColor Cyan } catch { Write-Host 'Impossibile ottenere la versione.' -ForegroundColor Yellow }"
@@ -98,8 +100,39 @@ IF %ERRORLEVEL% NEQ 0 (
         exit /b 1
     )
     echo [OK] pywebview installato con successo.
+    goto menu
 ) else (
     echo [OK] pywebview già installato.
+)
+
+python -c "import flask" 2>nul
+IF %ERRORLEVEL% NEQ 0 (
+    echo Installazione Flask in corso...
+    pip install flask
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Errore nell'installazione di Flask!
+        pause
+        exit /b 1
+    )
+    echo [OK] Flask installato con successo.
+    goto menu
+) else (
+    echo [OK] Flask già installato.
+)
+
+python -c "import flask_cors" 2>nul
+IF %ERRORLEVEL% NEQ 0 (
+    echo Installazione Flask-CORS in corso...
+    pip install flask-cors
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Errore nell'installazione di Flask-CORS!
+        pause
+        exit /b 1
+    )
+    echo [OK] Flask-CORS installato con successo.
+    goto menu
+) else (
+    echo [OK] Flask-CORS già installato.
 )
 
 echo.

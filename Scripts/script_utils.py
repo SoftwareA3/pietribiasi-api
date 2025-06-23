@@ -242,6 +242,7 @@ def create_executable_from_batchscript(obj):
     bat_file = obj.build_dir / "Pietribiasi_App_start.bat"
     ps1_file = obj.build_dir / "Pietribiasi_App.ps1"
     exe_file = obj.build_dir / "Pietribiasi_App.exe"
+    icon_file = obj.project_root / "assets/icon.ico"
     
     # Verifica che il file .bat esista
     if not bat_file.exists():
@@ -293,7 +294,7 @@ if (Test-Path $batPath) {
         print(f"✅ File PowerShell creato: {ps1_file}")
         
         # Comando PowerShell per convertire .ps1 in .exe con opzioni migliorate
-        cmd = f'Invoke-ps2exe -inputFile "{ps1_file}" -outputFile "{exe_file}" -noConsole:$false -title "Pietribiasi App" -version "1.0.0.0" -copyright "Pietribiasi" -iconFile $null'
+        cmd = f'Invoke-ps2exe -inputFile "{ps1_file}" -outputFile "{exe_file}" -noConsole:$false -title "Pietribiasi App" -version "1.0.0.0" -copyright "Pietribiasi" -iconFile "{icon_file}"'
         
         print(f"Esecuzione comando: {cmd}")
         result = subprocess.run(
