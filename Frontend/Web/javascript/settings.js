@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 alert("Impostazioni modificate con successo");
                 console.log("Settings saved successfully:", response.statusText);
                 console.log("Ricaricamento della pagina...");
+                location.reload();
             } else {
                 console.error("Error saving settings:", response.statusText);
             }
