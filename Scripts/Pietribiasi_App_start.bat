@@ -36,7 +36,6 @@ set /p choice="Seleziona un'opzione (0-8): "
 
 if "%choice%"=="0" goto START_APP_FRONTEND_WINDOWED
 if "%choice%"=="1" goto START_APP
-if "%choice%"=="2" goto START_FRONTEND_SERVER_ONLY
 if "%choice%"=="3" goto START_BACKEND_ONLY
 if "%choice%"=="4" goto STOP_APP
 if "%choice%"=="5" goto RESTART_APP
@@ -91,13 +90,15 @@ if "!FRONTEND_RUNNING!"=="1" (
 ) else (
     echo Avvio del frontend con eseguibile...
     timeout /t 2 >nul
+    REM Avvia il server frontend 
+    start "Pietribiasi Frontend Server" python server_only.py
     REM Usa l'eseguibile PyInstaller invece di python
     if exist "PietribasiApp.exe" (
         start "Pietribiasi App" PietribasiApp.exe
         echo Applicazione desktop avviata tramite eseguibile!
     ) else (
         echo Eseguibile non trovato, uso fallback Python...
-        start "Pietribiasi Frontend Server" python python_server.py
+        start "Pietribiasi App" python python_server.py
     )
 )
 
@@ -135,32 +136,6 @@ if "!FRONTEND_RUNNING!"=="1" (
 echo.
 echo Applicazione avviata!
 call :SHOW_ADDRESSES
-echo.
-pause
-goto MENU
-
-:START_FRONTEND_SERVER_ONLY
-echo.
-echo Avvio del Server Frontend (solo per connessioni remote)...
-echo.
-
-call :CHECK_PROCESSES
-if "!FRONTEND_RUNNING!"=="1" (
-    echo Frontend già in esecuzione!
-) else (
-    echo Avvio del server frontend (modalità server)...
-    start "Pietribiasi Frontend Server" python server_only.py
-    timeout /t 3 >nul
-    echo Server frontend avviato!
-)
-
-echo.
-echo Server frontend disponibile su:
-echo   http://localhost:!FRONTEND_PORT!
-echo   http://!SERVER_IP!:!FRONTEND_PORT!
-echo.
-echo Altre macchine possono ora connettersi usando python_server.py
-echo o aprendo l'URL nel browser.
 echo.
 pause
 goto MENU
