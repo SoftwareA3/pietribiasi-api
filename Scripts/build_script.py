@@ -163,7 +163,6 @@ kill $FRONTEND_PID
             
             # Aggiorna i file di configurazione PRIMA del build
             await script_utils.update_appsettings(self)
-            #self.update_start_bat()
 
             with open("build.json", "r", encoding="utf-8") as f:
                 self.config = json.load(f)
@@ -194,7 +193,6 @@ kill $FRONTEND_PID
 
             self.create_launcher_script(target)
 
-            # script_utils.create_executable_from_batchscript(self)
             script_utils.create_pyinstaller_executable(self)
 
             print(f"\n✅ Build completato con successo!")
