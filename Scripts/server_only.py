@@ -2,21 +2,13 @@
 # server_only.py
 """
 Script per avviare solo il server HTTP senza la finestra desktop.
-Utile per permettere connessioni remote da altre macchine.
+Utilizza la classe WebServer di python_server.py per riutilizzare il codice Flask.
 """
 
 import signal
 import sys
 import time
 from pathlib import Path
-
-# Importa la classe WebServer dal modulo principale
-try:
-    from python_server import WebServer as WS
-except ImportError:
-    print("Errore: Impossibile importare WebServer da python_server.py")
-    print("Assicurati che python_server.py sia nella stessa directory.")
-    sys.exit(1)
 
 def signal_handler(sig, frame):
     """Gestisce il segnale di interruzione (Ctrl+C)"""
@@ -27,9 +19,18 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 def main():
-    """Funzione principale per avviare solo il server"""
-    print("=== Pietribiasi App - Solo Server ===")
+    """Funzione principale per avviare solo il server Flask"""
+    print("=== Pietribasi App - Solo Server ===")
     print("Avvio del server HTTP per connessioni remote...")
+    
+    # Importa la classe WebServer dal modulo principale
+    try:
+        from python_server import WebServer
+    except ImportError:
+        print("Errore: Impossibile importare WebServer da python_server.py")
+        print("Assicurati che python_server.py sia nella stessa directory.")
+        input("Premi INVIO per uscire...")
+        return
     
     # Controlla se siamo nella directory corretta
     if not Path("frontend").exists():
@@ -38,16 +39,32 @@ def main():
         input("Premi INVIO per uscire...")
         return
     
+    # Controlla le dipendenze Flask
+    try:
+        import flask
+        import flask_cors
+    except ImportError:
+        print("Errore: Flask non è installato!")
+        print("Installa le dipendenze con: pip install flask flask-cors")
+        input("Premi INVIO per uscire...")
+        return
+    
     # Configura il gestore del segnale per Ctrl+C
     signal.signal(signal.SIGINT, signal_handler)
     
-    # Crea e avvia il server
-    server = WS()
+    # Crea l'istanza del server Flask utilizzando la classe WebServer
+    server = WebServer()
     signal_handler.server = server  # Salva il riferimento per la chiusura
     
+    # Avvia il server
     if server.start_server():
-        print(f"Server avviato con successo!")
+        print(f"Server Flask avviato con successo!")
         print(f"Indirizzo locale: http://{server.host}:{server.port}")
+        
+        # Attende un momento che il server si avvii
+        time.sleep(2)
+        print("Server pronto per le connessioni!")
+        
         print("\nIl server è in esecuzione. Premi Ctrl+C per fermare.")
         
         try:
@@ -57,6 +74,8 @@ def main():
         except KeyboardInterrupt:
             # Gestito dal signal_handler
             pass
+        except Exception as e:
+            print(f"Errore durante l'esecuzione del server: {e}")
     else:
         print("Impossibile avviare il server. Verifica la configurazione.")
         input("Premi INVIO per uscire...")
