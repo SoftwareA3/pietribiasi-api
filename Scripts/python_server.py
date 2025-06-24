@@ -181,7 +181,7 @@ class PietribasiApp:
         self.web_server.stop_server()
     
     def get_icon_path(self, use_absolute=True):
-        icon_path = Path("frontend/assets/icon.ico")
+        icon_path = Path("frontend/assets/icon.png")
         absolute_path = os.path.abspath(icon_path)
         return str(absolute_path) if use_absolute else str(icon_path)
         
