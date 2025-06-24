@@ -40,20 +40,20 @@
     },
     "server": {
         "backend": {
-            "host": "192.168.100.107",
+            "host": "192.168.100.112",
             "port": 5245,
             "local_ip_automatically": false,
             "connection_string": "Data Source=SRV2022MES\\SQLEXPRESS;Initial Catalog=PIETRIBIASISRLM4;User ID=sa;Password=sa_2022;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
         },
         "frontend": {
-            "host": "192.168.100.107",
+            "host": "192.168.100.112",
             "port": 8080,
             "local_ip_automatically": false
         }
     },
     "remote_backend": {
         "enabled": true,
-        "host": "192.168.100.107",
+        "host": "192.168.100.112",
         "port": 5245,
         "protocol": "http",
         "health_endpoint": "/health",

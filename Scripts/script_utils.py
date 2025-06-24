@@ -174,6 +174,121 @@ def default_config():
         }
     }
 
+async def build_backend_for_target(self, target):
+        """Compila il backend per una specifica piattaforma"""
+        print(f"Compilazione del backend per {target['name']}...")
+        
+        backend_path = self.project_root / self.config['build']['backend_project']
+        build_output = self.build_dir / "backend"
+
+        # Leggi la connection string dal file build.json
+        connection_string = self.config['server']['backend']['connection_string']
+        print(f"Connection string backend: {connection_string}")
+
+        cmd = [
+            'dotnet', 'publish', str(backend_path),
+            '-c', 'Release',
+            '-o', str(build_output),
+            '--self-contained', 'true',
+            '-r', target['runtime']
+        ]
+        
+        result = subprocess.run(cmd, check=True)
+        if result.returncode != 0:
+            raise Exception(f"La compilazione del backend per {target['name']} è fallita")
+        
+        return build_output
+
+def create_pyinstaller_executable(obj):
+    """Crea un eseguibile con PyInstaller per python_server.py"""
+    print("Creazione eseguibile con PyInstaller...")
+    
+    # Path dei file
+    python_server_path = obj.project_root / "Scripts/python_server.py"
+    icon_path = obj.project_root / "frontend/assets/icon.ico"
+    output_dir = obj.build_dir
+    
+    if not python_server_path.exists():
+        print(f"❌ ERRORE: {python_server_path} non trovato!")
+        return False
+        
+    # Copia python_server.py nella build directory per semplificare i path
+    build_python_server = obj.build_dir / "python_server.py"
+    shutil.copy2(python_server_path, build_python_server)
+    
+    # Costruisci il comando PyInstaller
+    cmd = [
+        'pyinstaller',
+        '--onefile',  # Crea un singolo eseguibile
+        '--noconsole',  # Non mostra la console 
+        '--distpath', str(output_dir),  # Directory di output
+        '--workpath', str(output_dir / 'pyinstaller_temp'),  # Directory temporanea
+        '--specpath', str(output_dir),  # Directory per il file .spec
+        '--name', 'PietribasiApp',  # Nome dell'eseguibile
+    ]
+    
+    # Aggiungi l'icona se esiste
+    if icon_path.exists():
+        cmd.extend(['--icon', str(icon_path)])
+        print(f"✅ Icona trovata: {icon_path}")
+    else:
+        print(f"⚠️ Icona non trovata: {icon_path}")
+    
+    # Aggiungi percorsi dati aggiuntivi (per build.json e frontend)
+    cmd.extend([
+        '--add-data', f'{obj.build_dir / "build.json"};.',
+        '--add-data', f'{obj.build_dir / "frontend"};frontend',
+        str(build_python_server)
+    ])
+    
+    try:
+        # Cambia nella directory di build per l'esecuzione
+        old_cwd = os.getcwd()
+        os.chdir(obj.build_dir)
+        
+        print(f"Esecuzione comando: {' '.join(cmd)}")
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            print(f"❌ Errore PyInstaller: {result.stderr}")
+            return False
+            
+        # Verifica che l'eseguibile sia stato creato
+        exe_path = output_dir / "PietribasiApp.exe"
+        if exe_path.exists():
+            print(f"✅ Eseguibile creato: {exe_path}")
+            
+            # Pulizia file temporanei
+            temp_dirs = [
+                output_dir / 'pyinstaller_temp',
+                output_dir / '__pycache__'
+            ]
+            for temp_dir in temp_dirs:
+                if temp_dir.exists():
+                    shutil.rmtree(temp_dir, ignore_errors=True)
+            
+            # Rimuovi i file .spec generati
+            for spec_file in output_dir.glob('*.spec'):
+                try:
+                    spec_file.unlink()
+                except Exception as e:
+                    print(f"⚠️ Impossibile rimuovere {spec_file}: {e}")
+            
+            return True
+        else:
+            print(f"❌ Eseguibile non trovato: {exe_path}")
+            return False
+            
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Errore durante l'esecuzione di PyInstaller: {e}")
+        print(f"Stderr: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"❌ Errore generico PyInstaller: {e}")
+        return False
+    finally:
+        os.chdir(old_cwd)
+
 async def update_appsettings(obj):
     """Aggiorna appsettings.json in apiPB/ con i valori da build.json nella root"""
     print("Aggiornamento di appsettings.json...")

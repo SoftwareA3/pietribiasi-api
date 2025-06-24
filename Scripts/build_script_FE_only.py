@@ -74,30 +74,6 @@ class FrontendOnlyBuilder:
         except Exception as e:
             print(f"❌ Errore durante la configurazione di main.js: {e}")
     
-    def create_frontend_launcher(self):
-        """Copia il template Frontend_Pietribiasi_App_start.bat nella directory di build"""
-        print("Copia del template script di controllo...")
-        
-        # Path del template nella root del progetto
-        template_path = self.project_root / "Scripts/Frontend_Pietribiasi_App_start.bat"
-        # Path di destinazione nella cartella di build
-        destination_path = self.build_dir / "Pietribiasi_App_start.bat"
-        
-        if not template_path.exists():
-            print(f"❌ ERRORE: Template {template_path} non trovato!")
-            print("Assicurati che il file Frontend_Pietribiasi_App_start.bat sia presente nella root del progetto.")
-            return False
-        
-        try:
-            # Copia il template nella cartella di build
-            shutil.copy2(template_path, destination_path)
-            print(f"✅ Template copiato da {template_path} a {destination_path}")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Errore durante la copia del template: {e}")
-            return False
-    
     async def build(self):
         """Esegue l'intero processo di build per il solo frontend"""
         try:
@@ -121,11 +97,12 @@ class FrontendOnlyBuilder:
 
             
             # Crea gli script e file di supporto
-            self.create_frontend_launcher()
+            # self.create_frontend_launcher()
             # self.create_configuration_file()
             # self.create_package_json()
 
-            script_utils.create_executable_from_batchscript(self)
+            # script_utils.create_executable_from_batchscript(self)
+            script_utils.create_pyinstaller_executable(self)
             
             # Crea l'archivio
             print(f"\n✅ Build frontend completato con successo!")

@@ -57,7 +57,7 @@ if not exist "build.json" (
 REM Estrae i valori da build.json usando PowerShell
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.app.name } catch { Write-Output 'Pietribiasi App' }"') do set APP_NAME=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.build.backend_project } catch { Write-Output 'apiPB' }"') do set BACKEND_PROJECT=%%i
-for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.backend.host } catch { Write-Output 'localhost' }"') do set SERVER_IP=%%i
+for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.remote_backend.host } catch { Write-Output 'localhost' }"') do set SERVER_IP=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.backend.port } catch { Write-Output '5245' }"') do set BACKEND_PORT=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.frontend.port } catch { Write-Output '8080' }"') do set FRONTEND_PORT=%%i
 
@@ -73,7 +73,7 @@ goto :eof
 
 :START_APP_FRONTEND_WINDOWED
 echo.
-echo Avvio Frontend con Finestra Desktop...
+echo Avvio Frontend con Finestra Desktop (Eseguibile)...
 echo.
 
 REM Controlla se i processi sono già in esecuzione
@@ -89,9 +89,16 @@ if "!BACKEND_RUNNING!"=="1" (
 if "!FRONTEND_RUNNING!"=="1" (
     echo Frontend già in esecuzione!
 ) else (
-    echo Avvio del frontend...
+    echo Avvio del frontend con eseguibile...
     timeout /t 2 >nul
-    start "Pietribiasi Frontend Server" python python_server.py
+    REM Usa l'eseguibile PyInstaller invece di python
+    if exist "PietribasiApp.exe" (
+        start "Pietribiasi App" PietribasiApp.exe
+        echo Applicazione desktop avviata tramite eseguibile!
+    ) else (
+        echo Eseguibile non trovato, uso fallback Python...
+        start "Pietribiasi Frontend Server" python python_server.py
+    )
 )
 
 echo.
@@ -213,10 +220,18 @@ REM 2. Termina i processi backend
 echo Terminazione processi backend...
 taskkill /f /im !BACKEND_PROJECT!.exe 2>nul
 
-REM 3. Termina eventuali processi WebView (nel caso il frontend usi webview)
+REM 3. Termina eventuali processi WebView (nel caso il frontend usi webview) e il progesso PietribasiApp.exe
+REM (assicurati che il nome del processo sia corretto)
 echo Terminazione processi WebView...
 taskkill /f /im "Microsoft Edge WebView2" 2>nul
 taskkill /f /im msedgewebview2.exe 2>nul
+echo Terminazione processi PietribasiApp...
+tasklist | findstr PietribasiApp.exe >nul 2>&1
+if %errorlevel%==0 (
+    taskkill /f /im PietribasiApp.exe 2>nul
+) else (
+    echo Nessun processo PietribasiApp trovato.
+)
 
 REM 4. Attendiamo che i processi terminino completamente
 echo Attesa terminazione processi...

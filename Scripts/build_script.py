@@ -194,7 +194,8 @@ kill $FRONTEND_PID
 
             self.create_launcher_script(target)
 
-            script_utils.create_executable_from_batchscript(self)
+            # script_utils.create_executable_from_batchscript(self)
+            script_utils.create_pyinstaller_executable(self)
 
             print(f"\n✅ Build completato con successo!")
             if self.config['packaging'].get('create_portable', True):
