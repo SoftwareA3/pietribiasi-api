@@ -24,24 +24,23 @@ echo ===============================================
 echo.
 echo 0. Avvia Frontend con Finestra Desktop (WebView)
 echo 1. Avvia applicazione 
-echo 2. Avvia solo il Server Frontend (per connessioni remote)
-echo 3. Avvia solo il Backend
-echo 4. Ferma applicazione  
-echo 5. Riavvia applicazione
-echo 6. Stato applicazione
-echo 7. Mostra indirizzi IP
-echo 8. Esci
+echo 2. Avvia solo il Backend
+echo 3. Ferma applicazione  
+echo 4. Riavvia applicazione
+echo 5. Stato applicazione
+echo 6. Mostra indirizzi IP
+echo 7. Esci
 echo.
-set /p choice="Seleziona un'opzione (0-8): "
+set /p choice="Seleziona un'opzione (0-7): "
 
 if "%choice%"=="0" goto START_APP_FRONTEND_WINDOWED
 if "%choice%"=="1" goto START_APP
-if "%choice%"=="3" goto START_BACKEND_ONLY
-if "%choice%"=="4" goto STOP_APP
-if "%choice%"=="5" goto RESTART_APP
-if "%choice%"=="6" goto STATUS_APP
-if "%choice%"=="7" goto SHOW_IPS
-if "%choice%"=="8" goto EXIT
+if "%choice%"=="2" goto START_BACKEND_ONLY
+if "%choice%"=="3" goto STOP_APP
+if "%choice%"=="4" goto RESTART_APP
+if "%choice%"=="5" goto STATUS_APP
+if "%choice%"=="6" goto SHOW_IPS
+if "%choice%"=="7" goto EXIT
 goto MENU
 
 :LOAD_CONFIG_FROM_BUILD_JSON
