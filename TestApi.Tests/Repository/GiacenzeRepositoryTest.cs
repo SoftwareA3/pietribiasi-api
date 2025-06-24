@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using apiPB.Data;
 using apiPB.Models;
-using apiPB.Repository.Abstraction;
 using apiPB.Repository.Implementation;
+using apiPB.Utils.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -14,9 +13,9 @@ namespace TestApi.Tests.Repository
 {
     public class GiacenzeRepositoryTest
     {
+        private readonly Mock<ApplicationDbContext> _mockContext;
+        private readonly Mock<DbSet<VwApiGiacenze>> _mockSet;
         private readonly GiacenzeRepository _giacenzeRepository;
-        private readonly Mock<ApplicationDbContext> _mockContext = new Mock<ApplicationDbContext>();
-        private readonly Mock<DbSet<VwApiGiacenze>> _mockSet = new Mock<DbSet<VwApiGiacenze>>();
 
         private readonly List<VwApiGiacenze> _giacenzeDataSample = new List<VwApiGiacenze>
         {
@@ -42,22 +41,21 @@ namespace TestApi.Tests.Repository
 
         public GiacenzeRepositoryTest()
         {
-            _giacenzeRepository = new GiacenzeRepository(_mockContext.Object);
+            _mockContext = new Mock<ApplicationDbContext>();
             _mockSet = new Mock<DbSet<VwApiGiacenze>>();
+            _giacenzeRepository = new GiacenzeRepository(_mockContext.Object);
         }
 
         [Fact]
-        public void GetGiacenze_ShouldReturnListOfGiacenze()
+        public void GetGiacenze_ShouldReturnListOfGiacenze_WhenDataExists()
         {
             // Arrange
-            var giacenzeData = _giacenzeDataSample.AsQueryable();
+            var giacenzeData = new List<VwApiGiacenze>() {_giacenzeDataSample[0], _giacenzeDataSample[1]}.AsQueryable();
 
             _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.Provider).Returns(giacenzeData.Provider);
             _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.Expression).Returns(giacenzeData.Expression);
             _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.ElementType).Returns(giacenzeData.ElementType);
             _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.GetEnumerator()).Returns(giacenzeData.GetEnumerator());
-
-            _mockContext.Setup(c => c.VwApiGiacenzes).Returns(_mockSet.Object);
 
             // Act
             var result = _giacenzeRepository.GetGiacenze();
@@ -67,38 +65,37 @@ namespace TestApi.Tests.Repository
             Assert.Equal(2, result.Count());
             Assert.Contains(result, g => g.Item == "ITEM001");
             Assert.Contains(result, g => g.Item == "ITEM002");
+            Assert.Contains(result, g => g.Description == "Test Item 1");
+            Assert.Contains(result, g => g.Description == "Test Item 2");
+            Assert.Contains(result, g => g.BookInv == 10.5);
+            Assert.Contains(result, g => g.BookInv == 20.0);
         }
 
         [Fact]
-        public void GetGiacenze_ShouldReturnEmptyList_WhenNoDataExist()
+        public void GetGiacenze_ShouldThrowEmptyListException_WhenNoDataExists()
         {
             // Arrange
-            var giacenzeData = new List<VwApiGiacenze>().AsQueryable();
+            var emptyGiacenzeData = new List<VwApiGiacenze>().AsQueryable();
 
-            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.Provider).Returns(giacenzeData.Provider);
-            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.Expression).Returns(giacenzeData.Expression);
-            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.ElementType).Returns(giacenzeData.ElementType);
-            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.GetEnumerator()).Returns(giacenzeData.GetEnumerator());
+            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.Provider).Returns(emptyGiacenzeData.Provider);
+            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.Expression).Returns(emptyGiacenzeData.Expression);
+            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.ElementType).Returns(emptyGiacenzeData.ElementType);
+            _mockSet.As<IQueryable<VwApiGiacenze>>().Setup(m => m.GetEnumerator()).Returns(emptyGiacenzeData.GetEnumerator());
 
             _mockContext.Setup(c => c.VwApiGiacenzes).Returns(_mockSet.Object);
 
-            // Act
-            var result = _giacenzeRepository.GetGiacenze();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            // Act & Assert
+            Assert.Throws<EmptyListException>(() => _giacenzeRepository.GetGiacenze());
         }
 
         [Fact]
-        public void GiacenzeRepository_ShouldInitializeWithContext()
+        public void GetGiacenze_ShouldThrowException_WhenDbSetIsNull()
         {
             // Arrange
-            var mockContext = new Mock<ApplicationDbContext>();
+            _mockContext.Setup(c => c.VwApiGiacenzes).Returns((DbSet<VwApiGiacenze>)null);
 
             // Act & Assert
-            var exception = Record.Exception(() => new GiacenzeRepository(mockContext.Object));
-            Assert.Null(exception);
+            Assert.Throws<ArgumentNullException>(() => _giacenzeRepository.GetGiacenze());
         }
     }
 }
