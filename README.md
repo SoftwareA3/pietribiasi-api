@@ -33,7 +33,8 @@
    9. [Repository](#repository)
    10. [Services](#services)
    11. [Utils](#utils)
-   12. [Sequenza di esecuzione](#sequenza-di-esecuzione)
+   12. [Gestione delle eccezioni](#gestione-delle-eccezioni)
+   13. [Sequenza di esecuzione](#sequenza-di-esecuzione)
        - [Richieste GET](#richieste-get)
        - [Richieste POST](#richieste-post)
        - [Richieste DELETE](#richieste-delete)
@@ -50,7 +51,6 @@ I file verranno descritti brevemente di seguito:
 - `build_script_FE_only.py`: script che serve per la configurazione e la costruzione delle cartelle `build_FE` (per la costruzione della WebApp Frontend) e `dist_FE` con il file compresso di build_FE;
 - `build_scritp.py`: script che serve per la configurazione e la costruzione delle cartelle `build` (per la costruzione della console per l'avvio di Frontend e Backend) e `dist` con il file compresso di build;
 - `build.json`: file di configurazione dell'applicazione che verrà descritto in seguito con una sezione apposita. Viene copiato, filtrato e usato in entrambe le cartelle di build;
-- `Frontend_Pietribiasi_App_start.bat`: script batch per l'avvio del Frontend. Viene usato per creare l'eseguibile col quale eseguire `python_server.py`. Viene copiato, rinominato e usato in `build_FE`;
 - `Pietribiasi_App_start.bat`: script batch per l'avvio della console dell'applicazione, con la quale avviare Frontend e/o Backend. Viene usato per creare l'eseguibile col quale aprire la console dell'applicazione. Viene copiato e usato in `build_FE`
 - `config_and_build_script.bat`: script che si occupa di installare le dipendenze per poi far scegliere se eseguire `build_script_FE_only.py`, `build_script.py` o entrambi. È lo script da avviare dopo la clonazione della repository. Verrà descritto meglio in una sezione dedicata;
 - `python_server.py`: script che si occupa dell'apertura della finestra per il Frontend. La finestra si rpesenta come la finestra di un'applicazione. Viene copiato e usato in entrambe le cartelle di build;
@@ -150,8 +150,8 @@ Di seguito viene approfondito il file `build.json`
 ## Build
 Per costruire l'applicazione, bisogna spostarsi nella cartella `Scripts` ed eseguire lo script batch `config_and_build.bat`. Lo script chiedera i permessi di amministratore per scaricare le dipendenze dell'applicazione, quali: 
 - `python`: per il comando `python`, indispensabile per l'esecuzione degli script di build; 
-- `ps2exe`: per la conversione dei file .ps1 (creati con gli script python per le build dai file batch) in file eseguibili; 
-- `pywebview`: una libreria python utilizzata per la costruzione della finestra per la WebApp.
+- `PiInstaller`: per realizzare l'eseguibile dell'applicazione web;
+- `pywebview`: una libreria python utilizzata per la costruzione della finestra per la WebApp;
 - `flask` e `flask_cors`: per la configurazione e l'avvio del server Frontend.
 
 Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
@@ -166,18 +166,17 @@ Aperta la cartella `build`, è possibile eseguire il file con estensione `.exe`.
 Viene aperta una console con le seguenti opzioni:
 0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è messa per testare il Frontend;
 1. Avvia l'applicazione, inizializzando i server Frontend e Backend, senza però aprire la finestra con l'applicazione
-2. Avvia solo il server Frontend
-3. Avvia solo il server Backend
-4. Ferma i server
-5. Riavvia i server
-6. Mostra lo stato dei server
-7. Mostra gli IP dove sono disponibili i server Frontend e Backend
-8. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server e la console.
+2. Avvia solo il server Backend
+3. Ferma i server
+4. Riavvia i server
+5. Mostra lo stato dei server
+6. Mostra gli IP dove sono disponibili i server Frontend e Backend
+7. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server e la console.
 
 # Avvio FrontEnd con build_FE
 Una volta finita la build per il Frontend, verrà generata la cartella `build_FE` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist_FE`.
-Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
-Il file batch avvia delle console che vengono chiuse subito per aprire la finestra con la WebApp.
+Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile apre una finestra con l'applicazione web.
+In alternativa, è possibile connettersi all'IP del server frontend dal browser.
 
 ---
 
@@ -658,6 +657,35 @@ public IActionResult PutViewInventario([FromBody] ViewInventarioPutRequestDto? r
 
 ---
 
+```csharp
+public IActionResult GetInventarioNotImported()
+```
+- **Endpoint:** `get_inventario_not_imported`
+- **Richiesta:** GET
+- **Descrizione:** Recupera le informazioni non sincronizzate dalla tabella 
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `204 No Content` se la richiesta ha ritornato una lista vuota perché non ci sono record non importati.
+
+---
+
+```csharp
+public IActionResult GetNotImportedAppInventarioByFilter([FromBody] ViewInventarioRequestDto? request)
+```
+- **Endpoint:** `view_inventario/not_imported/filtered`
+- **Richiesta:** POST
+- **Descrizione:** Recupera le informazioni non sincronizzate e filtrate dalla tabella  
+- **Parametri:**
+    - `ViewInventarioRequestDto` Dto di richiesta contenente i filtri di ricerca
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella con i filtri applicati
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati.
+
+---
+
 #### JobController
 **ROUTE:** `api/job`
 Questa classe si occupa del recupero delle informazioni dalla vista `vw_api_job`
@@ -791,24 +819,25 @@ public IActionResult GetMostepsMocomponentWithBarCode([FromBody] BarCodeRequestD
 
 ---
 
-#### OmmessageController
-**ROUTE:** `api/ommessage`
-Questa classe si occupa del recupero dei file di log da Mago4, utilizzando MoId come parametro di ricerca. Interroga la vista `vw_api_ommessages`
+#### ActionMessageController
+**ROUTE:** `api/action_message`
+Questa classe si occupa del recupero dei file di log da Mago4, utilizzando parametri di ricerca. Interroga la vista `vw_api_action_message`
 
 ---
 
 ```csharp
-public IActionResult GetOmmessageGroupedByMoId([FromBody] MoIdRequestDto moIdRequestDto)
+public IActionResult GetActionMessagesByFilter([FromBody] ImportedLogMessageDto? request)
 ```
-- **Endpoint:** `get_log_from_moid`
+- **Endpoint:** `get_action_messages_filtered`
 - **Richiesta:** POST
-- **Descrizione:** Recupera le informazioni dalla vista, utilizzando il MoId
+- **Descrizione:** Ritorna tutte le informazioni della vista vw_om_action_messages filtrate in base ai parametri passati
 - **Parametri:**
-    - `MoIdRequestDto` Dto di ricerca contenente l'identificativo MoId
+    - `ImportedLogMessageDto` Dto di ricerca contenente i parametri di ricerca
 - **Ritorna:** `IActionResult`  
-    - `200 Ok` se l'operazione va a buon fine. Ritorna i record della vista filtrati
-    - `400 Bad Request` se la richiesta ha corpo nullo.
-    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `200 Ok` se l'operazione va a buon fine. Ritorna i record della vista filtrati;
+    - `204 No Content`: se l'operazione va a buon fine ma non ci sono dati da recuperare;
+    - `400 Bad Request` se la richiesta ha corpo nullo;
+    - `404 Not Found` se la richiesta non ha prodotto risultati o si sono verificati degli errori.
 
 ---
 
@@ -905,6 +934,35 @@ public IActionResult GetPrelMatWithComponent([FromBody] ComponentRequestDto? a3A
 
 ---
 
+```csharp
+public IActionResult GetNotImportedPrelMat()
+```
+- **Endpoint:** `view_prel_mat/not_imported`
+- **Richiesta:** GET
+- **Descrizione:** Recupera le informazioni non sincronizzate dalla tabella 
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `204 No Content` se la richiesta ha ritornato una lista vuota perché non ci sono record non importati.
+
+---
+
+```csharp
+public IActionResult GetNotImportedPrelMatWithFilter(ViewPrelMatRequestDto request)
+```
+- **Endpoint:** `view_prel_mat/not_imported`
+- **Richiesta:** POST
+- **Descrizione:** Recupera le informazioni non sincronizzate e filtrate dalla tabella  
+- **Parametri:**
+    - `ViewPrelMatRequestDto` Dto di richiesta contenente i filtri di ricerca
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella con i filtri applicati
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati.
+
+---
+
 #### RegOreController
 **ROUTE:** `api/reg_ore`
 Questa classe si occupa di effettuare le operazioni CRUD sulla tabella `A3_app_reg_ore`
@@ -980,6 +1038,37 @@ public IActionResult DeleteRegOreId([FromBody] ViewOreDeleteRequestDto? a3AppDel
     - `200 Ok` se l'operazione va a buon fine e il record viene eliminato correttamente
     - `400 Bad Request` se la richiesta ha corpo nullo.
     - `404 Not Found` se la richiesta non ha prodotto risultati e il record non viene eliminato correttamente
+
+---
+
+```csharp
+public IActionResult GetRegOreNotImported()
+```
+- **Endpoint:** `view_ore/not_imported`
+- **Richiesta:** GET
+- **Descrizione:** Recupera le informazioni non sincronizzate dalla tabella 
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `204 No Content` se la richiesta ha ritornato una lista vuota perché non ci sono record non importati.
+
+---
+
+```csharp
+public IActionResult GetNotImportedAppRegOre([FromBody] ViewOreRequestDto? filter)
+```
+- **Endpoint:** `view_ore/not_imported/filtered`
+- **Richiesta:** POST
+- **Descrizione:** Recupera le informazioni non sincronizzate e filtrate dalla tabella  
+- **Parametri:**
+    - `ViewOreRequestDto` Dto di richiesta contenente i filtri di ricerca
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella con i filtri applicati
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati.
+
+---
 
 #### WorkerController
 **ROUTE:** `api/worker`
@@ -1102,17 +1191,30 @@ Sono necessari per ridurre al minimo il compito dei controllers, che si occupera
 ---
 
 ## Utils
-Gli Utils sono classi che servono per supportare alcuni processi. In particolare per gestire gli errori dei controller e scrivere il file di log. I file contenuti in Utils sono due:
+Gli Utils sono classi che servono per supportare alcuni processi. In particolare per gestire gli errori dei controller e scrivere il file di log. I file contenuti in Utils sono tre:
 - LogService: classe che serve a creare la cartella il file di log e a popolarlo con le informazioni necessarie.
 - ResponseHandler: è il gestore delle risposte dei Controller dopo aver ricevuto una richiesta API. Questa classe si occupa di catturare la condizione, scrivere sul file di log e ritornare una risposta. 
+- ApplicationException: classe che inserisce alcune eccezioni personalizzate. Contiene un metodo utile per controllare se da un metodo dev'essere lanciata un'eccezione per lista vuota o se la lista vuota è attesa.
 
 In particolare gestisce 3 tipi di situazione:
 - BadRequest: il corpo della richiesta all'API è vuoto
-- NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati. <strong><i>Su questo punto c'è da fare la premessa del NoContent, ossia quando ci si aspetta che non venga ritornato nulla</i></strong>
+- NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati. 
+- NoContent: la richiesta non ritorna una risposta perché non sono stati trovati dati. A differenza di NotFound, ci si aspetta che il contenuto ritornato possa essere vuoto.
 - Altre richieste tipo 200: (ad esempio 200 Ok o 201 Created) la richiesta è andata a buon fine. Ritorna il Dto di risposta e lo stampa sul file.
 
 ### Dipendenze
 - LogService: per scrivere sul file di log
+
+---
+
+## Gestione delle eccezioni
+Le eccezioni vengono lanciate dal livello di accesso ai dati, ossia dai repository. All'interno dei repository viene deciso che tipo di eccezione lanciare nei casi in cui:
+- Venga ritornato un contenuto nullo o una lista vuota e il risultato non è atteso `EmptyListException`;
+- Venga ritornata una lista vuota e ci si aspetta che il contenuto sia vuoto `ExpectedEmptyListException`;
+- I parametri passati al repository sono nulli o parzialmente nulli (ad esempio una proprietà del Filter) `ArgumentNullException`;
+- Altre eccezioni generiche `Exception`
+
+Di conseguenza le eccezioni vengono lanciate per essere catturate dal gestore finale delle eccezioni. A parte nel caso particolare del servizio di MagoRequestService, non vengono rilanciate eccezioni né gestite dai Service, ma sono catturate all'interno dei Controller e gestite tramite la classe `ResponseHandler`. In base all'eccezione, viene ritornata una risposta HTTP con un messaggio pertinente.
 
 ---
 
@@ -1206,3 +1308,11 @@ E nel file di contesto del database:
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:YourDatabaseAlias");
 ```
+
+---
+
+## Torna all'inizio
+
+Per tornare rapidamente all'inizio di questo documento, puoi cliccare su questo link:
+
+[⬆️ Torna all'inizio](#pietribiasi-app)
