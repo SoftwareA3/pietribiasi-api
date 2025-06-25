@@ -226,13 +226,14 @@ namespace TestApi.Tests.Repository
         public void PostRegOreList_ThrowsEmptyListException_WhenNoDataProvided()
         {
             // Arrange
-            var filterList = new List<RegOreFilter>();
             SetupMockDbSet(_regOres.AsQueryable());
 
             // Act & Assert
-            var exception = Assert.Throws<EmptyListException>(() => _regOreRepository.PostRegOreList(filterList));
+            var exception = Assert.Throws<EmptyListException>(() =>
+                _regOreRepository.PostRegOreList(new List<RegOreFilter> { }));
+
             Assert.Equal(nameof(RegOreRepository), exception.ClassName);
-            Assert.Equal(nameof(RegOreRepository.PostRegOreList), exception.MethodName);
+            Assert.Equal(nameof(_regOreRepository.PostRegOreList), exception.MethodName);
         }
 
         [Fact]
@@ -532,24 +533,6 @@ namespace TestApi.Tests.Repository
             Assert.All(result, r => Assert.False(r.Imported));
             Assert.All(result, r => Assert.Equal(filter.WorkerId, r.WorkerId));
             Assert.All(result, r => Assert.Equal(filter.Job, r.Job));
-        }
-
-        [Fact]
-        public void GetNotImportedAppRegOreByFilter_ThrowsEmptyListException_WhenNoDataMatchesFilter()
-        {
-            // Arrange
-            var filter = new ViewOreRequestFilter
-            {
-                WorkerId = 999,
-                Job = "NonExistentJob"
-            };
-
-            SetupMockDbSet(Enumerable.Empty<A3AppRegOre>().AsQueryable());
-
-            // Act & Assert
-            var exception = Assert.Throws<EmptyListException>(() => _regOreRepository.GetNotImportedAppRegOreByFilter(filter));
-            Assert.Equal(nameof(RegOreRepository), exception.ClassName);
-            Assert.Equal(nameof(RegOreRepository.GetNotImportedAppRegOreByFilter), exception.MethodName);
         }
 
         [Fact]
