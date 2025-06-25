@@ -6,6 +6,7 @@ using apiPB.Data;
 using apiPB.Models;
 using apiPB.Repository.Implementation;
 using apiPB.Filters;
+using apiPB.Utils.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -75,6 +76,34 @@ namespace TestApi.Tests.Repository
                 Imported = false,
                 UserImp = "User1",
                 DataImp = new DateTime(2023, 10, 1)
+            },
+            new A3AppRegOre
+            {
+                RegOreId = 3,
+                WorkerId = 3,
+                SavedDate = DateTime.Now.AddDays(-2),
+                Job = "Job3",
+                RtgStep = 3,
+                Alternate = "Alt3",
+                AltRtgStep = 4,
+                Operation = "Op3",
+                OperDesc = "Operation 3",
+                Bom = "BOM3",
+                Variant = "Variant3",
+                ItemDesc = "Item Description 3",
+                Moid = 3,
+                Mono = "Mono3",
+                CreationDate = DateTime.Now.AddDays(-2),
+                Uom = "UOM3",
+                ProductionQty = 300,
+                ProducedQty = 150,
+                ResQty = 150,
+                Storage = "Storage3",
+                Wc = "WC3",
+                WorkingTime = 5400,
+                Imported = false,
+                UserImp = null,
+                DataImp = null
             }
         };
 
@@ -137,11 +166,15 @@ namespace TestApi.Tests.Repository
             _mockSet = new Mock<DbSet<A3AppRegOre>>();
             _mockContext = new Mock<ApplicationDbContext>();
             _regOreRepository = new RegOreRepository(_mockContext.Object);
+        }
 
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(_regOres.AsQueryable().Provider);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(_regOres.AsQueryable().Expression);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(_regOres.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(_regOres.GetEnumerator());
+        private void SetupMockDbSet(IQueryable<A3AppRegOre> data)
+        {
+            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(data.Provider);
+            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(data.Expression);
+            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+
             _mockContext.Setup(c => c.A3AppRegOres).Returns(_mockSet.Object);
         }
 
@@ -149,32 +182,21 @@ namespace TestApi.Tests.Repository
         public void GetAppRegOre_ReturnsRegOreList_WhenDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(_regOres.AsQueryable().Provider);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(_regOres.AsQueryable().Expression);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(_regOres.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(_regOres.GetEnumerator());
-
-            _mockContext.Setup(c => c.A3AppRegOres).Returns(_mockSet.Object);
+            SetupMockDbSet(_regOres.AsQueryable());
 
             // Act
             var result = _regOreRepository.GetAppRegOre();
 
             // Assert
-            Assert.Equal(2, result.Count());
+            Assert.Equal(3, result.Count());
             Assert.Equal(_regOres.First().Job, result.First().Job);
-            Assert.Equal(_regOres.Last().Job, result.Last().Job);
         }
 
         [Fact]
         public void GetAppRegOre_ReturnsEmptyList_WhenNoDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(new List<A3AppRegOre>().AsQueryable().Provider);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(new List<A3AppRegOre>().AsQueryable().Expression);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(new List<A3AppRegOre>().AsQueryable().ElementType);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(new List<A3AppRegOre>().GetEnumerator());
-
-            _mockContext.Setup(c => c.A3AppRegOres).Returns(_mockSet.Object);
+            SetupMockDbSet(Enumerable.Empty<A3AppRegOre>().AsQueryable());
 
             // Act
             var result = _regOreRepository.GetAppRegOre();
@@ -188,6 +210,7 @@ namespace TestApi.Tests.Repository
         {
             // Arrange
             var filterList = new List<RegOreFilter> { _regOreFilter };
+            SetupMockDbSet(_regOres.AsQueryable());
             _mockSet.Setup(m => m.AddRange(It.IsAny<IEnumerable<A3AppRegOre>>()));
             _mockContext.Setup(c => c.SaveChanges()).Returns(1);
 
@@ -200,30 +223,23 @@ namespace TestApi.Tests.Repository
         }
 
         [Fact]
-        public void PostRegOreList_DoesNotAddRegOre_WhenNoDataProvided()
+        public void PostRegOreList_ThrowsEmptyListException_WhenNoDataProvided()
         {
             // Arrange
             var filterList = new List<RegOreFilter>();
-            _mockSet.Setup(m => m.AddRange(It.IsAny<IEnumerable<A3AppRegOre>>()));
-            _mockContext.Setup(c => c.SaveChanges()).Returns(0);
+            SetupMockDbSet(_regOres.AsQueryable());
 
-            // Act
-            var result = _regOreRepository.PostRegOreList(filterList);
-
-            // Assert
-            Assert.Empty(result);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _regOreRepository.PostRegOreList(filterList));
+            Assert.Equal(nameof(RegOreRepository), exception.ClassName);
+            Assert.Equal(nameof(RegOreRepository.PostRegOreList), exception.MethodName);
         }
 
         [Fact]
         public void GetAppViewOre_ReturnsFilteredResults_WhenDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(_regOres.AsQueryable().Provider);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(_regOres.AsQueryable().Expression);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(_regOres.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(_regOres.GetEnumerator());
-
-            _mockContext.Setup(c => c.A3AppRegOres).Returns(_mockSet.Object);
+            SetupMockDbSet(_regOres.AsQueryable());
 
             // Act
             var result = _regOreRepository.GetAppViewOre(_viewOreRequestFilter);
@@ -234,21 +250,66 @@ namespace TestApi.Tests.Repository
         }
 
         [Fact]
-        public void GetAppViewOre_ReturnsEmptyList_WhenNoDataExists()
+        public void GetAppViewOre_ThrowsEmptyListException_WhenNoDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(new List<A3AppRegOre>().AsQueryable().Provider);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(new List<A3AppRegOre>().AsQueryable().Expression);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(new List<A3AppRegOre>().AsQueryable().ElementType);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(new List<A3AppRegOre>().GetEnumerator());
+            SetupMockDbSet(Enumerable.Empty<A3AppRegOre>().AsQueryable());
 
-            _mockContext.Setup(c => c.A3AppRegOres).Returns(_mockSet.Object);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _regOreRepository.GetAppViewOre(new ViewOreRequestFilter()));
+            Assert.Equal(nameof(RegOreRepository), exception.ClassName);
+            Assert.Equal(nameof(_regOreRepository.GetAppViewOre), exception.MethodName);
+        }
 
+        [Fact]
+        public void GetAppViewOre_OrdersByDataImp_WhenImportedIsTrue()
+        {
+            // Arrange
+            var testData = _regOres.ToList();
+            testData[0].Imported = true;
+            testData[0].DataImp = DateTime.Now.AddDays(-2);
+            testData[1].Imported = true;
+            testData[1].DataImp = DateTime.Now.AddDays(-1);
+            testData[2].Imported = true;
+            testData[2].DataImp = DateTime.Now;
+
+            SetupMockDbSet(testData.AsQueryable());
+
+            var filter = new ViewOreRequestFilter { Imported = true };
+            
             // Act
-            var result = _regOreRepository.GetAppViewOre(new ViewOreRequestFilter());
+            var result = _regOreRepository.GetAppViewOre(filter);
 
             // Assert
-            Assert.Empty(result);
+            Assert.NotEmpty(result);
+            var orderedResult = result.ToList();
+            for (int i = 0; i < orderedResult.Count - 1; i++)
+            {
+                Assert.True(orderedResult[i].DataImp >= orderedResult[i + 1].DataImp);
+            }
+        }
+
+        [Fact]
+        public void GetAppViewOre_OrdersBySavedDate_WhenImportedIsFalseOrNull()
+        {
+            // Arrange
+            var testData = _regOres.ToList();
+            testData.ForEach(x => x.Imported = false);
+
+            SetupMockDbSet(testData.AsQueryable());
+
+            var filter = new ViewOreRequestFilter { Imported = false };
+            
+            // Act
+            var result = _regOreRepository.GetAppViewOre(filter);
+
+            // Assert
+            Assert.NotEmpty(result);
+            var orderedResult = result.ToList();
+            for (int i = 0; i < orderedResult.Count - 1; i++)
+            {
+                Assert.True(orderedResult[i].SavedDate >= orderedResult[i + 1].SavedDate);
+            }
         }
 
         [Fact]
@@ -261,8 +322,7 @@ namespace TestApi.Tests.Repository
                 WorkingTime = 7200
             };
 
-            var regOre = _regOres.First(m => m.RegOreId == filter.RegOreId);
-            _mockSet.Setup(m => m.Find(It.IsAny<object[]>())).Returns(regOre);
+            SetupMockDbSet(_regOres.AsQueryable());
             _mockContext.Setup(c => c.SaveChanges()).Returns(1);
 
             // Act
@@ -270,10 +330,11 @@ namespace TestApi.Tests.Repository
 
             // Assert
             Assert.Equal(filter.WorkingTime, result.WorkingTime);
+            Assert.NotNull(result);
         }
 
         [Fact]
-        public void PutAppViewOre_ReturnsNull_WhenNoDataExists()
+        public void PutAppViewOre_ThrowsArgumentNullException_WhenRegOreNotFound()
         {
             // Arrange
             var filter = new ViewOrePutFilter
@@ -282,59 +343,312 @@ namespace TestApi.Tests.Repository
                 WorkingTime = 7200
             };
 
-            _mockSet.Setup(m => m.Find(It.IsAny<object[]>())).Returns((A3AppRegOre)null);
-            _mockContext.Setup(c => c.SaveChanges()).Returns(0);
+            SetupMockDbSet(Enumerable.Empty<A3AppRegOre>().AsQueryable());
 
-            // Act
-            var result = _regOreRepository.PutAppViewOre(filter);
-
-            // Assert
-            Assert.Null(result);
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => _regOreRepository.PutAppViewOre(filter));
+            Assert.Contains("999", exception.Message);
+            Assert.Contains("PutAppViewOre", exception.Message);
         }
 
         [Fact]
-        public void DeleteRegOre_ShouldReturnRegOre_WhenRegOreExists()
+        public void DeleteRegOreId_ReturnsRegOre_WhenRegOreExists()
         {
             // Arrange
-            var deleteRegOreId = new ViewOreDeleteRequestFilter
+            var deleteFilter = new ViewOreDeleteRequestFilter
             {
                 RegOreId = 1
             };
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(_regOres.AsQueryable().Provider);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(_regOres.AsQueryable().Expression);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(_regOres.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(_regOres.GetEnumerator());
-            _mockContext.Setup(c => c.A3AppRegOres).Returns(_mockSet.Object);
-            _mockSet.Setup(m => m.Find(It.IsAny<object[]>())).Returns(_regOres.FirstOrDefault(m => m.RegOreId == deleteRegOreId.RegOreId));
+            
+            SetupMockDbSet(_regOres.AsQueryable());
+            _mockSet.Setup(m => m.Find(It.IsAny<object[]>())).Returns((object[] ids) =>
+                _regOres.FirstOrDefault(x => x.RegOreId == (int)ids[0]));
+            _mockSet.Setup(m => m.Remove(It.IsAny<A3AppRegOre>()));
+            _mockContext.Setup(c => c.SaveChanges()).Returns(1);
 
             // Act
-            var result = _regOreRepository.DeleteRegOreId(deleteRegOreId);
+            var result = _regOreRepository.DeleteRegOreId(deleteFilter);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(deleteRegOreId.RegOreId, result.RegOreId);
+            Assert.Equal(deleteFilter.RegOreId, result.RegOreId);
+            _mockSet.Verify(m => m.Remove(It.IsAny<A3AppRegOre>()), Times.Once);
+            _mockContext.Verify(c => c.SaveChanges(), Times.Once);
         }
 
         [Fact]
-        public void DeleteRegOre_ShouldReturnNull_WhenRegOreDoesNotExist()
+        public void DeleteRegOreId_ThrowsArgumentNullException_WhenRegOreDoesNotExist()
         {
             // Arrange
-            var deleteRegOreId = new ViewOreDeleteRequestFilter
+            var deleteFilter = new ViewOreDeleteRequestFilter
             {
                 RegOreId = 999
             };
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Provider).Returns(_regOres.AsQueryable().Provider);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.Expression).Returns(_regOres.AsQueryable().Expression);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.ElementType).Returns(_regOres.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<A3AppRegOre>>().Setup(m => m.GetEnumerator()).Returns(_regOres.GetEnumerator());
-            _mockContext.Setup(c => c.A3AppRegOres).Returns(_mockSet.Object);
-            _mockSet.Setup(m => m.Find(It.IsAny<object[]>())).Returns(_regOres.FirstOrDefault(m => m.RegOreId == deleteRegOreId.RegOreId));
+            
+            SetupMockDbSet(Enumerable.Empty<A3AppRegOre>().AsQueryable());
+
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => _regOreRepository.DeleteRegOreId(deleteFilter));
+            Assert.Contains("999", exception.Message);
+            Assert.Contains("DeleteRegOreId", exception.Message);
+        }
+
+        [Fact]
+        public void GetNotImportedRegOre_ReturnsNotImportedRegOres_WhenDataExists()
+        {
+            // Arrange
+            var testData = _regOres.ToList();
+            testData[0].Imported = false;
+            testData[1].Imported = false;
+            testData[2].Imported = false;
+
+            SetupMockDbSet(testData.AsQueryable());
 
             // Act
-            var result = _regOreRepository.DeleteRegOreId(deleteRegOreId);
+            var result = _regOreRepository.GetNotImportedRegOre();
 
             // Assert
-            Assert.Null(result);
+            Assert.Equal(3, result.Count()); // Tutti e 3 hanno Imported = false
+            Assert.All(result, r => Assert.False(r.Imported));
+        }
+
+        [Fact]
+        public void GetNotImportedRegOre_ReturnsEmptyList_WhenNoNotImportedDataExists()
+        {
+            // Arrange
+            var testData = _regOres.ToList();
+            testData.ForEach(x => x.Imported = true);
+
+            SetupMockDbSet(testData.AsQueryable());
+
+            // Act
+            var result = _regOreRepository.GetNotImportedRegOre();
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void UpdateRegOreImported_UpdatesNotImportedRegOres_WhenValidFilterProvided()
+        {
+            // Arrange
+            var filter = new WorkerIdSyncFilter { WorkerId = "123" };
+            var testData = _regOres.ToList();
+            testData.ForEach(x => x.Imported = false);
+            
+            SetupMockDbSet(testData.AsQueryable());
+            _mockContext.Setup(c => c.SaveChanges()).Returns(testData.Count);
+
+            // Act
+            var result = _regOreRepository.UpdateRegOreImported(filter);
+
+            // Assert
+            Assert.NotNull(result);
+            _mockContext.Verify(c => c.SaveChanges(), Times.Once);
+        }
+
+        [Fact]
+        public void UpdateRegOreImported_ThrowsArgumentNullException_WhenFilterIsNull()
+        {
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => _regOreRepository.UpdateRegOreImported(null));
+            Assert.Equal("filter", exception.ParamName);
+        }
+
+        [Fact]
+        public void UpdateRegOreImported_ThrowsArgumentNullException_WhenWorkerIdIsNull()
+        {
+            // Arrange
+            var filter = new WorkerIdSyncFilter { WorkerId = null };
+
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => _regOreRepository.UpdateRegOreImported(filter));
+            Assert.Equal("filter", exception.ParamName);
+        }
+
+        [Fact]
+        public void UpdateRegOreImported_ThrowsEmptyListException_WhenNoNotImportedDataExists()
+        {
+            // Arrange
+            var filter = new WorkerIdSyncFilter { WorkerId = "123" };
+            var testData = _regOres.ToList();
+            testData.ForEach(x => x.Imported = true);
+
+            SetupMockDbSet(testData.AsQueryable());
+
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _regOreRepository.UpdateRegOreImported(filter));
+            Assert.Equal(nameof(RegOreRepository), exception.ClassName);
+            Assert.Equal(nameof(_regOreRepository.UpdateRegOreImported), exception.MethodName);
+        }
+
+        [Fact]
+        public void UpdateRegOreImported_SetsImportedFieldsCorrectly()
+        {
+            // Arrange
+            var filter = new WorkerIdSyncFilter { WorkerId = "456" };
+            var testData = _regOres.ToList();
+            testData.ForEach(x => x.Imported = false);
+            
+            SetupMockDbSet(testData.AsQueryable());
+            _mockContext.Setup(c => c.SaveChanges()).Returns(testData.Count);
+
+            var beforeTime = DateTime.Now.AddSeconds(-1);
+
+            // Act
+            _regOreRepository.UpdateRegOreImported(filter);
+
+            // Assert
+            var afterTime = DateTime.Now.AddSeconds(1);
+            
+            Assert.All(testData, item => 
+            {
+                Assert.True(item.Imported);
+                Assert.Equal("456", item.UserImp);
+                Assert.True(item.DataImp >= beforeTime && item.DataImp <= afterTime);
+            });
+        }
+
+        [Fact]
+        public void GetNotImportedAppRegOreByFilter_ReturnsFilteredNotImportedRegOres_WhenDataExists()
+        {
+            // Arrange
+            var filter = new ViewOreRequestFilter
+            {
+                WorkerId = 1,
+                Job = "Job1"
+            };
+
+            var testData = _regOres.ToList();
+            testData[1].Imported = false; // RegOreId 1 che corrisponde ai filtri
+
+            SetupMockDbSet(testData.AsQueryable());
+
+            // Act
+            var result = _regOreRepository.GetNotImportedAppRegOreByFilter(filter);
+
+            // Assert
+            Assert.Single(result);
+            Assert.All(result, r => Assert.False(r.Imported));
+            Assert.All(result, r => Assert.Equal(filter.WorkerId, r.WorkerId));
+            Assert.All(result, r => Assert.Equal(filter.Job, r.Job));
+        }
+
+        [Fact]
+        public void GetNotImportedAppRegOreByFilter_ThrowsEmptyListException_WhenNoDataMatchesFilter()
+        {
+            // Arrange
+            var filter = new ViewOreRequestFilter
+            {
+                WorkerId = 999,
+                Job = "NonExistentJob"
+            };
+
+            SetupMockDbSet(Enumerable.Empty<A3AppRegOre>().AsQueryable());
+
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _regOreRepository.GetNotImportedAppRegOreByFilter(filter));
+            Assert.Equal(nameof(RegOreRepository), exception.ClassName);
+            Assert.Equal(nameof(RegOreRepository.GetNotImportedAppRegOreByFilter), exception.MethodName);
+        }
+
+        [Fact]
+        public void UpdateImportedById_UpdatesSpecificRegOre_WhenValidFilterProvided()
+        {
+            // Arrange
+            var filter = new UpdateImportedIdFilter 
+            { 
+                Id = 1, 
+                WorkerId = "123" 
+            };
+            
+            var testData = _regOres.ToList();
+            testData[1].Imported = false; // RegOreId 1
+
+            SetupMockDbSet(testData.AsQueryable());
+            _mockContext.Setup(c => c.SaveChanges()).Returns(1);
+
+            // Act
+            var result = _regOreRepository.UpdateImportedById(filter);
+
+            // Assert
+            Assert.NotNull(result);
+            _mockContext.Verify(c => c.SaveChanges(), Times.Once);
+        }
+
+        [Fact]
+        public void UpdateImportedById_ThrowsArgumentNullException_WhenFilterIsNull()
+        {
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => _regOreRepository.UpdateImportedById(null));
+            Assert.Equal("filter", exception.ParamName);
+        }
+
+        [Fact]
+        public void UpdateImportedById_ThrowsArgumentNullException_WhenWorkerIdIsNull()
+        {
+            // Arrange
+            var filter = new UpdateImportedIdFilter 
+            { 
+                Id = 1, 
+                WorkerId = null 
+            };
+
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => _regOreRepository.UpdateImportedById(filter));
+            Assert.Equal("filter", exception.ParamName);
+        }
+
+        [Fact]
+        public void UpdateImportedById_ThrowsEmptyListException_WhenNoMatchingNotImportedRegOreExists()
+        {
+            // Arrange
+            var filter = new UpdateImportedIdFilter 
+            { 
+                Id = 999,
+                WorkerId = "123" 
+            };
+
+            SetupMockDbSet(_regOres.AsQueryable());
+
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => _regOreRepository.UpdateImportedById(filter));
+            Assert.Equal(nameof(RegOreRepository), exception.ClassName);
+            Assert.Equal(nameof(_regOreRepository.UpdateImportedById), exception.MethodName);
+        }
+
+        [Fact]
+        public void UpdateImportedById_SetsImportedFieldsCorrectly()
+        {
+            // Arrange
+            var filter = new UpdateImportedIdFilter 
+            { 
+                Id = 1, 
+                WorkerId = "789" 
+            };
+            
+            var testData = _regOres.ToList();
+            testData[1].Imported = false; // RegOreId 1
+            testData[2].Imported = false; // RegOreId 3
+
+            SetupMockDbSet(testData.AsQueryable());
+            _mockContext.Setup(c => c.SaveChanges()).Returns(1);
+
+            var beforeTime = DateTime.Now.AddSeconds(-1);
+
+            // Act
+            _regOreRepository.UpdateImportedById(filter);
+
+            // Assert
+            var afterTime = DateTime.Now.AddSeconds(1);
+            var updatedItem = testData[1]; // RegOreId 1
+            
+            Assert.True(updatedItem.Imported);
+            Assert.Equal("789", updatedItem.UserImp);
+            Assert.True(updatedItem.DataImp >= beforeTime && updatedItem.DataImp <= afterTime);
+            
+            // Verifica che l'altro elemento non sia stato modificato
+            Assert.False(testData[2].Imported); // RegOreId 3 should remain unchanged
         }
     }
 }

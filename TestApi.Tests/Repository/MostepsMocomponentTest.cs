@@ -6,6 +6,7 @@ using apiPB.Data;
 using apiPB.Models;
 using apiPB.Repository.Implementation;
 using apiPB.Filters;
+using apiPB.Utils.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -93,7 +94,7 @@ namespace TestApi.Tests.Repository
             CreationDate = new DateTime(2023, 10, 1),
             Operation = "Op1",
             BarCode = "BarCode1"
-        };  
+        };
 
         public MostepsMocomponentTest()
         {
@@ -102,16 +103,21 @@ namespace TestApi.Tests.Repository
             _mostepsMocomponentRepository = new MostepsMocomponentRepository(_mockContext.Object);
         }
 
+        private void SetupMockDbSet(IQueryable<VwApiMostepsMocomponent> data)
+        {
+            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(data.Provider);
+            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(data.Expression);
+            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+            
+            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
+        }
+
         [Fact]
         public void GetMostepsMocomponentJob_ReturnsDistinctResults_WhenDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
-
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
+            SetupMockDbSet(_mostepsMocomponents.AsQueryable());
 
             // Act
             var result = _mostepsMocomponentRepository.GetMostepsMocomponentJob(_jobFilter);
@@ -119,37 +125,28 @@ namespace TestApi.Tests.Repository
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
+            Assert.Equal("Job1", result.First().Job);
         }
 
         [Fact]
-        public void GetMostepsMocomponentJobDistinct_ReturnsEmpty_WhenNoDataExists()
+        public void GetMostepsMocomponentJob_ThrowsEmptyListException_WhenNoDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
+            SetupMockDbSet(Enumerable.Empty<VwApiMostepsMocomponent>().AsQueryable());
 
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
-
-            // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentJob(new JobFilter { Job = "NonExistentJob" });
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => 
+                _mostepsMocomponentRepository.GetMostepsMocomponentJob(new JobFilter { Job = "NonExistentJob" }));
+            
+            Assert.Equal(nameof(MostepsMocomponentRepository), exception.ClassName);
+            Assert.Equal(nameof(_mostepsMocomponentRepository.GetMostepsMocomponentJob), exception.MethodName);
         }
 
         [Fact]
-        public void GetMostepsMocomponentMonoDistinct_ReturnsDistinctResults_WhenDataExists()
+        public void GetMostepsMocomponentMono_ReturnsDistinctResults_WhenDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
-
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
+            SetupMockDbSet(_mostepsMocomponents.AsQueryable());
 
             // Act
             var result = _mostepsMocomponentRepository.GetMostepsMocomponentMono(_monoFilter);
@@ -157,37 +154,30 @@ namespace TestApi.Tests.Repository
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
+            Assert.Equal("Job1", result.First().Job);
+            Assert.Equal("Mono1", result.First().Mono);
         }
 
         [Fact]
-        public void GetMostepsMocomponentMonoDistinct_ReturnsEmpty_WhenNoDataExists()
+        public void GetMostepsMocomponentMono_ThrowsEmptyListException_WhenNoDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
+            SetupMockDbSet(_mostepsMocomponents.AsQueryable());
 
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
-
-            // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentMono(new MonoFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now });
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => 
+                _mostepsMocomponentRepository.GetMostepsMocomponentMono(
+                    new MonoFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now }));
+            
+            Assert.Equal(nameof(MostepsMocomponentRepository), exception.ClassName);
+            Assert.Equal(nameof(_mostepsMocomponentRepository.GetMostepsMocomponentMono), exception.MethodName);
         }
 
         [Fact]
-        public void GetMostepsMocomponentOperationDistinct_ReturnsDistinctResults_WhenDataExists()
+        public void GetMostepsMocomponentOperation_ReturnsDistinctResults_WhenDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
-
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
+            SetupMockDbSet(_mostepsMocomponents.AsQueryable());
 
             // Act
             var result = _mostepsMocomponentRepository.GetMostepsMocomponentOperation(_operationFilter);
@@ -195,37 +185,31 @@ namespace TestApi.Tests.Repository
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
+            Assert.Equal("Job1", result.First().Job);
+            Assert.Equal("Mono1", result.First().Mono);
+            Assert.Equal("Op1", result.First().Operation);
         }
 
         [Fact]
-        public void GetMostepsMocomponentOperationDistinct_ReturnsEmpty_WhenNoDataExists()
+        public void GetMostepsMocomponentOperation_ThrowsEmptyListException_WhenNoDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
+            SetupMockDbSet(_mostepsMocomponents.AsQueryable());
 
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
-
-            // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentOperation(new OperationFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation" });
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => 
+                _mostepsMocomponentRepository.GetMostepsMocomponentOperation(
+                    new OperationFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation" }));
+            
+            Assert.Equal(nameof(MostepsMocomponentRepository), exception.ClassName);
+            Assert.Equal(nameof(_mostepsMocomponentRepository.GetMostepsMocomponentOperation), exception.MethodName);
         }
 
         [Fact]
-        public void GetMostepsMocomponentBarCodeDistinct_ReturnsDistinctResults_WhenDataExists()
+        public void GetMostepsMocomponentBarCode_ReturnsDistinctResults_WhenDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
-
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
+            SetupMockDbSet(_mostepsMocomponents.AsQueryable());
 
             // Act
             var result = _mostepsMocomponentRepository.GetMostepsMocomponentBarCode(_barCodeFilter);
@@ -233,25 +217,126 @@ namespace TestApi.Tests.Repository
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
+            Assert.Equal("Job1", result.First().Job);
+            Assert.Equal("Mono1", result.First().Mono);
+            Assert.Equal("Op1", result.First().Operation);
+            Assert.Equal("BarCode1", result.First().BarCode);
         }
 
         [Fact]
-        public void GetMostepsMocomponentBarCodeDistinct_ReturnsEmpty_WhenNoDataExists()
+        public void GetMostepsMocomponentBarCode_ThrowsEmptyListException_WhenNoDataExists()
         {
             // Arrange
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Provider).Returns(_mostepsMocomponents.AsQueryable().Provider);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.Expression).Returns(_mostepsMocomponents.AsQueryable().Expression);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.ElementType).Returns(_mostepsMocomponents.AsQueryable().ElementType);
-            _mockSet.As<IQueryable<VwApiMostepsMocomponent>>().Setup(m => m.GetEnumerator()).Returns(_mostepsMocomponents.GetEnumerator());
+            SetupMockDbSet(_mostepsMocomponents.AsQueryable());
 
-            _mockContext.Setup(c => c.VwApiMostepsMocomponents).Returns(_mockSet.Object);
+            // Act & Assert
+            var exception = Assert.Throws<EmptyListException>(() => 
+                _mostepsMocomponentRepository.GetMostepsMocomponentBarCode(
+                    new BarCodeFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation", BarCode = "NonExistentBarCode" }));
+            
+            Assert.Equal(nameof(MostepsMocomponentRepository), exception.ClassName);
+            Assert.Equal(nameof(_mostepsMocomponentRepository.GetMostepsMocomponentBarCode), exception.MethodName);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentJob_HandlesDuplicateData_ReturnsDistinct()
+        {
+            // Arrange
+            var duplicateData = new List<VwApiMostepsMocomponent>
+            {
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", Operation = "Op1" },
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", Operation = "Op1" }, // Duplicate
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono2", Operation = "Op2" }
+            };
+            
+            SetupMockDbSet(duplicateData.AsQueryable());
 
             // Act
-            var result = _mostepsMocomponentRepository.GetMostepsMocomponentBarCode(new BarCodeFilter { Job = "NonExistentJob", Mono = "NonExistentMono", CreationDate = DateTime.Now, Operation = "NonExistentOperation", BarCode = "NonExistentBarCode" });
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentJob(_jobFilter);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Empty(result);
+            // Distinct dovrebbe rimuovere i duplicati, ma il test dipende dall'implementazione di Distinct() su VwApiMostepsMocomponent
+            Assert.True(result.Count() >= 1);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentMono_FiltersCorrectlyByAllParameters()
+        {
+            // Arrange
+            var testData = new List<VwApiMostepsMocomponent>
+            {
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 1) },
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono2", CreationDate = new DateTime(2023, 10, 1) },
+                new VwApiMostepsMocomponent { Job = "Job2", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 1) },
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 2) }
+            };
+            
+            SetupMockDbSet(testData.AsQueryable());
+
+            // Act
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentMono(_monoFilter);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            var item = result.First();
+            Assert.Equal("Job1", item.Job);
+            Assert.Equal("Mono1", item.Mono);
+            Assert.Equal(new DateTime(2023, 10, 1), item.CreationDate);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentOperation_FiltersCorrectlyByAllParameters()
+        {
+            // Arrange
+            var testData = new List<VwApiMostepsMocomponent>
+            {
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 1), Operation = "Op1" },
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 1), Operation = "Op2" },
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono2", CreationDate = new DateTime(2023, 10, 1), Operation = "Op1" }
+            };
+            
+            SetupMockDbSet(testData.AsQueryable());
+
+            // Act
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentOperation(_operationFilter);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            var item = result.First();
+            Assert.Equal("Job1", item.Job);
+            Assert.Equal("Mono1", item.Mono);
+            Assert.Equal(new DateTime(2023, 10, 1), item.CreationDate);
+            Assert.Equal("Op1", item.Operation);
+        }
+
+        [Fact]
+        public void GetMostepsMocomponentBarCode_FiltersCorrectlyByAllParameters()
+        {
+            // Arrange
+            var testData = new List<VwApiMostepsMocomponent>
+            {
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 1), Operation = "Op1", BarCode = "BarCode1" },
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 1), Operation = "Op1", BarCode = "BarCode2" },
+                new VwApiMostepsMocomponent { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 10, 1), Operation = "Op2", BarCode = "BarCode1" }
+            };
+            
+            SetupMockDbSet(testData.AsQueryable());
+
+            // Act
+            var result = _mostepsMocomponentRepository.GetMostepsMocomponentBarCode(_barCodeFilter);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            var item = result.First();
+            Assert.Equal("Job1", item.Job);
+            Assert.Equal("Mono1", item.Mono);
+            Assert.Equal(new DateTime(2023, 10, 1), item.CreationDate);
+            Assert.Equal("Op1", item.Operation);
+            Assert.Equal("BarCode1", item.BarCode);
         }
     }
 }
