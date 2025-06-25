@@ -110,7 +110,7 @@ namespace apiPB.Repository.Implementation
         public A3AppPrelMat DeletePrelMatId(ViewPrelMatDeleteFilter filter)
         {
             var deletePrelMat = _context.A3AppPrelMats.Find(filter.PrelMatId)
-                ?? throw new Exception($"Il prelievo non è stato trovato con l'ID {filter.PrelMatId} per DeletePrelMatId in PrelMatRepository.");
+                ?? throw new ArgumentNullException($"Il prelievo non è stato trovato con l'ID {filter.PrelMatId} per DeletePrelMatId in PrelMatRepository.");
 
             _context.A3AppPrelMats.Remove(deletePrelMat);
             _context.SaveChanges();
