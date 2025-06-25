@@ -139,6 +139,24 @@ def copy_build_json_to_build(obj, filter_frontend=True):
     
     print("✅ build.json copiato nella cartella di build")
     return True
+
+def copy_documentation_to_build(obj):
+    """Copia README.md nella cartella di build"""
+    print("Copia di README.md nella cartella di build...")
+    
+    build_doc_src = obj.project_root / "Scripts/README.md"
+    build_doc_dst = obj.build_dir / "README.md"
+    
+    # Legge il file README.md originale
+    with open(build_doc_src, 'r', encoding='utf-8') as f:
+        documentation = f.read()
+    
+    # Scrive il file README.md nella cartella di build
+    with open(build_doc_dst, 'w', encoding='utf-8') as f:
+        f.write(documentation)
+    
+    print("✅ Documentazione copiata nella cartella di build")
+    return True
         
 def default_config():
     """Configurazione di default"""

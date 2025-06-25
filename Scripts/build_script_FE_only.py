@@ -46,6 +46,7 @@ class FrontendOnlyBuilder:
 
             script_utils.copy_python_server(self)
             script_utils.copy_build_json_to_build(self, True)
+            script_utils.copy_documentation_to_build(self)
 
             
             # Crea gli script e file di supporto
