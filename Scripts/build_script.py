@@ -11,7 +11,7 @@ from datetime import datetime
 import script_utils
 
 class AppBuilder:
-    def __init__(self, config_path="Scripts/build.json"):
+    def __init__(self, config_path="build.json"):
         self.project_root = Path(__file__).parent.parent
         print(f"Root del progetto: {self.project_root}")
         

@@ -153,6 +153,11 @@ def default_config():
             "output_dir": "dist",
             "temp_dir": "build"
         },
+        "build_FE": {
+            "frontend_path": "Frontend",
+            "output_dir": "dist_FE",
+            "temp_dir": "build_FE"
+        },
         "targets": [
             {
                 "name": "Windows",

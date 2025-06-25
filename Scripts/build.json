@@ -8,13 +8,13 @@
     "build": {
         "backend_project": "apiPB",
         "frontend_path": "Frontend",
-        "output_dir": "dist",
-        "temp_dir": "build"
+        "output_dir": "PietribiasiApp_server_distribution",
+        "temp_dir": "PietribiasiApp_server"
     },
     "build_FE": {
         "frontend_path": "Frontend",
-        "output_dir": "dist_FE",
-        "temp_dir": "build_FE"
+        "output_dir": "PietribiasiApp_distribution",
+        "temp_dir": "PietribiasiApp"
     },
     "targets": [
         {
