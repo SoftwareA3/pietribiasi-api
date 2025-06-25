@@ -219,7 +219,7 @@ if errorlevel 1 (
 
 echo [OK] Entrambi gli script sono stati eseguiti con successo.
 echo.
-goto fine
+goto menu
 
 :build_full
 echo.
