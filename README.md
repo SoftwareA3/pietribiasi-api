@@ -164,14 +164,14 @@ Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
 Una volta finita la build per Frontend e Backend, verrà generata la cartella `build` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist`.
 Aperta la cartella `build`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
 Viene aperta una console con le seguenti opzioni:
-0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è messa per testare il Frontend;
+0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è inserita per testare il Frontend;
 1. Avvia l'applicazione, inizializzando i server Frontend e Backend, senza però aprire la finestra con l'applicazione
 2. Avvia solo il server Backend
 3. Ferma i server
 4. Riavvia i server
 5. Mostra lo stato dei server
 6. Mostra gli IP dove sono disponibili i server Frontend e Backend
-7. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server e la console.
+7. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server, la console e l'applicazione se aperta.
 
 # Avvio FrontEnd con build_FE
 Una volta finita la build per il Frontend, verrà generata la cartella `build_FE` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist_FE`.
@@ -206,7 +206,7 @@ I pulsanti disponibili per tutti gli utenti sono (Titolo - icona):
 - **Visualizza Ore Registrate** - 📄: porta alla pagina [Visualizza Ore Registrate](#visualizza-ore-registrate)
 - **Visualizza Prelievi Effettuati** - 🚚: porta alla pagina [Visualizza Prelievi Effettuati](#visualizza-prelievi-effettuati)
 - **Visualizza Registrazioni Inventario** - 🔍: porta alla pagina [Visualizza Registrazioni Inventario](#visualizza-registrazioni-inventario)
-- **Sincronizza** - 🔄️: porta alla pagina [Sincronizzazione](#sincronizzazione)
+- **Sincronizza** - 🔄️: porta alla pagina [Sincronizzazione](#sincronizzazione) (se la sincronizzazione è permessa per gli addetti)
 
 Le operazioni aggiuntive disponibili per gli utenti di tipo amministratore sono:
 - **Modalità Power User** - (👤 con un "+"): porta alla pagina [Power User](#power-user)
@@ -228,7 +228,7 @@ La pagina per la registrazione delle ore di una commessa si presenta come una se
 - Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_reg_ore**.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
 ---
@@ -266,7 +266,9 @@ In caso la commessa abbia il pallino verde, vengono rese disponibili due operazi
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
 - **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione.
 
-Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi da sincronizzare e poi che sono già stati sincronizzati. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+All'attivazione del toggle, comparirà anche un nuovo input per consentire di filtrare per la data di importazione. Aggiornando la lista, gli elemenenti compariranno in ordine crescente dalla data specificata nell'input.
+
 Inoltre per ogni elemento importato, è disponibile un pulsante, indicato da un'icona di una lista puntata, per visualizzare dei **messaggi di log** relativi al **MoId**. I messaggi sono visualizzabili solo se disponibili. In caso non lo siano, viene avvertito l'utente tramite un icona ⚠️ e un alert in caso si provi a cliccare il pulsante.  
 
 ---
@@ -283,7 +285,7 @@ La pagina per il Prelievo di Materiali per Produzione si presenta come una serie
 - Nel caso in cui la quantità inserita superi la quantità da prelevare (ad esempio 6000 nel caso sopra), l'elemento verrà comunque aggiunto, ma verrà mostrato un messaggio per avvisare l'utente.
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_prel_mat**.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
 ---
@@ -324,7 +326,9 @@ In caso la commessa abbia il pallino verde, vengono rese disponibili due operazi
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database
 - **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare la quantità prelevata tramite la pressione del pulsante e la successiva conferma dell'operazione.
 
-Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi da sincronizzare e poi che sono già stati sincronizzati. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+All'attivazione del toggle, comparirà anche un nuovo input per consentire di filtrare per la data di importazione. Aggiornando la lista, gli elemenenti compariranno in ordine crescente dalla data specificata nell'input.
+
 Inoltre per ogni elemento importato, è disponibile un pulsante, indicato da un'icona di una lista puntata, per visualizzare dei **messaggi di log** relativi al **MoId**. I messaggi sono visualizzabili solo se disponibili. In caso non lo siano, viene avvertito l'utente tramite un icona ⚠️ e un alert in caso si provi a cliccare il pulsante.
 
 ---
@@ -337,7 +341,7 @@ La pagina per la Gestione dell'Inventario si presenta con due campi:
 - Quando tutti i campi sono completi, alla pressione del pulsante **“Aggiungi”** , indicato anche dall'icona ➕ (o alla pressione di "Invio" nel campo della **Quantità rilevata**), vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_inventario**.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
 ---
@@ -372,7 +376,10 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database.
 
-Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi da sincronizzare e poi che sono già stati sincronizzati. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+All'attivazione del toggle, comparirà anche un nuovo input per consentire di filtrare per la data di importazione. Aggiornando la lista, gli elemenenti compariranno in ordine crescente dalla data specificata nell'input.
+
+
 Inoltre per ogni elemento importato, è disponibile un pulsante, indicato da un'icona di una lista puntata, per visualizzare dei **messaggi di log** relativi al **MoId**. I messaggi sono visualizzabili solo se disponibili. In caso non lo siano, viene avvertito l'utente tramite un icona ⚠️ e un alert in caso si provi a cliccare il pulsante.
 
 ---
@@ -421,6 +428,8 @@ Per il BackEnd, la maggior parte delle directory hanno una divisione dei file ch
 ## Controllers
 I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT, DELETE). 
 I controllers inoltre rappresentano il layer di presentazione, ossia si occupano di esporre l'endpoint, inoltrare la richiesta dell'utente al layer di business (i service in questo caso) e inoltre si occupa di fornire la risposta finale, quindi è l'ultimo gestore delle eccezioni che ritorna messaggi all'utente che ha effettuato la richiesta.
+
+Altra documentazione per le richieste HTTP dei Controller è disponibile [qui](#documentazione-api)
 
 ### Dipendenze
 - Services: Servizio per la scrittura del file di log
@@ -1133,9 +1142,6 @@ Per quanto riguarda l'unica classe di Data, non verranno descritti i metodi, poi
 ## Dto
 Directory che contiene i file Dto (Data Transfer Object), ossia file di richiesta e risposta all'utente. Questi file sono i contenitori di informazioni che vengono inserite dall'utente (convertite dal JSON del corpo della richiesta) e ritornate dall'applicazione (convertite dal Dto al JSON) all'utente.
 
-### Classi
-Per quanto riguarda i file contenenti le classi dei Dto, non verranno descritte, poiché contengono solamente attributi per la formazione dei Dto dei modelli o dei Dto di richiesta
-
 ### Dto Models
 Rappresentano i Dto di risposta o comunque Dto che inviano i record completi in risposta. Contengono tutti i campi contenuti dei rispettivi Models, ma separano la gestione dei dati (Models) dal livello di presentazione all'utente (Dto)
 
@@ -1147,9 +1153,6 @@ Ad esempio, se il modello rappresenta una tabella User(int Id, string Password) 
 
 ## Filters
 Filters è la directory che contiene i filtri, ossia classi che simulano i file Dto delle richieste. Questo passaggio permette di separare il livello di presentazione (Dto) dal livello dati (Filters) in modo che le richieste siano fatte con un tipo specifico. Può sembrare un'aggiunta superflua, ma nel caso ci sia bisogno di una maggiore gestione o elaborazione dei dati, queste classi possono tornare utili. Ad esempio nel caso in cui, da una richiesta, serva inserire un parametro fisso, si può aggiungere un filtro con i parametri necessari e impostare il parametro fisso nella sezione "logica" dell'applicazione, ossia nei Repository. In questo modo sarà solamente necessario creare il filtro e mappare il Dto nel filtro
-
-### Classi
-Per quanto riguarda le classi dei filter, non verranno descritte, poiché all'interno di queste ci sono solo attributi ripresi dai Dto di richiesta per effettuare le query nei repository
 
 ---
 
@@ -1192,11 +1195,11 @@ Sono necessari per ridurre al minimo il compito dei controllers, che si occupera
 
 ## Utils
 Gli Utils sono classi che servono per supportare alcuni processi. In particolare per gestire gli errori dei controller e scrivere il file di log. I file contenuti in Utils sono tre:
-- LogService: classe che serve a creare la cartella il file di log e a popolarlo con le informazioni necessarie.
-- ResponseHandler: è il gestore delle risposte dei Controller dopo aver ricevuto una richiesta API. Questa classe si occupa di catturare la condizione, scrivere sul file di log e ritornare una risposta. 
-- ApplicationException: classe che inserisce alcune eccezioni personalizzate. Contiene un metodo utile per controllare se da un metodo dev'essere lanciata un'eccezione per lista vuota o se la lista vuota è attesa.
+- **LogService**: classe che serve a creare la cartella il file di log e a popolarlo con le informazioni necessarie.
+- **ResponseHandler**: è il gestore delle risposte dei Controller dopo aver ricevuto una richiesta API. Questa classe si occupa di catturare la condizione, scrivere sul file di log e ritornare una risposta. 
+- **ApplicationException**: classe che inserisce alcune eccezioni personalizzate. Contiene un metodo utile per controllare se da un metodo dev'essere lanciata un'eccezione per lista vuota o se la lista vuota è attesa.
 
-In particolare gestisce 3 tipi di situazione:
+In particolare gestisce 4 tipi di situazione:
 - BadRequest: il corpo della richiesta all'API è vuoto
 - NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati. 
 - NoContent: la richiesta non ritorna una risposta perché non sono stati trovati dati. A differenza di NotFound, ci si aspetta che il contenuto ritornato possa essere vuoto.
@@ -1248,16 +1251,16 @@ Nel controller, alla richiesta di una PUT all'API, viene richiesto all'utente da
 
 ## Aggiunta di nuove richieste per il Back End:
 Per aggiungere una nuova richiesta al Back End, la procedura più efficace è la seguente:
-- Aggiornamento delle tabelle del database interessate dalla richiesta tramite lo scaffolding, in modo da aggiornare il **Contesto** del database nell'applicazione e i **Modelli**
+- Aggiornamento delle tabelle del database interessate dalla richiesta tramite lo scaffolding, in modo da aggiornare il **Contesto** del database nell'applicazione e i **Modelli** (solo se necessario)
 - Sistemazione di eventuali dipendenze dalla modifica del contesto del database (ad esempio se la tabella viene aggiornata con nuovi campi o campi rimossi, che richiedono probabilmente modifiche ad altre richieste, mappers, repository ecc...)
 - Creazione del **Dto** del modello in modo da separare il modello dalle informazioni richieste e/o ritornate. In alternativa, un **Dto** di richiesta che contenga informazioni per la risposta (non ho distinto request e response) 
 - Creazione di un file Dto di richiesta
-- Creazione del rispettivo filtro
-- Creazione dei mappers (dto - filtro; modello - dto, viceversa, ecc...)
-- Creazione dei metodi nei repository
-- Creazione dei metodi nei servizi
-- Creazione della richiesta nel controller
-- Eventuali modifiche in Program.cs (ad esempio se viene creato un nuovo file Mapper, Controller ecc...), cioè files che richiedono configurazioni in Program.cs
+- Creazione del rispettivo **Filter**
+- Creazione dei **Mappers** (dto - filtro; modello - dto, viceversa, ecc...)
+- Creazione dei metodi nei **Repository**
+- Creazione dei metodi nei **Service**
+- Creazione della richiesta nel **Controller**
+- Eventuali modifiche in `Program.cs` (ad esempio se viene creato un nuovo file **Mapper**, **Controller** ecc...), cioè files che richiedono configurazioni in `Program.cs`
 
 ---
 
