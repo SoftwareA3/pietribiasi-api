@@ -124,7 +124,7 @@ namespace TestApi.Tests.ControllerTests
                 .Returns(new OkObjectResult(new List<RegOreDto> { _sampleRegOreDto }));
         }
 
-        // --- Test per getAllRegOre ---
+        #region GetAllRegOre Tests
         [Fact]
         public void GetAllRegOre_ShouldReturnOkResult_WhenDataExists()
         {
@@ -212,8 +212,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(204, noContentResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per PostRegOreList ---
+        #region PostRegOreList Tests
         [Fact]
         public void PostRegOreList_ShouldReturnCreatedResult_WhenDataIsProcessed()
         {
@@ -306,8 +307,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per GetA3AppRegOre ---
+        #region GetA3AppRegOre Tests
         [Fact]
         public void GetA3AppRegOre_ShouldReturnOkResult_WhenDataExists()
         {
@@ -399,8 +401,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per PutA3AppRegOre ---
+        #region PutA3AppRegOre Tests
         [Fact]
         public void PutA3AppRegOre_ShouldReturnOkResult_WhenDataIsUpdated()
         {
@@ -502,8 +505,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per DeleteRegOreId ---
+        #region DeleteRegOreId Tests
         [Fact]
         public void DeleteRegOreId_ShouldReturnOkResult_WhenDataIsDeleted()
         {
@@ -594,8 +598,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per GetRegOreNotImported ---
+        #region GetRegOreNotImported Tests
         [Fact]
         public void GetRegOreNotImported_ShouldReturnOkResult_WhenDataExists()
         {
@@ -689,9 +694,10 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(204, noContentResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
 
-        // -- Test per GetNotImportedAppRegOre ---
+        #region GetNotImportedAppRegOre Tests
 
         [Fact]
         public void GetNotImportedAppRegOre_ShouldReturnOkResult_WhenDataExists()
@@ -784,5 +790,6 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         } 
+        #endregion
     }
 }

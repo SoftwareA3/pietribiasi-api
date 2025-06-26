@@ -146,6 +146,8 @@ namespace TestApi.Tests.ControllerTests
                 .Returns(new NotFoundObjectResult("Not Found"));
         }
 
+        #region GetAllPrelMat Tests
+
         [Fact]
         public void GetAllPrelMat_ShouldReturnOk_WhenServiceReturnsData()
         {
@@ -237,6 +239,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
+
+        #region GetNotImportedPrelMatWithFilter Tests
 
         [Fact]
         public void GetNotImportedPrelMatWithFilter_ShouldReturnOk_WhenServiceReturnsData()
@@ -322,7 +327,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
+        #region PostPrelMatList Tests   
 
         [Fact]
         public void PostPrelMatList_ShouldReturnOk_WhenServiceReturnsData()
@@ -426,7 +433,9 @@ namespace TestApi.Tests.ControllerTests
             _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
-        // -- Test per GetViewPrelMat --
+        #endregion
+
+        #region GetViewPrelMat Tests
         [Fact]
         public void GetViewPrelMat_ShouldReturnOk_WhenServiceReturnsData()
         {
@@ -511,8 +520,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // -- Test per PutViewPrelMat --
+        #region PutViewPrelMat Tests
 
         [Fact]
         public void PutViewPrelMat_ShouldReturnOk_WhenServiceReturnsData()
@@ -597,8 +607,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // -- Test per GetNotImportedPrelMat --
+        #region GetNotImportedPrelMat Tests
 
         [Fact]
         public void GetNotImportedPrelMat_ShouldReturnOk_WhenServiceReturnsData()
@@ -726,8 +737,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // -- Test per DeletePrelMatId --
+        #region DeletePrelMatId Tests
 
         [Fact]
         public void DeletePrelMatId_ShouldReturnOk_WhenServiceDeletesSuccessfully()
@@ -831,8 +843,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // -- Test per GetPrelMatWithComponent --
+        #region GetPrelMatWithComponent Tests
         [Fact]
         public void GetPrelMatWithComponent_ShouldReturnOk_WhenServiceReturnsData()
         {
@@ -935,5 +948,6 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(204, noContentResult.StatusCode);
             _responseHandlerMock.Verify(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
     }
 }

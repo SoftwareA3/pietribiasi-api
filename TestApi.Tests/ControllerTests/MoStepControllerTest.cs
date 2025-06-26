@@ -78,7 +78,7 @@ namespace TestApi.Tests.ControllerTests
             };
         }
 
-        // --- Tests for GetVwApiMostepWithJob ---
+        #region GetVwApiMostepWithJob Tests 
 
         [Fact]
         public void GetVwApiMostepWithJob_ShouldReturnOkResult_WhenDataExists()
@@ -172,8 +172,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Tests for GetMostepWithMono ---
+        #region GetMostepWithMono Tests
 
         [Fact]
         public void GetMostepWithMono_ShouldReturnOkResult_WhenDataExists()
@@ -265,8 +266,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Tests for GetMostepWithOperation ---
+        #region GetMostepWithOperation Tests
         [Fact]
         public void GetMostepWithOperation_ShouldReturnOkResult_WhenDataExists()
         {
@@ -359,5 +361,6 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
     }
 }

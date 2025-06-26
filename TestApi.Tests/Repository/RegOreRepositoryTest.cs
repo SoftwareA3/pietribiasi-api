@@ -148,7 +148,10 @@ namespace TestApi.Tests.Repository
             ResQty = 50,
             Storage = "Storage1",
             Wc = "WC1",
-            WorkingTime = 3600
+            WorkingTime = 3600,
+            Imported = false,
+            UserImp = "User1",
+            DataImp = new DateTime(2023, 10, 1)
         };
 
         private readonly ViewOreRequestFilter _viewOreRequestFilter = new ViewOreRequestFilter

@@ -94,7 +94,7 @@ namespace TestApi.Tests.ControllerTests
             };
         }
 
-        // --- Tests for GetMostepsMocomponentWithJob ---
+        #region GetMostepsMocomponentWithJob Tests
 
         [Fact]
         public void GetMostepsMocomponentWithJob_ShouldReturnOkResult_WhenDataExists()
@@ -187,8 +187,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Tests for GetMostepsMocomponentWithMono ---
+        #region GetMostepsMocomponentWithMono Tests
 
         [Fact]
         public void GetMostepsMocomponentWithMono_ShouldReturnOkResult_WhenDataExists()
@@ -281,8 +282,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Tests for GetMostepsMocomponentWithOperation ---
+        #region GetMostepsMocomponentWithOperation Tests
 
         [Fact]
         public void GetMostepsMocomponentWithOperation_ShouldReturnOkResult_WhenDataExists()
@@ -375,8 +377,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Tests for GetMostepsMocomponentWithBarCode ---
+        #region GetMostepsMocomponentWithBarCode Tests
 
         [Fact]
         public void GetMostepsMocomponentWithBarCode_ShouldReturnOkResult_WhenDataExists()
@@ -469,5 +472,6 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
     }
 }

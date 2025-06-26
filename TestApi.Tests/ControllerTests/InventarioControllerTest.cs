@@ -95,7 +95,7 @@ namespace TestApi.Tests.ControllerTests
             };
         }
 
-        // --- Test per GetInventario ---
+        #region GetInventario Tests
         [Fact]
         public void GetInventario_ShouldReturnOkResult_WhenDataExists()
         {
@@ -188,9 +188,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-
-        // --- Test per PostInventarioList ---
+        #region PostInventarioList Tests
         [Fact]
         public void PostInventarioList_ShouldReturnOkResult_WhenDataIsProcessed()
         {
@@ -303,8 +303,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per GetViewInventario ---
+        #region GetViewInventario Tests
         [Fact]
         public void GetViewInventario_ShouldReturnOkResult_WhenDataExists()
         {
@@ -396,8 +397,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per PutViewInventario ---
+        #region PutViewInventario Tests
         [Fact]
         public void PutViewInventario_ShouldReturnOkResult_WhenDataIsUpdated()
         {
@@ -483,8 +485,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per GetInventarioNotImported ---
+        #region GetNotImportedInventario Tests
         [Fact]
         public void GetInventarioNotImported_ShouldReturnOkResult_WhenDataExists()
         {
@@ -577,8 +580,9 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
 
-        // --- Test per GetNotImportedAppInventarioByFilter ---
+        #region GetNotImportedAppInventarioByFilter Tests 
         [Fact]
         public void GetNotImportedAppInventarioByFilter_ShouldReturnOkResult_WhenDataExists()
         {
@@ -670,5 +674,6 @@ namespace TestApi.Tests.ControllerTests
             Assert.Equal(404, notFoundResult.StatusCode);
             _responseHandlerMock.Verify(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
+        #endregion
     }
 }

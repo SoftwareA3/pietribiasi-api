@@ -182,15 +182,24 @@ namespace TestApi.Tests.Repository
             // Arrange
             var inventarioFilter = new List<InventarioFilter>
             {
-                new InventarioFilter 
-                { 
+                new InventarioFilter
+                {
+                    InvId = 1,
+                    SavedDate = new DateTime(2025, 6, 1),
                     WorkerId = 1,
                     Item = "ITEM001",
                     Description = "Test Item 1 Updated",
                     BarCode = "BC001",
                     BookInv = 15.0,
                     PrevBookInv = 10.0,
-                    UoM = "PCS"
+                    UoM = "PCS",
+                    FiscalYear = 2025,
+                    Storage = "STG01",
+                    BookInvDiff = 5.0,
+                    InvRsn = true,
+                    Imported = false,
+                    UserImp = "User001",
+                    DataImp = new DateTime(2025, 6, 1)
                 }
             };
 
