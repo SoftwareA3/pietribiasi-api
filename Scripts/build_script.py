@@ -81,54 +81,32 @@ class AppBuilder:
         if target['runtime'].startswith('win'):
             # Copia il file BAT principale
             self.create_advanced_start_bat()
-        else:
-            self.create_unix_launcher()  # Mantieni il launcher Unix esistente
-
-    def create_unix_launcher(self):
-        """Crea uno script di avvio per Unix (Linux/macOS) (.sh)"""
-        backend_conf = self.config['server']['backend']
-        frontend_conf = self.config['server']['frontend']
-        app_name = self.config['app']['name']
-        backend_exec = self.config['build']['backend_project']
-
-        launcher_content = f'''#!/bin/bash
-echo "Avvio di {app_name} in corso..."
-cd "$(dirname "$0")"
-
-# Avvia il Backend
-echo "Avvio del Backend Server..."
-./backend/{backend_exec} --urls="http://{backend_conf['host']}:{backend_conf['port']}" &
-BACKEND_PID=$!
-
-# Avvia il Frontend
-echo "Avvio del Frontend Server..."
-npx http-server ./frontend -a {frontend_conf['host']} -p {frontend_conf['port']} --cors -o index.html &
-FRONTEND_PID=$!
-
-echo "{app_name} e' in esecuzione."
-echo "Premi INVIO per terminare l'applicazione."
-read
-
-echo "Arresto dell'applicazione in corso..."
-kill $BACKEND_PID
-kill $FRONTEND_PID
-'''
-        launcher_path = self.build_dir / f"start_{app_name.replace(' ', '_')}.sh"
-        with open(launcher_path, 'w', encoding='utf-8', newline='\n') as f:
-            f.write(launcher_content)
-        os.chmod(launcher_path, 0o755)
     
-    async def update_backend_host_ip(self, build_json_path):
-        """Aggiorna server.backend.host con l'IP locale."""
+    async def update_host_ip(self, build_json_path, automatic_ip=True):
+        """Aggiorna server.backend.host; server.frontend.host; remote_backend.host con l'IP locale."""
+        print("❗❗ Aggiornamento dell'IP locale nel file build.json... ❗❗")
         with open(build_json_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
-        automatic_ip = config['server']['backend']['local_ip_automatically']
+
         if automatic_ip:
             local_ip = script_utils.get_local_ip()
+            
+            remote_backend = config['remote_backend']
+            if remote_backend['enabled'] == True:
+                remote_backend['host'] = local_ip
+                print(f"✅ remote_backend.host aggiornato a {local_ip}")
+            else:
+                print("❌ remote_backend non è abilitato e quindi non aggiornato.")
             config['server']['backend']['host'] = local_ip
+            config['server']['frontend']['host'] = local_ip
+
+            
             with open(build_json_path, 'w', encoding='utf-8') as f:
                 json.dump(config, f, indent=4, ensure_ascii=False)
             print(f"✅ server.backend.host aggiornato a {local_ip}")
+            print(f"✅ server.frontend.host aggiornato a {local_ip}")
+        else:
+            print("Aggiornamento automatico dell'IP locale disabilitato. Nessun cambiamento effettuato.")
         
     def copy_python_server_only(self):
         """Copia server_only.py nella cartella di build per permettere la riconfigurazione runtime"""
@@ -155,11 +133,8 @@ kill $FRONTEND_PID
 
             await script_utils.clean(self)
 
-            # Inserisce l'IP locale per il Frontend nel file build.json se configurato per farlo
-            # script_utils.update_frontend_host_ip("build.json")
-
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
-            await self.update_backend_host_ip("build.json")
+            await self.update_host_ip("build.json")
             
             # Aggiorna i file di configurazione PRIMA del build
             await script_utils.update_appsettings(self)

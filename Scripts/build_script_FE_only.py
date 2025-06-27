@@ -32,14 +32,9 @@ class FrontendOnlyBuilder:
             print(f"=== Build Frontend-Only di {self.config['app']['name']} ===")
 
             await script_utils.clean(self)
-
-            #await script_utils.update_frontend_host_ip("build.json")
             
             # Aggiorna i file di configurazione PRIMA del build
             await script_utils.update_appsettings(self)
-            
-            # Test connessione backend (opzionale)
-            # await self.test_backend_connection()
             
             # Copia e configura il frontend
             await script_utils.copy_and_configure_frontend(self, "build_FE")
@@ -47,12 +42,6 @@ class FrontendOnlyBuilder:
             script_utils.copy_python_server(self)
             script_utils.copy_build_json_to_build(self, True)
             script_utils.copy_documentation_to_build(self)
-
-            
-            # Crea gli script e file di supporto
-            # self.create_frontend_launcher()
-            # self.create_configuration_file()
-            # self.create_package_json()
 
             # script_utils.create_executable_from_batchscript(self)
             script_utils.create_pyinstaller_executable(self)

@@ -22,7 +22,7 @@ echo ===============================================
 echo    CONTROLLO APPLICAZIONE !APP_NAME!
 echo ===============================================
 echo.
-echo 0. Avvia Frontend con Finestra Desktop (WebView)
+echo 0. Avvia applicazione in modalità silenziosa (senza console)
 echo 1. Avvia applicazione 
 echo 2. Avvia solo il Backend
 echo 3. Ferma applicazione  
@@ -33,7 +33,7 @@ echo 7. Esci
 echo.
 set /p choice="Seleziona un'opzione (0-7): "
 
-if "%choice%"=="0" goto START_APP_FRONTEND_WINDOWED
+if "%choice%"=="0" goto START_APP_SILENT
 if "%choice%"=="1" goto START_APP
 if "%choice%"=="2" goto START_BACKEND_ONLY
 if "%choice%"=="3" goto STOP_APP
@@ -69,9 +69,9 @@ echo.
 
 goto :eof
 
-:START_APP_FRONTEND_WINDOWED
+:START_APP_SILENT
 echo.
-echo Avvio Frontend con Finestra Desktop (Eseguibile)...
+echo Avvio Applicazione senza console...
 echo.
 
 REM Controlla se i processi sono già in esecuzione
@@ -80,7 +80,12 @@ if "!BACKEND_RUNNING!"=="1" (
     echo Backend già in esecuzione!
 ) else (
     echo Avvio del backend...
-    start "Backend Server" cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
+    REM Avvia il backend minimizzato e poi nasconde la finestra della console
+    start "Backend Server" /min cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
+    REM Attendi che la finestra venga creata
+    timeout /t 1 >nul
+    REM Nascondi la finestra della console del backend usando PowerShell
+    powershell -Command "Get-Process | Where-Object { $_.MainWindowTitle -like '*Backend Server*' } | ForEach-Object { $hwnd = $_.MainWindowHandle; if ($hwnd -ne 0) { Add-Type -Name win -Namespace native -MemberDefinition '[DllImport(\"user32.dll\")]public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);'; [native.win]::ShowWindowAsync($hwnd, 0) } }"
     timeout /t 3 >nul
 )
 
@@ -90,15 +95,7 @@ if "!FRONTEND_RUNNING!"=="1" (
     echo Avvio del frontend con eseguibile...
     timeout /t 2 >nul
     REM Avvia il server frontend 
-    start "Pietribiasi Frontend Server" python server_only.py
-    REM Usa l'eseguibile PyInstaller invece di python
-    if exist "PietribasiApp.exe" (
-        start "Pietribiasi App" PietribasiApp.exe
-        echo Applicazione desktop avviata tramite eseguibile!
-    ) else (
-        echo Eseguibile non trovato, uso fallback Python...
-        start "Pietribiasi App" python python_server.py
-    )
+    start "Pietribiasi Frontend Server" pythonw server_only.py
 )
 
 echo.

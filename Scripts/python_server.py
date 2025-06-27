@@ -62,27 +62,6 @@ class WebServer:
                 
         except Exception as e:
             print(f"Errore nel caricamento configurazione: {e}")
-        
-    def load_config_from_local_ip(self, config_path="build.json"):
-        """Carica la configurazione per la porta dal file build.json e l'IP locale"""
-        try:
-            # Ottiene l'IP locale
-            self.host = self.get_local_ip()
-            print(f"IP locale rilevato: {self.host}")
-
-            # Carica la configurazione dal file build.json
-            if Path(config_path).exists():
-                with open(config_path, 'r', encoding='utf-8') as f:
-                    config = json.load(f)
-                
-                frontend_config = config.get('server', {}).get('frontend', {})
-                self.port = frontend_config.get("port", 8080)
-
-                print(f"Configurazione caricata: {self.host}:{self.port}")
-            else:
-                print("File di configurazione non trovato, uso valori predefiniti")
-        except Exception as e:
-            print(f"Errore nel caricamento configurazione: {e}")
 
     def create_flask_app(self):
         """Crea e configura l'applicazione Flask"""
@@ -127,15 +106,7 @@ class WebServer:
             print(f"Errore: Directory '{DIRECTORY}' non trovata!")
             return False
             
-        # Carica configurazione
-        if Path(config_path).exists():
-            with open(config_path, 'r', encoding='utf-8') as f:
-                config = json.load(f)
-        
-        if config['server']['frontend']['local_ip_automatically'] == True or "true":
-            self.load_config_from_local_ip(config_path)
-        else:
-            self.load_config_from_build_json(config_path)
+        self.load_config_from_build_json(config_path)
         
         # Crea l'app Flask
         self.app = self.create_flask_app()
