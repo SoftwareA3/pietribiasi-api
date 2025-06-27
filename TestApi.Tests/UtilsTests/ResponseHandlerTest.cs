@@ -15,6 +15,13 @@ namespace TestApi.Tests.UtilsTests
         private readonly ResponseHandler _responseHandler;
         private readonly Mock<HttpContext> _mockHttpContext;
         private readonly Mock<HttpRequest> _mockHttpRequest;
+        
+        // Oggetto di test per le risposte
+        private class TestItem
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
 
         public ResponseHandlerTest()
         {
@@ -23,7 +30,7 @@ namespace TestApi.Tests.UtilsTests
             _responseHandler = new ResponseHandler(_mockLogService.Object);
             _mockHttpContext = new Mock<HttpContext>();
             _mockHttpRequest = new Mock<HttpRequest>();
-            
+
             // Setup HttpContext mock
             _mockHttpContext.Setup(c => c.Request).Returns(_mockHttpRequest.Object);
         }
@@ -35,6 +42,12 @@ namespace TestApi.Tests.UtilsTests
             _mockHttpRequest.Setup(r => r.Method).Returns("GET");
             _mockHttpRequest.Setup(r => r.Path).Returns(new PathString("/api/test"));
             bool isLogActive = true;
+            _mockLogService.Setup(l => l.AppendMessageToLog(
+                It.IsAny<string>(),
+                It.IsAny<int?>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>()
+            ));
 
             // Act
             var result = _responseHandler.HandleBadRequest(_mockHttpContext.Object, isLogActive);
@@ -214,6 +227,73 @@ namespace TestApi.Tests.UtilsTests
         }
 
         [Fact]
+        public void HandleOk_ShouldReturnOkResult()
+        {
+            // Arrange
+            _mockHttpRequest.Setup(r => r.Method).Returns("GET");
+            _mockHttpRequest.Setup(r => r.Path).Returns(new PathString("/api/test"));
+            bool isLogActive = true;
+            
+            // Act
+            var result = _responseHandler.HandleOk(_mockHttpContext.Object, isLogActive);
+            
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, result.StatusCode);
+            Assert.Equal("Ok", result.Value);
+        }
+
+        [Fact]
+        public void HandleNoContent_ShouldReturnNoContentResult()
+        {
+            // Arrange
+            _mockHttpRequest.Setup(r => r.Method).Returns("DELETE");
+            _mockHttpRequest.Setup(r => r.Path).Returns(new PathString("/api/test"));
+            bool isLogActive = true;
+            
+            // Act
+            var result = _responseHandler.HandleNoContent(_mockHttpContext.Object, isLogActive);
+            
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, result.StatusCode);
+            
+            // Verify both log and warning were called
+            _mockLogService.Verify(
+                l => l.AppendMessageToLog(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<string>(), It.IsAny<bool>()),
+                Times.Once
+            );
+            _mockLogService.Verify(
+                l => l.AppendWarningToLog(It.IsAny<string>()),
+                Times.Once
+            );
+        }
+
+        [Fact]
+        public void HandleBadRequest_ShouldCallBothLogAndError()
+        {
+            // Arrange
+            _mockHttpRequest.Setup(r => r.Method).Returns("POST");
+            _mockHttpRequest.Setup(r => r.Path).Returns(new PathString("/api/test"));
+            bool isLogActive = true;
+            
+            // Act
+            var result = _responseHandler.HandleBadRequest(_mockHttpContext.Object, isLogActive);
+            
+            // Assert
+            _mockLogService.Verify(
+                l => l.AppendMessageToLog(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<string>(), It.IsAny<bool>()),
+                Times.Once
+            );
+            _mockLogService.Verify(
+                l => l.AppendErrorToLog(It.Is<string>(s => s == "Bad Request")),
+                Times.Once
+            );
+        }
+
+        [Fact]
         public void HttpContextString_WithNullValues_ShouldHandleGracefully()
         {
             // Arrange
@@ -237,13 +317,6 @@ namespace TestApi.Tests.UtilsTests
                 ),
                 Times.Once
             );
-        }
-        
-        // Test helper class
-        private class TestItem
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
         }
     }
 }

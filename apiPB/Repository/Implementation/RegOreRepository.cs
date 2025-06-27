@@ -62,7 +62,7 @@ namespace apiPB.Repository.Implementation
             _context.A3AppRegOres.AddRange(list);
             _context.SaveChanges();
 
-            ApplicationExceptionHandler.ValidateEmptyList(list, nameof(RegOreRepository), nameof(PostRegOreList));
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(list, nameof(RegOreRepository), nameof(PostRegOreList));
 
             return list;
         }

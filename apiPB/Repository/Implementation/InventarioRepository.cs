@@ -146,7 +146,7 @@ namespace apiPB.Repository.Implementation
         {
             if (inventario == null || inventario.BookInv == null || inventario.PrevBookInv == null)
             {
-                throw new Exception("Il parametro 'inventario' non può essere nullo e deve contenere valori per BookInv e PrevBookInv.");
+                throw new ArgumentNullException("Il parametro 'inventario' non può essere nullo e deve contenere valori per BookInv e PrevBookInv.");
             }
             if (inventario.BookInv - inventario.PrevBookInv > 0)
             {

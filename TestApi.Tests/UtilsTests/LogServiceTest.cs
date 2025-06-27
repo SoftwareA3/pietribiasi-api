@@ -19,22 +19,34 @@ namespace TestApi.Tests.UtilsTests
         private readonly Type _logServiceType;
         private readonly FieldInfo _logFolderPathField;
         private readonly FieldInfo _logFilePathField;
+        private readonly FieldInfo _logErrorFilePathField;
+
+        // Model utilizzato per simulare gli oggetti nei test
+        private class TestModel
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
 
         public LogServiceTest()
         {
             // Setup test environment
             _testLogFilePath = Path.Combine(_testLogFolderPath, "API.log");
             _logService = new LogService();
-            
+
             // Use reflection to access and modify private fields for testing
             _logServiceType = typeof(LogService);
             _logFolderPathField = _logServiceType.GetField("_logFolderPath", BindingFlags.NonPublic | BindingFlags.Instance);
             _logFilePathField = _logServiceType.GetField("_logFilePath", BindingFlags.NonPublic | BindingFlags.Instance);
-            
+            _logErrorFilePathField = _logServiceType.GetField("_logErrorFilePath", BindingFlags.NonPublic | BindingFlags.Instance);
+
+
             // Set test paths for the log service
             _logFolderPathField.SetValue(_logService, _testLogFolderPath);
             _logFilePathField.SetValue(_logService, _testLogFilePath);
-            
+            _logErrorFilePathField.SetValue(_logService, Path.Combine(_testLogFolderPath, "APIErrors.log"));
+
+
             // Ensure clean test environment
             CleanupTestEnvironment();
         }
@@ -60,6 +72,7 @@ namespace TestApi.Tests.UtilsTests
             }
         }
 
+        #region AppendMessageToLog Tests
         [Fact]
         public void AppendMessageToLog_CreatesLogFileAndAddsMessage_WhenIsActiveIsTrue()
         {
@@ -95,6 +108,9 @@ namespace TestApi.Tests.UtilsTests
             // Assert
             Assert.False(File.Exists(_testLogFilePath));
         }
+        #endregion
+
+        #region AppendMessageAndListToLog Tests
 
         [Fact]
         public void AppendMessageAndListToLog_AddsMessageAndListToLogFile_WhenIsActiveIsTrue()
@@ -104,7 +120,7 @@ namespace TestApi.Tests.UtilsTests
             int statusCode = 200;
             string statusMessage = "Ok";
             bool isActive = true;
-            
+
             var testList = new List<TestModel>
             {
                 new TestModel { Id = 1, Name = "Test1" },
@@ -134,7 +150,7 @@ namespace TestApi.Tests.UtilsTests
             int statusCode = 200;
             string statusMessage = "Ok";
             bool isActive = false;
-            
+
             var testList = new List<TestModel>
             {
                 new TestModel { Id = 1, Name = "Test1" },
@@ -170,6 +186,9 @@ namespace TestApi.Tests.UtilsTests
             // Should not contain list entries since list is null
             Assert.DoesNotContain("Id: 1", logContent);
         }
+        #endregion
+
+        #region AppendMessageAndItemToLog Tests
 
         [Fact]
         public void AppendMessageAndItemToLog_AddsMessageAndItemToLogFile_WhenIsActiveIsTrue()
@@ -179,7 +198,7 @@ namespace TestApi.Tests.UtilsTests
             int statusCode = 200;
             string statusMessage = "Ok";
             bool isActive = true;
-            
+
             var testItem = new TestModel { Id = 1, Name = "Test1" };
 
             // Act
@@ -203,7 +222,7 @@ namespace TestApi.Tests.UtilsTests
             int statusCode = 200;
             string statusMessage = "Ok";
             bool isActive = false;
-            
+
             var testItem = new TestModel { Id = 1, Name = "Test1" };
 
             // Act
@@ -235,12 +254,15 @@ namespace TestApi.Tests.UtilsTests
             // Should not contain item entries since item is null
             Assert.DoesNotContain("Id: 1", logContent);
         }
+        #endregion
+
+        #region Test Methods for LogService
 
         [Fact]
         public void CreateLogFile_CreatesDirectoryAndFile_WhenTheyDoNotExist()
         {
             // Arrange
-            MethodInfo createLogFileMethod = _logServiceType.GetMethod("CreateLogFile", 
+            MethodInfo createLogFileMethod = _logServiceType.GetMethod("CreateLogFile",
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
@@ -255,7 +277,7 @@ namespace TestApi.Tests.UtilsTests
         public void AppendIpAddress_ReturnsNonEmptyString()
         {
             // Arrange
-            MethodInfo appendIpAddressMethod = _logServiceType.GetMethod("AppendIpAddress", 
+            MethodInfo appendIpAddressMethod = _logServiceType.GetMethod("AppendIpAddress",
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
@@ -267,12 +289,52 @@ namespace TestApi.Tests.UtilsTests
             // Check if the result is in a valid IP format
             Assert.True(System.Net.IPAddress.TryParse(result, out _));
         }
+        #endregion
 
-        // Helper class for testing
-        private class TestModel
+        #region AppendErrorToLog and AppendWarningToLog Tests
+
+        [Fact]
+        public void AppendErrorToLog_ShouldCreateErrorLogFileAndWriteMessage()
         {
-            public int Id { get; set; }
-            public string Name { get; set; }
+            // Arrange
+            string errorMessage = "Test error message";
+            string errorLogPath = Path.Combine(_testLogFolderPath, "APIErrors.log");
+            if (!Directory.Exists(_testLogFolderPath))
+                Directory.CreateDirectory(_testLogFolderPath);
+            if (File.Exists(errorLogPath))
+                File.Delete(errorLogPath);
+
+            // Act
+            _logService.AppendErrorToLog(errorMessage);
+
+            // Assert
+            Assert.True(File.Exists(errorLogPath));
+            string errorLogContent = File.ReadAllText(errorLogPath);
+            Assert.Contains("===== ERROR =====", errorLogContent);
+            Assert.Contains(errorMessage, errorLogContent);
+            Assert.Contains("===== END ERROR =====", errorLogContent);
+
+            // Cleanup
+            if (File.Exists(errorLogPath))
+                File.Delete(errorLogPath);
         }
+
+        [Fact]
+        public void AppendWarningToLog_ShouldCreateErrorLogFileAndWriteWarning()
+        {
+            // Arrange
+            string warningMessage = "Test warning message";
+
+            // Act
+            _logService.AppendWarningToLog(warningMessage);
+
+            // Assert
+            Assert.True(File.Exists(Path.Combine(_testLogFolderPath, "APIErrors.log")));
+            string errorLogContent = File.ReadAllText(Path.Combine(_testLogFolderPath, "APIErrors.log"));
+            Assert.Contains("===== WARNING =====", errorLogContent);
+            Assert.Contains(warningMessage, errorLogContent);
+            Assert.Contains("===== END WARNING =====", errorLogContent);
+        }
+        #endregion
     }
 }

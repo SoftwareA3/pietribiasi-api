@@ -12,6 +12,7 @@ using apiPB.Dto.Models;
 using apiPB.Dto.Request;
 using apiPB.Services.Abstraction;
 using apiPB.Utils.Abstraction;
+using apiPB.Utils.Implementation;
 
 namespace TestApi.Tests.ControllerTests
 {
@@ -80,10 +81,16 @@ namespace TestApi.Tests.ControllerTests
                 HttpContext = httpContextMock.Object
             };
 
-            _responseHandlerMock.Setup(x => x.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), "La richiesta non può essere vuota."))
-                .Returns(new BadRequestObjectResult("La richiesta non può essere vuota."));
-            _responseHandlerMock.Setup(x => x.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), "Nessun risultato trovato."))
-                .Returns(new NotFoundObjectResult("Nessun risultato trovato."));
+            _responseHandlerMock.Setup(rh => rh.HandleNoContent(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NoContentResult());
+            _responseHandlerMock.Setup(rh => rh.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new BadRequestObjectResult("Bad Request"));
+            _responseHandlerMock.Setup(rh => rh.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+            _responseHandlerMock.Setup(x => x.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<WorkerDto>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new OkObjectResult(_sampleWorkerDto));
+            _responseHandlerMock.Setup(x => x.HandleOkAndList(It.IsAny<HttpContext>(), It.IsAny<List<WorkerDto>>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new OkObjectResult(new List<WorkerDto> { _sampleWorkerDto }));
         }
 
         // --- Test per GetAllWorkers ---
@@ -109,12 +116,11 @@ namespace TestApi.Tests.ControllerTests
         }
 
         [Fact]
-        public void GetAllWorkers_ShouldReturnNotFound_WhenNoDataExists()
+        public void GetAllWorkers_ShouldReturnNotFound_WhenServiceThrowsEmptyListException()
         {
             // Arrange
-            var emptyList = new List<WorkerDto>();
-            _workerRequestServiceMock.Setup(service => service.GetWorkers()).Returns(emptyList);
-            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+            _workerRequestServiceMock.Setup(service => service.GetWorkers()).Throws(new EmptyListException("WorkerController", "GetAllWorkers", "Nessun risultato trovato."));
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
@@ -123,93 +129,46 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
 
-        // --- I test commentati sono deprecati e non necessari --- //
+        [Fact]
+        public void GetAllWorkers_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
+        {
+            // Arrange
+            _workerRequestServiceMock.Setup(service => service.GetWorkers()).Throws(new ArgumentNullException("WorkerController", "Il servizio ritorna null."));
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
-        // // --- Test per GetWorkersFieldsById ---
-        // [Fact]
-        // public void GetWorkersFieldsById_ShouldReturnOkResult_WhenDataExists()
-        // {
-        //     // Arrange
-        //     int id = 43;
-        //     var mockData = new List<WorkersFieldDto> { _sampleWorkersFieldDto };
-        //     _workerRequestServiceMock.Setup(service => service.GetWorkersFieldsById(It.Is<WorkersFieldRequestDto>(dto => dto.WorkerId == id)))
-        //         .Returns(mockData);
-        //     MockRequestPath("GET", $"/api/worker/workersfield/{id}");
+            // Act
+            var result = _controller.GetAllWorkers();
 
-        //     // Act
-        //     var result = _controller.GetWorkersFieldsById(id);
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
 
-        //     // Assert
-        //     var okResult = Assert.IsType<OkObjectResult>(result);
-        //     Assert.Equal(200, okResult.StatusCode);
-        //     var returnValue = Assert.IsType<List<WorkersFieldDto>>(okResult.Value);
-        //     Assert.Single(returnValue);
-        //     Assert.Equal(_sampleWorkersFieldDto.WorkerId, returnValue.First().WorkerId);
-        //     _logServiceMock.Verify(log => log.AppendMessageAndListToLog(It.IsAny<string>(), 200, "OK", It.IsAny<List<WorkersFieldDto>>(), false), Times.Once);
-        // }
+        [Fact]
+        public void GetAllWorkers_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _workerRequestServiceMock.Setup(service => service.GetWorkers()).Throws(new Exception("Errore generico."));
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
 
-        // [Fact]
-        // public void GetWorkersFieldsById_ShouldReturnNotFound_WhenNoDataExists()
-        // {
-        //     // Arrange
-        //     _workerRequestServiceMock.Setup(service => service.GetWorkersFieldsById(It.IsAny<WorkersFieldRequestDto>()))
-        //         .Returns((IEnumerable<WorkersFieldDto>)null);
-        //     MockRequestPath("GET", "/api/worker/workersfield/43");
+            // Act
+            var result = _controller.GetAllWorkers();
 
-        //     // Act
-        //     var result = _controller.GetWorkersFieldsById(43);
-
-        //     // Assert
-        //     var notFoundResult = Assert.IsType<NotFoundResult>(result);
-        //     Assert.Equal(404, notFoundResult.StatusCode);
-        //     _logServiceMock.Verify(log => log.AppendMessageToLog(It.IsAny<string>(), 404, "Not Found", false), Times.Once);
-        // }
-        
-        // // --- Test per UpdateOrCreateLastLogin ---
-        // [Fact]
-        // public async Task UpdateOrCreateLastLogin_ShouldReturnCreatedResult_WhenDataExists()
-        // {
-        //     // Arrange
-        //     _workerRequestServiceMock.Setup(service => service.UpdateOrCreateLastLogin(It.IsAny<PasswordWorkersRequestDto>()))
-        //         .ReturnsAsync(_sampleWorkersFieldDto);
-        //     MockRequestPath("POST", "/api/worker/lastlogin");
-
-        //     // Act
-        //     var result = await _controller.UpdateOrCreateLastLogin(_samplePasswordRequestDto);
-
-        //     // Assert
-        //     var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-        //     Assert.Equal(201, createdResult.StatusCode);
-        //     Assert.Equal("GetWorkersFieldsById", createdResult.ActionName);
-        //     Assert.Equal(43, createdResult.RouteValues["id"]);
-        //     var returnValue = Assert.IsType<WorkersFieldDto>(createdResult.Value);
-        //     Assert.Equal(_sampleWorkersFieldDto.WorkerId, returnValue.WorkerId);
-        //     _logServiceMock.Verify(log => log.AppendMessageToLog(It.IsAny<string>(), 201, "Created", false), Times.Once);
-        // }
-
-        // [Fact]
-        // public async Task UpdateOrCreateLastLogin_ShouldReturnNotFound_WhenNoDataExists()
-        // {
-        //     // Arrange
-        //     _workerRequestServiceMock.Setup(service => service.UpdateOrCreateLastLogin(It.IsAny<PasswordWorkersRequestDto>()))
-        //         .ReturnsAsync((WorkersFieldDto)null);
-        //     MockRequestPath("POST", "/api/worker/lastlogin");
-
-        //     // Act
-        //     var result = await _controller.UpdateOrCreateLastLogin(_samplePasswordRequestDto);
-
-        //     // Assert
-        //     var notFoundResult = Assert.IsType<NotFoundResult>(result);
-        //     Assert.Equal(404, notFoundResult.StatusCode);
-        //     _logServiceMock.Verify(log => log.AppendMessageToLog(It.IsAny<string>(), 404, "Not Found", false), Times.Once);
-        // }
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
 
         // --- Test per LoginWithPassword ---
         [Fact]
-        public void LoginWithPassword_ShouldReturnOkResult_WhenCredentialsAreValid()
+        public void LoginWithPassword_ShouldReturnOk_WhenDataExists()
         {
             // Arrange
             _workerRequestServiceMock.Setup(service => service.LoginWithPassword(It.IsAny<PasswordWorkersRequestDto>()))
@@ -223,35 +182,18 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, okResult.StatusCode);
-            var returnValue = Assert.IsType<WorkerDto>(okResult.Value);
+            var returnValue = Assert.IsAssignableFrom<WorkerDto>(okResult.Value);
             Assert.Equal(_sampleWorkerDto.WorkerId, returnValue.WorkerId);
             _responseHandlerMock.Verify(log => log.HandleOkAndItem(It.IsAny<HttpContext>(), It.IsAny<WorkerDto>(), false, "Ok"), Times.Once);
         }
 
         [Fact]
-        public void LoginWithPassword_ShouldReturnBadRequest_WhenRequestIsNull()
-        {
-            // Arrange
-            PasswordWorkersRequestDto nullRequest = null;
-            _responseHandlerMock.Setup(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"))
-                .Returns(new BadRequestObjectResult("Bad Request"));
-
-            // Act
-            var result = _controller.LoginWithPassword(nullRequest);
-
-            // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, badRequestResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), false, "Bad Request"), Times.Once);
-        }
-
-        [Fact]
-        public void LoginWithPassword_ShouldReturnNotFound_WhenCredentialsAreInvalid()
+        public void LoginWithPassword_ShouldReturnNotFound_WhenServiceThrowsArgumentNullException()
         {
             // Arrange
             _workerRequestServiceMock.Setup(service => service.LoginWithPassword(It.IsAny<PasswordWorkersRequestDto>()))
-                .Returns((WorkerDto)null);
-            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"))
+                .Throws(new ArgumentNullException("WorkerController", "Il servizio ritorna null."));
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Returns(new NotFoundObjectResult("Not Found"));
 
             // Act
@@ -260,7 +202,58 @@ namespace TestApi.Tests.ControllerTests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), false, "Not Found"), Times.Once);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void LoginWithPassword_ShouldReturnNotFound_WhenServiceThrowsException()
+        {
+            // Arrange
+            _workerRequestServiceMock.Setup(service => service.LoginWithPassword(It.IsAny<PasswordWorkersRequestDto>()))
+                .Throws(new Exception("Errore generico."));
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.LoginWithPassword(_samplePasswordRequestDto);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void LoginWithPassword_ShouldReturnBadRequest_WhenRequestIsNull()
+        {
+            // Arrange
+            PasswordWorkersRequestDto? nullDto = null;
+
+            // Act
+            var result = _controller.LoginWithPassword(nullDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleBadRequest(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void LoginWithPassword_ShouldReturnNotFound_WhenServiceThrowsEmptyListException()
+        {
+            // Arrange
+            _workerRequestServiceMock.Setup(service => service.LoginWithPassword(It.IsAny<PasswordWorkersRequestDto>()))
+                .Throws(new EmptyListException("WorkerController", "LoginWithPassword", "Nessun risultato trovato."));
+            _responseHandlerMock.Setup(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(new NotFoundObjectResult("Not Found"));
+
+            // Act
+            var result = _controller.LoginWithPassword(_samplePasswordRequestDto);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _responseHandlerMock.Verify(log => log.HandleNotFound(It.IsAny<HttpContext>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Once);
         }
     }
 }

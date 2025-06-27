@@ -105,7 +105,7 @@ namespace TestApi.Tests.ServicesTests
         {
             // Arrange
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent> { _sampleVwApiMostepsMocomponent };
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentJobDistinct(It.IsAny<JobFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentJob(It.IsAny<JobFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<JobFilter>(It.IsAny<JobRequestDto>()))
@@ -146,7 +146,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var filter = new JobFilter { Job = "Job1" };
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent>();
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentJobDistinct(It.IsAny<JobFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentJob(It.IsAny<JobFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<JobFilter>(It.IsAny<JobRequestDto>()))
@@ -166,7 +166,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var filter = new MonoFilter { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 1, 1) };
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent> { _sampleVwApiMostepsMocomponent };
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentMonoDistinct(It.IsAny<MonoFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentMono(It.IsAny<MonoFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<MonoFilter>(It.IsAny<MonoRequestDto>()))
@@ -207,7 +207,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var filter = new MonoFilter { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 1, 1) };
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent>();
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentMonoDistinct(It.IsAny<MonoFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentMono(It.IsAny<MonoFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<MonoFilter>(It.IsAny<MonoRequestDto>()))
@@ -227,7 +227,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var filter = new OperationFilter {Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 1, 1), Operation = "Op1"};
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent> { _sampleVwApiMostepsMocomponent };
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentOperationDistinct(It.IsAny<OperationFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentOperation(It.IsAny<OperationFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<OperationFilter>(It.IsAny<OperationRequestDto>()))
@@ -268,7 +268,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var filter = new OperationFilter { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 1, 1), Operation = "Op1" };
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent>();
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentOperationDistinct(It.IsAny<OperationFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentOperation(It.IsAny<OperationFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<OperationFilter>(It.IsAny<OperationRequestDto>()))
@@ -288,7 +288,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var filter = new BarCodeFilter { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 1, 1), Operation = "Op1", BarCode = "BarCode1" };
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent> { _sampleVwApiMostepsMocomponent };
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentBarCodeDistinct(It.IsAny<BarCodeFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentBarCode(It.IsAny<BarCodeFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<BarCodeFilter>(It.IsAny<BarCodeRequestDto>()))
@@ -329,7 +329,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var filter = new BarCodeFilter { Job = "Job1", Mono = "Mono1", CreationDate = new DateTime(2023, 1, 1), Operation = "Op1", BarCode = "BarCode1" };
             var vwApiMostepsMocomponents = new List<VwApiMostepsMocomponent>();
-            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentBarCodeDistinct(It.IsAny<BarCodeFilter>()))
+            _mostepsMocomponentRepositoryMock.Setup(repo => repo.GetMostepsMocomponentBarCode(It.IsAny<BarCodeFilter>()))
                 .Returns(vwApiMostepsMocomponents);
 
             _mapperMock.Setup(m => m.Map<BarCodeFilter>(It.IsAny<BarCodeRequestDto>()))
