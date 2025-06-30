@@ -41,7 +41,7 @@ class FrontendOnlyBuilder:
 
             script_utils.copy_python_server(self)
             script_utils.copy_build_json_to_build(self, True)
-            script_utils.copy_documentation_to_build(self)
+            #script_utils.copy_documentation_to_build(self)
 
             # script_utils.create_executable_from_batchscript(self)
             script_utils.create_pyinstaller_executable(self)
