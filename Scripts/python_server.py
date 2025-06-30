@@ -15,142 +15,7 @@ from flask_cors import CORS
 
 DIRECTORY = "frontend"
 
-class WebServer:
-    def __init__(self):
-        self.app = None
-        self.server_thread = None
-        self.host = "localhost"
-        self.port = 8080
-        
-    def get_local_ip(self):
-        """Restituisce l'indirizzo IPv4 locale del dispositivo (non localhost)."""
-        try:
-            # Usa una connessione UDP fittizia per determinare l'IP locale
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-                s.connect(('8.8.8.8', 80))
-                ip = s.getsockname()[0]
-                # Verifica che non sia localhost
-                if ip.startswith("127."):
-                    raise Exception("Indirizzo locale è localhost")
-                return ip
-        except Exception:
-            # Fallback: cerca tra le interfacce di rete
-            try:
-                hostname = socket.gethostname()
-                ips = socket.gethostbyname_ex(hostname)[2]
-                for ip in ips:
-                    if not ip.startswith("127."):
-                        return ip
-            except Exception:
-                pass
-            return '127.0.0.1'
-        
-    def load_config_from_build_json(self, config_path="build.json"):
-        """Carica la configurazione dal file build.json"""
-        try:
-            if Path(config_path).exists():
-                with open(config_path, 'r', encoding='utf-8') as f:
-                    config = json.load(f)
-                
-                frontend_config = config.get('server', {}).get('frontend', {})
-                self.host = frontend_config.get("host", "localhost")
-                self.port = frontend_config.get("port", 8080)
-                
-                print(f"Configurazione caricata: {self.host}:{self.port}")
-            else:
-                print("File di configurazione non trovato, uso valori predefiniti")
-                
-        except Exception as e:
-            print(f"Errore nel caricamento configurazione: {e}")
-
-    def create_flask_app(self):
-        """Crea e configura l'applicazione Flask"""
-        app = Flask(__name__)
-        CORS(app)  # Abilita CORS per tutte le route
-        
-        # Disabilita il logging di Flask per mantenere l'output pulito
-        import logging
-        log = logging.getLogger('werkzeug')
-        log.setLevel(logging.ERROR)
-        
-        # Disabilita il caching
-        @app.after_request
-        def after_request(response):
-            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-            response.headers["Pragma"] = "no-cache"
-            response.headers["Expires"] = "0"
-            return response
-        
-        # Serve i file statici
-        @app.route('/', defaults={'path': ''})
-        @app.route('/<path:path>')
-        def serve_static(path):
-            if path == "":
-                path = "index.html"
-            try:
-                return send_from_directory(DIRECTORY, path)
-            except FileNotFoundError:
-                # Fallback per SPA (Single Page Application)
-                return send_from_directory(DIRECTORY, 'index.html')
-        
-        # Gestisci le richieste API che non esistono (evita errori 404 nel frontend)
-        @app.route('/api/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-        def api_not_found(path):
-            return {"error": "API endpoint not found", "path": path}, 404
-        
-        return app
-
-    def start_server(self, config_path="build.json"):
-        """Avvia il server Flask in un thread separato"""
-        if not Path(DIRECTORY).exists():
-            print(f"Errore: Directory '{DIRECTORY}' non trovata!")
-            return False
-            
-        self.load_config_from_build_json(config_path)
-        
-        # Crea l'app Flask
-        self.app = self.create_flask_app()
-        
-        def run_flask():
-            """Funzione per eseguire Flask nel thread separato"""
-            try:
-                self.app.run(
-                    host=self.host, 
-                    port=self.port, 
-                    debug=False, 
-                    threaded=True,
-                    use_reloader=False 
-                )
-            except Exception as e:
-                print(f"Errore nell'esecuzione del server Flask: {e}")
-        
-        try:
-            self.server_thread = threading.Thread(target=run_flask, daemon=True)
-            self.server_thread.start()
-            print(f"Server Flask avviato su http://{self.host}:{self.port}")
-            return True
-            
-        except Exception as e:
-            print(f"Errore avvio server Flask: {e}")
-            return False
-    
-    def stop_server(self):
-        """Ferma il server Flask"""
-        print("Arresto del server...")
-        # Con Flask in modalità threaded, il thread si chiude automaticamente
-        # quando l'applicazione principale termina (daemon=True)
-        if self.server_thread:
-            print("Server arrestato")
-
-class PietribasiApp:
-    def __init__(self):
-        self.web_server = WebServer()
-        
-    def on_window_closed(self):
-        """Callback chiamato quando la finestra viene chiusa"""
-        print("Finestra chiusa, arresto dell'applicazione...")
-        self.web_server.stop_server()
-    
+class PietribiasiApp:    
     def get_icon_path(self, use_absolute=True):
         icon_path = Path("frontend/assets/icon.png")
         absolute_path = os.path.abspath(icon_path)
@@ -158,20 +23,24 @@ class PietribasiApp:
         
     def run(self):
         """Avvia l'applicazione desktop"""
-        # Avvia il server
-        if not self.web_server.start_server():
-            print("Impossibile avviare il server. Uscita.")
+        
+        # Legge l'ip del server dal file di configurazione
+        config_path = Path("build.json")
+        if config_path.exists():
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            self.server_ip = config['server']['frontend']['host']
+            self.server_port = config['server']['frontend']['port']
+        else:
+            print("Errore: File di configurazione 'build.json' non trovato!")
             return
-        
-        # Attende che il server sia pronto
-        time.sleep(2)  # Aumentato il tempo di attesa per Flask
-        
+
         # URL dell'applicazione
-        url = f"http://{self.web_server.host}:{self.web_server.port}/index.html"
+        url = f"http://{self.server_ip}:{self.server_port}/index.html"
         
         # Configura la finestra
         window_config = {
-            'title': 'Pietribasi App',
+            'title': 'Pietribiasi App',
             'width': 1200,
             'height': 800,
             'min_size': (800, 600),
@@ -213,13 +82,10 @@ class PietribasiApp:
             
         except Exception as e:
             print(f"Errore nell'avvio dell'applicazione: {e}")
-        finally:
-            # Assicurati che il server sia fermato
-            self.on_window_closed()
 
 def main():
     """Funzione principale"""
-    print("Avvio Pietribasi App...")
+    print("Avvio Pietribiasi App...")
     
     # Controlla se siamo nella directory corretta
     if not Path("frontend").exists():
@@ -239,7 +105,7 @@ def main():
         return
     
     # Avvia l'applicazione
-    app = PietribasiApp()
+    app = PietribiasiApp()
     app.run()
     
     print("Applicazione terminata.")

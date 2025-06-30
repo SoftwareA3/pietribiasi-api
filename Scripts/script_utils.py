@@ -247,7 +247,7 @@ def create_pyinstaller_executable(obj):
         '--distpath', str(output_dir),  # Directory di output
         '--workpath', str(output_dir / 'pyinstaller_temp'),  # Directory temporanea
         '--specpath', str(output_dir),  # Directory per il file .spec
-        '--name', 'PietribasiApp',  # Nome dell'eseguibile
+        '--name', 'PietribiasiApp',  # Nome dell'eseguibile
     ]
     
     # Aggiungi l'icona se esiste
@@ -277,7 +277,7 @@ def create_pyinstaller_executable(obj):
             return False
             
         # Verifica che l'eseguibile sia stato creato
-        exe_path = output_dir / "PietribasiApp.exe"
+        exe_path = output_dir / "PietribiasiApp.exe"
         if exe_path.exists():
             print(f"✅ Eseguibile creato: {exe_path}")
             

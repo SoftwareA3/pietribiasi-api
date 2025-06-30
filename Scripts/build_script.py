@@ -170,6 +170,12 @@ class AppBuilder:
             self.create_launcher_script(target)
 
             script_utils.create_pyinstaller_executable(self)
+            if self.build_dir.exists():
+                fname = "python_server.py"
+                fpath = self.build_dir / fname
+                if fpath.exists():
+                    fpath.unlink()
+                    print(f"🗑️  File {fname} eliminato dalla cartella di build")
 
             print(f"\n✅ Build completato con successo!")
             if self.config['packaging'].get('create_portable', True):

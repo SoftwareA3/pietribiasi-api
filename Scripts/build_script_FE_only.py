@@ -45,6 +45,13 @@ class FrontendOnlyBuilder:
 
             # script_utils.create_executable_from_batchscript(self)
             script_utils.create_pyinstaller_executable(self)
+
+            if self.build_dir.exists():
+                fname = "python_server.py"
+                fpath = self.build_dir / fname
+                if fpath.exists():
+                    fpath.unlink()
+                    print(f"🗑️  File {fname} eliminato dalla cartella di build")
             
             # Crea l'archivio
             print(f"\n✅ Build frontend completato con successo!")

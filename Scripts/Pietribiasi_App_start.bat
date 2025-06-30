@@ -92,7 +92,7 @@ if "!BACKEND_RUNNING!"=="1" (
 if "!FRONTEND_RUNNING!"=="1" (
     echo Frontend già in esecuzione!
 ) else (
-    echo Avvio del frontend con eseguibile...
+    echo Avvio del frontend...
     timeout /t 2 >nul
     REM Avvia il server frontend 
     start "Pietribiasi Frontend Server" pythonw server_only.py
@@ -191,17 +191,17 @@ REM 2. Termina i processi backend
 echo Terminazione processi backend...
 taskkill /f /im !BACKEND_PROJECT!.exe 2>nul
 
-REM 3. Termina eventuali processi WebView (nel caso il frontend usi webview) e il progesso PietribasiApp.exe
+REM 3. Termina eventuali processi WebView (nel caso il frontend usi webview) e il progesso PietribiasiApp.exe
 REM (assicurati che il nome del processo sia corretto)
 echo Terminazione processi WebView...
 taskkill /f /im "Microsoft Edge WebView2" 2>nul
 taskkill /f /im msedgewebview2.exe 2>nul
-echo Terminazione processi PietribasiApp...
-tasklist | findstr PietribasiApp.exe >nul 2>&1
+echo Terminazione processi PietribiasiApp...
+tasklist | findstr PietribiasiApp.exe >nul 2>&1
 if %errorlevel%==0 (
-    taskkill /f /im PietribasiApp.exe 2>nul
+    taskkill /f /im PietribiasiApp.exe 2>nul
 ) else (
-    echo Nessun processo PietribasiApp trovato.
+    echo Nessun processo PietribiasiApp trovato.
 )
 
 REM 4. Attendiamo che i processi terminino completamente
