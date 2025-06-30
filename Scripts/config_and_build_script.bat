@@ -10,8 +10,12 @@ echo ========================================
 echo.
 echo Questo script installerà i prerequisiti necessari per il build.
 echo Verranno installati:
-echo - ps2exe ^(PowerShell to EXE converter^)
+REM echo - ps2exe ^(PowerShell to EXE converter^)
+echo - Python ^(Python 3.7 o superiore^)
 echo - pywebview ^(Python library^)
+echo - Flask ^(Python web framework^)
+echo - Flask-CORS ^(Cross-Origin Resource Sharing for Flask^)
+echo - PyInstaller ^(Python package for creating standalone executables^)
 echo.
 
 net session >nul 2>&1
@@ -46,47 +50,49 @@ if errorlevel 1 (
 echo [OK] Python trovato.
 echo.
 
-echo [INFO] Controllo presenza ps2exe...
-powershell -Command "try { $module = Get-Module -ListAvailable -Name ps2exe; if ($module) { Write-Host '[OK] ps2exe già installato.' -ForegroundColor Green; exit 0 } else { Write-Host '[INFO] ps2exe non trovato.' -ForegroundColor Yellow; exit 1 } } catch { Write-Host '[INFO] ps2exe non trovato.' -ForegroundColor Yellow; exit 1 }"
+@REM echo [INFO] Controllo presenza ps2exe...
+@REM powershell -Command "try { $module = Get-Module -ListAvailable -Name ps2exe; if ($module) { Write-Host '[OK] ps2exe già installato.' -ForegroundColor Green; exit 0 } else { Write-Host '[INFO] ps2exe non trovato.' -ForegroundColor Yellow; exit 1 } } catch { Write-Host '[INFO] ps2exe non trovato.' -ForegroundColor Yellow; exit 1 }"
 
-if errorlevel 1 (
-    echo [INFO] Installazione ps2exe in corso...
-    echo [INFO] Configurazione repository PSGallery come trusted...
+@REM if errorlevel 1 (
+@REM     echo [INFO] Installazione ps2exe in corso...
+@REM     echo [INFO] Configurazione repository PSGallery come trusted...
     
-    powershell -Command "try { Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Write-Host '[OK] Repository PSGallery configurato.' -ForegroundColor Green } catch { Write-Host '[WARNING] Impossibile configurare PSGallery come trusted.' -ForegroundColor Yellow }"
+@REM     powershell -Command "try { Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Write-Host '[OK] Repository PSGallery configurato.' -ForegroundColor Green } catch { Write-Host '[WARNING] Impossibile configurare PSGallery come trusted.' -ForegroundColor Yellow }"
     
-    echo [INFO] Download e installazione ps2exe...
-    powershell -Command "try { Install-Module -Name ps2exe -Force -Scope AllUsers -Repository PSGallery -AllowClobber; Write-Host '[OK] ps2exe installato con successo.' -ForegroundColor Green; exit 0 } catch { Write-Host '[ERRORE] Impossibile installare ps2exe: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
+@REM     echo [INFO] Download e installazione ps2exe...
+@REM     powershell -Command "try { Install-Module -Name ps2exe -Force -Scope AllUsers -Repository PSGallery -AllowClobber; Write-Host '[OK] ps2exe installato con successo.' -ForegroundColor Green; exit 0 } catch { Write-Host '[ERRORE] Impossibile installare ps2exe: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
     
-    if errorlevel 1 (
-        echo [ERRORE] Installazione ps2exe fallita.
-        echo [INFO] Tentativo di installazione con modalità CurrentUser...
+@REM     if errorlevel 1 (
+@REM         echo [ERRORE] Installazione ps2exe fallita.
+@REM         echo [INFO] Tentativo di installazione con modalità CurrentUser...
         
-        powershell -Command "try { Install-Module -Name ps2exe -Force -Scope CurrentUser -Repository PSGallery -AllowClobber; Write-Host '[OK] ps2exe installato con successo per l'utente corrente.' -ForegroundColor Green; exit 0 } catch { Write-Host '[ERRORE] Impossibile installare ps2exe anche per CurrentUser: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
+@REM         powershell -Command "try { Install-Module -Name ps2exe -Force -Scope CurrentUser -Repository PSGallery -AllowClobber; Write-Host '[OK] ps2exe installato con successo per l'utente corrente.' -ForegroundColor Green; exit 0 } catch { Write-Host '[ERRORE] Impossibile installare ps2exe anche per CurrentUser: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
         
-        if errorlevel 1 (
-            echo [ERRORE] Impossibile installare ps2exe. Verifica:
-            echo - Connessione a Internet
-            echo - Permessi di amministratore
-            echo - Configurazione PowerShell ExecutionPolicy
-            pause
-            exit /b 1
-        )
-    )
+@REM         if errorlevel 1 (
+@REM             echo [ERRORE] Impossibile installare ps2exe. Verifica:
+@REM             echo - Connessione a Internet
+@REM             echo - Permessi di amministratore
+@REM             echo - Configurazione PowerShell ExecutionPolicy
+@REM             pause
+@REM             exit /b 1
+@REM         )
+@REM     )
     
-    echo [INFO] Verifica finale installazione ps2exe...
-    powershell -Command "try { $module = Get-Module -ListAvailable -Name ps2exe; if ($module) { Write-Host '[OK] ps2exe installato e verificato.' -ForegroundColor Green; Write-Host 'Versione: ' $module.Version -ForegroundColor Cyan } else { Write-Host '[ERRORE] ps2exe non trovato dopo l''installazione.' -ForegroundColor Red; exit 1 } } catch { Write-Host '[ERRORE] Errore durante la verifica di ps2exe.' -ForegroundColor Red; exit 1 }"
+@REM     echo [INFO] Verifica finale installazione ps2exe...
+@REM     powershell -Command "try { $module = Get-Module -ListAvailable -Name ps2exe; if ($module) { Write-Host '[OK] ps2exe installato e verificato.' -ForegroundColor Green; Write-Host 'Versione: ' $module.Version -ForegroundColor Cyan } else { Write-Host '[ERRORE] ps2exe non trovato dopo l''installazione.' -ForegroundColor Red; exit 1 } } catch { Write-Host '[ERRORE] Errore durante la verifica di ps2exe.' -ForegroundColor Red; exit 1 }"
     
-    if errorlevel 1 (
-        echo [ERRORE] Verifica ps2exe fallita.
-        pause
-        exit /b 1
-    )
-) else (
-    echo [OK] ps2exe già installato.
-    powershell -Command "try { $module = Get-Module -ListAvailable -Name ps2exe; Write-Host 'Versione installata: ' $module.Version -ForegroundColor Cyan } catch { Write-Host 'Impossibile ottenere la versione.' -ForegroundColor Yellow }"
-)
-echo.
+@REM     if errorlevel 1 (
+@REM         echo [ERRORE] Verifica ps2exe fallita.
+@REM         pause
+@REM         exit /b 1
+@REM     )
+@REM     echo [OK] ps2exe installato e verificato con successo.
+@REM     goto menu
+@REM ) else (
+@REM     echo [OK] ps2exe già installato.
+@REM     powershell -Command "try { $module = Get-Module -ListAvailable -Name ps2exe; Write-Host 'Versione installata: ' $module.Version -ForegroundColor Cyan } catch { Write-Host 'Impossibile ottenere la versione.' -ForegroundColor Yellow }"
+@REM )
+@REM echo.
 
 python -c "import webview" 2>nul
 IF %ERRORLEVEL% NEQ 0 (
@@ -98,8 +104,54 @@ IF %ERRORLEVEL% NEQ 0 (
         exit /b 1
     )
     echo [OK] pywebview installato con successo.
+    goto menu
 ) else (
     echo [OK] pywebview già installato.
+)
+
+python -c "import flask" 2>nul
+IF %ERRORLEVEL% NEQ 0 (
+    echo Installazione Flask in corso...
+    pip install flask
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Errore nell'installazione di Flask!
+        pause
+        exit /b 1
+    )
+    echo [OK] Flask installato con successo.
+    goto menu
+) else (
+    echo [OK] Flask già installato.
+)
+
+python -c "import flask_cors" 2>nul
+IF %ERRORLEVEL% NEQ 0 (
+    echo Installazione Flask-CORS in corso...
+    pip install flask-cors
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Errore nell'installazione di Flask-CORS!
+        pause
+        exit /b 1
+    )
+    echo [OK] Flask-CORS installato con successo.
+    goto menu
+) else (
+    echo [OK] Flask-CORS già installato.
+)
+
+python -c "import PyInstaller" 2>nul
+IF %ERRORLEVEL% NEQ 0 (
+    echo Installazione PyInstaller in corso...
+    pip install pyinstaller
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Errore nell'installazione di PyInstaller!
+        pause
+        exit /b 1
+    )
+    echo [OK] PyInstaller installato con successo.
+    goto menu
+) else (
+    echo [OK] PyInstaller già installato.
 )
 
 echo.
@@ -167,7 +219,8 @@ if errorlevel 1 (
 
 echo [OK] Entrambi gli script sono stati eseguiti con successo.
 echo.
-goto fine
+pause
+goto menu
 
 :build_full
 echo.

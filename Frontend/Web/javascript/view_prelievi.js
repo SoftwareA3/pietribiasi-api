@@ -213,7 +213,7 @@ function createFilterObject() {
     }
 
     
-    if (showImportedToggle.checked == true) {
+    if (showImportedToggle.checked === true) {
         if(filterImported.value) {
             const importedDate = new Date(filterImported.value);
             filteredObject.dataImp = importedDate.toISOString().slice(0, -1); // Rimuove la "Z" che crea problemi con le chiamate all'API

@@ -6,7 +6,8 @@
    2. [Build](#build)
    3. [Avvio Applicazione con build (Avvio Frontend e Backend)](#avvio-applicazione-con-build-avvio-frontend-e-backend)
    4. [Avvio FrontEnd con build_FE](#avvio-applicazione-con-build-avvio-frontend-e-backend)
-2. [FrontEnd](#frontend)
+2. [Documentazione API](#documentazione-api)
+3. [FrontEnd](#frontend)
    1. [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
    2. [Home](#home)
    3. [Registrazione Ore Commessa](#registrazione-ore-commessa)
@@ -18,7 +19,7 @@
    9. [Power User](#power-user)
    10. [Sincronizzazione](#sincronizzazione)
    11. [Impostazioni](#impostazioni)
-3. [Backend](#backend)
+4. [Backend](#backend)
    1. [Divisione](#divisione)
    2. [Controllers](#controllers)
    3. [Authentication](#authentication)
@@ -32,13 +33,14 @@
    9. [Repository](#repository)
    10. [Services](#services)
    11. [Utils](#utils)
-   12. [Sequenza di esecuzione](#sequenza-di-esecuzione)
+   12. [Gestione delle eccezioni](#gestione-delle-eccezioni)
+   13. [Sequenza di esecuzione](#sequenza-di-esecuzione)
        - [Richieste GET](#richieste-get)
        - [Richieste POST](#richieste-post)
        - [Richieste DELETE](#richieste-delete)
        - [Richieste PUT](#richieste-put)
-4. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
-5. [Comandi](#comandi)
+5. [Aggiunta di nuove richieste per il Back End](#aggiunta-di-nuove-richieste-per-il-back-end)
+6. [Comandi](#comandi)
    1. [Avvio API](#avvio-api)
    2. [Scaffolding](#scaffolding)
    3. [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale) 
@@ -49,7 +51,6 @@ I file verranno descritti brevemente di seguito:
 - `build_script_FE_only.py`: script che serve per la configurazione e la costruzione delle cartelle `build_FE` (per la costruzione della WebApp Frontend) e `dist_FE` con il file compresso di build_FE;
 - `build_scritp.py`: script che serve per la configurazione e la costruzione delle cartelle `build` (per la costruzione della console per l'avvio di Frontend e Backend) e `dist` con il file compresso di build;
 - `build.json`: file di configurazione dell'applicazione che verrà descritto in seguito con una sezione apposita. Viene copiato, filtrato e usato in entrambe le cartelle di build;
-- `Frontend_Pietribiasi_App_start.bat`: script batch per l'avvio del Frontend. Viene usato per creare l'eseguibile col quale eseguire `python_server.py`. Viene copiato, rinominato e usato in `build_FE`;
 - `Pietribiasi_App_start.bat`: script batch per l'avvio della console dell'applicazione, con la quale avviare Frontend e/o Backend. Viene usato per creare l'eseguibile col quale aprire la console dell'applicazione. Viene copiato e usato in `build_FE`
 - `config_and_build_script.bat`: script che si occupa di installare le dipendenze per poi far scegliere se eseguire `build_script_FE_only.py`, `build_script.py` o entrambi. È lo script da avviare dopo la clonazione della repository. Verrà descritto meglio in una sezione dedicata;
 - `python_server.py`: script che si occupa dell'apertura della finestra per il Frontend. La finestra si rpesenta come la finestra di un'applicazione. Viene copiato e usato in entrambe le cartelle di build;
@@ -149,8 +150,9 @@ Di seguito viene approfondito il file `build.json`
 ## Build
 Per costruire l'applicazione, bisogna spostarsi nella cartella `Scripts` ed eseguire lo script batch `config_and_build.bat`. Lo script chiedera i permessi di amministratore per scaricare le dipendenze dell'applicazione, quali: 
 - `python`: per il comando `python`, indispensabile per l'esecuzione degli script di build; 
-- `ps2exe`: per la conversione dei file .ps1 (creati con gli script python per le build dai file batch) in file eseguibili; 
-- `pywebview`: una libreria python utilizzata per la costruzione della finestra per la WebApp.
+- `PiInstaller`: per realizzare l'eseguibile dell'applicazione web;
+- `pywebview`: una libreria python utilizzata per la costruzione della finestra per la WebApp;
+- `flask` e `flask_cors`: per la configurazione e l'avvio del server Frontend.
 
 Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
 1. Esecuzione di `build_script.py` (per la costruzione di Frontend e Backend in `build`);
@@ -162,20 +164,25 @@ Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
 Una volta finita la build per Frontend e Backend, verrà generata la cartella `build` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist`.
 Aperta la cartella `build`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
 Viene aperta una console con le seguenti opzioni:
-0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è messa per testare il Frontend;
+0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è inserita per testare il Frontend;
 1. Avvia l'applicazione, inizializzando i server Frontend e Backend, senza però aprire la finestra con l'applicazione
-2. Avvia solo il server Frontend
-3. Avvia solo il server Backend
-4. Ferma i server
-5. Riavvia i server
-6. Mostra lo stato dei server
-7. Mostra gli IP dove sono disponibili i server Frontend e Backend
-8. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server e la console.
+2. Avvia solo il server Backend
+3. Ferma i server
+4. Riavvia i server
+5. Mostra lo stato dei server
+6. Mostra gli IP dove sono disponibili i server Frontend e Backend
+7. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server, la console e l'applicazione se aperta.
 
 # Avvio FrontEnd con build_FE
 Una volta finita la build per il Frontend, verrà generata la cartella `build_FE` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist_FE`.
-Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
-Il file batch avvia delle console che vengono chiuse subito per aprire la finestra con la WebApp.
+Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile apre una finestra con l'applicazione web.
+In alternativa, è possibile connettersi all'IP del server frontend dal browser.
+
+---
+
+# Documentazione API
+Il link permette di scaricare il pdf con la documentazione dell'API. La documentazione è presa dal client Swagger, generato nel backend tramite il comando `dotnet run watch` e disponibile all'IP esposto nella console. All'URL dell'IP esposto, è necessario aggiungere l'endpoint `/swagger`.
+[📄 Scarica la documentazione API in PDF](assets/documentazione_api.pdf)
 
 ---
 
@@ -199,7 +206,7 @@ I pulsanti disponibili per tutti gli utenti sono (Titolo - icona):
 - **Visualizza Ore Registrate** - 📄: porta alla pagina [Visualizza Ore Registrate](#visualizza-ore-registrate)
 - **Visualizza Prelievi Effettuati** - 🚚: porta alla pagina [Visualizza Prelievi Effettuati](#visualizza-prelievi-effettuati)
 - **Visualizza Registrazioni Inventario** - 🔍: porta alla pagina [Visualizza Registrazioni Inventario](#visualizza-registrazioni-inventario)
-- **Sincronizza** - 🔄️: porta alla pagina [Sincronizzazione](#sincronizzazione)
+- **Sincronizza** - 🔄️: porta alla pagina [Sincronizzazione](#sincronizzazione) (se la sincronizzazione è permessa per gli addetti)
 
 Le operazioni aggiuntive disponibili per gli utenti di tipo amministratore sono:
 - **Modalità Power User** - (👤 con un "+"): porta alla pagina [Power User](#power-user)
@@ -221,7 +228,7 @@ La pagina per la registrazione delle ore di una commessa si presenta come una se
 - Quando tutti i campi sono completi, sono da inserire le **Ore**. Inserite anche le ore, alla pressione del pulsante **“Aggiungi”**, indicato anche dall'icona ➕,  vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_reg_ore**.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
 ---
@@ -259,7 +266,9 @@ In caso la commessa abbia il pallino verde, vengono rese disponibili due operazi
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare le ore registrate tramite un input che va poi confermato per l'invio delle modifiche al database
 - **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare le ore registrate tramite la pressione del pulsante e la successiva conferma dell'operazione.
 
-Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi da sincronizzare e poi che sono già stati sincronizzati. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+All'attivazione del toggle, comparirà anche un nuovo input per consentire di filtrare per la data di importazione. Aggiornando la lista, gli elemenenti compariranno in ordine crescente dalla data specificata nell'input.
+
 Inoltre per ogni elemento importato, è disponibile un pulsante, indicato da un'icona di una lista puntata, per visualizzare dei **messaggi di log** relativi al **MoId**. I messaggi sono visualizzabili solo se disponibili. In caso non lo siano, viene avvertito l'utente tramite un icona ⚠️ e un alert in caso si provi a cliccare il pulsante.  
 
 ---
@@ -276,7 +285,7 @@ La pagina per il Prelievo di Materiali per Produzione si presenta come una serie
 - Nel caso in cui la quantità inserita superi la quantità da prelevare (ad esempio 6000 nel caso sopra), l'elemento verrà comunque aggiunto, ma verrà mostrato un messaggio per avvisare l'utente.
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_prel_mat**.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
 ---
@@ -317,7 +326,9 @@ In caso la commessa abbia il pallino verde, vengono rese disponibili due operazi
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database
 - **Elimina**: indicata tramite l'icona 🗑️ permette di eliminare la quantità prelevata tramite la pressione del pulsante e la successiva conferma dell'operazione.
 
-Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi da sincronizzare e poi che sono già stati sincronizzati. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+All'attivazione del toggle, comparirà anche un nuovo input per consentire di filtrare per la data di importazione. Aggiornando la lista, gli elemenenti compariranno in ordine crescente dalla data specificata nell'input.
+
 Inoltre per ogni elemento importato, è disponibile un pulsante, indicato da un'icona di una lista puntata, per visualizzare dei **messaggi di log** relativi al **MoId**. I messaggi sono visualizzabili solo se disponibili. In caso non lo siano, viene avvertito l'utente tramite un icona ⚠️ e un alert in caso si provi a cliccare il pulsante.
 
 ---
@@ -330,7 +341,7 @@ La pagina per la Gestione dell'Inventario si presenta con due campi:
 - Quando tutti i campi sono completi, alla pressione del pulsante **“Aggiungi”** , indicato anche dall'icona ➕ (o alla pressione di "Invio" nel campo della **Quantità rilevata**), vengono aggiunte le informazioni recuperate, in una lista temporanea sottostante. 
 - Questa lista si resetta all’aggiornamento della pagina, facendo sparire tutte le informazioni che non sono state salvate.
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
-- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella **A3_app_inventario**.
+- Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
 ---
@@ -365,7 +376,10 @@ La lista di elementi filtrati, mostra delle informazioni per ogni elemento. Ques
 In caso la commessa abbia il pallino verde, vengono rese disponibili due operazioni:
 - **Modifica**: indicata tramite l'icona ✏️ permette di modificare la quantità prelevata tramite un input che va poi confermato per l'invio delle modifiche al database.
 
-Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi che sono già stati sincronizzati e poi quelli da sincronizzare. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+Per la pagina di visualizzazione è disponibile un **toggle** per visualizzare gli elementi dei quali è già stata fatta la sincronizzazione con Mago4. Attivando il toggle, compariranno prima gli elementi da sincronizzare e poi che sono già stati sincronizzati. Per gli elementi sincronizzati, compariranno anche: il codice, la data e l'ora dell'utente che ha effettuato la sincronizzazione.
+All'attivazione del toggle, comparirà anche un nuovo input per consentire di filtrare per la data di importazione. Aggiornando la lista, gli elemenenti compariranno in ordine crescente dalla data specificata nell'input.
+
+
 Inoltre per ogni elemento importato, è disponibile un pulsante, indicato da un'icona di una lista puntata, per visualizzare dei **messaggi di log** relativi al **MoId**. I messaggi sono visualizzabili solo se disponibili. In caso non lo siano, viene avvertito l'utente tramite un icona ⚠️ e un alert in caso si provi a cliccare il pulsante.
 
 ---
@@ -414,6 +428,8 @@ Per il BackEnd, la maggior parte delle directory hanno una divisione dei file ch
 ## Controllers
 I controllers sono classi che servono ad invocare i metodi HTTP (GET, POST, PUT, DELETE). 
 I controllers inoltre rappresentano il layer di presentazione, ossia si occupano di esporre l'endpoint, inoltrare la richiesta dell'utente al layer di business (i service in questo caso) e inoltre si occupa di fornire la risposta finale, quindi è l'ultimo gestore delle eccezioni che ritorna messaggi all'utente che ha effettuato la richiesta.
+
+Altra documentazione per le richieste HTTP dei Controller è disponibile [qui](#documentazione-api)
 
 ### Dipendenze
 - Services: Servizio per la scrittura del file di log
@@ -650,6 +666,35 @@ public IActionResult PutViewInventario([FromBody] ViewInventarioPutRequestDto? r
 
 ---
 
+```csharp
+public IActionResult GetInventarioNotImported()
+```
+- **Endpoint:** `get_inventario_not_imported`
+- **Richiesta:** GET
+- **Descrizione:** Recupera le informazioni non sincronizzate dalla tabella 
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `204 No Content` se la richiesta ha ritornato una lista vuota perché non ci sono record non importati.
+
+---
+
+```csharp
+public IActionResult GetNotImportedAppInventarioByFilter([FromBody] ViewInventarioRequestDto? request)
+```
+- **Endpoint:** `view_inventario/not_imported/filtered`
+- **Richiesta:** POST
+- **Descrizione:** Recupera le informazioni non sincronizzate e filtrate dalla tabella  
+- **Parametri:**
+    - `ViewInventarioRequestDto` Dto di richiesta contenente i filtri di ricerca
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella con i filtri applicati
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati.
+
+---
+
 #### JobController
 **ROUTE:** `api/job`
 Questa classe si occupa del recupero delle informazioni dalla vista `vw_api_job`
@@ -783,24 +828,25 @@ public IActionResult GetMostepsMocomponentWithBarCode([FromBody] BarCodeRequestD
 
 ---
 
-#### OmmessageController
-**ROUTE:** `api/ommessage`
-Questa classe si occupa del recupero dei file di log da Mago4, utilizzando MoId come parametro di ricerca. Interroga la vista `vw_api_ommessages`
+#### ActionMessageController
+**ROUTE:** `api/action_message`
+Questa classe si occupa del recupero dei file di log da Mago4, utilizzando parametri di ricerca. Interroga la vista `vw_api_action_message`
 
 ---
 
 ```csharp
-public IActionResult GetOmmessageGroupedByMoId([FromBody] MoIdRequestDto moIdRequestDto)
+public IActionResult GetActionMessagesByFilter([FromBody] ImportedLogMessageDto? request)
 ```
-- **Endpoint:** `get_log_from_moid`
+- **Endpoint:** `get_action_messages_filtered`
 - **Richiesta:** POST
-- **Descrizione:** Recupera le informazioni dalla vista, utilizzando il MoId
+- **Descrizione:** Ritorna tutte le informazioni della vista vw_om_action_messages filtrate in base ai parametri passati
 - **Parametri:**
-    - `MoIdRequestDto` Dto di ricerca contenente l'identificativo MoId
+    - `ImportedLogMessageDto` Dto di ricerca contenente i parametri di ricerca
 - **Ritorna:** `IActionResult`  
-    - `200 Ok` se l'operazione va a buon fine. Ritorna i record della vista filtrati
-    - `400 Bad Request` se la richiesta ha corpo nullo.
-    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `200 Ok` se l'operazione va a buon fine. Ritorna i record della vista filtrati;
+    - `204 No Content`: se l'operazione va a buon fine ma non ci sono dati da recuperare;
+    - `400 Bad Request` se la richiesta ha corpo nullo;
+    - `404 Not Found` se la richiesta non ha prodotto risultati o si sono verificati degli errori.
 
 ---
 
@@ -897,6 +943,35 @@ public IActionResult GetPrelMatWithComponent([FromBody] ComponentRequestDto? a3A
 
 ---
 
+```csharp
+public IActionResult GetNotImportedPrelMat()
+```
+- **Endpoint:** `view_prel_mat/not_imported`
+- **Richiesta:** GET
+- **Descrizione:** Recupera le informazioni non sincronizzate dalla tabella 
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `204 No Content` se la richiesta ha ritornato una lista vuota perché non ci sono record non importati.
+
+---
+
+```csharp
+public IActionResult GetNotImportedPrelMatWithFilter(ViewPrelMatRequestDto request)
+```
+- **Endpoint:** `view_prel_mat/not_imported`
+- **Richiesta:** POST
+- **Descrizione:** Recupera le informazioni non sincronizzate e filtrate dalla tabella  
+- **Parametri:**
+    - `ViewPrelMatRequestDto` Dto di richiesta contenente i filtri di ricerca
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella con i filtri applicati
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati.
+
+---
+
 #### RegOreController
 **ROUTE:** `api/reg_ore`
 Questa classe si occupa di effettuare le operazioni CRUD sulla tabella `A3_app_reg_ore`
@@ -973,6 +1048,37 @@ public IActionResult DeleteRegOreId([FromBody] ViewOreDeleteRequestDto? a3AppDel
     - `400 Bad Request` se la richiesta ha corpo nullo.
     - `404 Not Found` se la richiesta non ha prodotto risultati e il record non viene eliminato correttamente
 
+---
+
+```csharp
+public IActionResult GetRegOreNotImported()
+```
+- **Endpoint:** `view_ore/not_imported`
+- **Richiesta:** GET
+- **Descrizione:** Recupera le informazioni non sincronizzate dalla tabella 
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `204 No Content` se la richiesta ha ritornato una lista vuota perché non ci sono record non importati.
+
+---
+
+```csharp
+public IActionResult GetNotImportedAppRegOre([FromBody] ViewOreRequestDto? filter)
+```
+- **Endpoint:** `view_ore/not_imported/filtered`
+- **Richiesta:** POST
+- **Descrizione:** Recupera le informazioni non sincronizzate e filtrate dalla tabella  
+- **Parametri:**
+    - `ViewOreRequestDto` Dto di richiesta contenente i filtri di ricerca
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine e vengono ritornati i record non importati dalla tabella con i filtri applicati
+    - `400 Bad Request` se la richiesta ha corpo nullo.
+    - `404 Not Found` se la richiesta non ha prodotto risultati.
+
+---
+
 #### WorkerController
 **ROUTE:** `api/worker`
 Questa classe si occupa di recuperare le informazioni dalla vista `vw_api_workers`
@@ -1036,9 +1142,6 @@ Per quanto riguarda l'unica classe di Data, non verranno descritti i metodi, poi
 ## Dto
 Directory che contiene i file Dto (Data Transfer Object), ossia file di richiesta e risposta all'utente. Questi file sono i contenitori di informazioni che vengono inserite dall'utente (convertite dal JSON del corpo della richiesta) e ritornate dall'applicazione (convertite dal Dto al JSON) all'utente.
 
-### Classi
-Per quanto riguarda i file contenenti le classi dei Dto, non verranno descritte, poiché contengono solamente attributi per la formazione dei Dto dei modelli o dei Dto di richiesta
-
 ### Dto Models
 Rappresentano i Dto di risposta o comunque Dto che inviano i record completi in risposta. Contengono tutti i campi contenuti dei rispettivi Models, ma separano la gestione dei dati (Models) dal livello di presentazione all'utente (Dto)
 
@@ -1050,9 +1153,6 @@ Ad esempio, se il modello rappresenta una tabella User(int Id, string Password) 
 
 ## Filters
 Filters è la directory che contiene i filtri, ossia classi che simulano i file Dto delle richieste. Questo passaggio permette di separare il livello di presentazione (Dto) dal livello dati (Filters) in modo che le richieste siano fatte con un tipo specifico. Può sembrare un'aggiunta superflua, ma nel caso ci sia bisogno di una maggiore gestione o elaborazione dei dati, queste classi possono tornare utili. Ad esempio nel caso in cui, da una richiesta, serva inserire un parametro fisso, si può aggiungere un filtro con i parametri necessari e impostare il parametro fisso nella sezione "logica" dell'applicazione, ossia nei Repository. In questo modo sarà solamente necessario creare il filtro e mappare il Dto nel filtro
-
-### Classi
-Per quanto riguarda le classi dei filter, non verranno descritte, poiché all'interno di queste ci sono solo attributi ripresi dai Dto di richiesta per effettuare le query nei repository
 
 ---
 
@@ -1094,17 +1194,30 @@ Sono necessari per ridurre al minimo il compito dei controllers, che si occupera
 ---
 
 ## Utils
-Gli Utils sono classi che servono per supportare alcuni processi. In particolare per gestire gli errori dei controller e scrivere il file di log. I file contenuti in Utils sono due:
-- LogService: classe che serve a creare la cartella il file di log e a popolarlo con le informazioni necessarie.
-- ResponseHandler: è il gestore delle risposte dei Controller dopo aver ricevuto una richiesta API. Questa classe si occupa di catturare la condizione, scrivere sul file di log e ritornare una risposta. 
+Gli Utils sono classi che servono per supportare alcuni processi. In particolare per gestire gli errori dei controller e scrivere il file di log. I file contenuti in Utils sono tre:
+- **LogService**: classe che serve a creare la cartella il file di log e a popolarlo con le informazioni necessarie.
+- **ResponseHandler**: è il gestore delle risposte dei Controller dopo aver ricevuto una richiesta API. Questa classe si occupa di catturare la condizione, scrivere sul file di log e ritornare una risposta. 
+- **ApplicationException**: classe che inserisce alcune eccezioni personalizzate. Contiene un metodo utile per controllare se da un metodo dev'essere lanciata un'eccezione per lista vuota o se la lista vuota è attesa.
 
-In particolare gestisce 3 tipi di situazione:
+In particolare gestisce 4 tipi di situazione:
 - BadRequest: il corpo della richiesta all'API è vuoto
-- NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati. <strong><i>Su questo punto c'è da fare la premessa del NoContent, ossia quando ci si aspetta che non venga ritornato nulla</i></strong>
+- NotFound: il corpo della richiesta conteneva informazioni errate o che non hanno restituito risultati. 
+- NoContent: la richiesta non ritorna una risposta perché non sono stati trovati dati. A differenza di NotFound, ci si aspetta che il contenuto ritornato possa essere vuoto.
 - Altre richieste tipo 200: (ad esempio 200 Ok o 201 Created) la richiesta è andata a buon fine. Ritorna il Dto di risposta e lo stampa sul file.
 
 ### Dipendenze
 - LogService: per scrivere sul file di log
+
+---
+
+## Gestione delle eccezioni
+Le eccezioni vengono lanciate dal livello di accesso ai dati, ossia dai repository. All'interno dei repository viene deciso che tipo di eccezione lanciare nei casi in cui:
+- Venga ritornato un contenuto nullo o una lista vuota e il risultato non è atteso `EmptyListException`;
+- Venga ritornata una lista vuota e ci si aspetta che il contenuto sia vuoto `ExpectedEmptyListException`;
+- I parametri passati al repository sono nulli o parzialmente nulli (ad esempio una proprietà del Filter) `ArgumentNullException`;
+- Altre eccezioni generiche `Exception`
+
+Di conseguenza le eccezioni vengono lanciate per essere catturate dal gestore finale delle eccezioni. A parte nel caso particolare del servizio di MagoRequestService, non vengono rilanciate eccezioni né gestite dai Service, ma sono catturate all'interno dei Controller e gestite tramite la classe `ResponseHandler`. In base all'eccezione, viene ritornata una risposta HTTP con un messaggio pertinente.
 
 ---
 
@@ -1138,16 +1251,16 @@ Nel controller, alla richiesta di una PUT all'API, viene richiesto all'utente da
 
 ## Aggiunta di nuove richieste per il Back End:
 Per aggiungere una nuova richiesta al Back End, la procedura più efficace è la seguente:
-- Aggiornamento delle tabelle del database interessate dalla richiesta tramite lo scaffolding, in modo da aggiornare il **Contesto** del database nell'applicazione e i **Modelli**
+- Aggiornamento delle tabelle del database interessate dalla richiesta tramite lo scaffolding, in modo da aggiornare il **Contesto** del database nell'applicazione e i **Modelli** (solo se necessario)
 - Sistemazione di eventuali dipendenze dalla modifica del contesto del database (ad esempio se la tabella viene aggiornata con nuovi campi o campi rimossi, che richiedono probabilmente modifiche ad altre richieste, mappers, repository ecc...)
 - Creazione del **Dto** del modello in modo da separare il modello dalle informazioni richieste e/o ritornate. In alternativa, un **Dto** di richiesta che contenga informazioni per la risposta (non ho distinto request e response) 
 - Creazione di un file Dto di richiesta
-- Creazione del rispettivo filtro
-- Creazione dei mappers (dto - filtro; modello - dto, viceversa, ecc...)
-- Creazione dei metodi nei repository
-- Creazione dei metodi nei servizi
-- Creazione della richiesta nel controller
-- Eventuali modifiche in Program.cs (ad esempio se viene creato un nuovo file Mapper, Controller ecc...), cioè files che richiedono configurazioni in Program.cs
+- Creazione del rispettivo **Filter**
+- Creazione dei **Mappers** (dto - filtro; modello - dto, viceversa, ecc...)
+- Creazione dei metodi nei **Repository**
+- Creazione dei metodi nei **Service**
+- Creazione della richiesta nel **Controller**
+- Eventuali modifiche in `Program.cs` (ad esempio se viene creato un nuovo file **Mapper**, **Controller** ecc...), cioè files che richiedono configurazioni in `Program.cs`
 
 ---
 
@@ -1198,3 +1311,11 @@ E nel file di contesto del database:
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:YourDatabaseAlias");
 ```
+
+---
+
+## Torna all'inizio
+
+Per tornare rapidamente all'inizio di questo documento, puoi cliccare su questo link:
+
+[⬆️ Torna all'inizio](#pietribiasi-app)

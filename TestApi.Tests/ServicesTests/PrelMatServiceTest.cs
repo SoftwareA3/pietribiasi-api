@@ -140,6 +140,8 @@ namespace TestApi.Tests.ServicesTests
             _prelMatService = new PrelMatRequestService(_prelMatRepositoryMock.Object, _mapperMock.Object);
         }
 
+        #region GetAppPrelMat Tests
+
         [Fact]
         public void GetAppPrelMat_ReturnsListOfPrelMatDto_WhenDataExists()
         {
@@ -153,32 +155,7 @@ namespace TestApi.Tests.ServicesTests
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal(_samplePrelMatDto.PrelMatId, result.First().PrelMatId);
-            Assert.Equal(_samplePrelMatDto.Job, result.First().Job);
-            Assert.Equal(_samplePrelMatDto.RtgStep, result.First().RtgStep);
-            Assert.Equal(_samplePrelMatDto.Alternate, result.First().Alternate);
-            Assert.Equal(_samplePrelMatDto.AltRtgStep, result.First().AltRtgStep);
-            Assert.Equal(_samplePrelMatDto.Operation, result.First().Operation);
-            Assert.Equal(_samplePrelMatDto.OperDesc, result.First().OperDesc);
-            Assert.Equal(_samplePrelMatDto.Position, result.First().Position);
-            Assert.Equal(_samplePrelMatDto.Component, result.First().Component);
-            Assert.Equal(_samplePrelMatDto.Bom, result.First().Bom);
-            Assert.Equal(_samplePrelMatDto.Variant, result.First().Variant);
-            Assert.Equal(_samplePrelMatDto.ItemDesc, result.First().ItemDesc);
-            Assert.Equal(_samplePrelMatDto.Moid, result.First().Moid);
-            Assert.Equal(_samplePrelMatDto.Mono, result.First().Mono);
-            Assert.Equal(_samplePrelMatDto.CreationDate, result.First().CreationDate);
-            Assert.Equal(_samplePrelMatDto.UoM, result.First().UoM);
-            Assert.Equal(_samplePrelMatDto.ProductionQty, result.First().ProductionQty);
-            Assert.Equal(_samplePrelMatDto.ProducedQty, result.First().ProducedQty);
-            Assert.Equal(_samplePrelMatDto.ResQty, result.First().ResQty);
-            Assert.Equal(_samplePrelMatDto.Storage, result.First().Storage);
-            Assert.Equal(_samplePrelMatDto.BarCode, result.First().BarCode);
-            Assert.Equal(_samplePrelMatDto.Wc, result.First().Wc);
-            Assert.Equal(_samplePrelMatDto.PrelQty, result.First().PrelQty);
-            Assert.Equal(_samplePrelMatDto.Imported, result.First().Imported);
-            Assert.Equal(_samplePrelMatDto.UserImp, result.First().UserImp);
-            Assert.Equal(_samplePrelMatDto.DataImp, result.First().DataImp);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
             _prelMatRepositoryMock.Verify(repo => repo.GetAppPrelMat(), Times.Once);
         }
 
@@ -198,6 +175,10 @@ namespace TestApi.Tests.ServicesTests
             _prelMatRepositoryMock.Verify(repo => repo.GetAppPrelMat(), Times.Once);
         }
 
+        #endregion
+
+        #region PostPrelMatList Tests
+
         [Fact]
         public void PostPrelMatList_ReturnsListOfPrelMatDto_WhenDataExists()
         {
@@ -207,7 +188,7 @@ namespace TestApi.Tests.ServicesTests
             var filterList = new List<PrelMatFilter> { new PrelMatFilter() };
 
             _prelMatRepositoryMock.Setup(repo => repo.PostPrelMatList(It.IsAny<List<PrelMatFilter>>())).Returns(sampleList);
-            _mapperMock.Setup(m => m.Map<List<PrelMatFilter>>(It.IsAny<List<PrelMatRequestDto>>())).Returns(filterList);
+            _mapperMock.Setup(m => m.Map<PrelMatFilter>(It.IsAny<PrelMatRequestDto>())).Returns(new PrelMatFilter());
 
             // Act
             var result = _prelMatService.PostPrelMatList(requestList);
@@ -215,33 +196,9 @@ namespace TestApi.Tests.ServicesTests
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal(_samplePrelMatDto.PrelMatId, result.First().PrelMatId);
-            Assert.Equal(_samplePrelMatDto.Job, result.First().Job);
-            Assert.Equal(_samplePrelMatDto.RtgStep, result.First().RtgStep);
-            Assert.Equal(_samplePrelMatDto.Alternate, result.First().Alternate);
-            Assert.Equal(_samplePrelMatDto.AltRtgStep, result.First().AltRtgStep);
-            Assert.Equal(_samplePrelMatDto.Operation, result.First().Operation);
-            Assert.Equal(_samplePrelMatDto.OperDesc, result.First().OperDesc);
-            Assert.Equal(_samplePrelMatDto.Position, result.First().Position);
-            Assert.Equal(_samplePrelMatDto.Component, result.First().Component);
-            Assert.Equal(_samplePrelMatDto.Bom, result.First().Bom);
-            Assert.Equal(_samplePrelMatDto.Variant, result.First().Variant);
-            Assert.Equal(_samplePrelMatDto.ItemDesc, result.First().ItemDesc);
-            Assert.Equal(_samplePrelMatDto.Moid, result.First().Moid);
-            Assert.Equal(_samplePrelMatDto.Mono, result.First().Mono);
-            Assert.Equal(_samplePrelMatDto.CreationDate, result.First().CreationDate);
-            Assert.Equal(_samplePrelMatDto.UoM, result.First().UoM);
-            Assert.Equal(_samplePrelMatDto.ProductionQty, result.First().ProductionQty);
-            Assert.Equal(_samplePrelMatDto.ProducedQty, result.First().ProducedQty);
-            Assert.Equal(_samplePrelMatDto.ResQty, result.First().ResQty);
-            Assert.Equal(_samplePrelMatDto.Storage, result.First().Storage);
-            Assert.Equal(_samplePrelMatDto.BarCode, result.First().BarCode);
-            Assert.Equal(_samplePrelMatDto.Wc, result.First().Wc);
-            Assert.Equal(_samplePrelMatDto.PrelQty, result.First().PrelQty);
-            Assert.Equal(_samplePrelMatDto.Imported, result.First().Imported);
-            Assert.Equal(_samplePrelMatDto.UserImp, result.First().UserImp);
-            Assert.Equal(_samplePrelMatDto.DataImp, result.First().DataImp);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
             _prelMatRepositoryMock.Verify(repo => repo.PostPrelMatList(It.IsAny<List<PrelMatFilter>>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<PrelMatFilter>(It.IsAny<PrelMatRequestDto>()), Times.Once);
         }
 
         [Fact]
@@ -250,10 +207,9 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var sampleList = new List<A3AppPrelMat>();
             var requestList = new List<PrelMatRequestDto> { _samplePrelMatRequestDto };
-            var filterList = new List<PrelMatFilter> { new PrelMatFilter() };
 
             _prelMatRepositoryMock.Setup(repo => repo.PostPrelMatList(It.IsAny<List<PrelMatFilter>>())).Returns(sampleList);
-            _mapperMock.Setup(m => m.Map<List<PrelMatFilter>>(It.IsAny<List<PrelMatRequestDto>>())).Returns(filterList);
+            _mapperMock.Setup(m => m.Map<PrelMatFilter>(It.IsAny<PrelMatRequestDto>())).Returns(new PrelMatFilter());
 
             // Act
             var result = _prelMatService.PostPrelMatList(requestList);
@@ -265,12 +221,34 @@ namespace TestApi.Tests.ServicesTests
         }
 
         [Fact]
+        public void PostPrelMatList_ReturnsEmptyList_WhenRequestListIsEmpty()
+        {
+            // Arrange
+            var requestList = new List<PrelMatRequestDto>();
+            var sampleList = new List<A3AppPrelMat>();
+
+            _prelMatRepositoryMock.Setup(repo => repo.PostPrelMatList(It.IsAny<List<PrelMatFilter>>())).Returns(sampleList);
+
+            // Act
+            var result = _prelMatService.PostPrelMatList(requestList);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            _prelMatRepositoryMock.Verify(repo => repo.PostPrelMatList(It.IsAny<List<PrelMatFilter>>()), Times.Once);
+        }
+
+        #endregion
+
+        #region GetViewPrelMatList Tests
+
+        [Fact]
         public void GetViewPrelMatList_ReturnsListOfPrelMatDto_WhenDataExists()
         {
             // Arrange
             var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
             var filter = new ViewPrelMatRequestFilter();
-            var request = new ViewPrelMatRequestDto();
+            var request = _sampleViewPrelMatRequestDto;
 
             _prelMatRepositoryMock.Setup(repo => repo.GetViewPrelMat(It.IsAny<ViewPrelMatRequestFilter>())).Returns(sampleList);
             _mapperMock.Setup(m => m.Map<ViewPrelMatRequestFilter>(It.IsAny<ViewPrelMatRequestDto>())).Returns(filter);
@@ -281,33 +259,9 @@ namespace TestApi.Tests.ServicesTests
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal(_samplePrelMatDto.PrelMatId, result.First().PrelMatId);
-            Assert.Equal(_samplePrelMatDto.Job, result.First().Job);
-            Assert.Equal(_samplePrelMatDto.RtgStep, result.First().RtgStep);
-            Assert.Equal(_samplePrelMatDto.Alternate, result.First().Alternate);
-            Assert.Equal(_samplePrelMatDto.AltRtgStep, result.First().AltRtgStep);
-            Assert.Equal(_samplePrelMatDto.Operation, result.First().Operation);
-            Assert.Equal(_samplePrelMatDto.OperDesc, result.First().OperDesc);
-            Assert.Equal(_samplePrelMatDto.Position, result.First().Position);
-            Assert.Equal(_samplePrelMatDto.Component, result.First().Component);
-            Assert.Equal(_samplePrelMatDto.Bom, result.First().Bom);
-            Assert.Equal(_samplePrelMatDto.Variant, result.First().Variant);
-            Assert.Equal(_samplePrelMatDto.ItemDesc, result.First().ItemDesc);
-            Assert.Equal(_samplePrelMatDto.Moid, result.First().Moid);
-            Assert.Equal(_samplePrelMatDto.Mono, result.First().Mono);
-            Assert.Equal(_samplePrelMatDto.CreationDate, result.First().CreationDate);
-            Assert.Equal(_samplePrelMatDto.UoM, result.First().UoM);
-            Assert.Equal(_samplePrelMatDto.ProductionQty, result.First().ProductionQty);
-            Assert.Equal(_samplePrelMatDto.ProducedQty, result.First().ProducedQty);
-            Assert.Equal(_samplePrelMatDto.ResQty, result.First().ResQty);
-            Assert.Equal(_samplePrelMatDto.Storage, result.First().Storage);
-            Assert.Equal(_samplePrelMatDto.BarCode, result.First().BarCode);
-            Assert.Equal(_samplePrelMatDto.Wc, result.First().Wc);
-            Assert.Equal(_samplePrelMatDto.PrelQty, result.First().PrelQty);
-            Assert.Equal(_samplePrelMatDto.Imported, result.First().Imported);
-            Assert.Equal(_samplePrelMatDto.UserImp, result.First().UserImp);
-            Assert.Equal(_samplePrelMatDto.DataImp, result.First().DataImp);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
             _prelMatRepositoryMock.Verify(repo => repo.GetViewPrelMat(It.IsAny<ViewPrelMatRequestFilter>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<ViewPrelMatRequestFilter>(It.IsAny<ViewPrelMatRequestDto>()), Times.Once);
         }
 
         [Fact]
@@ -316,7 +270,7 @@ namespace TestApi.Tests.ServicesTests
             // Arrange
             var sampleList = new List<A3AppPrelMat>();
             var filter = new ViewPrelMatRequestFilter();
-            var request = new ViewPrelMatRequestDto();
+            var request = _sampleViewPrelMatRequestDto;
 
             _prelMatRepositoryMock.Setup(repo => repo.GetViewPrelMat(It.IsAny<ViewPrelMatRequestFilter>())).Returns(sampleList);
             _mapperMock.Setup(m => m.Map<ViewPrelMatRequestFilter>(It.IsAny<ViewPrelMatRequestDto>())).Returns(filter);
@@ -330,15 +284,18 @@ namespace TestApi.Tests.ServicesTests
             _prelMatRepositoryMock.Verify(repo => repo.GetViewPrelMat(It.IsAny<ViewPrelMatRequestFilter>()), Times.Once);
         }
 
+        #endregion
+
+        #region PutViewPrelMat Tests
+
         [Fact]
         public void PutViewPrelMat_ReturnsPrelMatDto_WhenDataExists()
         {
             // Arrange
-            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
             var filter = new ViewPrelMatPutFilter();
-            var request = new ViewPrelMatPutRequestDto();
+            var request = _sampleViewPrelMatPutRequestDto;
 
-            _prelMatRepositoryMock.Setup(repo => repo.PutViewPrelMat(It.IsAny<ViewPrelMatPutFilter>())).Returns(sampleList.First());
+            _prelMatRepositoryMock.Setup(repo => repo.PutViewPrelMat(It.IsAny<ViewPrelMatPutFilter>())).Returns(_sampleVwApiPrelMat);
             _mapperMock.Setup(m => m.Map<ViewPrelMatPutFilter>(It.IsAny<ViewPrelMatPutRequestDto>())).Returns(filter);
 
             // Act
@@ -346,63 +303,23 @@ namespace TestApi.Tests.ServicesTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_samplePrelMatDto.PrelMatId, result.PrelMatId);
-            Assert.Equal(_samplePrelMatDto.Job, result.Job);
-            Assert.Equal(_samplePrelMatDto.RtgStep, result.RtgStep);
-            Assert.Equal(_samplePrelMatDto.Alternate, result.Alternate);
-            Assert.Equal(_samplePrelMatDto.AltRtgStep, result.AltRtgStep);
-            Assert.Equal(_samplePrelMatDto.Operation, result.Operation);
-            Assert.Equal(_samplePrelMatDto.OperDesc, result.OperDesc);
-            Assert.Equal(_samplePrelMatDto.Position, result.Position);
-            Assert.Equal(_samplePrelMatDto.Component, result.Component);
-            Assert.Equal(_samplePrelMatDto.Bom, result.Bom);
-            Assert.Equal(_samplePrelMatDto.Variant, result.Variant);
-            Assert.Equal(_samplePrelMatDto.ItemDesc, result.ItemDesc);
-            Assert.Equal(_samplePrelMatDto.Moid, result.Moid);
-            Assert.Equal(_samplePrelMatDto.Mono, result.Mono);
-            Assert.Equal(_samplePrelMatDto.CreationDate, result.CreationDate);
-            Assert.Equal(_samplePrelMatDto.UoM, result.UoM);
-            Assert.Equal(_samplePrelMatDto.ProductionQty, result.ProductionQty);
-            Assert.Equal(_samplePrelMatDto.ProducedQty, result.ProducedQty);
-            Assert.Equal(_samplePrelMatDto.ResQty, result.ResQty);
-            Assert.Equal(_samplePrelMatDto.Storage, result.Storage);
-            Assert.Equal(_samplePrelMatDto.BarCode, result.BarCode);
-            Assert.Equal(_samplePrelMatDto.Wc, result.Wc);
-            Assert.Equal(_samplePrelMatDto.PrelQty, result.PrelQty);
-            Assert.Equal(_samplePrelMatDto.Imported, result.Imported);
-            Assert.Equal(_samplePrelMatDto.UserImp, result.UserImp);
-            Assert.Equal(_samplePrelMatDto.DataImp, result.DataImp);
+            AssertPrelMatDto(result, _samplePrelMatDto);
             _prelMatRepositoryMock.Verify(repo => repo.PutViewPrelMat(It.IsAny<ViewPrelMatPutFilter>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<ViewPrelMatPutFilter>(It.IsAny<ViewPrelMatPutRequestDto>()), Times.Once);
         }
 
-        [Fact]
-        public void PutViewPrelMat_ReturnsNull_WhenNoDataExists()
-        {
-            // Arrange
-            var sampleList = new List<A3AppPrelMat>();
-            var filter = new ViewPrelMatPutFilter();
-            var request = new ViewPrelMatPutRequestDto();
+        #endregion
 
-            _prelMatRepositoryMock.Setup(repo => repo.PutViewPrelMat(It.IsAny<ViewPrelMatPutFilter>())).Returns((A3AppPrelMat)null);
-            _mapperMock.Setup(m => m.Map<ViewPrelMatPutFilter>(It.IsAny<ViewPrelMatPutRequestDto>())).Returns(filter);
-
-            // Act
-            var result = _prelMatService.PutViewPrelMat(request);
-
-            // Assert
-            Assert.Null(result);
-            _prelMatRepositoryMock.Verify(repo => repo.PutViewPrelMat(It.IsAny<ViewPrelMatPutFilter>()), Times.Once);
-        }
+        #region DeletePrelMatId Tests
 
         [Fact]
         public void DeletePrelMatId_ReturnsPrelMatDto_WhenDataExists()
         {
             // Arrange
-            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
             var filter = new ViewPrelMatDeleteFilter();
             var request = new ViewPrelMatDeleteRequestDto();
 
-            _prelMatRepositoryMock.Setup(repo => repo.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteFilter>())).Returns(sampleList.First());
+            _prelMatRepositoryMock.Setup(repo => repo.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteFilter>())).Returns(_sampleVwApiPrelMat);
             _mapperMock.Setup(m => m.Map<ViewPrelMatDeleteFilter>(It.IsAny<ViewPrelMatDeleteRequestDto>())).Returns(filter);
 
             // Act
@@ -410,52 +327,288 @@ namespace TestApi.Tests.ServicesTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_samplePrelMatDto.PrelMatId, result.PrelMatId);
-            Assert.Equal(_samplePrelMatDto.Job, result.Job);
-            Assert.Equal(_samplePrelMatDto.RtgStep, result.RtgStep);
-            Assert.Equal(_samplePrelMatDto.Alternate, result.Alternate);
-            Assert.Equal(_samplePrelMatDto.AltRtgStep, result.AltRtgStep);
-            Assert.Equal(_samplePrelMatDto.Operation, result.Operation);
-            Assert.Equal(_samplePrelMatDto.OperDesc, result.OperDesc);
-            Assert.Equal(_samplePrelMatDto.Position, result.Position);
-            Assert.Equal(_samplePrelMatDto.Component, result.Component);
-            Assert.Equal(_samplePrelMatDto.Bom, result.Bom);
-            Assert.Equal(_samplePrelMatDto.Variant, result.Variant);
-            Assert.Equal(_samplePrelMatDto.ItemDesc, result.ItemDesc);
-            Assert.Equal(_samplePrelMatDto.Moid, result.Moid);
-            Assert.Equal(_samplePrelMatDto.Mono, result.Mono);
-            Assert.Equal(_samplePrelMatDto.CreationDate, result.CreationDate);
-            Assert.Equal(_samplePrelMatDto.UoM, result.UoM);
-            Assert.Equal(_samplePrelMatDto.ProductionQty, result.ProductionQty);
-            Assert.Equal(_samplePrelMatDto.ProducedQty, result.ProducedQty);
-            Assert.Equal(_samplePrelMatDto.ResQty, result.ResQty);
-            Assert.Equal(_samplePrelMatDto.Storage, result.Storage);
-            Assert.Equal(_samplePrelMatDto.BarCode, result.BarCode);
-            Assert.Equal(_samplePrelMatDto.Wc, result.Wc);
-            Assert.Equal(_samplePrelMatDto.PrelQty, result.PrelQty);
-            Assert.Equal(_samplePrelMatDto.Imported, result.Imported);
-            Assert.Equal(_samplePrelMatDto.UserImp, result.UserImp);
-            Assert.Equal(_samplePrelMatDto.DataImp, result.DataImp);
-            _prelMatRepositoryMock.Verify(repo => repo.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteFilter>()), Times.Once);  
+            AssertPrelMatDto(result, _samplePrelMatDto);
+            _prelMatRepositoryMock.Verify(repo => repo.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteFilter>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<ViewPrelMatDeleteFilter>(It.IsAny<ViewPrelMatDeleteRequestDto>()), Times.Once);
+        }
+
+        #endregion
+
+        #region GetPrelMatWithComponent Tests
+
+        [Fact]
+        public void GetPrelMatWithComponent_ReturnsListOfPrelMatDto_WhenDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
+            var request = new ComponentRequestDto();
+            var filter = new ComponentFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.GetPrelMatWithComponent(It.IsAny<ComponentFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<ComponentFilter>(It.IsAny<ComponentRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.GetPrelMatWithComponent(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
+            _prelMatRepositoryMock.Verify(repo => repo.GetPrelMatWithComponent(It.IsAny<ComponentFilter>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<ComponentFilter>(It.IsAny<ComponentRequestDto>()), Times.Once);
         }
 
         [Fact]
-        public void DeletePrelMatId_ReturnsNull_WhenNoDataExists()
+        public void GetPrelMatWithComponent_ReturnsEmptyList_WhenNoDataExists()
         {
             // Arrange
             var sampleList = new List<A3AppPrelMat>();
-            var filter = new ViewPrelMatDeleteFilter();
-            var request = new ViewPrelMatDeleteRequestDto();
+            var request = new ComponentRequestDto();
+            var filter = new ComponentFilter();
 
-            _prelMatRepositoryMock.Setup(repo => repo.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteFilter>())).Returns((A3AppPrelMat)null);
-            _mapperMock.Setup(m => m.Map<ViewPrelMatDeleteFilter>(It.IsAny<ViewPrelMatDeleteRequestDto>())).Returns(filter);
+            _prelMatRepositoryMock.Setup(repo => repo.GetPrelMatWithComponent(It.IsAny<ComponentFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<ComponentFilter>(It.IsAny<ComponentRequestDto>())).Returns(filter);
 
             // Act
-            var result = _prelMatService.DeletePrelMatId(request);
+            var result = _prelMatService.GetPrelMatWithComponent(request);
 
             // Assert
-            Assert.Null(result);
-            _prelMatRepositoryMock.Verify(repo => repo.DeletePrelMatId(It.IsAny<ViewPrelMatDeleteFilter>()), Times.Once);
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            _prelMatRepositoryMock.Verify(repo => repo.GetPrelMatWithComponent(It.IsAny<ComponentFilter>()), Times.Once);
         }
+
+        [Fact]
+        public void GetPrelMatWithComponent_WithNullRequest_ReturnsListOfPrelMatDto()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
+            var filter = new ComponentFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.GetPrelMatWithComponent(It.IsAny<ComponentFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<ComponentFilter>(It.IsAny<ComponentRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.GetPrelMatWithComponent(null);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
+            _prelMatRepositoryMock.Verify(repo => repo.GetPrelMatWithComponent(It.IsAny<ComponentFilter>()), Times.Once);
+        }
+
+        #endregion
+
+        #region GetNotImportedPrelMat Tests
+
+        [Fact]
+        public void GetNotImportedPrelMat_ReturnsListOfPrelMatDto_WhenDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
+            _prelMatRepositoryMock.Setup(repo => repo.GetNotImportedPrelMat()).Returns(sampleList);
+
+            // Act
+            var result = _prelMatService.GetNotImportedPrelMat();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
+            _prelMatRepositoryMock.Verify(repo => repo.GetNotImportedPrelMat(), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedPrelMat_ReturnsEmptyList_WhenNoDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat>();
+            _prelMatRepositoryMock.Setup(repo => repo.GetNotImportedPrelMat()).Returns(sampleList);
+
+            // Act
+            var result = _prelMatService.GetNotImportedPrelMat();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            _prelMatRepositoryMock.Verify(repo => repo.GetNotImportedPrelMat(), Times.Once);
+        }
+
+        #endregion
+
+        #region UpdatePrelMatImported Tests
+
+        [Fact]
+        public void UpdatePrelMatImported_ReturnsListOfPrelMatDto_WhenDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
+            var request = new WorkerIdSyncRequestDto();
+            var filter = new WorkerIdSyncFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<WorkerIdSyncFilter>(It.IsAny<WorkerIdSyncRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.UpdatePrelMatImported(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<WorkerIdSyncFilter>(It.IsAny<WorkerIdSyncRequestDto>()), Times.Once);
+        }
+
+        [Fact]
+        public void UpdatePrelMatImported_ReturnsEmptyList_WhenNoDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat>();
+            var request = new WorkerIdSyncRequestDto();
+            var filter = new WorkerIdSyncFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<WorkerIdSyncFilter>(It.IsAny<WorkerIdSyncRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.UpdatePrelMatImported(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>()), Times.Once);
+        }
+
+        #endregion
+
+        #region GetNotImportedAppPrelMatByFilter Tests
+
+        [Fact]
+        public void GetNotImportedAppPrelMatByFilter_ReturnsListOfPrelMatDto_WhenDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
+            var request = _sampleViewPrelMatRequestDto;
+            var filter = new ViewPrelMatRequestFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<ViewPrelMatRequestFilter>(It.IsAny<ViewPrelMatRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.GetNotImportedAppPrelMatByFilter(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
+            _prelMatRepositoryMock.Verify(repo => repo.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestFilter>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<ViewPrelMatRequestFilter>(It.IsAny<ViewPrelMatRequestDto>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetNotImportedAppPrelMatByFilter_ReturnsEmptyList_WhenNoDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat>();
+            var request = _sampleViewPrelMatRequestDto;
+            var filter = new ViewPrelMatRequestFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<ViewPrelMatRequestFilter>(It.IsAny<ViewPrelMatRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.GetNotImportedAppPrelMatByFilter(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            _prelMatRepositoryMock.Verify(repo => repo.GetNotImportedAppPrelMatByFilter(It.IsAny<ViewPrelMatRequestFilter>()), Times.Once);
+        }
+
+        #endregion
+
+        #region UpdateImportedById Tests
+
+        [Fact]
+        public void UpdateImportedById_ReturnsListOfPrelMatDto_WhenDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat> { _sampleVwApiPrelMat };
+            var request = new UpdateImportedIdRequestDto();
+            var filter = new UpdateImportedIdFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<UpdateImportedIdFilter>(It.IsAny<UpdateImportedIdRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.UpdateImportedById(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            AssertPrelMatDto(result.First(), _samplePrelMatDto);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>()), Times.Once);
+            _mapperMock.Verify(m => m.Map<UpdateImportedIdFilter>(It.IsAny<UpdateImportedIdRequestDto>()), Times.Once);
+        }
+
+        [Fact]
+        public void UpdateImportedById_ReturnsEmptyList_WhenNoDataExists()
+        {
+            // Arrange
+            var sampleList = new List<A3AppPrelMat>();
+            var request = new UpdateImportedIdRequestDto();
+            var filter = new UpdateImportedIdFilter();
+
+            _prelMatRepositoryMock.Setup(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>())).Returns(sampleList);
+            _mapperMock.Setup(m => m.Map<UpdateImportedIdFilter>(It.IsAny<UpdateImportedIdRequestDto>())).Returns(filter);
+
+            // Act
+            var result = _prelMatService.UpdateImportedById(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>()), Times.Once);
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private void AssertPrelMatDto(PrelMatDto actual, PrelMatDto expected)
+        {
+            Assert.Equal(expected.PrelMatId, actual.PrelMatId);
+            Assert.Equal(expected.WorkerId, actual.WorkerId);
+            Assert.Equal(expected.SavedDate, actual.SavedDate);
+            Assert.Equal(expected.Job, actual.Job);
+            Assert.Equal(expected.RtgStep, actual.RtgStep);
+            Assert.Equal(expected.Alternate, actual.Alternate);
+            Assert.Equal(expected.AltRtgStep, actual.AltRtgStep);
+            Assert.Equal(expected.Operation, actual.Operation);
+            Assert.Equal(expected.OperDesc, actual.OperDesc);
+            Assert.Equal(expected.Position, actual.Position);
+            Assert.Equal(expected.Component, actual.Component);
+            Assert.Equal(expected.Bom, actual.Bom);
+            Assert.Equal(expected.Variant, actual.Variant);
+            Assert.Equal(expected.ItemDesc, actual.ItemDesc);
+            Assert.Equal(expected.Moid, actual.Moid);
+            Assert.Equal(expected.Mono, actual.Mono);
+            Assert.Equal(expected.CreationDate, actual.CreationDate);
+            Assert.Equal(expected.UoM, actual.UoM);
+            Assert.Equal(expected.ProductionQty, actual.ProductionQty);
+            Assert.Equal(expected.ProducedQty, actual.ProducedQty);
+            Assert.Equal(expected.ResQty, actual.ResQty);
+            Assert.Equal(expected.Storage, actual.Storage);
+            Assert.Equal(expected.BarCode, actual.BarCode);
+            Assert.Equal(expected.Wc, actual.Wc);
+            Assert.Equal(expected.PrelQty, actual.PrelQty);
+            Assert.Equal(expected.Imported, actual.Imported);
+            Assert.Equal(expected.UserImp, actual.UserImp);
+            Assert.Equal(expected.DataImp, actual.DataImp);
+        }
+
+        #endregion
     }
 }

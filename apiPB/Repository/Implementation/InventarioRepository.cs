@@ -111,10 +111,19 @@ namespace apiPB.Repository.Implementation
 
             ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(InventarioRepository), nameof(GetViewInventario));
 
+            // Ordinamento ascendente se il campo DataImp è specificato e Imported è true
+            if (filter.Imported.HasValue && filter.Imported.Value == true && filter.DataImp.HasValue)
+            {
+                return query.OrderBy(i => i.DataImp).ToList();
+            }
+
+            // Ordinamento discendente se il campo DataImp non è specificato e Imported è true
             if (filter.Imported.HasValue && filter.Imported.Value == true)
             {
                 return query.OrderByDescending(i => i.DataImp).ToList();
             }
+
+            // Altrimenti, ordinamento discendente per SavedDate
             else
             {
                 return query.OrderByDescending(i => i.SavedDate).ToList();
@@ -137,7 +146,7 @@ namespace apiPB.Repository.Implementation
         {
             if (inventario == null || inventario.BookInv == null || inventario.PrevBookInv == null)
             {
-                throw new Exception("Il parametro 'inventario' non può essere nullo e deve contenere valori per BookInv e PrevBookInv.");
+                throw new ArgumentNullException("Il parametro 'inventario' non può essere nullo e deve contenere valori per BookInv e PrevBookInv.");
             }
             if (inventario.BookInv - inventario.PrevBookInv > 0)
             {

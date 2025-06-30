@@ -139,6 +139,24 @@ def copy_build_json_to_build(obj, filter_frontend=True):
     
     print("✅ build.json copiato nella cartella di build")
     return True
+
+def copy_documentation_to_build(obj):
+    """Copia README.md nella cartella di build"""
+    print("Copia di README.md nella cartella di build...")
+    
+    build_doc_src = obj.project_root / "Scripts/README.md"
+    build_doc_dst = obj.build_dir / "README.md"
+    
+    # Legge il file README.md originale
+    with open(build_doc_src, 'r', encoding='utf-8') as f:
+        documentation = f.read()
+    
+    # Scrive il file README.md nella cartella di build
+    with open(build_doc_dst, 'w', encoding='utf-8') as f:
+        f.write(documentation)
+    
+    print("✅ Documentazione copiata nella cartella di build")
+    return True
         
 def default_config():
     """Configurazione di default"""
@@ -152,6 +170,11 @@ def default_config():
             "frontend_path": "Frontend",
             "output_dir": "dist",
             "temp_dir": "build"
+        },
+        "build_FE": {
+            "frontend_path": "Frontend",
+            "output_dir": "dist_FE",
+            "temp_dir": "build_FE"
         },
         "targets": [
             {
@@ -173,6 +196,121 @@ def default_config():
             "timeout_seconds": 30
         }
     }
+
+async def build_backend_for_target(self, target):
+        """Compila il backend per una specifica piattaforma"""
+        print(f"Compilazione del backend per {target['name']}...")
+        
+        backend_path = self.project_root / self.config['build']['backend_project']
+        build_output = self.build_dir / "backend"
+
+        # Leggi la connection string dal file build.json
+        connection_string = self.config['server']['backend']['connection_string']
+        print(f"Connection string backend: {connection_string}")
+
+        cmd = [
+            'dotnet', 'publish', str(backend_path),
+            '-c', 'Release',
+            '-o', str(build_output),
+            '--self-contained', 'true',
+            '-r', target['runtime']
+        ]
+        
+        result = subprocess.run(cmd, check=True)
+        if result.returncode != 0:
+            raise Exception(f"La compilazione del backend per {target['name']} è fallita")
+        
+        return build_output
+
+def create_pyinstaller_executable(obj):
+    """Crea un eseguibile con PyInstaller per python_server.py"""
+    print("Creazione eseguibile con PyInstaller...")
+    
+    # Path dei file
+    python_server_path = obj.project_root / "Scripts/python_server.py"
+    icon_path = obj.project_root / "frontend/assets/icon.ico"
+    output_dir = obj.build_dir
+    
+    if not python_server_path.exists():
+        print(f"❌ ERRORE: {python_server_path} non trovato!")
+        return False
+        
+    # Copia python_server.py nella build directory per semplificare i path
+    build_python_server = obj.build_dir / "python_server.py"
+    shutil.copy2(python_server_path, build_python_server)
+    
+    # Costruisci il comando PyInstaller
+    cmd = [
+        'pyinstaller',
+        '--onefile',  # Crea un singolo eseguibile
+        '--noconsole',  # Non mostra la console 
+        '--distpath', str(output_dir),  # Directory di output
+        '--workpath', str(output_dir / 'pyinstaller_temp'),  # Directory temporanea
+        '--specpath', str(output_dir),  # Directory per il file .spec
+        '--name', 'PietribiasiApp',  # Nome dell'eseguibile
+    ]
+    
+    # Aggiungi l'icona se esiste
+    if icon_path.exists():
+        cmd.extend(['--icon', str(icon_path)])
+        print(f"✅ Icona trovata: {icon_path}")
+    else:
+        print(f"⚠️ Icona non trovata: {icon_path}")
+    
+    # Aggiungi percorsi dati aggiuntivi (per build.json e frontend)
+    cmd.extend([
+        '--add-data', f'{obj.build_dir / "build.json"};.',
+        '--add-data', f'{obj.build_dir / "frontend"};frontend',
+        str(build_python_server)
+    ])
+    
+    try:
+        # Cambia nella directory di build per l'esecuzione
+        old_cwd = os.getcwd()
+        os.chdir(obj.build_dir)
+        
+        print(f"Esecuzione comando: {' '.join(cmd)}")
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            print(f"❌ Errore PyInstaller: {result.stderr}")
+            return False
+            
+        # Verifica che l'eseguibile sia stato creato
+        exe_path = output_dir / "PietribiasiApp.exe"
+        if exe_path.exists():
+            print(f"✅ Eseguibile creato: {exe_path}")
+            
+            # Pulizia file temporanei
+            temp_dirs = [
+                output_dir / 'pyinstaller_temp',
+                output_dir / '__pycache__'
+            ]
+            for temp_dir in temp_dirs:
+                if temp_dir.exists():
+                    shutil.rmtree(temp_dir, ignore_errors=True)
+            
+            # Rimuovi i file .spec generati
+            for spec_file in output_dir.glob('*.spec'):
+                try:
+                    spec_file.unlink()
+                except Exception as e:
+                    print(f"⚠️ Impossibile rimuovere {spec_file}: {e}")
+            
+            return True
+        else:
+            print(f"❌ Eseguibile non trovato: {exe_path}")
+            return False
+            
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Errore durante l'esecuzione di PyInstaller: {e}")
+        print(f"Stderr: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"❌ Errore generico PyInstaller: {e}")
+        return False
+    finally:
+        os.chdir(old_cwd)
 
 async def update_appsettings(obj):
     """Aggiorna appsettings.json in apiPB/ con i valori da build.json nella root"""
@@ -242,6 +380,7 @@ def create_executable_from_batchscript(obj):
     bat_file = obj.build_dir / "Pietribiasi_App_start.bat"
     ps1_file = obj.build_dir / "Pietribiasi_App.ps1"
     exe_file = obj.build_dir / "Pietribiasi_App.exe"
+    icon_file = obj.project_root / "assets/icon.ico"
     
     # Verifica che il file .bat esista
     if not bat_file.exists():
@@ -293,7 +432,7 @@ if (Test-Path $batPath) {
         print(f"✅ File PowerShell creato: {ps1_file}")
         
         # Comando PowerShell per convertire .ps1 in .exe con opzioni migliorate
-        cmd = f'Invoke-ps2exe -inputFile "{ps1_file}" -outputFile "{exe_file}" -noConsole:$false -title "Pietribiasi App" -version "1.0.0.0" -copyright "Pietribiasi" -iconFile $null'
+        cmd = f'Invoke-ps2exe -inputFile "{ps1_file}" -outputFile "{exe_file}" -noConsole:$false -title "Pietribiasi App" -version "1.0.0.0" -copyright "Pietribiasi" -iconFile "{icon_file}"'
         
         print(f"Esecuzione comando: {cmd}")
         result = subprocess.run(

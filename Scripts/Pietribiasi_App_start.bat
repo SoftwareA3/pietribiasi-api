@@ -22,27 +22,25 @@ echo ===============================================
 echo    CONTROLLO APPLICAZIONE !APP_NAME!
 echo ===============================================
 echo.
-echo 0. Avvia Frontend con Finestra Desktop (WebView)
+echo 0. Avvia applicazione in modalità silenziosa (senza console)
 echo 1. Avvia applicazione 
-echo 2. Avvia solo il Server Frontend (per connessioni remote)
-echo 3. Avvia solo il Backend
-echo 4. Ferma applicazione  
-echo 5. Riavvia applicazione
-echo 6. Stato applicazione
-echo 7. Mostra indirizzi IP
-echo 8. Esci
+echo 2. Avvia solo il Backend
+echo 3. Ferma applicazione  
+echo 4. Riavvia applicazione
+echo 5. Stato applicazione
+echo 6. Mostra indirizzi IP
+echo 7. Esci
 echo.
-set /p choice="Seleziona un'opzione (0-8): "
+set /p choice="Seleziona un'opzione (0-7): "
 
-if "%choice%"=="0" goto START_APP_FRONTEND_WINDOWED
+if "%choice%"=="0" goto START_APP_SILENT
 if "%choice%"=="1" goto START_APP
-if "%choice%"=="2" goto START_FRONTEND_SERVER_ONLY
-if "%choice%"=="3" goto START_BACKEND_ONLY
-if "%choice%"=="4" goto STOP_APP
-if "%choice%"=="5" goto RESTART_APP
-if "%choice%"=="6" goto STATUS_APP
-if "%choice%"=="7" goto SHOW_IPS
-if "%choice%"=="8" goto EXIT
+if "%choice%"=="2" goto START_BACKEND_ONLY
+if "%choice%"=="3" goto STOP_APP
+if "%choice%"=="4" goto RESTART_APP
+if "%choice%"=="5" goto STATUS_APP
+if "%choice%"=="6" goto SHOW_IPS
+if "%choice%"=="7" goto EXIT
 goto MENU
 
 :LOAD_CONFIG_FROM_BUILD_JSON
@@ -57,7 +55,7 @@ if not exist "build.json" (
 REM Estrae i valori da build.json usando PowerShell
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.app.name } catch { Write-Output 'Pietribiasi App' }"') do set APP_NAME=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.build.backend_project } catch { Write-Output 'apiPB' }"') do set BACKEND_PROJECT=%%i
-for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.backend.host } catch { Write-Output 'localhost' }"') do set SERVER_IP=%%i
+for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.remote_backend.host } catch { Write-Output 'localhost' }"') do set SERVER_IP=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.backend.port } catch { Write-Output '5245' }"') do set BACKEND_PORT=%%i
 for /f "delims=" %%i in ('powershell -Command "try { $json = Get-Content 'build.json' | ConvertFrom-Json; Write-Output $json.server.frontend.port } catch { Write-Output '8080' }"') do set FRONTEND_PORT=%%i
 
@@ -71,9 +69,9 @@ echo.
 
 goto :eof
 
-:START_APP_FRONTEND_WINDOWED
+:START_APP_SILENT
 echo.
-echo Avvio Frontend con Finestra Desktop...
+echo Avvio Applicazione senza console...
 echo.
 
 REM Controlla se i processi sono già in esecuzione
@@ -82,7 +80,12 @@ if "!BACKEND_RUNNING!"=="1" (
     echo Backend già in esecuzione!
 ) else (
     echo Avvio del backend...
-    start "Backend Server" cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
+    REM Avvia il backend minimizzato e poi nasconde la finestra della console
+    start "Backend Server" /min cmd /c "cd backend && !BACKEND_PROJECT!.exe --urls=http://!SERVER_IP!:!BACKEND_PORT!"
+    REM Attendi che la finestra venga creata
+    timeout /t 1 >nul
+    REM Nascondi la finestra della console del backend usando PowerShell
+    powershell -Command "Get-Process | Where-Object { $_.MainWindowTitle -like '*Backend Server*' } | ForEach-Object { $hwnd = $_.MainWindowHandle; if ($hwnd -ne 0) { Add-Type -Name win -Namespace native -MemberDefinition '[DllImport(\"user32.dll\")]public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);'; [native.win]::ShowWindowAsync($hwnd, 0) } }"
     timeout /t 3 >nul
 )
 
@@ -91,7 +94,8 @@ if "!FRONTEND_RUNNING!"=="1" (
 ) else (
     echo Avvio del frontend...
     timeout /t 2 >nul
-    start "Pietribiasi Frontend Server" python python_server.py
+    REM Avvia il server frontend 
+    start "Pietribiasi Frontend Server" pythonw server_only.py
 )
 
 echo.
@@ -128,32 +132,6 @@ if "!FRONTEND_RUNNING!"=="1" (
 echo.
 echo Applicazione avviata!
 call :SHOW_ADDRESSES
-echo.
-pause
-goto MENU
-
-:START_FRONTEND_SERVER_ONLY
-echo.
-echo Avvio del Server Frontend (solo per connessioni remote)...
-echo.
-
-call :CHECK_PROCESSES
-if "!FRONTEND_RUNNING!"=="1" (
-    echo Frontend già in esecuzione!
-) else (
-    echo Avvio del server frontend (modalità server)...
-    start "Pietribiasi Frontend Server" python server_only.py
-    timeout /t 3 >nul
-    echo Server frontend avviato!
-)
-
-echo.
-echo Server frontend disponibile su:
-echo   http://localhost:!FRONTEND_PORT!
-echo   http://!SERVER_IP!:!FRONTEND_PORT!
-echo.
-echo Altre macchine possono ora connettersi usando python_server.py
-echo o aprendo l'URL nel browser.
 echo.
 pause
 goto MENU
@@ -213,10 +191,18 @@ REM 2. Termina i processi backend
 echo Terminazione processi backend...
 taskkill /f /im !BACKEND_PROJECT!.exe 2>nul
 
-REM 3. Termina eventuali processi WebView (nel caso il frontend usi webview)
+REM 3. Termina eventuali processi WebView (nel caso il frontend usi webview) e il progesso PietribiasiApp.exe
+REM (assicurati che il nome del processo sia corretto)
 echo Terminazione processi WebView...
 taskkill /f /im "Microsoft Edge WebView2" 2>nul
 taskkill /f /im msedgewebview2.exe 2>nul
+echo Terminazione processi PietribiasiApp...
+tasklist | findstr PietribiasiApp.exe >nul 2>&1
+if %errorlevel%==0 (
+    taskkill /f /im PietribiasiApp.exe 2>nul
+) else (
+    echo Nessun processo PietribiasiApp trovato.
+)
 
 REM 4. Attendiamo che i processi terminino completamente
 echo Attesa terminazione processi...

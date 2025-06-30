@@ -62,7 +62,7 @@ namespace apiPB.Repository.Implementation
             _context.A3AppRegOres.AddRange(list);
             _context.SaveChanges();
 
-            ApplicationExceptionHandler.ValidateEmptyList(list, nameof(RegOreRepository), nameof(PostRegOreList));
+            ApplicationExceptionHandler.ValidateNotNullOrEmptyList(list, nameof(RegOreRepository), nameof(PostRegOreList));
 
             return list;
         }
@@ -82,10 +82,19 @@ namespace apiPB.Repository.Implementation
 
             ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(RegOreRepository), nameof(GetAppViewOre));
 
+            // Ordinamento ascendente se il campo DataImp è specificato e Imported è true
+            if (filter.Imported.HasValue && filter.Imported.Value == true && filter.DataImp.HasValue)
+            {
+                return query.OrderBy(i => i.DataImp).ToList();
+            }
+
+            // Ordinamento discendente se il campo DataImp non è specificato e Imported è true
             if (filter.Imported.HasValue && filter.Imported.Value == true)
             {
                 return query.OrderByDescending(i => i.DataImp).ToList();
             }
+
+            // Altrimenti, ordinamento discendente per SavedDate
             else
             {
                 return query.OrderByDescending(i => i.SavedDate).ToList();

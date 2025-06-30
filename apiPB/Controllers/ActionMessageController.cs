@@ -30,6 +30,8 @@ namespace apiPB.Controllers
         /// </summary>
         /// <param name="ImportedLogMessageDto">DTO per la richiesta di importazione dei messaggi di log</param>
         /// <response code="200">Ritorna tutte le informazioni della vista vw_om_action_messages</response>
+        /// <response code="204">Nessun messaggio di azione trovato con i filtri specificati</response>
+        /// <response code="400">Richiesta non valida</response>
         /// <response code="404">Non trovato</response>
         public IActionResult GetActionMessagesByFilter([FromBody] ImportedLogMessageDto? request)
         {
