@@ -59,8 +59,6 @@ I file verranno descritti brevemente di seguito:
 
 Di seguito viene approfondito il file `build.json`
 
-Prova per i test
-
 ## File build.json
 
 ``` json
