@@ -48,14 +48,14 @@
 # Configurazione (dopo aver clonato la repository)
 La configurazione dell'applicazione è definita nella cartella `Scripts`. In questa cartella sono situati sia i file di configurazione dell'applicazione, che gli script che poi verranno copiati nelle cartelle di build per l'avvio dell'applicazione. 
 I file verranno descritti brevemente di seguito:
-- `build_script_FE_only.py`: script che serve per la configurazione e la costruzione delle cartelle `build_FE` (per la costruzione della WebApp Frontend) e `dist_FE` con il file compresso di build_FE;
-- `build_scritp.py`: script che serve per la configurazione e la costruzione delle cartelle `build` (per la costruzione della console per l'avvio di Frontend e Backend) e `dist` con il file compresso di build;
+- `build_script_FE_only.py`: script che serve per la configurazione e la costruzione delle cartelle per la costruzione della WebApp Frontend e con il file compresso di build_FE;
+- `build_scritp.py`: script che serve per la configurazione e la costruzione delle cartelle per la costruzione della console per l'avvio di Frontend e Backend e con il file compresso di build;
 - `build.json`: file di configurazione dell'applicazione che verrà descritto in seguito con una sezione apposita. Viene copiato, filtrato e usato in entrambe le cartelle di build;
-- `Pietribiasi_App_start.bat`: script batch per l'avvio della console dell'applicazione, con la quale avviare Frontend e/o Backend. Viene usato per creare l'eseguibile col quale aprire la console dell'applicazione. Viene copiato e usato in `build_FE`
+- `Pietribiasi_App_start.bat`: script batch per l'avvio della console di controllo dell'applicazione, con la quale avviare Frontend e/o Backend. 
 - `config_and_build_script.bat`: script che si occupa di installare le dipendenze per poi far scegliere se eseguire `build_script_FE_only.py`, `build_script.py` o entrambi. È lo script da avviare dopo la clonazione della repository. Verrà descritto meglio in una sezione dedicata;
-- `python_server.py`: script che si occupa dell'apertura della finestra per il Frontend. La finestra si rpesenta come la finestra di un'applicazione. Viene copiato e usato in entrambe le cartelle di build;
+- `python_server.py`: script che si occupa dell'apertura della finestra per l'applicazione in versione Desktop. La finestra si rpesenta come la finestra di un'applicazione. Viene copiato e usato in entrambe le cartelle di build;
 - `script_utils.py`: file contenente funzioni usate sia da `build_script_FE_only.py` che da `build_script.py`. Viene usato per evitare la duplicazione di codice;
-- `server_only.py`: script che si occupa dell'avvio del server e non dell'apertura dell'applicazione. Viene copiato e usato in `build` per aprire il server Frontend senza dover per forza avviare la finestra con l'applicazione.
+- `server_only.py`: script che si occupa dell'avvio del server e non dell'apertura dell'applicazione. Viene copiato e usato per aprire il server Frontend senza dover per forza avviare la finestra con l'applicazione.
 
 Di seguito viene approfondito il file `build.json`
 
@@ -164,9 +164,9 @@ Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
 Una volta finita la build per Frontend e Backend, verrà generata la cartella `build` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist`.
 Aperta la cartella `build`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
 Viene aperta una console con le seguenti opzioni:
-0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è inserita per testare il Frontend;
-1. Avvia l'applicazione, inizializzando i server Frontend e Backend, senza però aprire la finestra con l'applicazione
-2. Avvia solo il server Backend
+0. Avvia l'applicazione, inizializzando il server backend e frontend senza console. Questa modalità viene detta "silenzionsa" perché nasconde le console dei server, pur mantenendoli attivi. L'aaplicazione rimane accessibile sia da broswer tramite eseguibile;
+1. Avvia l'applicazione, inizializzando i server Frontend e Backend e mostrando le console
+2. Avvia solo il server Backend (utile per testare le API)
 3. Ferma i server
 4. Riavvia i server
 5. Mostra lo stato dei server
