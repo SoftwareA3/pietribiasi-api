@@ -12,9 +12,11 @@ set BACKEND_PROJECT=apiPB
 set FRONTEND_PORT=8080
 set BACKEND_PORT=5245
 set SERVER_IP=192.168.100.113
+set BUILD_AND_DISTR_DIR="..\BuildAndDistr"
 
 REM Carica la configurazione da build.json
 call :LOAD_CONFIG_FROM_BUILD_JSON
+call :CHECK_DEPENDENCIES
 
 :MENU
 cls
@@ -66,6 +68,54 @@ echo   SERVER_IP: !SERVER_IP!
 echo   BACKEND_PORT: !BACKEND_PORT!
 echo   FRONTEND_PORT: !FRONTEND_PORT!
 echo.
+
+goto :eof
+
+:CHECK_DEPENDENCIES
+echo Controllo dipendenze...
+
+echo [INFO] Controllo presenza Python...
+where python >nul 2>&1
+if errorlevel 1 (
+    echo [ERRORE] Python non trovato. Per favore, installalo da https://www.python.org/downloads/
+    pause
+    exit /b 1
+)
+echo [OK] Python trovato.
+echo.
+
+REM Controlla se le dipendenze sono installate
+echo Controllo dipendenze...
+echo.
+echo [INFO] Controllo presenza Flask...
+python -c "import flask" 2>nul
+if errorlevel 1 (
+    echo [ERRORE] Flask non trovato. Installazione in corso...
+    pip install --user flask
+    if errorlevel 1 (
+        echo Errore nell'installazione di Flask!
+        pause
+        exit /b 1
+    )
+)
+echo [OK] Flask trovato.
+echo.
+echo [INFO] Controllo presenza Flask-CORS...
+python -c "import flask_cors" 2>nul
+if errorlevel 1 (
+    echo [ERRORE] Flask-CORS non trovato. Installazione in corso...
+    pip install --user flask-cors
+    if errorlevel 1 (
+        echo Errore nell'installazione di Flask-CORS!
+        pause
+        exit /b 1
+    )
+)
+echo [OK] Flask-CORS trovato.
+echo.
+echo [INFO] Dipendenze verificate con successo.
+echo.
+popd >nul 2>&1
 
 goto :eof
 
