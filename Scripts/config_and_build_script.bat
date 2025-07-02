@@ -37,6 +37,9 @@ if errorlevel 1 (
 echo [OK] Python trovato.
 echo.
 
+echo [INFO] Installazione di pip...
+python -m ensurepip --default-pip >nul 2>&1
+
 echo.
 echo [INFO] Installazione dei pacchetti richiesti...
 
