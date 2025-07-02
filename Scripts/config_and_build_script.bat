@@ -27,17 +27,33 @@ echo.
 
 rem --- Blocco di controllo delle dipendenze ---
 
+call :admin_permissions
+
 echo [INFO] Controllo presenza Python...
-where python >nul 2>&1
+python --version >nul 2>&1
 if errorlevel 1 (
-    echo [ERRORE] Python non trovato. Per favore, installalo da https://www.python.org/downloads/
-    pause
+    echo [ERRORE] Python non trovato: installazione in corso...
+    @echo off
+    REM Scarica Python installer
+    curl -o python-installer.exe https://www.python.org/ftp/python/3.11.5/python-3.11.5-amd64.exe
+
+    REM Esegui installazione silenziosa con aggiunta a PATH
+    python-installer.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=0
+
+    REM Verifica installazione
+    python --version
+    if errorlevel 1 (
+        echo [ERRORE] Installazione di Python fallita!
+        pause
+        exit /b 1
+    ) else (
+        echo [OK] Python installato con successo.
+    )
+
     exit /b 1
 )
 echo [OK] Python trovato.
 echo.
-
-call :admin_permissions
 
 echo [INFO] Installazione di pip...
 python -m ensurepip --default-pip >nul 2>&1
