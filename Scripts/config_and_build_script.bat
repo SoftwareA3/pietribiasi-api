@@ -27,7 +27,19 @@ echo.
 
 rem --- Blocco di controllo delle dipendenze ---
 
-call :admin_permissions
+@REM net session >nul 2>&1
+@REM if %errorLevel% neq 0 (
+@REM     echo Richiesta privilegi di amministratore...
+@REM     echo Questo script ha bisogno dei privilegi di amministratore per installare i moduli PowerShell.
+@REM     echo.
+@REM     echo Premi un tasto per continuare come amministratore...
+@REM     pause >nul
+    
+@REM     REM Rilancia lo script come amministratore
+@REM     powershell -Command "Start-Process '%~f0' -Verb RunAs"
+@REM     exit /b
+@REM )
+
 
 echo [INFO] Controllo presenza Python...
 python --version >nul 2>&1
@@ -161,20 +173,6 @@ goto menu
 
 
 rem --- Sezioni di esecuzione ---
-
-:admin_permissions
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-    echo Richiesta privilegi di amministratore...
-    echo Questo script ha bisogno dei privilegi di amministratore per installare i moduli PowerShell.
-    echo.
-    echo Premi un tasto per continuare come amministratore...
-    pause >nul
-    
-    REM Rilancia lo script come amministratore
-    powershell -Command "Start-Process '%~f0' -Verb RunAs"
-    exit /b
-)
 
 :build_all
 echo.
