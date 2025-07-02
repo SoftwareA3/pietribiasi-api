@@ -13,6 +13,7 @@ using apiPB.Models;
 using apiPB.Utils.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Microsoft.Extensions.Configuration;
 using Moq.Protected;
 using Xunit;
 
@@ -26,6 +27,7 @@ namespace TestApi.Tests.ApiClient
         private readonly HttpClient _httpClient;
         private readonly Mock<DbSet<A3AppSetting>> _mockAppSettingsSet;
         private readonly MagoApiClient _magoApiClient;
+        private readonly IConfiguration _configuration;
 
         private readonly List<A3AppSetting> _appSettingsData = new List<A3AppSetting>
         {
@@ -43,9 +45,17 @@ namespace TestApi.Tests.ApiClient
             _mockAppSettingsSet = new Mock<DbSet<A3AppSetting>>();
             
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-            
+            _configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    { "ConnectionStrings:LocalA3Db", "" },
+                    { "MagoIpString", ""}
+                })
+                .Build();
+
+
             SetupMockDbSet();
-            _magoApiClient = new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object);
+            _magoApiClient = new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object, _configuration);
         }
 
         private void SetupMockDbSet()
@@ -81,8 +91,7 @@ namespace TestApi.Tests.ApiClient
         public void Constructor_ShouldInitializeClient_WhenValidParametersProvided()
         {
             // Arrange & Act
-            var client = new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object);
-
+            var client = new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object, _configuration);
             // Assert
             Assert.NotNull(client);
             Assert.Equal("https://api.mago.test/", _httpClient.BaseAddress?.ToString());
@@ -100,7 +109,7 @@ namespace TestApi.Tests.ApiClient
 
             // Act & Assert
             var exception = Assert.Throws<InvalidOperationException>(() => 
-                new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object));
+                new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object, _configuration));
             Assert.Equal("Connection string non trovata.", exception.Message);
         }
 
@@ -175,7 +184,6 @@ namespace TestApi.Tests.ApiClient
                 Times.Once(),
                 ItExpr.Is<HttpRequestMessage>(req =>
                     req.Headers.Authorization != null &&
-                    req.Headers.Host == "192.168.100.213" &&
                     req.Headers.Accept.Any(h => h.MediaType == "application/json") &&
                     req.Headers.AcceptEncoding.Any(h => h.Value == "gzip") &&
                     req.Headers.Connection.Contains("keep-alive")),
@@ -395,7 +403,7 @@ namespace TestApi.Tests.ApiClient
         public void Dispose_ShouldDisposeHttpClient_WhenCalled()
         {
             // Arrange
-            var client = new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object);
+            var client = new MagoApiClient(_httpClient, _mockContext.Object, _mockLogService.Object, _configuration);
 
             // Act & Assert
             // HttpClient disposal is handled by the DI container in real scenarios

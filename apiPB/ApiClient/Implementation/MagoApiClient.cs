@@ -15,15 +15,17 @@ namespace apiPB.ApiClient.Implementation
     {
         private readonly HttpClient _httpClient;
         private readonly ApplicationDbContext _dbContext;
+        private readonly IConfiguration _configuration;
         private readonly string _baseUrl;
         private readonly JsonSerializerOptions _jsonOptions;
         private readonly ILogService _logService;
 
-        public MagoApiClient(HttpClient httpClient, ApplicationDbContext dbContext, ILogService logService)
+        public MagoApiClient(HttpClient httpClient, ApplicationDbContext dbContext, ILogService logService, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _logService = logService;
             _baseUrl = GetConnectionString();
+            _configuration = configuration;
 
             // Configurazione JSON con camelCase
             _jsonOptions = new JsonSerializerOptions
@@ -58,7 +60,7 @@ namespace apiPB.ApiClient.Implementation
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
             
             // Header specifici per l'API Mago
-            request.Headers.Host = "192.168.100.213";
+            request.Headers.Host = _configuration["ConnectionStrings:MagoIpString"];
             request.Headers.UserAgent.ParseAdd("apiPB/1.0");
             
             // Encoding supportati
