@@ -37,6 +37,8 @@ if errorlevel 1 (
 echo [OK] Python trovato.
 echo.
 
+call :admin_permissions
+
 echo [INFO] Installazione di pip...
 python -m ensurepip --default-pip >nul 2>&1
 
