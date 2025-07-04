@@ -13,6 +13,7 @@ class AppBuilder:
     """Classe per la costruzione dell'applicazione PietriBiasi"""
     # Inizializza il percorso del progetto e carica la configurazione
     def __init__(self, config_path="BuildScripts/build.json"):
+        self.config_path = config_path
         self.project_root = Path(__file__).parent 
         print(f"Root del progetto: {self.project_root}")
         
@@ -36,10 +37,10 @@ class AppBuilder:
             await script_utils.clean(self)
 
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
-            await script_utils.update_host_ip("build.json")
+            await script_utils.update_host_ip(self.config_path)
 
             # Copia il Frontend nella cartella di build come file wwwroot (da testare)
-            with open("build.json", "r", encoding="utf-8") as f:
+            with open(self.config_path, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
             
             target = self.config['targets'][0] 
