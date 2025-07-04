@@ -8,23 +8,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
+      
       - name: Build EXE
         run: |
-          pyinstaller --onefile --noconsole BuildScripts/build.py
+          # Cambia directory per risolvere i problemi di percorsi relativi
+          cd BuildScripts
+          # Rimuovi --noconsole e aggiungi --add-data per includere script_utils
+          pyinstaller --onefile --add-data "script_utils.py;." --add-data "build.json;." build.py
+      
       - name: Move EXE to root and cleanup
         run: |
-          Move-Item -Path "dist\build.exe" -Destination "build.exe"
-          Remove-Item -Path "dist" -Recurse -Force -ErrorAction SilentlyContinue
-          Remove-Item -Path "build" -Recurse -Force -ErrorAction SilentlyContinue
-          Remove-Item -Path "build.spec" -Force -ErrorAction SilentlyContinue
+          Move-Item -Path "BuildScripts\dist\build.exe" -Destination "build.exe"
+          Remove-Item -Path "BuildScripts\dist" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "BuildScripts\build" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "BuildScripts\build.spec" -Force -ErrorAction SilentlyContinue
+      
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
