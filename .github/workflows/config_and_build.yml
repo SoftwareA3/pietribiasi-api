@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  
+        uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -19,8 +19,14 @@ jobs:
       - name: Build EXE
         run: |
           pyinstaller --onefile --noconsole BuildScripts/build.py
+      - name: Move EXE to root and cleanup
+        run: |
+          move dist\build.exe build.exe
+          rmdir /s /q dist
+          rmdir /s /q build
+          del build.spec
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: config-generator
-          path: dist/build.exe  
+          path: build.exe
