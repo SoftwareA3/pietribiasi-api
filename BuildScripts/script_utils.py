@@ -71,7 +71,7 @@ def copy_build_json_to_build(obj, filter=True):
     """Copia build.json nella cartella di build, scegliendo se rimuovere la connection_string"""
     print("Copia di build.json nella cartella di build...")
     
-    build_json_src = obj.project_root / "build.json"
+    build_json_src = obj.current_dir / "build.json"
     build_json_dst = obj.build_dir / "build.json"
     
     # Legge il file build.json originale
@@ -188,7 +188,7 @@ async def update_appsettings(obj):
     print("Aggiornamento di appsettings.json...")
 
     # Carica la configurazione da build.json nella root
-    build_json_path = obj.project_root / "build.json"
+    build_json_path = obj.current_dir / "build.json"
     if not build_json_path.exists():
         print(f"ATTENZIONE: {build_json_path} non trovato.")
         return
