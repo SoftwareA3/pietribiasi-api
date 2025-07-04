@@ -23,7 +23,6 @@ jobs:
         run: |
           # Cambia directory per risolvere i problemi di percorsi relativi
           cd BuildScripts
-          # Rimuovi --noconsole e aggiungi --add-data per includere script_utils
           pyinstaller --onefile --add-data "script_utils.py;." --add-data "build.json;." build.py
       
       - name: Move EXE to root and cleanup
