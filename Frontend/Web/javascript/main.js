@@ -1,7 +1,7 @@
 import { deleteCookie, getCookie } from "./cookies.js";
 
 // API configuration - this placeholder will be replaced by the build script
-const API_BASE_URL = '##API_BASE_URL##';
+const API_BASE_URL = window.location.origin; 
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Check if the user is authenticated
