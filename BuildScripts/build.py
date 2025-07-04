@@ -16,7 +16,7 @@ class AppBuilder:
     def __init__(self, config_path="BuildScripts/build.json"):
         
         if getattr(sys, 'frozen', False):
-            self.current_dir = Path(sys.executable).parent
+            self.project_root = Path(sys.executable).parent
         else:
             self.project_root = Path(__file__).parent 
         self.config_path = config_path
