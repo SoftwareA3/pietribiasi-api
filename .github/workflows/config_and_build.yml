@@ -21,10 +21,10 @@ jobs:
           pyinstaller --onefile --noconsole BuildScripts/build.py
       - name: Move EXE to root and cleanup
         run: |
-          move dist\build.exe build.exe
-          rmdir /s /q dist
-          rmdir /s /q build
-          del build.spec
+          Move-Item -Path "dist\build.exe" -Destination "build.exe"
+          Remove-Item -Path "dist" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "build" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "build.spec" -Force -ErrorAction SilentlyContinue
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
