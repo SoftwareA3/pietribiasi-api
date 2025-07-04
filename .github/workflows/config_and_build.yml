@@ -23,6 +23,7 @@ jobs:
         run: |
           # Cambia directory per risolvere i problemi di percorsi relativi
           cd BuildScripts
+          # Rimuovi --noconsole e aggiungi --add-data per includere script_utils
           pyinstaller --onefile --add-data "script_utils.py;." --add-data "build.json;." build.py
       
       - name: Move EXE to root and cleanup
@@ -32,7 +33,15 @@ jobs:
           Remove-Item -Path "BuildScripts\build" -Recurse -Force -ErrorAction SilentlyContinue
           Remove-Item -Path "BuildScripts\build.spec" -Force -ErrorAction SilentlyContinue
       
-      - name: Upload artifact
+      - name: Commit and push executable
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add build.exe
+          git commit -m "Auto-build: Updated build.exe [skip ci]" || exit 0
+          git push
+      
+      - name: Upload artifact (backup)
         uses: actions/upload-artifact@v4
         with:
           name: config-generator
