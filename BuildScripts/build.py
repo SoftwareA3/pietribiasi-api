@@ -12,7 +12,7 @@ import script_utils
 class AppBuilder:
     """Classe per la costruzione dell'applicazione PietriBiasi"""
     # Inizializza il percorso del progetto e carica la configurazione
-    def __init__(self, config_path="build.json"):
+    def __init__(self, config_path="BuildScripts/build.json"):
         self.project_root = Path(__file__).parent 
         print(f"Root del progetto: {self.project_root}")
         
