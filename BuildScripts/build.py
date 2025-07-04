@@ -10,6 +10,10 @@ from datetime import datetime
 import script_utils
 import sys
 
+# I PERCORSI SONO RELATIVI ALL'ESEGUIBILE CREATO CON PyInstaller
+# VIENE FATTO UN CONROLLO PER VERIFICARE CHE, SE VIENE ESEGUITO L'ESEGUIBILE,
+# IL PERCORSO DEL PROGETTO SIA CORRETTO, ALTRIMENTI È RELATIVO AL FILE build.py
+
 class AppBuilder:
     """Classe per la costruzione dell'applicazione PietriBiasi"""
     # Inizializza il percorso del progetto e carica la configurazione
@@ -18,7 +22,7 @@ class AppBuilder:
         if getattr(sys, 'frozen', False):
             self.project_root = Path(sys.executable).parent
         else:
-            self.project_root = Path(__file__).parent 
+            self.project_root = Path(__file__).parent.parent 
         self.config_path = config_path
         print(f"Root del progetto: {self.project_root}")
         
