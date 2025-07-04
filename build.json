@@ -8,13 +8,13 @@
     "build": {
         "backend_project": "apiPB",
         "frontend_path": "Frontend",
-        "output_dir": "PietribiasiApp_server_distribution",
-        "temp_dir": "PietribiasiApp_server"
+        "output_dir": "PietribiasiApp_distribution",
+        "temp_dir": "PietribiasiApp"
     },
     "build_FE": {
         "frontend_path": "Frontend",
-        "output_dir": "PietribiasiApp_distribution",
-        "temp_dir": "PietribiasiApp"
+        "output_dir": "PietribiasiApp_FE_distribution",
+        "temp_dir": "PietribiasiApp_FE"
     },
     "targets": [
         {
@@ -40,18 +40,18 @@
     },
     "server": {
         "backend": {
-            "host": "192.168.100.117",
+            "host": "192.168.100.112",
             "port": 5245,
             "connection_string": "Data Source=SRV2022MES\\SQLEXPRESS;Initial Catalog=PIETRIBIASISRLM4;User ID=sa;Password=sa_2022;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
         },
         "frontend": {
-            "host": "192.168.100.117",
+            "host": "192.168.100.112",
             "port": 8080
         }
     },
     "remote_backend": {
         "enabled": true,
-        "host": "192.168.100.117",
+        "host": "192.168.100.112",
         "port": 5245,
         "protocol": "http",
         "health_endpoint": "/health",
