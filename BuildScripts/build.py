@@ -13,8 +13,7 @@ class AppBuilder:
     """Classe per la costruzione dell'applicazione PietriBiasi"""
     # Inizializza il percorso del progetto e carica la configurazione
     def __init__(self, config_path="build.json"):
-        self.project_root = Path(__file__).parent.parent
-        self.current_dir = Path(__file__).parent
+        self.project_root = Path(__file__).parent 
         print(f"Root del progetto: {self.project_root}")
         
         # Carica la configurazione
@@ -25,7 +24,7 @@ class AppBuilder:
             self.config = self.default_config()
             
         # Crea le directory di build e distribuzione
-        self.build_dir, self.dist_dir, self.app_dir = script_utils.create_build_and_distr_dir(self)
+        self.build_dir, self.dist_dir, self.app_dir, self.script_dir = script_utils.create_build_and_distr_dir(self)
 
 
     async def build(self):
