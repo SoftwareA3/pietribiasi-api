@@ -32,6 +32,7 @@ jobs:
       
       - name: Move EXE to root and cleanup
         run: |
+          Remove-Item -Path "build.exe" -Force -ErrorAction SilentlyContinue
           Move-Item -Path "BuildScripts\dist\build.exe" -Destination "build.exe"
           Remove-Item -Path "BuildScripts\dist" -Recurse -Force -ErrorAction SilentlyContinue
           Remove-Item -Path "BuildScripts\build" -Recurse -Force -ErrorAction SilentlyContinue
@@ -39,8 +40,11 @@ jobs:
       
       - name: Commit and push executable
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "raul.pianon@studenti.unipd.it"
+          git config --local user.name "RaulPianon"
+          # Configura un utente fittizio per il commit
+          # git config --local user.email "action@github.com"
+          # git config --local user.name "GitHub Action"
           git add build.exe
           git commit -m "Auto-build: Updated build.exe [skip ci]" || exit 0
           git push
