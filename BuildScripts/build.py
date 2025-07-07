@@ -21,9 +21,10 @@ class AppBuilder:
         
         if getattr(sys, 'frozen', False):
             self.project_root = Path(sys.executable).parent
+            self.config_path = config_path
         else:
             self.project_root = Path(__file__).parent.parent 
-        self.config_path = config_path
+            self.config_path = self.project_root / config_path
         print(f"Root del progetto: {self.project_root}")
         
         # Carica la configurazione
@@ -31,7 +32,7 @@ class AppBuilder:
             with open(config_path, 'r', encoding='utf-8') as f:
                 self.config = json.load(f)
         else:
-            self.config = self.default_config()
+            self.config = script_utils.default_config()
             
         # Crea le directory di build e distribuzione
         self.build_dir, self.dist_dir, self.app_dir, self.script_dir = script_utils.create_build_and_distr_dir(self)
@@ -48,7 +49,7 @@ class AppBuilder:
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
             await script_utils.update_host_ip(self.config_path)
 
-            # Copia il Frontend nella cartella di build come file wwwroot (da testare)
+            # Carica la configurazione da build.jsonx
             with open(self.config_path, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
             
@@ -74,7 +75,7 @@ class AppBuilder:
             await script_utils.update_appsettings(self)
 
             # Copia il file build.json nella cartella (al momento senza filtrarlo)
-            script_utils.copy_build_json_to_build(self, True)
+            #script_utils.copy_build_json_to_build(self, True)
 
             # Copia parte della documentazione nella cartella di build
             script_utils.copy_documentation_to_build(self)

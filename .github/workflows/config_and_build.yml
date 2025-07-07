@@ -1,14 +1,15 @@
 name: Build Python to EXE
+
 on:
   push:
     branches: [ main ]
 
 permissions:
   contents: write
-
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,11 +43,11 @@ jobs:
         run: |
           git config --local user.email "raul.pianon@studenti.unipd.it"
           git config --local user.name "RaulPianon"
-          # Configura un utente fittizio per il commit
+          # Configura un utente fittizio per il commit o da un utente specifico
           # git config --local user.email "action@github.com"
           # git config --local user.name "GitHub Action"
           git add build.exe
-          git commit -m "Auto-build: Updated build.exe [skip ci]" || exit 0
+          git commit -m "Auto-build: Updated build.exe" || exit 0
           git push
       
       - name: Upload artifact (backup)
