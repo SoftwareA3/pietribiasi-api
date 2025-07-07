@@ -37,7 +37,8 @@
         "backend": {
             "host": "192.168.100.112",
             "port": 5245,
-            "connection_string": "Data Source=SRV2022MES\\SQLEXPRESS;Initial Catalog=PIETRIBIASISRLM4;User ID=sa;Password=sa_2022;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+            "connection_string": "Data Source=SRV2022MES\\SQLEXPRESS;Initial Catalog=PIETRIBIASISRLM4;User ID=sa;Password=sa_2022;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+            "resolve_ip_automatically": true
         }
     }
 }

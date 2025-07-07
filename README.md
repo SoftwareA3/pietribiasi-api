@@ -95,7 +95,8 @@ Di seguito viene approfondito il file `build.json`
         "backend": {
             "host": "localhost",
             "port": 5245,
-            "connection_string": "connection_string_placeholder"
+            "connection_string": "connection_string_placeholder",
+            "resolve_ip_automatically": true
         }
     }
 }
@@ -117,6 +118,7 @@ Di seguito viene approfondito il file `build.json`
     - IP
     - La stringa di connessione.
     - Le informazioni del Backend vengono copiate e inserite in `appsettings.json` nel backend, per consentire di creare il server e stabilire la connessione al database.
+    - Se l'IP viene risolto in maniera automatica durante il processo di build o se dev'essere solamente letto in `build.json`
 
 ## Build
 La build dell'applicazione dev'essere fatta, avviando l'eseguibile presente nella root del progetto, ossia `build.exe`. Questo file viene generato automaticamente ad ogni push effettuato in `main` attraverso una GitHub Action. Questa Action viene descritta nel file `config_and_build.yml` e si occupa di:

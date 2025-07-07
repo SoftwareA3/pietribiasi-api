@@ -48,7 +48,7 @@ class AppBuilder:
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
             await script_utils.update_host_ip(self.config_path)
 
-            # Copia il Frontend nella cartella di build come file wwwroot (da testare)
+            # Carica la configurazione da build.jsonx
             with open(self.config_path, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
             
@@ -74,7 +74,7 @@ class AppBuilder:
             await script_utils.update_appsettings(self)
 
             # Copia il file build.json nella cartella (al momento senza filtrarlo)
-            script_utils.copy_build_json_to_build(self, True)
+            #script_utils.copy_build_json_to_build(self, True)
 
             # Copia parte della documentazione nella cartella di build
             script_utils.copy_documentation_to_build(self)
