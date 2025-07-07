@@ -46,16 +46,11 @@
    3. [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale) 
 
 # Configurazione (dopo aver clonato la repository)
-La configurazione dell'applicazione è definita nella cartella `Scripts`. In questa cartella sono situati sia i file di configurazione dell'applicazione, che gli script che poi verranno copiati nelle cartelle di build per l'avvio dell'applicazione. 
+La configurazione dell'applicazione è definita nella cartella `BuildScripts`. In questa cartella sono situati sia i file di configurazione dell'applicazione, sia quelli che dovranno essere copiati all'interno della cartella dove verrà situata l'applicazione. 
 I file verranno descritti brevemente di seguito:
-- `build_script_FE_only.py`: script che serve per la configurazione e la costruzione delle cartelle `build_FE` (per la costruzione della WebApp Frontend) e `dist_FE` con il file compresso di build_FE;
-- `build_scritp.py`: script che serve per la configurazione e la costruzione delle cartelle `build` (per la costruzione della console per l'avvio di Frontend e Backend) e `dist` con il file compresso di build;
+- `build.py`: script che serve per la configurazione e la costruzione della cartella dove verrà creata la distribuzione dell'applicazione (nonché la cartella contenente la cartella dell'applicazione compressa.
 - `build.json`: file di configurazione dell'applicazione che verrà descritto in seguito con una sezione apposita. Viene copiato, filtrato e usato in entrambe le cartelle di build;
-- `Pietribiasi_App_start.bat`: script batch per l'avvio della console dell'applicazione, con la quale avviare Frontend e/o Backend. Viene usato per creare l'eseguibile col quale aprire la console dell'applicazione. Viene copiato e usato in `build_FE`
-- `config_and_build_script.bat`: script che si occupa di installare le dipendenze per poi far scegliere se eseguire `build_script_FE_only.py`, `build_script.py` o entrambi. È lo script da avviare dopo la clonazione della repository. Verrà descritto meglio in una sezione dedicata;
-- `python_server.py`: script che si occupa dell'apertura della finestra per il Frontend. La finestra si rpesenta come la finestra di un'applicazione. Viene copiato e usato in entrambe le cartelle di build;
 - `script_utils.py`: file contenente funzioni usate sia da `build_script_FE_only.py` che da `build_script.py`. Viene usato per evitare la duplicazione di codice;
-- `server_only.py`: script che si occupa dell'avvio del server e non dell'apertura dell'applicazione. Viene copiato e usato in `build` per aprire il server Frontend senza dover per forza avviare la finestra con l'applicazione.
 
 Di seguito viene approfondito il file `build.json`
 
@@ -72,13 +67,8 @@ Di seguito viene approfondito il file `build.json`
     "build": {
         "backend_project": "apiPB",
         "frontend_path": "Frontend",
-        "output_dir": "dist",
-        "temp_dir": "build"
-    },
-    "build_FE": {
-        "frontend_path": "Frontend",
-        "output_dir": "dist_FE",
-        "temp_dir": "build_FE"
+        "output_dir": "PietribiasiApp_distribution",
+        "temp_dir": "PietribiasiApp"
     },
     "targets": [
         {
@@ -106,22 +96,8 @@ Di seguito viene approfondito il file `build.json`
         "backend": {
             "host": "localhost",
             "port": 5245,
-            "local_ip_automatically": false,
-            "connection_string": "connectionstring"
-        },
-        "frontend": {
-            "host": "localhost",
-            "port": 8080,
-            "local_ip_automatically": false
+            "connection_string": "connection_string_placeholder"
         }
-    },
-    "remote_backend": {
-        "enabled": true,
-        "host": "localhost",
-        "port": 5245,
-        "protocol": "http",
-        "health_endpoint": "/health",
-        "timeout_seconds": 30
     }
 }
 ```
@@ -131,7 +107,6 @@ Di seguito viene approfondito il file `build.json`
     - Descrizione
     - Autore
 - `build`: indica quali cartelle contengono il `frontend` e il `backend` per poi copiarli nelle cartelle `output_dir` e `temp_dir` e come chiamare queste cartelle. Al momento il loro nome è `build` e `dist` rispettivamente;
-- `build_FE`: indica quali cartelle contengono il `frontend` per poi copiarlo nelle cartelle `output_dir` e `temp_dir` e come chiamare queste cartelle. Al momento il loro nome è `build_FE` e `dist_FE` rispettivamente;
 - `targets`: contengono le informazioni sul sistema dove viene fatta la distribuzione. Al momento gli script hanno distribuzione Windows e alcune impostazioni per gli altri sistemi (sono state aggiunte per manutenibilità);
 - `packaging`: 
     - `"create_installer": true` -> consente la creazione della cartella distribuibile (`build`);
@@ -141,42 +116,32 @@ Di seguito viene approfondito il file `build.json`
 - `server`: contiene le informazioni su:
     - Porte
     - IP
-    - Se l'IP dev'essere risolto in maniera automatica (prende l'IP del dispositivo) o se viene solamente letto dalle configurazioni
-    - Per il backend viene aggiunta la stringa di connessione.
-    - Le informazioni del Backend vengono copiate e inserite in `appsettings.json` nel backend, per consentire di creare il server e stabilire la connessione al database
-    - Le informazioni del backend vengono rimosse qualora sia disponibile la configurazione `remote_backend` e in generale per nascondere informazioni relative solo al backend, come la stringa di connessione
-- `remote_backend`: se `"enabled": true` vengono indicate le impostazioni quali l'IP e la porta per connettersi al server remoto. Viene usato dal Frontend per avere informazioni sulla connessione e in particolare dallo script `python_server.py` per creare la WebApp.
+    - La stringa di connessione.
+    - Le informazioni del Backend vengono copiate e inserite in `appsettings.json` nel backend, per consentire di creare il server e stabilire la connessione al database.
 
 ## Build
-Per costruire l'applicazione, bisogna spostarsi nella cartella `Scripts` ed eseguire lo script batch `config_and_build.bat`. Lo script chiedera i permessi di amministratore per scaricare le dipendenze dell'applicazione, quali: 
-- `python`: per il comando `python`, indispensabile per l'esecuzione degli script di build; 
-- `PiInstaller`: per realizzare l'eseguibile dell'applicazione web;
-- `pywebview`: una libreria python utilizzata per la costruzione della finestra per la WebApp;
-- `flask` e `flask_cors`: per la configurazione e l'avvio del server Frontend.
+La build dell'applicazione dev'essere fatta, avviando l'eseguibile presente nella root del progetto, ossia `build.exe`. Questo file viene generato automaticamente ad ogni push effettuato in `main` attraverso una GitHub Action. Questa Action viene descritta nel file `config_and_build.yml` e si occupa di:
+- Installare le dipendenze (Python, PyInstaller per la realizzazione dell'eseguibile dal file python);
+- Realizzare l'eseguibile;
+- Spostarlo nella root del progetto;
+- Eliminare i file superflui;
+- Realizzare un commit dell'eseguibile per aggiungerlo al Repository.
+Una volta terminata la Action, il prossimo aggiornamento del Repository aggiornerà anche l'eseguibile.
 
-Se le dipendenze vengono soddisfatte, l'applicazione lascia scegliere 4 opzioni:
-1. Esecuzione di `build_script.py` (per la costruzione di Frontend e Backend in `build`);
-2. Esecuzione di `build_script_FE_only.py` (per la costruzione del Frontend in `build_FE`);
-3. Esecuzione di entrambi gli sctipt;
-4. Per uscire dall'applicazione.
+---
+
+L'esecuzione dell'eseguibile darà il via al processo di build, che comprende:
+- La pulizia o la creazione delle cartelle per l'applicazione;
+- La modifica dell'indirizzo IP nel file `bujild.json` (se inserita l'opzione per farlo);
+- La copia dei file di Backend nella cartella dell'applicazione (attraverso `dotnet publish`);
+- La copia del Frontend in una cartella `wwwroot` nella cartella dell'applicazione;
+- L'aggiornamento del file `appsettings.json` nella cartella dell'applicazione, dove sono situati i file del Backend;
+- La copia della documentazione;
+- La creazione di un launcher da utilizzare nella cartella dell'applicazione per l'avvio.
 
 # Avvio Applicazione con build (Avvio Frontend e Backend)
-Una volta finita la build per Frontend e Backend, verrà generata la cartella `build` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist`.
-Aperta la cartella `build`, è possibile eseguire il file con estensione `.exe`. L'eseguibile esegue il file batch `Pietribiasi_App_start.bat`. 
-Viene aperta una console con le seguenti opzioni:
-0. Avvia l'applicazione, inizializzando il server backend e aprendo la finestra con la WebApp e il server Frontend. Il server Frontend si chiude alla chiusura dell'applicazione. Questa opzione è inserita per testare il Frontend;
-1. Avvia l'applicazione, inizializzando i server Frontend e Backend, senza però aprire la finestra con l'applicazione
-2. Avvia solo il server Backend
-3. Ferma i server
-4. Riavvia i server
-5. Mostra lo stato dei server
-6. Mostra gli IP dove sono disponibili i server Frontend e Backend
-7. Mostra le opzioni per decidere se uscire dall'App. Se si conferma con `s`, chiude i server, la console e l'applicazione se aperta.
-
-# Avvio FrontEnd con build_FE
-Una volta finita la build per il Frontend, verrà generata la cartella `build_FE` in `BuildAndDistr`, cartella disponibile nella root e generata anche questa dagli script python. Verrà generata anche la cartella `dist_FE`.
-Aperta la cartella `build_FE`, è possibile eseguire il file con estensione `.exe`. L'eseguibile apre una finestra con l'applicazione web.
-In alternativa, è possibile connettersi all'IP del server frontend dal browser.
+Per l'avvio dell'applicazione, basta spostarsi nella cartella creata dal file di build e eseguire il file `start.bat`. Il file non è altro che un piccolo script che esegue il file `apiPB.exe` nella cartella dove sono situati i file dell'applicazione.
+Eseguito il file `start.bat`, verrà aperta una console e avviati i server per il frontend e il backend. Il server backend è realizzato tramite `ASP.NET`, di conseguenza IP e porte del server backend coincidono con quelli del frontend. Al completamento dell'avvio del server, verrà generato l'URL dove sarà disponibile l'applicazione.
 
 ---
 
