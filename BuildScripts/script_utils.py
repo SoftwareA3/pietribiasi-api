@@ -70,8 +70,7 @@ def create_zip_archive(obj):
 def copy_build_json_to_build(obj, filter=True):
     """Copia build.json nella cartella di build, scegliendo se rimuovere la connection_string"""
     print("Copia di build.json nella cartella di build...")
-    
-    build_json_src = obj.current_dir / "build.json"
+    build_json_src = obj.script_dir / "build.json"
     build_json_dst = obj.build_dir / "build.json"
     
     # Legge il file build.json originale
@@ -188,7 +187,7 @@ async def update_appsettings(obj):
     print("Aggiornamento di appsettings.json...")
 
     # Carica la configurazione da build.json nella root
-    build_json_path = obj.current_dir / "build.json"
+    build_json_path = obj.script_dir / "build.json"
     if not build_json_path.exists():
         print(f"ATTENZIONE: {build_json_path} non trovato.")
         return
@@ -236,7 +235,8 @@ def create_build_and_distr_dir(obj):
     build_dir = build_and_distr / obj.config['build']['temp_dir']
     dist_dir = build_and_distr / obj.config['build']['output_dir']
     app_dir = build_dir / "App"
-    return build_dir, dist_dir, app_dir
+    script_dir = obj.project_root / "BuildScripts"
+    return build_dir, dist_dir, app_dir, script_dir
 
 async def update_host_ip(build_json_path, automatic_ip=True):
     """Aggiorna server.backend.host con l'IP locale."""

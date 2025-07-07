@@ -8,13 +8,22 @@ from pathlib import Path
 import asyncio
 from datetime import datetime
 import script_utils
+import sys
+
+# I PERCORSI SONO RELATIVI ALL'ESEGUIBILE CREATO CON PyInstaller
+# VIENE FATTO UN CONROLLO PER VERIFICARE CHE, SE VIENE ESEGUITO L'ESEGUIBILE,
+# IL PERCORSO DEL PROGETTO SIA CORRETTO, ALTRIMENTI È RELATIVO AL FILE build.py
 
 class AppBuilder:
     """Classe per la costruzione dell'applicazione PietriBiasi"""
     # Inizializza il percorso del progetto e carica la configurazione
-    def __init__(self, config_path="build.json"):
-        self.project_root = Path(__file__).parent.parent
-        self.current_dir = Path(__file__).parent
+    def __init__(self, config_path="BuildScripts/build.json"):
+        
+        if getattr(sys, 'frozen', False):
+            self.project_root = Path(sys.executable).parent
+        else:
+            self.project_root = Path(__file__).parent.parent 
+        self.config_path = config_path
         print(f"Root del progetto: {self.project_root}")
         
         # Carica la configurazione
@@ -25,7 +34,7 @@ class AppBuilder:
             self.config = self.default_config()
             
         # Crea le directory di build e distribuzione
-        self.build_dir, self.dist_dir, self.app_dir = script_utils.create_build_and_distr_dir(self)
+        self.build_dir, self.dist_dir, self.app_dir, self.script_dir = script_utils.create_build_and_distr_dir(self)
 
 
     async def build(self):
@@ -37,10 +46,10 @@ class AppBuilder:
             await script_utils.clean(self)
 
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
-            await script_utils.update_host_ip("build.json")
+            await script_utils.update_host_ip(self.config_path)
 
             # Copia il Frontend nella cartella di build come file wwwroot (da testare)
-            with open("build.json", "r", encoding="utf-8") as f:
+            with open(self.config_path, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
             
             target = self.config['targets'][0] 

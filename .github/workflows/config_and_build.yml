@@ -4,28 +4,54 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-
+        uses: actions/checkout@v4
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
+      
       - name: Build EXE
         run: |
-          pyinstaller --onefile --noconsole build.py
-      - name: Upload artifact
+          # Cambia directory per risolvere i problemi di percorsi relativi
+          cd BuildScripts
+          # Rimuovi --noconsole e aggiungi --add-data per includere script_utils
+          pyinstaller --onefile --add-data "script_utils.py;." --add-data "build.json;." build.py
+      
+      - name: Move EXE to root and cleanup
+        run: |
+          Remove-Item -Path "build.exe" -Force -ErrorAction SilentlyContinue
+          Move-Item -Path "BuildScripts\dist\build.exe" -Destination "build.exe"
+          Remove-Item -Path "BuildScripts\dist" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "BuildScripts\build" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "BuildScripts\build.spec" -Force -ErrorAction SilentlyContinue
+      
+      - name: Commit and push executable
+        run: |
+          git config --local user.email "raul.pianon@studenti.unipd.it"
+          git config --local user.name "RaulPianon"
+          # Configura un utente fittizio per il commit
+          # git config --local user.email "action@github.com"
+          # git config --local user.name "GitHub Action"
+          git add build.exe
+          git commit -m "Auto-build: Updated build.exe [skip ci]" || exit 0
+          git push
+      
+      - name: Upload artifact (backup)
         uses: actions/upload-artifact@v4
         with:
           name: config-generator
-          path: dist/build.exe  
+          path: build.exe
