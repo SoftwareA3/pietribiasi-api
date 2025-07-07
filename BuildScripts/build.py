@@ -21,9 +21,10 @@ class AppBuilder:
         
         if getattr(sys, 'frozen', False):
             self.project_root = Path(sys.executable).parent
+            self.config_path = config_path
         else:
             self.project_root = Path(__file__).parent.parent 
-        self.config_path = config_path
+            self.config_path = self.project_root / config_path
         print(f"Root del progetto: {self.project_root}")
         
         # Carica la configurazione
@@ -31,7 +32,7 @@ class AppBuilder:
             with open(config_path, 'r', encoding='utf-8') as f:
                 self.config = json.load(f)
         else:
-            self.config = self.default_config()
+            self.config = script_utils.default_config()
             
         # Crea le directory di build e distribuzione
         self.build_dir, self.dist_dir, self.app_dir, self.script_dir = script_utils.create_build_and_distr_dir(self)
