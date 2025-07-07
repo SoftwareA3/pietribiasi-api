@@ -5,7 +5,6 @@
    1. [File build.json](#file-buildjson)
    2. [Build](#build)
    3. [Avvio Applicazione con build (Avvio Frontend e Backend)](#avvio-applicazione-con-build-avvio-frontend-e-backend)
-   4. [Avvio FrontEnd con build_FE](#avvio-applicazione-con-build-avvio-frontend-e-backend)
 2. [Documentazione API](#documentazione-api)
 3. [FrontEnd](#frontend)
    1. [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
