@@ -16,17 +16,16 @@ jobs:
 
       - name: Build sh in Docker with old GLIBC (Debian Bullseye)
         run: |
-            docker run --rm \
+          docker run --rm \
             -v ${{ github.workspace }}:/app \
             -w /app/BuildScripts \
             --user $(id -u):$(id -g) \
             python:3.10-bullseye bash -c "\
-                pip install pyinstaller && \
-                pyinstaller --onefile \
+              python -m pip install --user pyinstaller && \
+              ~/.local/bin/pyinstaller --onefile \
                 --add-data 'script_utils.py:.' \
                 --add-data 'build.json:.' \
                 build.py"
-
 
       - name: Move sh to root and cleanup
         run: |
