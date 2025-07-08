@@ -1,15 +1,6 @@
-name: Build Python to EXE
+name: Build Python to sh Linux 
 
 on:
-  push:
-    branches: [ main, develop ]
-    paths:
-      - 'BuildScripts/**'
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - 'BuildScripts/**'
-
   workflow_dispatch:
 
 permissions:
@@ -32,14 +23,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
       
-      - name: Build EXE
+      - name: Build sh
         run: |
           # Cambia directory per risolvere i problemi di percorsi relativi
           cd BuildScripts
           # Rimuovi --noconsole e aggiungi --add-data per includere script_utils
           pyinstaller --onefile --add-data "script_utils.py;." --add-data "build.json;." build.py
       
-      - name: Move EXE to root and cleanup
+      - name: Move sh to root and cleanup
         run: |
             rm -f build.sh
             rm -f build.exe
@@ -55,8 +46,8 @@ jobs:
           # Configura un utente fittizio per il commit o da un utente specifico
           # git config --local user.email "action@github.com"
           # git config --local user.name "GitHub Action"
-          git add build.exe
-          git commit -m "Auto-build: Updated build.exe" || exit 0
+          git add build.sh
+          git commit -m "Auto-build: Updated build.sh" || exit 0
           git push
       
       - name: Upload artifact (backup)
