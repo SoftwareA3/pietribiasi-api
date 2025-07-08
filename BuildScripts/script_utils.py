@@ -30,6 +30,8 @@ async def copy_and_configure_frontend(obj, build_name):
         shutil.rmtree(frontend_dst)
     shutil.copytree(frontend_src, frontend_dst)
 
+    print("✅ Frontend copiato nella cartella di build")
+
 def get_local_ip():
     """Restituisce l'indirizzo IPv4 locale del dispositivo (non localhost)."""
     try:
@@ -96,8 +98,8 @@ def copy_documentation_to_build(obj):
     """Copia README.md nella cartella di build"""
     print("Copia di README.md nella cartella di build...")
     
-    build_doc_src = obj.project_root / "Docs/README.md"
-    build_doc_dst = obj.build_dir / "README.md"
+    build_doc_src = obj.project_root / "Docs/Documentazione.md"
+    build_doc_dst = obj.build_dir / "Documentazione.md"
     
     # Legge il file README.md originale
     with open(build_doc_src, 'r', encoding='utf-8') as f:
@@ -156,31 +158,6 @@ def default_config():
         }
     }
 
-async def build_backend_for_target(self, target):
-        """Compila il backend per una specifica piattaforma"""
-        print(f"Compilazione del backend per {target['name']}...")
-        
-        backend_path = self.project_root / self.config['build']['backend_project']
-        build_output = self.app_dir
-
-        # Leggi la connection string dal file build.json
-        connection_string = self.config['server']['backend']['connection_string']
-        print(f"Connection string backend: {connection_string}")
-
-        cmd = [
-            'dotnet', 'publish', str(backend_path),
-            '-c', 'Release',
-            '-o', str(build_output),
-            '--self-contained', 'true',
-            '-r', target['runtime']
-        ]
-        
-        result = subprocess.run(cmd, check=True)
-        if result.returncode != 0:
-            raise Exception(f"La compilazione del backend per {target['name']} è fallita")
-        
-        return build_output
-
 # Update appsettings.json in BuildAndDistr
 async def update_appsettings(obj):
     f"""Aggiorna appsettings.json in {obj.app_dir} con i valori da build.json nella root"""
@@ -236,6 +213,8 @@ def create_build_and_distr_dir(obj):
     dist_dir = build_and_distr / obj.config['build']['output_dir']
     app_dir = build_dir / "App"
     script_dir = obj.project_root / "BuildScripts"
+
+    print("✅ Cartelle di build e distribuzione create")
     return build_dir, dist_dir, app_dir, script_dir
 
 async def update_host_ip(build_json_path):
@@ -281,6 +260,8 @@ async def build_backend_for_target(obj, target):
     if result.returncode != 0:
         raise Exception(f"La compilazione del backend per {target['name']} è fallita")
     
+    print(f"✅ Backend compilato per {target['name']} in {build_output}")
+    
     return build_output
 
 def create_launcher_script(obj):
@@ -318,7 +299,7 @@ if exist "App\\apiPB.exe" (
         with open(batch_file_path, 'w', encoding='utf-8') as f:
             f.write(batch_content)
         
-        print(f"Script batch creato con successo in: {batch_file_path}")
+        print(f"✅ Script batch creato con successo in: {batch_file_path}")
         return batch_file_path
         
     except Exception as e:

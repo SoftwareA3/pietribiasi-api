@@ -91,6 +91,7 @@ class AppBuilder:
                 print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
             
             print(f"🚀 Script terminato!")
+            input("Premi INVIO per uscire...")
             
         except Exception as e:
             print(f"❌ Build fallito: {e}")

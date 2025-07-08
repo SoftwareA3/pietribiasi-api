@@ -2,7 +2,15 @@ name: Build Python to EXE
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
+    paths:
+      - 'BuildScripts/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'BuildScripts/**'
+
+  workflow_dispatch:
 
 permissions:
   contents: write
