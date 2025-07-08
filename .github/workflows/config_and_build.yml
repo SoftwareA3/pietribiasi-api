@@ -26,6 +26,16 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+
+      - name: Publish ASP.NET Core Backend
+        run: |
+          New-Item -ItemType Directory -Path "${{ github.workspace }}/DistTmp" -Force
+          dotnet publish ./apiPB/apiPB.csproj --configuration Release --output ${{github.workspace}}/DistTmp --runtime win-x64 --self-contained true /p:UseAppHost=true
       
       - name: Install dependencies
         run: |

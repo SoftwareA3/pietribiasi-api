@@ -13,23 +13,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Build sh in Docker with old GLIBC (Debian Bullseye)
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
         run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            -w /app/BuildScripts \
-            --user $(id -u):$(id -g) \
-            python:3.10-bullseye bash -c "\
-              python -m pip install --user pyinstaller && \
-              ~/.local/bin/pyinstaller --onefile \
-                --add-data 'script_utils.py:.' \
-                --add-data 'build.json:.' \
-                build.py"
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+
+      - name: Build sh
+        run: |
+          # Cambia directory per risolvere i problemi di percorsi relativi
+          cd BuildScripts
+          # Rimuovi --noconsole e aggiungi --add-data per includere script_utils
+          pyinstaller --onefile --add-data "script_utils.py:." --add-data "build.json:." build.py
 
       - name: Move sh to root and cleanup
         run: |
           rm -f build.sh || true
+          rm -f build.exe || true
           mv BuildScripts/dist/build build.sh
           chmod +x build.sh
           rm -rf BuildScripts/dist

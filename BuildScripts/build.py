@@ -65,7 +65,12 @@ class AppBuilder:
                 return False
 
             if all([backend_host, backend_port]):
-                await script_utils.build_backend_for_target(self, target)
+                #await script_utils.build_backend_for_target(self, target)
+                created = await script_utils.copy_backend_dist(self, "build")
+                if created == True:
+                    dist_tmp = self.project_root / "DistTmp"
+                    if dist_tmp.exists() and dist_tmp.is_dir():
+                        shutil.rmtree(dist_tmp)
                 await script_utils.copy_and_configure_frontend(self, "build")
             else:
                 print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante in build.json")
