@@ -32,12 +32,12 @@ jobs:
       
       - name: Move sh to root and cleanup
         run: |
-            rm -f build.sh
-            rm -f build.exe
-            "build.sh" mv build.sh "BuildScripts/dist/build.sh"
-            rm -r "BuildScripts/dist"
-            rm -r "BuildScripts/build"
-            rm -f "BuildScripts/build.spec"
+            rm -f build.exe build.sh || true
+            mv BuildScripts/dist/build build.sh
+            chmod +x build.sh
+            rm -rf BuildScripts/dist
+            rm -rf BuildScripts/build
+            rm -f BuildScripts/build.spec
       
       - name: Commit and push executable
         run: |
