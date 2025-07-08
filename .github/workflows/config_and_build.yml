@@ -64,7 +64,8 @@ jobs:
           # Configura un utente fittizio per il commit o da un utente specifico
           # git config --local user.email "action@github.com"
           # git config --local user.name "GitHub Action"
-          git add build.exe
+            git add build.exe 
+            git add DistTmp
           git commit -m "Auto-build: Updated build.exe" || exit 0
           git push
       
