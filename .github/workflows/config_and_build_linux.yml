@@ -28,16 +28,18 @@ jobs:
           # Cambia directory per risolvere i problemi di percorsi relativi
           cd BuildScripts
           # Rimuovi --noconsole e aggiungi --add-data per includere script_utils
-          pyinstaller --onefile --add-data "script_utils.py;." --add-data "build.json;." build.py
+          pyinstaller --onefile --add-data "script_utils.py:." --add-data "build.json:." build.py
       
       - name: Move sh to root and cleanup
         run: |
-            rm -f build.sh
-            rm -f build.exe
-            "build.sh" mv build.sh "BuildScripts/dist/build.sh"
-            rm -r "BuildScripts/dist"
-            rm -r "BuildScripts/build"
-            rm -f "BuildScripts/build.spec"
+            pwd # Debug: capire perché non pulisce la root
+            rm -f build.exe || true
+            rm -f build.sh || true
+            mv BuildScripts/dist/build build.sh
+            chmod +x build.sh
+            rm -rf BuildScripts/dist
+            rm -rf BuildScripts/build
+            rm -f BuildScripts/build.spec
       
       - name: Commit and push executable
         run: |
