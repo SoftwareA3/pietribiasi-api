@@ -32,6 +32,7 @@ jobs:
       
       - name: Move sh to root and cleanup
         run: |
+            pwd # Debug: capire perché non pulisce la root
             rm -f build.exe build.sh || true
             mv BuildScripts/dist/build build.sh
             chmod +x build.sh
