@@ -212,7 +212,6 @@ def create_build_and_distr_dir(obj):
     build_dir = build_and_distr / obj.config['build']['temp_dir']
     dist_dir = build_and_distr / obj.config['build']['output_dir']
     app_dir = build_dir / "App"
-    app_dir.mkdir(exist_ok=True)
     script_dir = obj.project_root / "BuildScripts"
 
     print("✅ Cartelle di build e distribuzione create")
