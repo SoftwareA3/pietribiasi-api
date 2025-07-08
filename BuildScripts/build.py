@@ -81,7 +81,7 @@ class AppBuilder:
             script_utils.copy_documentation_to_build(self)
 
             # Crea uno script che raggiunga ed esegua il file 'apiPB.exe' nella cartella di build
-            script_utils.create_launcher_script(self)
+            script_utils.create_launcher_script(self, target)
 
             # Crea il file .zip per la distribuzione
             print(f"\n✅ Build completato con successo!")

@@ -264,15 +264,17 @@ async def build_backend_for_target(obj, target):
     
     return build_output
 
-def create_launcher_script(obj):
+def create_launcher_script(obj, target):
     """
-    Crea uno script batch che esegue apiPB.exe dalla cartella /App
+    Crea uno script in base al sistema: batch che esegue apiPB.exe dalla cartella /App,
+    o uno script shell che esegue apiPB dalla cartella /App.
     
     Args:
         obj: Oggetto che contiene l'attributo build_dir (percorso dove salvare lo script)
     """
     # Contenuto dello script batch
-    batch_content = '''@echo off
+    if target['name'] == "Windows":
+        script_content = '''@echo off
 echo Avvio di apiPB.exe...
 cd /d "%~dp0"
 if exist "App\\apiPB.exe" (
@@ -288,20 +290,47 @@ if exist "App\\apiPB.exe" (
 )
 '''
     
-    # Percorso completo del file batch
-    batch_file_path = os.path.join(obj.build_dir, "start.bat")
+        # Percorso completo del file batch
+        script_file_path = os.path.join(obj.build_dir, "start.bat")
+    
+    elif target['name'] == "Linux":
+        script_content = '''#!/bin/bash
+
+echo "Avvio di apiPB..."
+
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+if [ -f "App/apiPB" ]; then
+    echo "File apiPB trovato in App"
+    cd App
+    echo "Avvio di apiPB..."
+    # Execute the apiPB file
+    ./apiPB
+    echo "apiPB avviato con successo"
+else
+    echo "ERRORE: File apiPB non trovato nella cartella App"
+    read -p "Premi Invio per continuare..."
+fi
+'''
+        script_file_path = os.path.join(obj.build_dir, "start.sh")
+    
+    else:
+        print(f"❌ Target {target['name']} non supportato per la creazione dello script di avvio.")
+        return None
     
     try:
         # Crea la directory se non esiste
         os.makedirs(obj.build_dir, exist_ok=True)
         
         # Scrivi il file batch
-        with open(batch_file_path, 'w', encoding='utf-8') as f:
-            f.write(batch_content)
+        with open(script_file_path, 'w', encoding='utf-8') as f:
+            f.write(script_content)
         
-        print(f"✅ Script batch creato con successo in: {batch_file_path}")
-        return batch_file_path
+        print(f"✅ Script creato con successo in: {script_file_path}")
+        return script_file_path
         
     except Exception as e:
-        print(f"Errore durante la creazione dello script batch: {e}")
+        print(f"Errore durante la creazione dello script: {e}")
         return None
