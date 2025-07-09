@@ -35,7 +35,7 @@ class AppBuilder:
             self.config = script_utils.default_config()
             
         # Crea le directory di build e distribuzione
-        self.build_dir, self.app_dir, self.script_dir = script_utils.create_build_and_distr_dir(self)
+        self.build_dir, self.dist_dir, self.app_dir, self.script_dir = script_utils.create_build_and_distr_dir(self)
 
 
     async def build(self):
@@ -44,10 +44,10 @@ class AppBuilder:
         try:
             print(f"=== Build di {self.config['app']['name']} ===")
 
-            await script_utils.clean(self)
+            #await script_utils.clean(self)
 
             # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
-            #await script_utils.update_host_ip(self.config_path)
+            await script_utils.update_host_ip(self.config_path)
 
             # Carica la configurazione da build.jsonx
             with open(self.config_path, "r", encoding="utf-8") as f:
@@ -89,11 +89,11 @@ class AppBuilder:
             script_utils.create_launcher_script(self, target)
 
             # Crea il file .zip per la distribuzione
-            # print(f"\n✅ Build completato con successo!")
-            # if self.config['packaging'].get('create_portable', True):
-            #     zip_path = script_utils.create_zip_archive(self)
-            #     print(f"📦 Archivio creato in: {zip_path}")
-            #     print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
+            print(f"\n✅ Build completato con successo!")
+            if self.config['packaging'].get('create_portable', True):
+                zip_path = script_utils.create_zip_archive(self)
+                print(f"📦 Archivio creato in: {zip_path}")
+                print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
             
             print(f"🚀 Script terminato!")
             input("Premi INVIO per uscire...")

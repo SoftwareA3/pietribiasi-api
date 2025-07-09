@@ -12,11 +12,11 @@ async def clean(obj):
     print("Pulizia delle directory in corso...")
     if obj.build_dir.exists():
         shutil.rmtree(obj.build_dir)
-    # if obj.dist_dir.exists():
-    #     shutil.rmtree(obj.dist_dir)
+    if obj.dist_dir.exists():
+        shutil.rmtree(obj.dist_dir)
     
     obj.build_dir.mkdir(exist_ok=True)
-    #obj.dist_dir.mkdir(exist_ok=True)
+    obj.dist_dir.mkdir(exist_ok=True)
 
 async def copy_and_configure_frontend(obj, build_name):
     """Copia il frontend e configura l'URL dell'API in main.js"""
@@ -201,21 +201,19 @@ async def update_appsettings(obj):
             json.dump(appsettings, f, indent=2, ensure_ascii=False)
 
         print(f"✅ appsettings.json aggiornato in {appsettings_path}:")
-        print(f"   Backend: {config['server']['backend']['host']}:{config['server']['backend']['port']}")
-
     except Exception as e:
         print(f"❌ Errore durante l'aggiornamento di {appsettings_path}: {e}")
 
 def create_build_and_distr_dir(obj):
-    build_and_distr = obj.project_root
+    build_and_distr = obj.project_root / "BuildAndDistr"
     build_and_distr.mkdir(exist_ok=True)
     build_dir = build_and_distr / obj.config['build']['temp_dir']
-    #dist_dir = build_and_distr / obj.config['build']['output_dir']
+    dist_dir = build_and_distr / obj.config['build']['output_dir']
     app_dir = build_dir / "App"
     script_dir = obj.project_root / "BuildScripts"
 
     print("✅ Cartelle di build e distribuzione create")
-    return build_dir, app_dir, script_dir
+    return build_dir, dist_dir, app_dir, script_dir
 
 async def update_host_ip(build_json_path):
     """Aggiorna server.backend.host con l'IP locale."""
@@ -274,47 +272,16 @@ def create_launcher_script(obj, target):
     """
     # Contenuto dello script batch
     if target['name'] == "Windows":
-        script_content = '''@echo off
-echo Avvio di apiPB.exe...
-cd /d "%~dp0"
-if exist "App\\apiPB.exe" (
-    echo File apiPB.exe trovato in App
-    cd App
-    echo Avvio di apiPB.exe...
-    rem Esegui il file apiPB.exe
-    .\\apiPB.exe
-    echo apiPB.exe avviato con successo
-) else (
-    echo ERRORE: File apiPB.exe non trovato nella cartella App
-    pause
-)
-'''
-    
-        # Percorso completo del file batch
-        script_file_path = os.path.join(obj.build_dir, "start.bat")
+        target_executable = os.path.join("App", "apiPB.exe")
+        link_name = "start.exe"
+        link = os.symlink(target_executable, link_name)
+        link_path = os.path.join(obj.build_dir, link_name)
     
     elif target['name'] == "Linux":
-        script_content = '''#!/bin/bash
-
-echo "Avvio di apiPB..."
-
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-
-if [ -f "App/apiPB" ]; then
-    echo "File apiPB trovato in App"
-    cd App
-    echo "Avvio di apiPB..."
-    # Execute the apiPB file
-    ./apiPB
-    echo "apiPB avviato con successo"
-else
-    echo "ERRORE: File apiPB non trovato nella cartella App"
-    read -p "Premi Invio per continuare..."
-fi
-'''
-        script_file_path = os.path.join(obj.build_dir, "start.sh")
+        target_executable = os.path.join("App", "apiPB")
+        link_name = "start"
+        os.symlink(target_executable, link_name)
+        link_path = os.path.join(obj.build_dir, link_name)
     
     else:
         print(f"❌ Target {target['name']} non supportato per la creazione dello script di avvio.")
@@ -325,11 +292,11 @@ fi
         os.makedirs(obj.build_dir, exist_ok=True)
         
         # Scrivi il file batch
-        with open(script_file_path, 'w', encoding='utf-8') as f:
-            f.write(script_content)
+        with open(link_path, 'w', encoding='utf-8') as f:
+            f.write(link)
         
-        print(f"✅ Script creato con successo in: {script_file_path}")
-        return script_file_path
+        print(f"✅ Script creato con successo in: {link_path}")
+        return link_path
         
     except Exception as e:
         print(f"Errore durante la creazione dello script: {e}")
