@@ -57,7 +57,7 @@ jobs:
       
       - name: Execute build.exe
         run: |
-          .\build.exe || exit 1
+          .\build.exe 
 
       - name: Clean up DistTmp and Exe
         run: |
