@@ -60,6 +60,7 @@ jobs:
           env:
           PYTHONIOENCODING: utf-8 
           LANG: C.UTF-8
+          run |
           cd BuildScripts
           python build.py
 
