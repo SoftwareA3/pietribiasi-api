@@ -32,6 +32,10 @@ jobs:
         with:
           dotnet-version: '9.0'
 
+      - name: Cleanup previous distribution directory
+        run: |
+          Remove-Item -Path "${{ github.workspace }}/BuildAndDistr" -Recurse -Force -ErrorAction SilentlyContinue
+
       - name: Setup Distribution Direcotry
         run: |
           New-Item -ItemType Directory -Path "${{ github.workspace }}/BuildAndDistr" -Force
