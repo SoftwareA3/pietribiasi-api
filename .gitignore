@@ -17,10 +17,6 @@
 /.vs
 /.venv
 
-# Ignora le cartelle realizzate con lo script di build
-/BuildAndDistr
-Scripts
-
 # Ignora pycaches e file temporanei
 __pycache__
 
