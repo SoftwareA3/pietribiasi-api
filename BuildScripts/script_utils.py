@@ -334,3 +334,18 @@ fi
     except Exception as e:
         print(f"Errore durante la creazione dello script: {e}")
         return None
+    
+async def copy_backend_dist(obj, build_name):
+    """Copia il backend compilato nella cartella di build"""
+    print("Copia del backend compilato nella cartella di build...")
+    
+    backend_src = obj.project_root / "DistTmp"
+    backend_dst = obj.app_dir
+    
+    if backend_dst.exists():
+        shutil.rmtree(backend_dst)
+    
+    shutil.copytree(backend_src, backend_dst)
+    
+    print("✅ Backend copiato nella cartella di build")
+    return True
