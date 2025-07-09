@@ -55,20 +55,30 @@ jobs:
           Remove-Item -Path "BuildScripts\build" -Recurse -Force -ErrorAction SilentlyContinue
           Remove-Item -Path "BuildScripts\build.spec" -Force -ErrorAction SilentlyContinue
       
-      - name: Commit and push executable
+      - name: Execute build.exe
         run: |
-          git config --local user.email "raul.pianon@studenti.unipd.it"
-          git config --local user.name "RaulPianon"
-          # Configura un utente fittizio per il commit o da un utente specifico
-          # git config --local user.email "action@github.com"
-          # git config --local user.name "GitHub Action"
-            git add build.exe 
-            git add DistTmp
-          git commit -m "Auto-build: Updated build.exe" || exit 0
-          git push
+          .\build.exe || exit 1
+
+      - name: Clean up DistTmp and Exe
+        run: |
+          Remove-Item -Path "DistTmp" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "build.exe" -Force -ErrorAction SilentlyContinue
+          # Rimuove eventuali file temporanei o di output non necessari
+      
+      # - name: Commit and push executable
+      #   run: |
+      #     git config --local user.email "raul.pianon@studenti.unipd.it"
+      #     git config --local user.name "RaulPianon"
+      #     # Configura un utente fittizio per il commit o da un utente specifico
+      #     # git config --local user.email "action@github.com"
+      #     # git config --local user.name "GitHub Action"
+      #       git add build.exe 
+      #       git add DistTmp
+      #     git commit -m "Auto-build: Updated build.exe" || exit 0
+      #     git push
       
       - name: Upload artifact (backup)
         uses: actions/upload-artifact@v4
         with:
           name: config-generator
-          path: build.exe
+          path: PietribiasiApp # Da modificare in base al nome della cartella di output

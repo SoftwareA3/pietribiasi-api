@@ -20,7 +20,6 @@
 # Ignora le cartelle realizzate con lo script di build
 /BuildAndDistr
 Scripts
-DistTmp
 
 # Ignora pycaches e file temporanei
 __pycache__

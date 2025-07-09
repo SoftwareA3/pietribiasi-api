@@ -12,11 +12,11 @@ async def clean(obj):
     print("Pulizia delle directory in corso...")
     if obj.build_dir.exists():
         shutil.rmtree(obj.build_dir)
-    if obj.dist_dir.exists():
-        shutil.rmtree(obj.dist_dir)
+    # if obj.dist_dir.exists():
+    #     shutil.rmtree(obj.dist_dir)
     
     obj.build_dir.mkdir(exist_ok=True)
-    obj.dist_dir.mkdir(exist_ok=True)
+    #obj.dist_dir.mkdir(exist_ok=True)
 
 async def copy_and_configure_frontend(obj, build_name):
     """Copia il frontend e configura l'URL dell'API in main.js"""
@@ -207,15 +207,15 @@ async def update_appsettings(obj):
         print(f"❌ Errore durante l'aggiornamento di {appsettings_path}: {e}")
 
 def create_build_and_distr_dir(obj):
-    build_and_distr = obj.project_root / "BuildAndDistr"
+    build_and_distr = obj.project_root
     build_and_distr.mkdir(exist_ok=True)
     build_dir = build_and_distr / obj.config['build']['temp_dir']
-    dist_dir = build_and_distr / obj.config['build']['output_dir']
+    #dist_dir = build_and_distr / obj.config['build']['output_dir']
     app_dir = build_dir / "App"
     script_dir = obj.project_root / "BuildScripts"
 
     print("✅ Cartelle di build e distribuzione create")
-    return build_dir, dist_dir, app_dir, script_dir
+    return build_dir, app_dir, script_dir
 
 async def update_host_ip(build_json_path):
     """Aggiorna server.backend.host con l'IP locale."""
