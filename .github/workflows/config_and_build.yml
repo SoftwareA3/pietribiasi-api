@@ -57,6 +57,9 @@ jobs:
       
       - name: Execute build.py
         run: |
+          env:
+          PYTHONIOENCODING: utf-8 
+          LANG: C.UTF-8
           cd BuildScripts
           python build.py
 
