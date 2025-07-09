@@ -56,11 +56,10 @@ jobs:
       #     Remove-Item -Path "BuildScripts\build.spec" -Force -ErrorAction SilentlyContinue
       
       - name: Execute build.py
-        run: |
-          env:
+        env:
           PYTHONIOENCODING: utf-8 
           LANG: C.UTF-8
-          run |
+        run: |
           cd BuildScripts
           python build.py
 
