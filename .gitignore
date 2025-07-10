@@ -24,5 +24,8 @@ __pycache__
 /TestApi.Tests/bin
 /TestApi.Tests/obj
 
+# Ignora i file di distribuzione e di build
+/App
+
 # Ignora momentaneamente il progetto con i test di unità
 # /TestApi.Tests
