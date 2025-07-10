@@ -41,6 +41,7 @@ jobs:
       - name: Copy Frontend files in wwwroot
         run: |
           if (Test-Path "${{ github.workspace }}/App/Backend") {
+            New-Item -ItemType Directory -Path "${{ github.workspace }}/App/Backend/wwwroot" -Force
             Copy-Item -Path "${{ github.workspace }}/Frontend/*" -Destination "${{ github.workspace }}/App/Backend/wwwroot" -Recurse -Force
           } else {
             Write-Host "Error: Backend directory not found."
