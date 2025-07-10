@@ -6,6 +6,7 @@ import asyncio
 import zipfile
 import os
 import subprocess
+from datetime import datetime
 
 async def clean(obj):
     """Pulisce le directory di build e di distribuzione"""
@@ -57,15 +58,17 @@ def get_local_ip():
 
 def create_zip_archive(obj):
     """Crea l'archivio ZIP finale"""
-    print("Creazione dell'archivio ZIP...")
-    zip_path = obj.dist_dir / f"{obj.config['app']['name']}_v{obj.config['app']['version']}.zip"
-    
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-        for root, _, files in os.walk(obj.build_dir):
+    print("Creazione del file ZIP di distribuzione...")
+    zip_filename = f"{obj.config['app']['name']}_build_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+    zip_path = obj.project_root / zip_filename
+    if not zip_path.parent.exists():
+        zip_path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(obj.app_dir):
             for file in files:
                 file_path = Path(root) / file
-                arc_path = file_path.relative_to(obj.build_dir)
-                zf.write(file_path, arc_path)
+                zipf.write(file_path, file_path.relative_to(obj.app_dir))
+    print(f"✅ File ZIP di distribuzione creato: {zip_path}")
 
     return zip_path
 
@@ -94,23 +97,31 @@ def copy_build_json_to_build(obj, filter=True):
     print("✅ build.json copiato nella cartella di build")
     return True
 
+def copy_backend_to_build(obj):
+    print("Copia il backend compilato nella directory di build")
+    backend_src = obj.project_root / "Backend"
+    backend_dst = obj.app_dir / "Application"
+
+    # Legge il contenuto del backend
+    if backend_dst.exists():
+        shutil.rmtree(backend_dst)
+    shutil.copytree(backend_src, backend_dst)
+
+    print("✅ Backend copiato nella cartella di build")
+
 def copy_documentation_to_build(obj):
     """Copia README.md nella cartella di build"""
-    print("Copia di README.md nella cartella di build...")
+    print("Copia della documentazione nella directory di build...")
+    docs_src = obj.project_root / "Documentazione.md"
+    docs_dst = obj.app_dir / "Documentazione.md"
+
+    with open(docs_src, 'r', encoding='utf-8') as f:
+        docs_content = f.read()
     
-    build_doc_src = obj.project_root / "Docs/Documentazione.md"
-    build_doc_dst = obj.build_dir / "Documentazione.md"
-    
-    # Legge il file README.md originale
-    with open(build_doc_src, 'r', encoding='utf-8') as f:
-        documentation = f.read()
-    
-    # Scrive il file README.md nella cartella di build
-    with open(build_doc_dst, 'w', encoding='utf-8') as f:
-        f.write(documentation)
+    with open(docs_dst, 'w', encoding='utf-8') as f:
+        f.write(docs_content)
     
     print("✅ Documentazione copiata nella cartella di build")
-    return True
         
 def default_config():
     """Configurazione di default"""
@@ -161,19 +172,7 @@ def default_config():
 # Update appsettings.json in BuildAndDistr
 async def update_appsettings(obj):
     f"""Aggiorna appsettings.json in {obj.app_dir} con i valori da build.json nella root"""
-    print("Aggiornamento di appsettings.json...")
-
-    # Carica la configurazione da build.json nella root
-    build_json_path = obj.script_dir / "build.json"
-    if not build_json_path.exists():
-        print(f"ATTENZIONE: {build_json_path} non trovato.")
-        return
-
-    with open(build_json_path, 'r', encoding='utf-8') as f:
-        config = json.load(f)
-
-    # Percorsi dei file da aggiornare
-    appsettings_path = obj.app_dir / "appsettings.json"
+    appsettings_path = obj.app_dir / "Application" / "appsettings.json"
 
     if not appsettings_path.exists():
         print(f"ATTENZIONE: {appsettings_path} non trovato.")
@@ -188,12 +187,12 @@ async def update_appsettings(obj):
             appsettings['Server'] = {}
 
         appsettings['Server']['Backend'] = {
-            "Host": config['server']['backend']['host'],
-            "Port": config['server']['backend']['port']
+            "Host": obj.config['server']['backend']['host'],
+            "Port": obj.config['server']['backend']['port']
         }
 
         appsettings['ConnectionStrings'] = {
-            "LocalA3Db": config['server']['backend'].get('connection_string', '')
+            "LocalA3Db": obj.config['server']['backend'].get('connection_string', '')
         }
 
         # Scrivi il file aggiornato
@@ -263,56 +262,53 @@ async def build_backend_for_target(obj, target):
     return build_output
 
 def create_launcher_script(obj, target):
-    """
-    Crea uno script in base al sistema: batch che esegue apiPB.exe dalla cartella /App,
-    o uno script shell che esegue apiPB dalla cartella /App.
-    
-    Args:
-        obj: Oggetto che contiene l'attributo build_dir (percorso dove salvare lo script)
-    """
-    # Contenuto dello script batch
     if target['name'] == "Windows":
-        target_executable = os.path.join("App", "apiPB.exe")
-        link_name = "start.exe"
-        link = os.symlink(target_executable, link_name)
-        link_path = os.path.join(obj.build_dir, link_name)
-    
-    elif target['name'] == "Linux":
-        target_executable = os.path.join("App", "apiPB")
-        link_name = "start"
-        os.symlink(target_executable, link_name)
-        link_path = os.path.join(obj.build_dir, link_name)
-    
+        script_content = '''@echo off
+    echo Avvio di apiPB.exe...
+    cd /d "%~dp0"
+    if exist "Application\\apiPB.exe" (
+        echo File apiPB.exe trovato in Application
+        cd Application
+        echo Avvio di apiPB.exe...
+        rem Esegui il file apiPB.exe
+        .\\apiPB.exe
+        echo apiPB.exe avviato con successo
+    ) else (
+        echo ERRORE: File apiPB.exe non trovato nella cartella App
+        pause
+    )
+    '''
+
+        # Percorso completo del file batch
+        script_file_path = os.path.join(obj.app_dir, "start.bat")
+
     else:
         print(f"❌ Target {target['name']} non supportato per la creazione dello script di avvio.")
         return None
     
     try:
-        # Crea la directory se non esiste
-        os.makedirs(obj.build_dir, exist_ok=True)
         
         # Scrivi il file batch
-        with open(link_path, 'w', encoding='utf-8') as f:
-            f.write(link)
+        with open(script_file_path, 'w', encoding='utf-8') as f:
+            f.write(script_content)
         
-        print(f"✅ Script creato con successo in: {link_path}")
-        return link_path
+        print(f"✅ Script creato con successo in: {script_file_path}")
         
     except Exception as e:
         print(f"Errore durante la creazione dello script: {e}")
         return None
+        
+# async def copy_backend_dist(obj, build_name):
+#     """Copia il backend compilato nella cartella di build"""
+#     print("Copia del backend compilato nella cartella di build...")
     
-async def copy_backend_dist(obj, build_name):
-    """Copia il backend compilato nella cartella di build"""
-    print("Copia del backend compilato nella cartella di build...")
+#     backend_src = obj.project_root / "DistTmp"
+#     backend_dst = obj.app_dir
     
-    backend_src = obj.project_root / "DistTmp"
-    backend_dst = obj.app_dir
+#     if backend_dst.exists():
+#         shutil.rmtree(backend_dst)
     
-    if backend_dst.exists():
-        shutil.rmtree(backend_dst)
+#     shutil.copytree(backend_src, backend_dst)
     
-    shutil.copytree(backend_src, backend_dst)
-    
-    print("✅ Backend copiato nella cartella di build")
-    return True
+#     print("✅ Backend copiato nella cartella di build")
+#     return True
