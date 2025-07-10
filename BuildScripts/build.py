@@ -17,14 +17,16 @@ import sys
 class AppBuilder:
     """Classe per la costruzione dell'applicazione PietriBiasi"""
     # Inizializza il percorso del progetto e carica la configurazione
-    def __init__(self, config_path="BuildScripts/build.json"):
+    def __init__(self, config_path="build.json"):
         
         if getattr(sys, 'frozen', False):
             self.project_root = Path(sys.executable).parent
             self.config_path = config_path
+            self.app_dir = self.project_root / "PietribiasiApp"
         else:
             self.project_root = Path(__file__).parent.parent 
-            self.config_path = self.project_root / config_path
+            self.config_path = self.project_root / "BuildScripts" / config_path
+            self.app_dir = self.project_root / "App" / "PietribiasiApp"
         print(f"Root del progetto: {self.project_root}")
         
         # Carica la configurazione
@@ -33,26 +35,19 @@ class AppBuilder:
                 self.config = json.load(f)
         else:
             self.config = script_utils.default_config()
-            
-        # Crea le directory di build e distribuzione
-        self.build_dir, self.dist_dir, self.app_dir, self.script_dir = script_utils.create_build_and_distr_dir(self)
-
 
     async def build(self):
-        """Esegue l'intero processo di build"""
-
         try:
             print(f"=== Build di {self.config['app']['name']} ===")
-
-            #await script_utils.clean(self)
-
-            # Inserisce l'IP locale per il Backend nel file build.json se configurato per farlo
+            if not Path(self.app_dir).exists():
+                self.app_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Recupera l'IP locale per il Backend se il file di configurazione lo richiede
             await script_utils.update_host_ip(self.config_path)
 
-            # Carica la configurazione da build.jsonx
+            # Carica la configurazione da build.json
             with open(self.config_path, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
-            
             target = self.config['targets'][0] 
             
             # Controlla che i valori necessari siano presenti in build.json
@@ -65,43 +60,29 @@ class AppBuilder:
                 return False
 
             if all([backend_host, backend_port]):
-                #await script_utils.build_backend_for_target(self, target)
-                created = await script_utils.copy_backend_dist(self, "build")
-                if created == True:
-                    dist_tmp = self.project_root / "DistTmp"
-                    if dist_tmp.exists() and dist_tmp.is_dir():
-                        shutil.rmtree(dist_tmp)
-                await script_utils.copy_and_configure_frontend(self, "build")
-            else:
-                print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante in build.json")
-                return False
+                script_utils.copy_backend_to_build(self)
             
-            # Aggiorna il file di configurazione nella cartella di build
+            # Configura il backend con i valori di configurazione
+            print("Aggiornamento di appsettings.json...")
+
+            # Percorsi dei file da aggiornare
             await script_utils.update_appsettings(self)
-
-            # Copia il file build.json nella cartella (al momento senza filtrarlo)
-            #script_utils.copy_build_json_to_build(self, True)
-
-            # Copia parte della documentazione nella cartella di build
+            
+            # Copia la documentazione nella directory di build
             script_utils.copy_documentation_to_build(self)
 
-            # Crea uno script che raggiunga ed esegua il file 'apiPB.exe' nella cartella di build
+            # Crea lo script di avvio per il target specificato
             script_utils.create_launcher_script(self, target)
+        
+            # Creazione del file ZIP di distribuzione
+            script_utils.create_zip_archive(self)
 
-            # Crea il file .zip per la distribuzione
-            print(f"\n✅ Build completato con successo!")
-            if self.config['packaging'].get('create_portable', True):
-                zip_path = script_utils.create_zip_archive(self)
-                print(f"📦 Archivio creato in: {zip_path}")
-                print(f"📁 Dimensione: {zip_path.stat().st_size / 1024 / 1024:.1f} MB")
-            
-            print(f"🚀 Script terminato!")
-            input("Premi INVIO per uscire...")
-            
         except Exception as e:
             print(f"❌ Build fallito: {e}")
             return False
         
+        print(f"✅ Build completata con successo in {self.app_dir}")
+        input("Premi Invio per continuare...")
         return True
 
 if __name__ == "__main__":
