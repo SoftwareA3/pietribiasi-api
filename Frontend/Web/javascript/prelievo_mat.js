@@ -21,10 +21,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     const closeSearchButton = document.getElementById("close-search-overlay");
     const cancelSearchButton = document.getElementById("cancel-search");
     const selectSearchResultButton = document.getElementById("select-search-result");
+    const searchMaterialsOverlay = document.getElementById("search-materials-overlay");
+    const closeMaterialSearchButton = document.getElementById("close-search-overlay-materials");
+    const cancelMaterialSearchButton = document.getElementById("cancel-search-materials");
+    const selectMaterialSearchResultButton = document.getElementById("select-search-result-materials");
     const searchResultsBody = document.getElementById("search-results-body");
+    const searchResultsMaterialsBody = document.getElementById("search-results-materials-body");
     const quantitaInput = document.getElementById("prel-mat-quantita");
     const saveButton = document.getElementById("inv-save");
     const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+    const eliminaArticoloButton = document.getElementById("prel-mat-elimina-articolo");
+    const aggiungiArticoloButton = document.getElementById("prel-mat-aggiungi-articolo");
     // Aggiunto quando viene salvata la lista viene
     const noContent = document.getElementById("nocontent");
     const errorQty = document.getElementById("error-quantity");
@@ -36,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     let barcodeList = [];
     let searchResults = [];
     let selectedSearchRow = null;
+    let selectedMaterialSearchRow = null;
     let dataResultList = [];
 
     let isFillingFromOverlay = false;
@@ -201,6 +209,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
+            aggiungiArticoloButton.disabled = false;
         }
 
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -427,6 +436,103 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
+    // Event listener per il pulsante Cerca - Ora apre la tabella overlay
+    aggiungiArticoloButton.addEventListener("click", async function() {
+        var itemList = await fetchAllGiacenze(); 
+        let searchResults = [];
+
+        console.log("Lista di articoli:", itemList);
+        
+        for(const item of itemList) {
+            searchResults.push(({
+                item: item.item || '',
+                description: item.description || '',
+                barcode: item.barCode || '',
+                bookInv: item.bookInv || '',
+                uoM: item.uoM || '',
+            }));
+
+            console.log("Articolo inserito:", item);
+        }
+        
+        populateMaterialSearchResults(searchResults);
+        searchMaterialsOverlay.classList.add("active");
+    });
+
+    // Event listeners per i pulsanti di chiusura dell'overlay
+    closeMaterialSearchButton.addEventListener("click", function() {
+        searchMaterialsOverlay.classList.remove("active");
+        selectedMaterialSearchRow = null;
+    });
+
+    cancelMaterialSearchButton.addEventListener("click", function() {
+        searchMaterialsOverlay.classList.remove("active");
+        selectedMaterialSearchRow = null;
+    });
+
+    // Event listener per il pulsante Seleziona
+    selectMaterialSearchResultButton.addEventListener("click", function() {
+        if (selectedMaterialSearchRow) {
+            console.log("Riga selezionata:", selectedMaterialSearchRow);
+
+            // Chiama l'API per aggiungere l'articolo a Mago
+            // Sostituisce il valore dell'articolo con il nuovo articolo aggiunto
+        }
+    });
+
+    function populateMaterialSearchResults(results) {
+        searchResultsMaterialsBody.innerHTML = "";
+        selectedMaterialSearchRow = null;
+
+        if (results.length === 0) {
+            const row = searchResultsMaterialsBody.insertRow();
+            const cell = row.insertCell();
+            cell.colSpan = 5;
+            cell.textContent = "Nessun risultato trovato";
+            return;
+        }
+
+        results.forEach((result, index) => {
+            const row = searchResultsMaterialsBody.insertRow();
+            row.dataset.index = index;
+
+            // Aggiunge celle con i dati
+            const cellItem = row.insertCell();
+            cellItem.textContent = result.item;
+
+            const cellDescription = row.insertCell();
+            cellDescription.textContent = result.description;
+
+            const cellBarcode = row.insertCell();
+            cellBarcode.textContent = result.barcode;
+
+            const cellBookInv = row.insertCell();
+            cellBookInv.textContent = result.bookInv;
+
+            const cellUoM = row.insertCell();
+            cellUoM.textContent = result.uoM;
+
+            // Event listener per la selezione della riga
+            row.addEventListener("click", function() {
+                // Rimuovi la selezione precedente
+                document.querySelectorAll("#search-results-materials-body tr.selected").forEach(tr => {
+                    tr.classList.remove("selected");
+                });
+                // Seleziona questa riga
+                row.classList.add("selected");
+                selectedMaterialSearchRow = results[index];
+            });
+
+            // Doppio click per selezionare e confermare
+            row.addEventListener("dblclick", function() {
+                selectedMaterialSearchRow = results[index];
+                selectMaterialSearchResultButton.click();
+            });
+
+        });
+    }
+
+
     // Funzione per popolare la tabella di risultati
     function populateSearchResults(results) {
         searchResultsBody.innerHTML = "";
@@ -646,6 +752,64 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
+    eliminaArticoloButton.addEventListener("click", async function() {
+        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+        const selectedOdp = findSelectedItem(odlInput.value, odpList);
+        const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
+        const selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
+
+        var workerId = "";
+        const puCookie = JSON.parse(getCookie("pu-User"));
+        if(puCookie) {
+            //console.log("cookie pu-User:", puCookie);
+            workerId = puCookie.workerId.toString();
+            console.log("L'operazione viene salvata con l'utente:", workerId);
+        }
+        else {
+            // Recupera il workerid dai cookies
+            const cookie = JSON.parse(getCookie("userInfo"));
+            console.log(typeof(cookie));
+            //console.log("Cookie:", cookie);
+            workerId = cookie.workerId.toString();
+            console.log("Worker ID:", workerId);
+        }
+
+        if (!workerId || workerId === "") {
+            console.error("Worker ID non trovato nei cookie.");
+            return;
+        }
+
+        if(parseFloat(quantitaInput.value) <= 0) {
+            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+            if (result) {
+                const data = 
+                {
+                    position: result.position,
+                    moid: result.moid,
+                }
+                    
+                const response = await deleteMoComponent(data, workerId);
+                if (response.ok) {
+                    console.log("Elemento rimosso con successo");
+                    alert("Elemento rimosso con successo");
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
+                else {
+                    console.error("Errore durante la rimozione dell'elemento:", response.status, response.statusText);
+                    alert("Errore durante la rimozione dell'elemento: " + response.statusText);
+                }
+            } else {
+                alert("Errore: impossibile rimuovere l'elemento. Dati mancanti o non validi.");
+            }
+        } else {
+            alert("Per eliminare un articolo, la quantità deve essere zero o inferiore a zero.");
+        }
+    });
+
+
     // Funzione per trovare l'elemento selezionato in base al valore dell'input
     // Si può esportare
     function findSelectedItem(inputValue, list) {
@@ -804,6 +968,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - UoM: ${allDataResult[0].prelUoM}`;
                 }
 
+                if (parseFloat(quantitaInput.value) <= 0) {
+                    eliminaArticoloButton.disabled = false;
+                }
+                
                 // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
                 if (parseFloat(quantitaInput.value) < 0) {
                     errorQty.style.display = "block";
@@ -976,6 +1144,51 @@ async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     }
     catch (error) {
         console.error("Errore durante la fetch:", error);
+    }
+}
+
+async function deleteMoComponent(data, workerId) {
+    try {
+        const request = await fetchWithAuth(getApiUrl("api/mago_api/delete_mo_component"), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "WorkerIdSyncRequestDto" : {"workerId": workerId},
+                "Request": data
+            }),
+        });
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return false;
+        }
+        const response = await request.json();
+        console.log("Risposta dalla cancellazione:", response);
+        return response.success;
+    } catch (error) {
+        console.error("Errore durante la cancellazione:", error);
+        return false;
+    }
+}
+
+async function fetchAllGiacenze() {
+    try {
+        const request = await fetchWithAuth(getApiUrl("api/giacenze/get_all"), {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return [];
+        }
+        const giacenze = await request.json();
+        return giacenze;
+    } catch (error) {
+        console.error("Errore durante la fetch delle giacenze:", error);
+        return [];
     }
 }
 

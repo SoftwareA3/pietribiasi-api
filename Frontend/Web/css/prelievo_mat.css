@@ -33,6 +33,33 @@
     margin-top: var(--spacing-2);
 }
 
+#prel-mat-elimina-articolo:disabled { 
+    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-600) 100%);
+    cursor: not-allowed;
+}
+
+#prel-mat-elimina-articolo:disabled, #prel-mat-elimina-articolo:disabled:hover,
+#prel-mat-aggiungi-articolo:disabled, #prel-mat-aggiungi-articolo:disabled:hover,
+#prel-mat-elimina-articolo:disabled > i, #prel-mat-elimina-articolo:disabled:hover > i:hover,
+#prel-mat-aggiungi-articolo:disabled > i, #prel-mat-aggiungi-articolo:disabled:hover > i:hover { 
+    cursor: not-allowed;
+}
+
+#prel-mat-elimina-articolo:disabled:hover { 
+    background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
+    cursor: not-allowed;
+}
+
+#prel-mat-aggiungi-articolo:disabled { 
+    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-600) 100%);
+    cursor: not-allowed;
+}
+
+#prel-mat-aggiungi-articolo:disabled:hover { 
+    background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
+    cursor: not-allowed;
+}
+
 /* Evidenziazione tipo movimento */
 form p strong {
     display: inline-block;
