@@ -310,6 +310,10 @@ fi
         # Scrivi il file batch
         with open(script_file_path, 'w', encoding='utf-8') as f:
             f.write(script_content)
+
+        if target['name'] == "Linux":
+            # Rendi il file eseguibile su Linux
+            os.chmod(script_file_path, 0o755)
         
         print(f"✅ Script creato con successo in: {script_file_path}")
         
