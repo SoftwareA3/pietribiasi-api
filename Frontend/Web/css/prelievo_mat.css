@@ -45,6 +45,15 @@
     cursor: not-allowed;
 }
 
+.search-input-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
 #prel-mat-elimina-articolo:disabled:hover { 
     background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
     cursor: not-allowed;

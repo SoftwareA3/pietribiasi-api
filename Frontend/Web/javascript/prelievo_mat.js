@@ -7,6 +7,8 @@ let globalAllData = null;
 
 document.addEventListener("DOMContentLoaded", async function () {
     // Recupera elementi DOM
+
+    // Input e liste di autocompletamento
     const commessaInput = document.getElementById("prel-mat-commessa");
     const commessaAutocompleteList = document.getElementById("prel-mat-commessa-autocomplete-list");
     const lavorazioneInput = document.getElementById("prel-mat-lavorazione");
@@ -15,23 +17,33 @@ document.addEventListener("DOMContentLoaded", async function () {
     const odlAutocompleteList = document.getElementById("prel-mat-odp-autocomplete-list");
     const barcodeInput = document.getElementById("prel-mat-barcode");
     const barcodeAutocompleteList = document.getElementById("prel-mat-barcode-autocomplete-list");
-    const addButton = document.getElementById("inv-add-list");
+    const quantitaInput = document.getElementById("prel-mat-quantita");
+    
+    // Tabella di ricerca commesse
     const cercaButton = document.getElementById("prel-mat-cerca");
     const searchOverlay = document.getElementById("search-overlay");
     const closeSearchButton = document.getElementById("close-search-overlay");
     const cancelSearchButton = document.getElementById("cancel-search");
     const selectSearchResultButton = document.getElementById("select-search-result");
+    const searchResultsBody = document.getElementById("search-results-body");
+    
+    // Tabella di ricerca materiali
     const searchMaterialsOverlay = document.getElementById("search-materials-overlay");
     const closeMaterialSearchButton = document.getElementById("close-search-overlay-materials");
     const cancelMaterialSearchButton = document.getElementById("cancel-search-materials");
     const selectMaterialSearchResultButton = document.getElementById("select-search-result-materials");
-    const searchResultsBody = document.getElementById("search-results-body");
+    const searchMaterialsInput = document.getElementById("search-materials-input");
+    const searchMaterialsButton = document.getElementById("search-materials-button");
+    const cancelSearchMaterialsInputButton = document.getElementById("cancel-search-materials-input");
     const searchResultsMaterialsBody = document.getElementById("search-results-materials-body");
-    const quantitaInput = document.getElementById("prel-mat-quantita");
+    
+    // Pulsanti
+    const addButton = document.getElementById("inv-add-list");
     const saveButton = document.getElementById("inv-save");
     const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
     const eliminaArticoloButton = document.getElementById("prel-mat-elimina-articolo");
     const aggiungiArticoloButton = document.getElementById("prel-mat-aggiungi-articolo");
+    
     // Aggiunto quando viene salvata la lista viene
     const noContent = document.getElementById("nocontent");
     const errorQty = document.getElementById("error-quantity");
@@ -44,6 +56,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     let searchResults = [];
     let selectedSearchRow = null;
     let selectedMaterialSearchRow = null;
+    let materialsSearchResults = [];
     let dataResultList = [];
 
     let isFillingFromOverlay = false;
@@ -438,25 +451,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener per il pulsante Cerca - Ora apre la tabella overlay
     aggiungiArticoloButton.addEventListener("click", async function() {
-        var itemList = await fetchAllGiacenze(); 
-        let searchResults = [];
+        materialsSearchResults = [];
+        await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
+    });
 
-        console.log("Lista di articoli:", itemList);
-        
-        for(const item of itemList) {
-            searchResults.push(({
-                item: item.item || '',
-                description: item.description || '',
-                barcode: item.barCode || '',
-                bookInv: item.bookInv || '',
-                uoM: item.uoM || '',
-            }));
-
-            console.log("Articolo inserito:", item);
+    searchMaterialsInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); 
+            searchMaterialsButton.click();
         }
-        
-        populateMaterialSearchResults(searchResults);
-        searchMaterialsOverlay.classList.add("active");
+    });
+
+    searchMaterialsButton.addEventListener("click", async function() {
+        const searchTerm = searchMaterialsInput.value.trim().toLowerCase();
+        var searchList = materialsSearchResults;
+        const filteredResults = searchList.filter(item =>
+            item.display.toLowerCase().includes(searchTerm) 
+        );
+        populateMaterialSearchResults(filteredResults);
+    });
+
+    cancelSearchMaterialsInputButton.addEventListener("click", async function() {
+        searchMaterialsInput.value = "";
+        materialsSearchResults = [];
+        await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
     });
 
     // Event listeners per i pulsanti di chiusura dell'overlay
@@ -990,6 +1008,31 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("Errore nel caricamento dei dati:", error);
             return null;
         }
+    }
+
+    async function defaultTableContent(searchMaterialsOverlay, materialsSearchResults) {
+        document.body.classList.add("loading-cursor");
+
+        var itemList = await fetchAllGiacenze(); 
+
+        console.log("Lista di articoli:", itemList);
+        
+        for(const item of itemList) {
+            materialsSearchResults.push(({
+                item: item.item || '',
+                description: item.description || '',
+                barcode: item.barCode || '',
+                bookInv: item.bookInv || '',
+                uoM: item.uoM || '',
+                display: `${item.item} - ${item.barCode} - ${item.description}` 
+            }));
+        }
+        
+        populateMaterialSearchResults(materialsSearchResults);
+
+        document.body.classList.remove("loading-cursor");
+
+        searchMaterialsOverlay.classList.add("active");
     }
 });
 
