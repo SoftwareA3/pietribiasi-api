@@ -1,4 +1,4 @@
-name: Build Python to EXE
+name: Build Windows Distribution
 
 on:
   workflow_dispatch:
@@ -32,7 +32,6 @@ jobs:
       - name: Setup Distribution Directory
         run: |
           New-Item -ItemType Directory -Path "${{ github.workspace }}/App" -Force
-          New-Item -ItemType Directory -Path "${{ github.workspace }}/PietribiasiApp" -Force
 
       - name: Publish ASP.NET Core Backend
         run: |

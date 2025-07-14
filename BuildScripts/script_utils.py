@@ -282,6 +282,25 @@ def create_launcher_script(obj, target):
         # Percorso completo del file batch
         script_file_path = os.path.join(obj.app_dir, "start.bat")
 
+    if target['name'] == "Linux":
+        script_content = '''#!/bin/bash
+        #!/bin/bash
+
+echo "Avvio di apiPB.exe..."
+cd "$(dirname "$0")"
+if [ -f "Application/apiPB" ]; then
+    echo "File apiPB trovato in Application"
+    cd Application
+    chmod +x apiPB
+    echo "Avvio di apiPB..."
+    ./apiPB
+    echo "Script avviato con successo"
+else
+    echo "ERRORE: File apiPB non trovato nella cartella Application"
+    read -p "Premi Invio per continuare..."
+fi
+        '''
+
     else:
         print(f"❌ Target {target['name']} non supportato per la creazione dello script di avvio.")
         return None
