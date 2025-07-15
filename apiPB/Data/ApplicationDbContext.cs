@@ -259,6 +259,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Operation)
                 .HasMaxLength(21)
                 .IsUnicode(false);
+            entity.Property(e => e.PickingSpecificator)
+                .HasMaxLength(12)
+                .IsUnicode(false);
             entity.Property(e => e.Storage)
                 .HasMaxLength(4)
                 .IsUnicode(false);
