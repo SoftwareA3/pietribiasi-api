@@ -36,6 +36,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     const searchMaterialsButton = document.getElementById("search-materials-button");
     const cancelSearchMaterialsInputButton = document.getElementById("cancel-search-materials-input");
     const searchResultsMaterialsBody = document.getElementById("search-results-materials-body");
+
+    // Overlay per la conferma della quantità di materiale da aggiungere
+    const materialQtyOverlay = document.getElementById("material-qty-overlay");
+    const addMaterialQtyOverlayButton = document.getElementById("add-material-qty-button");
+    const cancelMaterialQtyOverlayButton = document.getElementById("cancel-material-qty-button");
     
     // Pulsanti
     const addButton = document.getElementById("inv-add-list");
@@ -57,7 +62,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     let selectedSearchRow = null;
     let selectedMaterialSearchRow = null;
     let materialsSearchResults = [];
+    let isMaterialResultsFetched = false;
     let dataResultList = [];
+    let addMaterialInformation = null;
 
     let isFillingFromOverlay = false;
 
@@ -90,6 +97,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneInput.disabled = true;
             barcodeInput.value = "";
             barcodeInput.disabled = true;
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true;
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -109,6 +118,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneInput.disabled = true;
             barcodeInput.value = "";
             barcodeInput.disabled = true;
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true;
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -135,7 +146,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.disabled = true;
             barcodeList = [];
             barcodeAutocompleteList.innerHTML = "";
-            barcodeAutocompleteList.classList.add("hidden"); 
+            barcodeAutocompleteList.classList.add("hidden");
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true; 
             quantitaInput.disabled = true; 
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -155,6 +168,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneInput.disabled = true; 
             barcodeInput.value = "";
             barcodeInput.disabled = true;
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true;
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -176,6 +191,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneList = [];
             barcodeInput.value = "";
             barcodeInput.disabled = true;
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true;
             barcodeList = [];
             quantitaInput.disabled = true;
             quantitaInput.value = "";
@@ -198,7 +215,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeInput.disabled = true;
             barcodeList = [];
             barcodeAutocompleteList.innerHTML = "";
-            barcodeAutocompleteList.classList.add("hidden"); 
+            barcodeAutocompleteList.classList.add("hidden");
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true; 
             quantitaInput.disabled = true; 
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -216,6 +235,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true;
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -240,6 +261,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (lavorazioneInput.value === "") {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
+            aggiungiArticoloButton.disabled = true;
+            eliminaArticoloButton.disabled = true;
             quantitaInput.value = "";
             barcodeList = [];
             barcodeAutocompleteList.innerHTML = ""; // Svuota la lista di autocompletamento
@@ -264,7 +287,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("ODP selezionato:", selectedOdp);
             console.log("Lavorazione selezionata:", selectedLavorazione);
             console.log("Barcode selezionato:", selectedBarcode);
-            await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+            await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.component, selectedBarcode.barCode);
             quantitaInput.disabled = false;
             quantitaInput.focus();
         }
@@ -284,14 +307,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             const selectedOdp = findSelectedItem(odlInput.value, odpList);
             const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
             const selectedBarcode = barcodeList.find(item => item.barCode === barcodeInput.value.toUpperCase());
+            const selectedComponent = barcodeList.find(item => item.component === barcodeInput.value.toUpperCase());
             barcodeInput.value = selectedBarcode ? selectedBarcode.display : "";
     
-            if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode) {
+            if (selectedCommessa && selectedOdp && selectedLavorazione && selectedComponent && selectedBarcode) {
                 console.log("Commessa selezionata:", selectedCommessa);
                 console.log("ODP selezionato:", selectedOdp);
                 console.log("Lavorazione selezionata:", selectedLavorazione);
                 console.log("Barcode selezionato:", selectedBarcode);
-                await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+                console.log("Componente selezionato:", selectedComponent);
+                await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedComponent.component, selectedBarcode.barCode);
                 barcodeAutocompleteList.classList.add("hidden");
                 quantitaInput.focus();
             }
@@ -451,8 +476,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener per il pulsante Cerca - Ora apre la tabella overlay
     aggiungiArticoloButton.addEventListener("click", async function() {
-        materialsSearchResults = [];
-        await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
+        searchMaterialsInput.value = "";
+        addMaterialInformation = null;
+        if(isMaterialResultsFetched == false) {
+            materialsSearchResults = [];
+            isMaterialResultsFetched = true;
+            await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
+        }
+        else {
+            document.body.classList.add("loading-cursor");
+
+            populateMaterialSearchResults(materialsSearchResults);
+
+            document.body.classList.remove("loading-cursor");
+
+            searchMaterialsOverlay.classList.add("active");
+        }
     });
 
     searchMaterialsInput.addEventListener("keydown", function(event) {
@@ -473,9 +512,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     cancelSearchMaterialsInputButton.addEventListener("click", async function() {
         searchMaterialsInput.value = "";
-        materialsSearchResults = [];
-        await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
+        addMaterialInformation = null;
+        if(isMaterialResultsFetched == false) {
+            materialsSearchResults = [];
+            isMaterialResultsFetched = true;
+            await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
+        }
+        else {
+            document.body.classList.add("loading-cursor");
+
+            populateMaterialSearchResults(materialsSearchResults);
+
+            document.body.classList.remove("loading-cursor");
+
+            searchMaterialsOverlay.classList.add("active");
+        }
     });
+
 
     // Event listeners per i pulsanti di chiusura dell'overlay
     closeMaterialSearchButton.addEventListener("click", function() {
@@ -489,14 +542,97 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     // Event listener per il pulsante Seleziona
-    selectMaterialSearchResultButton.addEventListener("click", function() {
+    selectMaterialSearchResultButton.addEventListener("click", async function() {
         if (selectedMaterialSearchRow) {
             console.log("Riga selezionata:", selectedMaterialSearchRow);
 
-            // Chiama l'API per aggiungere l'articolo a Mago
-            // Sostituisce il valore dell'articolo con il nuovo articolo aggiunto
+            // Recupera le informazioni dal form e aggiungi l'articolo prima di aprire l'overlay
+            const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
+            const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
+
+            var workerId = "";
+            const puCookie = JSON.parse(getCookie("pu-User"));
+            if(puCookie) {
+                //console.log("cookie pu-User:", puCookie);
+                workerId = puCookie.workerId.toString();
+            }
+            else {
+                // Recupera il workerid dai cookies
+                const cookie = JSON.parse(getCookie("userInfo"));
+                console.log(typeof(cookie));
+                //console.log("Cookie:", cookie);
+                workerId = cookie.workerId.toString();
+            }
+
+            if (!workerId || workerId === "") {
+                console.error("Worker ID non trovato nei cookie.");
+                return;
+            }
+
+            addMaterialInformation = {
+                job: selectedCommessa.job,
+                moId: selectedLavorazione.moId,
+                component: selectedMaterialSearchRow.item,
+                workerId: workerId,
+            }
+
+            if (addMaterialInformation) {
+                console.log("Risultato di fetchJobsByBarCode:", addMaterialInformation);
+            }
+
+            materialQtyOverlay.classList.add("active");
         }
     });
+
+    addMaterialQtyOverlayButton.addEventListener("click", async function() {
+        const materialQty = document.getElementById("material-qty-input").value;
+        if(materialQty && materialQty <= 0) {
+            alert("Inserire una quantità valida maggiore di zero.");
+            return;
+        }
+
+        if (materialQty && addMaterialInformation) {
+            addMaterialInformation.neededQty = parseFloat(materialQty);
+            console.log("Informazioni aggiuntive per il materiale:", addMaterialInformation);
+        }
+
+        // Chiamata a MagoApi per l'aggiunta del materiale
+        var response = await addMoComponent(addMaterialInformation);
+        if (response && response.success) {
+            console.log("Materiale aggiunto con successo:", response);
+            
+            alert("Materiale aggiunto con successo!");
+
+            // Chiude l'overlay
+            materialQtyOverlay.classList.remove("active");
+            selectedMaterialSearchRow = null;
+
+            // Se sì aggiorna, altrimenti ricarica solo la tabella
+
+            // Impone una scelta all'utente: aggiorna la tabella o ricarica la pagina
+            if (confirm("Vuoi aggiornare i dati? Premi OK per ricaricare la pagina, Annulla per tornare alla tabella.")) {
+                // Ricarica la pagina
+                window.location.reload();
+            } else {
+                // Aggiorna la tabella dei materiali
+                materialsSearchResults = [];
+                isMaterialResultsFetched = false;
+                await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
+            }
+        } else {
+            console.error("Errore nell'aggiunta del materiale:", response);
+            alert("Si è verificato un errore durante l'aggiunta del materiale. Riprova.");
+        }
+    
+    });
+
+
+    cancelMaterialQtyOverlayButton.addEventListener("click", function() {
+        materialQtyOverlay.classList.remove("active");
+        selectedMaterialSearchRow = null;
+    });
+
+    // Pulsante di conferma per la quantità necessaria con invio dei dati a Mago
 
     function populateMaterialSearchResults(results) {
         searchResultsMaterialsBody.innerHTML = "";
@@ -712,7 +848,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     
         if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode && selectedQta) {
-            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.component, selectedBarcode.barCode);
             //console.log("Risultato di loadAllData:", result);
             if (result) {
                 var data = {
@@ -798,7 +934,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         if(parseFloat(quantitaInput.value) <= 0) {
-            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.barCode);
+            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.component, selectedBarcode.barCode);
             if (result) {
                 const data = 
                 {
@@ -884,6 +1020,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 .filter(lav => lav && lav.operation && lav.operDesc)
                 .map(lav => ({
                     operation: lav.operation,
+                    moId: lav.moid,
                     operDesc: lav.operDesc,
                     display: `${lav.operation} - ${lav.operDesc}`
                 }));
@@ -914,6 +1051,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         try {
             barcodeInput.disabled = false;
+            aggiungiArticoloButton.disabled = false;
+            eliminaArticoloButton.disabled = true;
             const barCodeResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
             //console.log("Risultato barcode:", barCodeResult);
             barcodeList = barCodeResult
@@ -943,11 +1082,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    async function loadAllData(jobId, mono, creationDate, operation, barCode) {
+    async function loadAllData(jobId, mono, creationDate, operation, component, barCode = "") {
         if (!jobId || !mono || !creationDate || !operation || !barCode) return null;
         
         try {
-            const allDataResult = await fetchJobsByBarCode(jobId, mono, creationDate, operation, barCode);
+            const allDataResult = await fetchJobsByComponent(jobId, mono, creationDate, operation, component, barCode);
             console.log("Lista di tutti i dati:", allDataResult);
 
             if(allDataResult.length > 0) {
@@ -1016,12 +1155,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         var itemList = await fetchAllGiacenze(); 
 
         console.log("Lista di articoli:", itemList);
+
+        itemList = itemList.filter(item => {
+            return !barcodeList.some(barcode => barcode.component === item.item);
+        });
         
         for(const item of itemList) {
             materialsSearchResults.push(({
                 item: item.item || '',
                 description: item.description || '',
-                barcode: item.barCode || '',
+                barCode: item.barCode || '',
                 bookInv: item.bookInv || '',
                 uoM: item.uoM || '',
                 display: `${item.item} - ${item.barCode} - ${item.description}` 
@@ -1088,9 +1231,9 @@ async function fetchJobsByOdp(job, mono, creationDate) {
     }
 }
 
-async function fetchJobsByBarCode(job, mono, creationDate, operation, barCode) {
+async function fetchJobsByComponent(job, mono, creationDate, operation, component, barCode = "") {
     try {
-        const request = await fetchWithAuth(getApiUrl("api/mostepsmocomponent/barcode"), {
+        const request = await fetchWithAuth(getApiUrl("api/mostepsmocomponent/component_barcode"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1100,6 +1243,7 @@ async function fetchJobsByBarCode(job, mono, creationDate, operation, barCode) {
                 "mono": mono,
                 "creationDate": creationDate,
                 "operation": operation,
+                "component": component,
                 "barCode": barCode
             }),
         });
@@ -1212,6 +1356,29 @@ async function deleteMoComponent(data, workerId) {
     } catch (error) {
         console.error("Errore durante la cancellazione:", error);
         return false;
+    }
+}
+
+async function addMoComponent(data) {
+    try {
+        const request = await fetchWithAuth(getApiUrl("api/mago_api/add_mo_component"), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data),
+        });
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return [];
+        }
+        const response = await request.json();
+        console.log("Risposta dall'aggiunta:", response);
+        return response;
+    }
+    catch (error) {
+        console.error("Errore durante l'aggiunta:", error);
+        return [];
     }
 }
 
