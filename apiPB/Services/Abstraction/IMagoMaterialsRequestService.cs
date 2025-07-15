@@ -9,6 +9,8 @@ namespace apiPB.Services.Abstraction
 {
     public interface IMagoMaterialsRequestService
     {
-        Task<IEnumerable<DeleteMoComponentRequestDto>> DeleteMoComponentAsync(MagoLoginResponseDto responseDto, IEnumerable<DeleteMoComponentRequestDto> request);
+        Task<DeleteMoComponentRequestDto> DeleteMoComponentAsync(MagoLoginResponseDto responseDto, DeleteMoComponentRequestDto request);
+        
+        Task<AddMoComponentRequestDto> AddMoComponentAsync(MagoLoginResponseDto responseDto, AddMoComponentRequestDto request);
     }
 }

@@ -7,6 +7,7 @@ namespace apiPB.Filters
 {
     public class BarCodeFilter : OperationFilter
     {
-        public required string BarCode { get; set; }
+        public string? BarCode { get; set; } = string.Empty;
+        public string? Component { get; set; } = string.Empty;
     }
 }

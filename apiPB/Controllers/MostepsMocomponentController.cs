@@ -119,7 +119,7 @@ namespace apiPB.Controllers
             }
         }
 
-        [HttpPost("barcode")]
+        [HttpPost("component_barcode")]
         /// <summary>
         /// Ritorna tutte le informazioni della vista vw_api_mosteps_mocomponents
         /// </summary>

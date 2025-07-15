@@ -25,7 +25,8 @@ namespace apiPB.Mappers.Dto
                 RectificationReasonNegative = settings.RectificationReasonNegative,
                 Storage = settings.Storage,
                 Closed = settings.Closed,
-                SyncGlobalActive = settings.SyncGlobalActive
+                SyncGlobalActive = settings.SyncGlobalActive,
+                ExternalReference = settings.ExternalReference
             };
         }
 
@@ -92,14 +93,12 @@ namespace apiPB.Mappers.Dto
         public static List<SyncPrelMatRequestDto> ToSyncPrelMatRequestDto(this SettingsDto settings, List<PrelMatDto> prelMatList)
         {
             var syncPrelMatList = prelMatList
-                .GroupBy(p => new { p.Moid, p.RtgStep, p.Alternate, p.AltRtgStep, p.WorkerId })
+                .GroupBy(p => new { p.Moid, p.WorkerId })
                 .Select(group => new SyncPrelMatRequestDto
                 {
                     MoId = group.Key.Moid,
-                    RtgStep = group.Key.RtgStep,
-                    Alternate = group.Key.Alternate,
-                    AltRtgStep = group.Key.AltRtgStep,
                     WorkerId = group.Key.WorkerId,
+                    ExternalReferences = settings.ExternalReference.ToString(),
                     ActionDetails = group
                         .Select(p => new SyncPrelMatDetailsRequestdto
                         {
@@ -111,6 +110,35 @@ namespace apiPB.Mappers.Dto
                         }).ToList()
                 })
                 .ToList();
+
+            return syncPrelMatList;
+        }
+
+        public static List<SyncPrelMatRequestDto> ToAddMaterialSyncPrelMatRequestDto(this SettingsDto settings, AddMoComponentRequestDto addMoComponent)
+        {
+            var syncPrelMatList = new List<SyncPrelMatRequestDto>
+            {
+                new SyncPrelMatRequestDto
+                {
+                    MoId = addMoComponent.MoId,
+                    WorkerId = addMoComponent.WorkerId,
+                    ExternalReferences = settings.ExternalReference.ToString(),
+                    ActionDetails = new List<SyncPrelMatDetailsRequestdto>
+                    {
+                        new SyncPrelMatDetailsRequestdto
+                        {
+                            Position = 0,
+                            PickedQty = 0,
+                            Closed = settings.Closed,
+                            SpecificatorType = settings.SpecificatorType,
+                            Storage = settings.Storage,
+                            Component = addMoComponent.Component,
+                            NeededQty = addMoComponent.NeededQty,
+                        }
+                    }.ToList()
+                }
+            }
+            .ToList();
 
             return syncPrelMatList;
         }

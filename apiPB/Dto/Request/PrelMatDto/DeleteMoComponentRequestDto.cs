@@ -10,12 +10,13 @@ namespace apiPB.Dto.Request
     /// </summary>
     public class DeleteMoComponentRequestDto
     {
-        int MoId { get; set; }
+        public int? WorkerId { get; set; } // ID del lavoratore che effettua la richiesta
+        public int MoId { get; set; }
 
-        int Position { get; set; }
+        public int Position { get; set; }
 
-        string ExternalReferences { get; set; } = string.Empty; //id di riferimento della richiesta (tuo contatore)
+        public string ExternalReferences { get; set; } = string.Empty; //id di riferimento della richiesta (tuo contatore)
 
-        string ExternalProgram { get; set; } = "Pietribiasi App"; //nome applicazione che fa la richiesta a piacere
+        public string ExternalProgram { get; set; } = "Pietribiasi App"; //nome applicazione che fa la richiesta a piacere
     }
 }

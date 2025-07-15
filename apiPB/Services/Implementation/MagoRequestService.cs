@@ -238,6 +238,8 @@ namespace apiPB.Services.Implementation
                         }
                     }
 
+                    _settingsRepository.IncrementExternalReferenceCounter();
+
                     return prelMatList;
                 }
                 catch (Exception ex)

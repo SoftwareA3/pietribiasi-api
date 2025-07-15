@@ -40,7 +40,12 @@ namespace apiPB.Repository.Implementation
 
         public IEnumerable<VwApiMostepsMocomponent> GetMostepsMocomponentBarCode(BarCodeFilter filter)
         {
-            var query = _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job && m.Mono == filter.Mono && m.CreationDate == filter.CreationDate && m.Operation == filter.Operation && m.BarCode == filter.BarCode).Distinct().ToList();
+            var query = _context.VwApiMostepsMocomponents.Where(m => m.Job == filter.Job
+                && m.Mono == filter.Mono
+                && m.CreationDate == filter.CreationDate
+                && m.Operation == filter.Operation
+                && m.Component == filter.Component
+                && (string.IsNullOrEmpty(filter.BarCode) || m.BarCode == filter.BarCode)).ToList();
             ApplicationExceptionHandler.ValidateNotNullOrEmptyList(query, nameof(MostepsMocomponentRepository), nameof(GetMostepsMocomponentBarCode));
             return query;
         }

@@ -19,33 +19,34 @@ namespace apiPB.Services.Implementation
     {
         private readonly IMagoApiClient _magoApiClient;
         //private readonly IPrelMatRequestService _prelMatRequestService;
-        //private readonly ISettingsRepository _settingsRepository;
+        private readonly ISettingsRepository _settingsRepository;
         private readonly ILogService _logService;
 
         public MagoMaterialsRequestService(
             IMagoApiClient magoApiClient,
             //IPrelMatRequestService prelMatRequestService,
-            //ISettingsRepository settingsRepository,
+            ISettingsRepository settingsRepository,
             ILogService logService)
         {
             _magoApiClient = magoApiClient;
             //_prelMatRequestService = prelMatRequestService;
-            //_settingsRepository = settingsRepository;
+            _settingsRepository = settingsRepository;
             _logService = logService;
         }
 
-        public async Task<IEnumerable<DeleteMoComponentRequestDto>> DeleteMoComponentAsync(MagoLoginResponseDto responseDto, IEnumerable<DeleteMoComponentRequestDto> request)
+        public async Task<DeleteMoComponentRequestDto> DeleteMoComponentAsync(MagoLoginResponseDto responseDto, DeleteMoComponentRequestDto request)
         {
             if (string.IsNullOrEmpty(responseDto.Token) || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
 
+            var requestList = new List<DeleteMoComponentRequestDto> { request };
             var response = await _magoApiClient.SendPostAsyncWithToken<DeleteMoComponentRequestDto>(
                 "PrelMat/DeleteMoComponent",
-                request,
+                requestList,
                 responseDto.Token, false);
-                
+
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("SyncRegOre failed");
@@ -53,6 +54,46 @@ namespace apiPB.Services.Implementation
             Console.WriteLine($"SyncRegOre successfull response: {response}");
 
             return request;
+        }
+
+        public async Task<AddMoComponentRequestDto> AddMoComponentAsync(MagoLoginResponseDto responseDto, AddMoComponentRequestDto request)
+        {
+            if (string.IsNullOrEmpty(responseDto.Token) || request == null)
+            {
+                throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
+            }
+
+            var settings = _settingsRepository.GetSettings() ?? throw new InvalidOperationException("Settings cannot be null");
+
+            // Chiamare Mapper per la conversione al formato per l'API di Mago apposito (per inserire i valori di default dove servono)
+            var mappedRequest = settings.ToAddMaterialSyncPrelMatRequestDto(request);
+
+            try
+            {
+                // Chiamare API di Mago per l'inserimento del materiale
+                var response = await _magoApiClient.SendPostAsyncWithToken<SyncPrelMatRequestDto>(
+                    "openMes/materials-picking",
+                    mappedRequest,
+                    responseDto.Token);
+
+                if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                {
+                    throw new Exception("AddMoComponent failed");
+                }
+                Console.WriteLine($"AddMoComponent successfull response: {response}");
+
+                // Incrementare il contatore per il riferimento esterno
+                _settingsRepository.IncrementExternalReferenceCounter();
+
+                return request;
+            }
+            catch (Exception ex)
+            {
+                _logService.AppendErrorToLog($"Error in AddMoComponent: {ex.Message}");
+                Console.WriteLine("Error sending data to Mago: logging off..." + ex.Message);
+
+                throw;
+            }
         }
     }
 }

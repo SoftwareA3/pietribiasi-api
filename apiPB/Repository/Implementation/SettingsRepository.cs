@@ -12,7 +12,7 @@ namespace apiPB.Repository.Implementation
     public class SettingsRepository : ISettingsRepository
     {
         private readonly ApplicationDbContext _context;
-        
+
         public SettingsRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -82,6 +82,20 @@ namespace apiPB.Repository.Implementation
                 _context.A3AppSettings.Add(magoSettings);
                 _context.SaveChanges();
                 return magoSettings;
+            }
+        }
+        
+        public void IncrementExternalReferenceCounter()
+        {
+            var settings = _context.A3AppSettings.FirstOrDefault();
+            if (settings != null)
+            {
+                settings.ExternalReference = settings.ExternalReference + 1;
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new ArgumentNullException("Nessun risultato per IncrementExternalReferenceCounter in SettingsRepository");
             }
         }
     }

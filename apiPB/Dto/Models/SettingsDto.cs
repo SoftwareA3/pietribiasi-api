@@ -28,5 +28,6 @@ namespace apiPB.Dto.Models
 
         public string? Storage { get; set; }
         public bool? SyncGlobalActive { get; set; }
+        public int? ExternalReference { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace apiPB.Repository.Abstraction
         SettingsDto? GetSettings();
 
         SyncGobalActiveRequestDto? GetSyncGlobalActive();
+
+        void IncrementExternalReferenceCounter();
     }
 }

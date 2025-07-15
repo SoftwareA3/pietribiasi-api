@@ -12,11 +12,14 @@ namespace apiPB.Dto.Request
     public class SyncPrelMatDetailsRequestdto
     {
         public int? Position { get; set; }
-        public double? PickedQty { get; set; }
+        public double? PickedQty { get; set; } = 0;
         public bool? Closed { get; set; } = false;
         public int? SpecificatorType { get; set; }
         public string? Specificator { get; set; } = string.Empty;
         public string? Storage { get; set; } = string.Empty;
         public string? Lot { get; set; } = string.Empty;
+        public double? NeededQty { get; set; } = 0;
+        public string? Component { get; set; } = string.Empty;
+        public string? ExternalProgram { get; set; } = "Pietribiasi App";
     }
 }
