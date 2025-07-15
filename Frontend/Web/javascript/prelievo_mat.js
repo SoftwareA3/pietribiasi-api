@@ -598,7 +598,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // Chiamata a MagoApi per l'aggiunta del materiale
         const response = await addMoComponent(addMaterialInformation);
-        if (response && response.ok) {
+        if (response) {
             console.log("Materiale aggiunto con successo:", response);
             
             alert("Materiale aggiunto con successo!");
