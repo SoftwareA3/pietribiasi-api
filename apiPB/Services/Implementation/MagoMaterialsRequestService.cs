@@ -43,9 +43,9 @@ namespace apiPB.Services.Implementation
 
             var requestList = new List<DeleteMoComponentRequestDto> { request };
             var response = await _magoApiClient.SendPostAsyncWithToken<DeleteMoComponentRequestDto>(
-                "PrelMat/DeleteMoComponent",
+                "openMes/delete-mo-component",
                 requestList,
-                responseDto.Token, false);
+                responseDto.Token);
 
             if (!response.IsSuccessStatusCode)
             {

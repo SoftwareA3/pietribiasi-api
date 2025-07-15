@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
@@ -10,6 +11,9 @@ namespace apiPB.Dto.Request
     /// </summary>
     public class DeleteMoComponentRequestDto
     {
+        // Per semplicità il WorkerId è inserito per creare l'ID della richiesta di login, ma non utilizzato nel contesto della cancellazione.
+        // Viene quindi ignorato nella serializzazione JSON per l'invio del payload a Mago.
+        [JsonIgnore]
         public int? WorkerId { get; set; } // ID del lavoratore che effettua la richiesta
         public int MoId { get; set; }
 
