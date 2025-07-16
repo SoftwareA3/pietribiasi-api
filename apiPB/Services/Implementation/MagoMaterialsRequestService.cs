@@ -41,10 +41,13 @@ namespace apiPB.Services.Implementation
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
 
-            var requestList = new List<DeleteMoComponentRequestDto> { request };
+            var settings = _settingsRepository.GetSettings() ?? throw new InvalidOperationException("Settings cannot be null");
+            
+            var mappedRequest = settings.ToDeleteMoComponentRequestDto(request);
+
             var response = await _magoApiClient.SendPostAsyncWithToken<DeleteMoComponentRequestDto>(
                 "openMes/delete-mo-component",
-                requestList,
+                mappedRequest,
                 responseDto.Token);
 
             if (!response.IsSuccessStatusCode)
@@ -53,7 +56,7 @@ namespace apiPB.Services.Implementation
             }
             Console.WriteLine($"SyncRegOre successfull response: {response}");
 
-            return request;
+            return mappedRequest.FirstOrDefault() ?? throw new InvalidOperationException("No data returned from Mago");
         }
 
         public async Task<AddMoComponentRequestDto> AddMoComponentAsync(MagoLoginResponseDto responseDto, AddMoComponentRequestDto request)

@@ -19,7 +19,7 @@ namespace apiPB.Dto.Request
 
         public int Position { get; set; }
 
-        public string ExternalReferences { get; set; } = string.Empty; //id di riferimento della richiesta (tuo contatore)
+        public string? ExternalReferences { get; set; } = string.Empty; //id di riferimento della richiesta (tuo contatore)
 
         public string ExternalProgram { get; set; } = "Pietribiasi App"; //nome applicazione che fa la richiesta a piacere
     }

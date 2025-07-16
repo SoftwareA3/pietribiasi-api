@@ -607,8 +607,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             materialQtyOverlay.classList.remove("active");
             selectedMaterialSearchRow = null;
 
-            // Se sì aggiorna, altrimenti ricarica solo la tabella
-
             // Impone una scelta all'utente: aggiorna la tabella o ricarica la pagina
             if (confirm("Vuoi aggiornare i dati? Premi OK per ricaricare la pagina, Annulla per tornare alla tabella.")) {
                 // Ricarica la pagina
@@ -938,11 +936,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (result) {
                 const data = 
                 {
+                    workerId: workerId,
                     position: result.position,
                     moid: result.moid,
                 }
                     
-                const response = await deleteMoComponent(data, workerId);
+                const response = await deleteMoComponent(data);
                 if (response.ok) {
                     console.log("Elemento rimosso con successo");
                     alert("Elemento rimosso con successo");
@@ -1334,17 +1333,14 @@ async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     }
 }
 
-async function deleteMoComponent(data, workerId) {
+async function deleteMoComponent(data) {
     try {
         const request = await fetchWithAuth(getApiUrl("api/mago_api/delete_mo_component"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                "WorkerIdSyncRequestDto" : {"workerId": workerId},
-                "Request": data
-            }),
+            body: JSON.stringify(data),
         });
         if (!request || !request.ok) {
             console.error("Errore nella richiesta:", request.status, request.statusText);

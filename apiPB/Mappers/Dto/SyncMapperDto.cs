@@ -114,6 +114,22 @@ namespace apiPB.Mappers.Dto
             return syncPrelMatList;
         }
 
+        public static List<DeleteMoComponentRequestDto> ToDeleteMoComponentRequestDto(this SettingsDto settings, DeleteMoComponentRequestDto deleteMoComponent)
+        {
+            var deleteMoComponentList = new List<DeleteMoComponentRequestDto>()
+            {
+                new DeleteMoComponentRequestDto
+                {
+                    MoId = deleteMoComponent.MoId,
+                    Position = deleteMoComponent.Position,
+                    ExternalReferences = settings.ExternalReference.ToString(),
+                    ExternalProgram = deleteMoComponent.ExternalProgram,
+                }
+            };
+
+            return deleteMoComponentList;
+        }
+
         public static List<SyncPrelMatRequestDto> ToAddMaterialSyncPrelMatRequestDto(this SettingsDto settings, AddMoComponentRequestDto addMoComponent)
         {
             var syncPrelMatList = new List<SyncPrelMatRequestDto>
