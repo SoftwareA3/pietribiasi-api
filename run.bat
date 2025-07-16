@@ -40,11 +40,6 @@ if exist "%CD%\TestingGround\Backend" (
     cd "%CD%\TestingGround\Backend"
     if exist "apiPB.exe" (
         start "Pietribiasi App TestGround" apiPB.exe
-
-        set /p openBrowser="Vuoi aprire la pagina nel browser? (s/n): "
-        if /I "%openBrowser%"=="s" (
-            start "" "http://localhost:5245"
-        )
     )
 ) else (
     echo Warning: apiPB.exe not found in Backend directory.
