@@ -37,7 +37,8 @@ namespace apiPB.Mappers.Dto
                 PrelQty = request.PrelQty,
                 Imported = request.Imported,
                 UserImp = request.UserImp ?? string.Empty,
-                DataImp = request.DataImp
+                DataImp = request.DataImp,
+                Deleted = request.Deleted ?? false
             };
         }
     }

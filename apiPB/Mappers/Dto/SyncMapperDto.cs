@@ -106,7 +106,9 @@ namespace apiPB.Mappers.Dto
                             PickedQty = p.PrelQty,
                             Closed = settings.Closed,
                             SpecificatorType = settings.SpecificatorType,
-                            Storage = p.Storage
+                            Storage = p.Storage,
+                            NeededQty = 0,
+                            Component = string.Empty,
                         }).ToList()
                 })
                 .ToList();

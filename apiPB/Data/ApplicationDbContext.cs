@@ -85,6 +85,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Component).IsUnicode(false);
             entity.Property(e => e.CreationDate).HasColumnType("datetime");
             entity.Property(e => e.DataImp).HasColumnType("datetime");
+            entity.Property(e => e.Deleted).HasDefaultValue(false);
             entity.Property(e => e.Job)
                 .HasMaxLength(10)
                 .IsUnicode(false);

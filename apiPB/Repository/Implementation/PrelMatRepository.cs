@@ -55,7 +55,8 @@ namespace apiPB.Repository.Implementation
                     Storage = filter.Storage,
                     BarCode = filter.BarCode,
                     Wc = filter.Wc,
-                    PrelQty = filter.PrelQty
+                    PrelQty = filter.PrelQty,
+                    Deleted = filter.Deleted,
                 };
 
                 list.Add(prelMat);
