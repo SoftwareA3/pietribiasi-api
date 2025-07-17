@@ -404,6 +404,13 @@ async function populatePrelieviList(data) {
             ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDateTime.date} alle ${parsedDateTime.time} </div>` : ''}
             ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
+
+        if(item.deleted === 1 || item.deleted === true)
+            itemContent.classList.add("deleted-prel-item");
+        
+        if(item.position === 0)
+            itemContent.classList.add("new-prel-item");
+        
         
         li.appendChild(itemContent);
         
@@ -412,45 +419,52 @@ async function populatePrelieviList(data) {
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
             
-            // Container per il campo di modifica delle quantità prelevate (inizialmente nascosto)
-            const editContainer = document.createElement("div");
-            editContainer.className = "edit-prel-container hidden";
-            editContainer.id = `edit-container-${item.prelMatId}`;
+            if(item.deleted === 0 || item.deleted === false)
+            {
+                // Container per il campo di modifica delle quantità prelevate (inizialmente nascosto)
+                const editContainer = document.createElement("div");
+                editContainer.className = "edit-prel-container hidden";
+                editContainer.id = `edit-container-${item.prelMatId}`;
+                
+                // Campo input per la modifica
+                const editInput = document.createElement("input");
+                editInput.type = "number";
+                editInput.step = "0.1";
+                editInput.className = "edit-prel-input";
+                editInput.id = `edit-prel-input-${item.prelMatId}`;
+                editInput.value = item.prelQty;
+                
+                // Pulsante di conferma modifica
+                const confirmButton = document.createElement("button");
+                confirmButton.className = "button-icon confirm option-button";
+                confirmButton.title = "Conferma modifica";
+                confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
+                confirmButton.addEventListener("click", () => savePrelieviEdit(item, data));
+                
+                // Pulsante di annullamento modifica
+                const cancelButton = document.createElement("button");
+                cancelButton.className = "button-icon cancel option-button";
+                cancelButton.title = "Annulla modifica";
+                cancelButton.innerHTML = '<i class="fa-solid fa-times"></i>';
+                cancelButton.addEventListener("click", () => cancelPrelieviEdit(item));    
+                // Aggiunge gli elementi al container di modifica
+                editContainer.appendChild(editInput);
+                editContainer.appendChild(confirmButton);
+                editContainer.appendChild(cancelButton);
             
-            // Campo input per la modifica
-            const editInput = document.createElement("input");
-            editInput.type = "number";
-            editInput.step = "0.1";
-            editInput.className = "edit-prel-input";
-            editInput.id = `edit-prel-input-${item.prelMatId}`;
-            editInput.value = item.prelQty;
-            
-            // Pulsante di conferma modifica
-            const confirmButton = document.createElement("button");
-            confirmButton.className = "button-icon confirm option-button";
-            confirmButton.title = "Conferma modifica";
-            confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
-            confirmButton.addEventListener("click", () => savePrelieviEdit(item, data));
-            
-            // Pulsante di annullamento modifica
-            const cancelButton = document.createElement("button");
-            cancelButton.className = "button-icon cancel option-button";
-            cancelButton.title = "Annulla modifica";
-            cancelButton.innerHTML = '<i class="fa-solid fa-times"></i>';
-            cancelButton.addEventListener("click", () => cancelPrelieviEdit(item));
-            
-            // Aggiunge gli elementi al container di modifica
-            editContainer.appendChild(editInput);
-            editContainer.appendChild(confirmButton);
-            editContainer.appendChild(cancelButton);
-            
-            // Pulsante di modifica
-            const editButton = document.createElement("button");
-            editButton.className = "button-icon edit option-button";
-            editButton.title = "Modifica Quantità Prelevate";
-            editButton.id = `edit-button-${item.prelMatId}`;
-            editButton.innerHTML = '<i class="fa-solid fa-pencil"></i>';
-            editButton.addEventListener("click", () => editPrelievi(item));
+                // Pulsante di modifica
+                const editButton = document.createElement("button");
+                editButton.className = "button-icon edit option-button";
+                editButton.title = "Modifica Quantità Prelevate";
+                editButton.id = `edit-button-${item.prelMatId}`;
+                editButton.innerHTML = '<i class="fa-solid fa-pencil"></i>';
+                editButton.addEventListener("click", () => editPrelievi(item));
+
+                // Aggiunge il container di modifica e il pulsante di modifica alle azioni
+                // Solo se l'elemento non è in lista per essere eliminato
+                itemActions.appendChild(editContainer);
+                itemActions.appendChild(editButton);
+            }
             
             // Pulsante di eliminazione
             const deleteButton = document.createElement("button");
@@ -460,8 +474,6 @@ async function populatePrelieviList(data) {
             deleteButton.addEventListener("click", () => deletePrelievi(item));
             
             // Aggiunge gli elementi al container delle azioni
-            itemActions.appendChild(editContainer);
-            itemActions.appendChild(editButton);
             itemActions.appendChild(deleteButton);
             li.appendChild(itemActions);
         }
