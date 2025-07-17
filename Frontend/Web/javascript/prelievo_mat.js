@@ -527,13 +527,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
         }
         else {
-            document.body.classList.add("loading-cursor");
+            setTimeout(() => {
+                document.body.classList.add("loading-cursor");
+            }, 200);
+
+            searchMaterialsOverlay.classList.add("active");
 
             populateMaterialSearchResults(materialsSearchResults);
 
             document.body.classList.remove("loading-cursor");
-
-            searchMaterialsOverlay.classList.add("active");
         }
     });
 
@@ -555,10 +557,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (selectedMaterialSearchRow) {
             console.log("Riga selezionata:", selectedMaterialSearchRow);
 
-            materialOverlayInput.value = 0;
-
             materialQtyOverlay.classList.add("active");
-            materialOverlayInput.focus();
+            
+            setTimeout(() => {
+                materialOverlayInput.value = 0;
+                materialOverlayInput.focus();
+            }, 200);
         }
     });
 
@@ -1190,7 +1194,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     async function defaultTableContent(searchMaterialsOverlay, materialsSearchResults) {
-        document.body.classList.add("loading-cursor");
+        setTimeout(() => {
+            document.body.classList.add("loading-cursor");
+        }, 200);
 
         var itemList = await fetchAllGiacenze(); 
 
