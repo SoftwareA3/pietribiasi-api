@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const materialQtyOverlay = document.getElementById("material-qty-overlay");
     const addMaterialQtyOverlayButton = document.getElementById("add-material-qty-button");
     const cancelMaterialQtyOverlayButton = document.getElementById("cancel-material-qty-button");
+    const materialOverlayInput = document.getElementById("material-qty-input");
     
     // Pulsanti
     const addButton = document.getElementById("inv-add-list");
@@ -64,9 +65,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     let materialsSearchResults = [];
     let isMaterialResultsFetched = false;
     let dataResultList = [];
-    let addMaterialInformation = null;
 
     let isFillingFromOverlay = false;
+    let isAddingNewItem = false;
+    let isDelitingItem = false;
 
     // Inizializza l'autocompletamento per la commessa e carica i dati iniziali
     try {
@@ -80,6 +82,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             }));
         // console.log("Lista di lavori:", jobList);
         setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
+        commessaInput.focus();
+        aggiungiArticoloButton.classList.add("disabled-button-look");
+        eliminaArticoloButton.classList.add("disabled-button-look");
     } catch (error) {
         console.error("Errore nel caricamento iniziale dei lavori:", error);
         alert("Qualcosa è andato storto durante il caricamento iniziale dei dati.");
@@ -97,8 +102,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneInput.disabled = true;
             barcodeInput.value = "";
             barcodeInput.disabled = true;
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true;
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -118,8 +123,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneInput.disabled = true;
             barcodeInput.value = "";
             barcodeInput.disabled = true;
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true;
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -147,8 +152,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeList = [];
             barcodeAutocompleteList.innerHTML = "";
             barcodeAutocompleteList.classList.add("hidden");
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true; 
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look"); 
             quantitaInput.disabled = true; 
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -168,8 +173,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneInput.disabled = true; 
             barcodeInput.value = "";
             barcodeInput.disabled = true;
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true;
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -191,8 +196,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             lavorazioneList = [];
             barcodeInput.value = "";
             barcodeInput.disabled = true;
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true;
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             barcodeList = [];
             quantitaInput.disabled = true;
             quantitaInput.value = "";
@@ -216,8 +221,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             barcodeList = [];
             barcodeAutocompleteList.innerHTML = "";
             barcodeAutocompleteList.classList.add("hidden");
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true; 
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             quantitaInput.disabled = true; 
             quantitaInput.value = "";
             errorQty.style.display = "none";
@@ -235,15 +240,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true;
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             quantitaInput.disabled = true;
             quantitaInput.value = "";
             errorQty.style.display = "none";
             if (quantitaLabel) {
                 quantitaLabel.textContent = "Quantità: ";
             }
-            aggiungiArticoloButton.disabled = false;
+            aggiungiArticoloButton.classList.remove("disabled-button-look");
         }
 
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
@@ -261,8 +266,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (lavorazioneInput.value === "") {
             barcodeInput.value = "";
             barcodeInput.disabled = true;
-            aggiungiArticoloButton.disabled = true;
-            eliminaArticoloButton.disabled = true;
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             quantitaInput.value = "";
             barcodeList = [];
             barcodeAutocompleteList.innerHTML = ""; // Svuota la lista di autocompletamento
@@ -443,8 +448,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }, 600);
             }
 
-            if(selectedSearchRow.barCode) {
-                console.log("Barcode trovato in overlay:", selectedSearchRow.barCode);
+            if(selectedSearchRow.component) {
+                console.log("Component trovato in overlay:", selectedSearchRow.component);
                 barcodeInput.value = `Item: ${selectedSearchRow.component} - Code: ${selectedSearchRow.barCode} - ${selectedSearchRow.itemDesc}`;
             }
             else {
@@ -476,8 +481,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener per il pulsante Cerca - Ora apre la tabella overlay
     aggiungiArticoloButton.addEventListener("click", async function() {
+        if(aggiungiArticoloButton.classList.contains("disabled-button-look")) {
+            alert("Selezionare una commessa, un odp e una lavorazione prima di procedere.");
+            return;
+        }
         searchMaterialsInput.value = "";
-        addMaterialInformation = null;
         if(isMaterialResultsFetched == false) {
             materialsSearchResults = [];
             isMaterialResultsFetched = true;
@@ -542,86 +550,61 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     // Event listener per il pulsante Seleziona
+    // Recupera le informazioni della tabella. Aggiunge la quantità per compilare il form
     selectMaterialSearchResultButton.addEventListener("click", async function() {
         if (selectedMaterialSearchRow) {
             console.log("Riga selezionata:", selectedMaterialSearchRow);
 
-            // Recupera le informazioni dal form e aggiungi l'articolo prima di aprire l'overlay
-            const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
-            const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-
-            var workerId = "";
-            const puCookie = JSON.parse(getCookie("pu-User"));
-            if(puCookie) {
-                //console.log("cookie pu-User:", puCookie);
-                workerId = puCookie.workerId.toString();
-            }
-            else {
-                // Recupera il workerid dai cookies
-                const cookie = JSON.parse(getCookie("userInfo"));
-                console.log(typeof(cookie));
-                //console.log("Cookie:", cookie);
-                workerId = cookie.workerId.toString();
-            }
-
-            if (!workerId || workerId === "") {
-                console.error("Worker ID non trovato nei cookie.");
-                return;
-            }
-
-            addMaterialInformation = {
-                job: selectedCommessa.job,
-                moId: selectedLavorazione.moId,
-                component: selectedMaterialSearchRow.item,
-                workerId: workerId,
-            }
-
-            if (addMaterialInformation) {
-                console.log("Risultato di fetchJobsByBarCode:", addMaterialInformation);
-            }
+            materialOverlayInput.value = 0;
 
             materialQtyOverlay.classList.add("active");
+            materialOverlayInput.focus();
         }
     });
 
+
     addMaterialQtyOverlayButton.addEventListener("click", async function() {
-        const materialQty = document.getElementById("material-qty-input").value;
+        const materialQty = materialOverlayInput.value;
         if(materialQty && materialQty <= 0) {
             alert("Inserire una quantità valida maggiore di zero.");
             return;
         }
 
-        if (materialQty && addMaterialInformation) {
-            addMaterialInformation.neededQty = parseFloat(materialQty);
-            console.log("Informazioni aggiuntive per il materiale:", addMaterialInformation);
+        if (materialQty && selectedMaterialSearchRow) {
+            selectedMaterialSearchRow.neededQty = parseFloat(materialQty);
+            console.log("Informazioni aggiuntive per il materiale:", selectedMaterialSearchRow);
         }
 
-        // Chiamata a MagoApi per l'aggiunta del materiale
-        const response = await addMoComponent(addMaterialInformation);
-        if (response) {
-            console.log("Materiale aggiunto con successo:", response);
-            
-            alert("Materiale aggiunto con successo!");
+        // Compila i campi del form con le informazioni selezionate prima di chiudere l'overlay
 
-            // Chiude l'overlay
-            materialQtyOverlay.classList.remove("active");
-            selectedMaterialSearchRow = null;
+        if(selectedMaterialSearchRow.item && selectedMaterialSearchRow.neededQty)
+        {
+            console.log("Componente trovato in overlay:", selectedMaterialSearchRow.item);
+            barcodeInput.value = `Item: ${selectedMaterialSearchRow.item} ${selectedMaterialSearchRow.barCode === "" || selectedMaterialSearchRow.barCode === null ? "" : `- Code: ${selectedMaterialSearchRow.barCode}`} - ${selectedMaterialSearchRow.description === "" || selectedMaterialSearchRow.description === null ? "Nessuna descrizione disponibile" : selectedMaterialSearchRow.description}`;
 
-            // Impone una scelta all'utente: aggiorna la tabella o ricarica la pagina
-            if (confirm("Vuoi aggiornare i dati? Premi OK per ricaricare la pagina, Annulla per tornare alla tabella.")) {
-                // Ricarica la pagina
-                window.location.reload();
-            } else {
-                // Aggiorna la tabella dei materiali
-                materialsSearchResults = [];
-                isMaterialResultsFetched = false;
-                await defaultTableContent(searchMaterialsOverlay, materialsSearchResults);
-            }
-        } else {
-            console.error("Errore nell'aggiunta del materiale:", response);
-            alert("Si è verificato un errore durante l'aggiunta del materiale. Riprova.");
+            quantitaLabel.textContent = `Nuova qta. da prelevare: ${selectedMaterialSearchRow.neededQty} - Qta. prelevabile: ${selectedMaterialSearchRow.prelQty} - UoM: ${selectedMaterialSearchRow.uoM}`;
+
+            quantitaInput.value = selectedMaterialSearchRow.neededQty;
+            quantitaInput.disabled = false; // Abilita il campo quantità
+            isAddingNewItem = true;
         }
-    
+        else {
+            barcodeInput.value = ""; // Resetta il campo se non c'è un barcode
+            alert("Selezionare un materiale prima di procedere.");
+        }
+
+        materialQtyOverlay.classList.remove("active");
+        searchMaterialsOverlay.classList.remove("active");
+
+        quantitaInput.focus();
+        quantitaInput.disabled = false;
+    });
+
+    materialOverlayInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            addMaterialQtyOverlayButton.click();
+        }
     });
 
 
@@ -818,6 +801,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     quantitaInput.disabled = true;
                     noContent.classList.remove("hidden");
                     alert("Dati salvati con successo");
+                    commessaInput.focus();
                 } else {
                     console.error("Errore durante il salvataggio dei dati:", response.status, response.statusText);
                 }
@@ -834,19 +818,42 @@ document.addEventListener("DOMContentLoaded", async function () {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
         const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-        const selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
         const selectedQta = document.getElementById("prel-mat-quantita").value;
-    
+        var selectedBarcode = null;
+
+        if(isAddingNewItem)
+        {
+            console.log("Barcode selezionato dalla tabella: ", selectedMaterialSearchRow)
+        }
+        else
+        {
+            selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
+            console.log("Barcode selezionato dal form: ", selectedBarcode)
+        }
+
         console.log("Dati selezionati:", {
             selectedCommessa,
             selectedOdp,
             selectedLavorazione,
-            selectedBarcode,
+            selectedBarcode: selectedBarcode || selectedMaterialSearchRow,
             selectedQta
         });
+
+        var result = null;
     
-        if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode && selectedQta) {
-            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.component, selectedBarcode.barCode);
+        if (selectedCommessa && selectedOdp && selectedLavorazione && (selectedBarcode || selectedMaterialSearchRow) && selectedQta) {
+            if(isAddingNewItem) {
+                console.log("Aggiunta di un nuovo articolo in corso...");
+
+                result = await loadDataForNewItem(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedMaterialSearchRow);
+                console.log("Risultato di loadDataForNewItem:", result);
+                selectedMaterialSearchRow = null; // Resetta la selezione del materiale
+
+                isAddingNewItem = false;
+            }
+            else {
+                result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.component, selectedBarcode.barCode);
+            }
             //console.log("Risultato di loadAllData:", result);
             if (result) {
                 var data = {
@@ -873,6 +880,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                     wc: result.wc,
                     prelQty: selectedQta
                 }
+
+                if(isDelitingItem)
+                {
+                    // Se sta eliminando l'articolo, inserisce il valore deleted
+                    console.log("Eliminazione dell'articolo in corso...");
+                    data.deleted = true;
+                    isDelitingItem = false; // Resetta il flag di eliminazione
+                }
+                else
+                {
+                    // Se sta aggiungendo un articolo, inserisce il valore false
+                    data.deleted = false;
+                }
+
                 dataResultList.push(data);
 
                 if(selectedQta > result.finalSum) 
@@ -892,6 +913,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 barcodeInput.disabled = true;
                 quantitaInput.value = "";
                 quantitaInput.disabled = true;
+                aggiungiArticoloButton.classList.add("disabled-button-look");
+                eliminaArticoloButton.classList.add("disabled-button-look");
                 const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
                 if (quantitaLabel) {
                     quantitaLabel.textContent = "Quantità: ";
@@ -905,61 +928,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     eliminaArticoloButton.addEventListener("click", async function() {
-        const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
-        const selectedOdp = findSelectedItem(odlInput.value, odpList);
-        const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-        const selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
-
-        var workerId = "";
-        const puCookie = JSON.parse(getCookie("pu-User"));
-        if(puCookie) {
-            //console.log("cookie pu-User:", puCookie);
-            workerId = puCookie.workerId.toString();
-            console.log("L'operazione viene salvata con l'utente:", workerId);
-        }
-        else {
-            // Recupera il workerid dai cookies
-            const cookie = JSON.parse(getCookie("userInfo"));
-            console.log(typeof(cookie));
-            //console.log("Cookie:", cookie);
-            workerId = cookie.workerId.toString();
-            console.log("Worker ID:", workerId);
-        }
-
-        if (!workerId || workerId === "") {
-            console.error("Worker ID non trovato nei cookie.");
+        if(eliminaArticoloButton.classList.contains("disabled-button-look")) {
+            alert("Selezionare un materiale con quantità da prelevare a zero prima di procedere.");
             return;
         }
 
-        if(parseFloat(quantitaInput.value) <= 0) {
-            const result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.component, selectedBarcode.barCode);
-            if (result) {
-                const data = 
-                {
-                    workerId: workerId,
-                    position: result.position,
-                    moid: result.moid,
-                }
-                    
-                const response = await deleteMoComponent(data);
-                if (response.ok) {
-                    console.log("Elemento rimosso con successo");
-                    alert("Elemento rimosso con successo");
-
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                }
-                else {
-                    console.error("Errore durante la rimozione dell'elemento:", response.status, response.statusText);
-                    alert("Errore durante la rimozione dell'elemento: " + response.statusText);
-                }
-            } else {
-                alert("Errore: impossibile rimuovere l'elemento. Dati mancanti o non validi.");
-            }
-        } else {
-            alert("Per eliminare un articolo, la quantità deve essere zero o inferiore a zero.");
-        }
+        isDelitingItem = true;
+        addButton.click();
     });
 
 
@@ -1001,6 +976,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     odlInput.disabled = true;
                 }, 100);
             }
+            else
+            {
+                odlInput.focus();
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati ODP:", error);
         }
@@ -1039,6 +1018,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     lavorazioneInput.disabled = true;
                 }, 100);
             }
+            else
+            {
+                lavorazioneInput.focus();
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati lavorazione:", error);
         }
@@ -1050,17 +1033,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         try {
             barcodeInput.disabled = false;
-            aggiungiArticoloButton.disabled = false;
-            eliminaArticoloButton.disabled = true;
+            aggiungiArticoloButton.classList.remove("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
             const barCodeResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
             //console.log("Risultato barcode:", barCodeResult);
             barcodeList = barCodeResult
-                .filter(barCode => barCode && barCode.barCode && barCode.itemDesc && barCode.component)
+                .filter(barCode => barCode && barCode.itemDesc && barCode.component)
                 .map(barCode => ({
                     component: barCode.component,
-                    barCode: barCode.barCode,
+                    barCode: barCode.barCode || '',
                     itemDesc: barCode.itemDesc,
-                    display: `Item: ${barCode.component} - Code: ${barCode.barCode} - ${barCode.itemDesc}`
+                    display: `Item: ${barCode.component} ${barCode.barCode === "" ? "" : "- Code: " + barCode.barCode } - ${barCode.itemDesc}`
                 }));
 
             //console.log("Lista di barcode:", barcodeList);
@@ -1076,13 +1059,17 @@ document.addEventListener("DOMContentLoaded", async function () {
                     barcodeInput.disabled = true;
                 }, 100);
             }
+            else
+            {
+                barcodeInput.focus();
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati barcode:", error);
         }
     }
 
     async function loadAllData(jobId, mono, creationDate, operation, component, barCode = "") {
-        if (!jobId || !mono || !creationDate || !operation || !barCode) return null;
+        if (!jobId || !mono || !creationDate || !operation || !component) return null;
         
         try {
             const allDataResult = await fetchJobsByComponent(jobId, mono, creationDate, operation, component, barCode);
@@ -1092,6 +1079,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 var sum = 0;
                 // Dati lista temporanea
+                var tmpListSum = 0;
                 dataResultList.forEach(element => {
                     // console.log("Elemento della lista temporanea:", element);
                     // console.log("Elemento corrente:", allDataResult[0]);
@@ -1102,6 +1090,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 });
                 console.log("Somma delle quantità della lista temporanea:", sum);
+                tmpListSum = sum;
                 console.log("Component:", allDataResult[0].component);
                 const prelMatQtyList = await fetchA3PrelMatQtyList(allDataResult[0].component);
                 console.log("Lista di quantità da A3_app_prel_mat:", prelMatQtyList);
@@ -1124,8 +1113,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - UoM: ${allDataResult[0].prelUoM}`;
                 }
 
-                if (parseFloat(quantitaInput.value) <= 0) {
-                    eliminaArticoloButton.disabled = false;
+                if (parseFloat(allDataResult[0].prelResQty) <= 0 || parseFloat(quantitaInput.value) - parseFloat(tmpListSum) <= 0) {
+                    eliminaArticoloButton.classList.remove("disabled-button-look");
                 }
                 
                 // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
@@ -1136,6 +1125,58 @@ document.addEventListener("DOMContentLoaded", async function () {
                 allDataResult[0].finalSum = finalSum;
 
                 return allDataResult[0];
+            }
+            else {
+                console.error("Nessun dato trovato per i parametri forniti.");
+                return null;
+            }
+
+        } catch (error) {
+            console.error("Errore nel caricamento dei dati:", error);
+            return null;
+        }
+    }
+
+    async function loadDataForNewItem(jobId, mono, creationDate, operation, selectedMaterialSearchRow) {
+        // Ricerca per tutti i parametri fino a component. Poi prende quelli interessanti e aggiunge:
+        // component, barCode, itemDesc, neededQty ecc..
+
+        try {
+            // Recupera le informazioni della lavorazione per aggiungere quelle sul materiale dalla tabella
+            const allDataResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
+            console.log("Lista di tutti i dati:", allDataResult);
+            console.log("Riga selezionata dalla tabella:", selectedMaterialSearchRow);
+
+            var dataItem = allDataResult[0];
+            dataItem.component = selectedMaterialSearchRow.item;
+            dataItem.barCode = selectedMaterialSearchRow.barCode || "";
+            dataItem.itemDesc = selectedMaterialSearchRow.itemDesc || "";
+            dataItem.prelQty = selectedMaterialSearchRow.neededQty || 0;
+            dataItem.prelNeededQty = selectedMaterialSearchRow.neededQty || 0;
+            dataItem.storage = selectedMaterialSearchRow.storage || "";
+            dataItem.prelUoM = selectedMaterialSearchRow.uoM || "";
+            dataItem.position = 0;
+
+            console.log("Dati per il nuovo articolo:", dataItem);
+
+            if(dataItem) {
+                quantitaInput.disabled = false;
+                const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+                if (quantitaLabel) {
+                    quantitaLabel.textContent = `Nuova qta. da prelevare: ${dataItem.prelResQty} - Qta. prelevabile: ${dataItem.prelQty} - UoM: ${dataItem.prelUoM}`;
+                }
+                
+                // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
+                if (parseFloat(quantitaInput.value) < 0) {
+                    errorQty.style.display = "block";
+                }
+
+                // FIXME: Controllo anche su quantità inserita minore di quella disponibile 
+                // (solo un controllo perché) materiale nuovo
+
+                isAddingNewItem = false; // Imposta il flag per indicare che si sta aggiungendo un nuovo articolo
+
+                return dataItem;
             }
             else {
                 console.error("Nessun dato trovato per i parametri forniti.");
@@ -1333,51 +1374,6 @@ async function fetchJobsByLavorazione(job, mono, creationDate, operation) {
     }
 }
 
-async function deleteMoComponent(data) {
-    try {
-        const request = await fetchWithAuth(getApiUrl("api/mago_api/delete_mo_component"), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data),
-        });
-        if (!request || !request.ok) {
-            console.error("Errore nella richiesta:", request.status, request.statusText);
-            return false;
-        }
-        const response = await request.json();
-        console.log("Risposta dalla cancellazione:", response);
-        return response.success;
-    } catch (error) {
-        console.error("Errore durante la cancellazione:", error);
-        return false;
-    }
-}
-
-async function addMoComponent(data) {
-    try {
-        const request = await fetchWithAuth(getApiUrl("api/mago_api/add_mo_component"), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data),
-        });
-        if (!request || !request.ok) {
-            console.error("Errore nella richiesta:", request.status, request.statusText);
-            return [];
-        }
-        const response = await request.json();
-        console.log("Risposta dall'aggiunta:", response);
-        return response;
-    }
-    catch (error) {
-        console.error("Errore durante l'aggiunta:", error);
-        return [];
-    }
-}
-
 async function fetchAllGiacenze() {
     try {
         const request = await fetchWithAuth(getApiUrl("api/giacenze/get_all"), {
@@ -1409,7 +1405,7 @@ function addToTemporaryList(data, dataResultList) {
         <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono}</div>
         <div><spam class="item-content-heading">Lav:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc} </div>
         <div><spam class="item-content-heading">BOM:</spam> ${data.bom}</div>
-        <div><spam class="item-content-heading">Item:</spam> ${data.component} - <spam class="item-content-heading">Code:</spam> ${data.barCode} </div>
+        <div><spam class="item-content-heading">Item:</spam> ${data.component} ${data.barCode === "" || null ? "" : `- <spam class="item-content-heading">Code:</spam> ${data.barCode}`} </div>
         <div class=temp-list-qta-${data.moid}><strong>Qta: ${data.prelQty}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
@@ -1417,6 +1413,15 @@ function addToTemporaryList(data, dataResultList) {
             </button>
         </div>
     `;
+
+    if(data.position === 0)
+    {
+        newItem.classList.add("new-prel-item");
+    }
+    if(data.deleted === true)
+    {
+        newItem.classList.add("deleted-prel-item");
+    }
 
     list.appendChild(newItem);
 

@@ -83,7 +83,6 @@ datalist {
 
 .option-button
 {
-    background-color: var(--white);
     border: none;
     color: var(--primary-color);
 }
@@ -171,12 +170,28 @@ datalist {
 }
 
 .item-content {
+    padding-top: var(--spacing-1);
+    padding-bottom: var(--spacing-1);
     flex: 1;
+    margin-left: var(--spacing-4);
 }
 
 .item-actions {
     display: flex;
     gap: var(--spacing-2);
+    margin-right: var(--spacing-4);
+}
+
+.new-prel-item {
+    background-color: color-mix(in srgb, var(--save) 20%, transparent);
+    padding-left: var(--spacing-2);
+    padding-right: var(--spacing-2);
+}
+
+.deleted-prel-item {
+    background: color-mix(in srgb, var(--error) 20%, transparent);
+    padding-left: var(--spacing-2);
+    padding-right: var(--spacing-2);
 }
 
 /* Stile per elementi appena aggiunti */

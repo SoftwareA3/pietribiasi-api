@@ -33,15 +33,10 @@
     margin-top: var(--spacing-2);
 }
 
-#prel-mat-elimina-articolo:disabled { 
-    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-600) 100%);
-    cursor: not-allowed;
-}
-
-#prel-mat-elimina-articolo:disabled, #prel-mat-elimina-articolo:disabled:hover,
-#prel-mat-aggiungi-articolo:disabled, #prel-mat-aggiungi-articolo:disabled:hover,
-#prel-mat-elimina-articolo:disabled > i, #prel-mat-elimina-articolo:disabled:hover > i:hover,
-#prel-mat-aggiungi-articolo:disabled > i, #prel-mat-aggiungi-articolo:disabled:hover > i:hover { 
+.disabled-button-look, .disabled-button-look:hover,
+.disabled-button-look, .disabled-button-look:hover,
+.disabled-button-look > i, .disabled-button-look:hover > i:hover,
+.disabled-button-look > i, .disabled-button-look:hover > i:hover { 
     cursor: not-allowed;
 }
 
@@ -54,18 +49,13 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-#prel-mat-elimina-articolo:disabled:hover { 
+.disabled-button-look:hover { 
     background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
     cursor: not-allowed;
 }
 
-#prel-mat-aggiungi-articolo:disabled { 
+.disabled-button-look { 
     background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-600) 100%);
-    cursor: not-allowed;
-}
-
-#prel-mat-aggiungi-articolo:disabled:hover { 
-    background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
     cursor: not-allowed;
 }
 
