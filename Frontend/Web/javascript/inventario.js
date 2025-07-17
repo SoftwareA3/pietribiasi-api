@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             
             // Autocompletamento personalizzato per evitare di visualizzare troppi elementi
             setupCustomAutocomplete(barCodeInput, barcodeAutocompleteList, barcodeList);
+            barCodeInput.focus();
         }
     } catch (error) {
         console.error("Error fetching items:", error);
