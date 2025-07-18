@@ -192,38 +192,6 @@ namespace apiPB.Controllers
             }
         }
 
-        [HttpPost("delete_mo_component")]
-        [Authorize]
-        public async Task<IActionResult> DeleteMoComponent([FromBody] DeleteMoComponentRequestDto request)
-        {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di eliminazione dei componenti dell'ordine di produzione non valida");
-
-            var settingsAndResponseTuple = await _magoRequestService.LoginWithWorkerIdAsync(new WorkerIdSyncRequestDto() { WorkerId = request.WorkerId });
-            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Login non riuscito durante l'eliminazione dei componenti dell'ordine di produzione");
-            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Impostazioni non trovate durante l'eliminazione");
-
-            try
-            {
-                var response = await _magoRequestService.DeleteMoComponentAsync(settingsAndResponseTuple.LoginResponse, request);
-                return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Eliminazione dei componenti dell'ordine di produzione effettuata con successo");
-            }
-            catch (Exception e)
-            {
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Eliminazione dei componenti dell'ordine di produzione non riuscita: " + e.Message);
-            }
-            finally
-            {
-                var loginResult = settingsAndResponseTuple.LoginResponse.Token;
-                if (loginResult != null)
-                {
-                    await _magoRequestService.LogoffAsync(new MagoTokenRequestDto
-                    {
-                        Token = loginResult
-                    });
-                }
-            }
-        }
-
         /// <summary>
         /// Sincronizza le movimentazioni di inventario salvate con Mago, filtrate
         /// </summary>
