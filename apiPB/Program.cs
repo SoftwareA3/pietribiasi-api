@@ -65,7 +65,6 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IMagoRequestService, MagoRequestService>();
     builder.Services.AddScoped<ISettingsRequestService, SettingsRequestService>();
     builder.Services.AddScoped<IActionMessageRequestService, ActionMessageRequestService>();
-    builder.Services.AddScoped<IMagoMaterialsRequestService, MagoMaterialsRequestService>();
 
     builder.Services.AddCors(options =>
     {
