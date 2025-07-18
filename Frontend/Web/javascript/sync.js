@@ -909,6 +909,22 @@ async function populatePrelieviList(data) {
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Qta: <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</strong></span> </div>
         `;
+
+        // if(data.position === 0)
+        // {
+        //     newItem.classList.add("new-prel-item");
+        // }
+        // if(data.deleted === true)
+        // {
+        //     newItem.classList.add("deleted-prel-item");
+        // }
+
+        if(item.position === 0) {
+            itemContent.classList.add("new-prel-item");
+        }
+        if(item.deleted === true) {
+            itemContent.classList.add("deleted-prel-item");
+        }
         
         li.appendChild(itemContent);
         prelieviList.appendChild(li);
