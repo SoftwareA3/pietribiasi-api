@@ -882,7 +882,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     storage: result.storage,
                     barCode: result.barCode,
                     wc: result.wc,
-                    prelQty: selectedQta
+                    prelQty: selectedQta,
+                    neededQty: result.neededQty
                 }
 
                 if(isDelitingItem)
@@ -1127,6 +1128,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
                 allDataResult[0].finalSum = finalSum;
+                allDataResult[0].neededQty = 0;
 
                 return allDataResult[0];
             }
@@ -1157,6 +1159,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             dataItem.itemDesc = selectedMaterialSearchRow.itemDesc || "";
             dataItem.prelQty = selectedMaterialSearchRow.neededQty || 0;
             dataItem.prelNeededQty = selectedMaterialSearchRow.neededQty || 0;
+            dataItem.neededQty = selectedMaterialSearchRow.neededQty || 0;
             dataItem.storage = selectedMaterialSearchRow.storage || "";
             dataItem.prelUoM = selectedMaterialSearchRow.uoM || "";
             dataItem.position = 0;
