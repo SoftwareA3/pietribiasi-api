@@ -62,4 +62,6 @@ public partial class A3AppPrelMat
     public DateTime? DataImp { get; set; }
 
     public bool? Deleted { get; set; }
+
+    public double? NeededQty { get; set; }
 }

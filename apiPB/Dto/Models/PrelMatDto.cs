@@ -67,5 +67,6 @@ namespace apiPB.Dto.Models
 
         public DateTime? DataImp { get; set; }
         public bool? Deleted { get; set; }
+        public double? NeededQty { get; set; }
     }
 }

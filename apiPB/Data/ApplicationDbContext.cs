@@ -85,7 +85,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Component).IsUnicode(false);
             entity.Property(e => e.CreationDate).HasColumnType("datetime");
             entity.Property(e => e.DataImp).HasColumnType("datetime");
-            entity.Property(e => e.Deleted).HasDefaultValue(false);
             entity.Property(e => e.Job)
                 .HasMaxLength(10)
                 .IsUnicode(false);
@@ -94,6 +93,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("MONo");
+            entity.Property(e => e.NeededQty).HasDefaultValue(0.0);
             entity.Property(e => e.OperDesc).IsUnicode(false);
             entity.Property(e => e.Operation)
                 .HasMaxLength(50)
@@ -173,6 +173,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Company)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.ExternalProgram)
+                .HasMaxLength(255)
+                .HasDefaultValue("PietribiasiApp");
             entity.Property(e => e.MagoUrl).IsUnicode(false);
             entity.Property(e => e.Password)
                 .HasMaxLength(50)

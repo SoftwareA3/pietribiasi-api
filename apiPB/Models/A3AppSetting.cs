@@ -27,5 +27,7 @@ public partial class A3AppSetting
 
     public bool? SyncGlobalActive { get; set; }
 
-    public int ExternalReference { get; set; }
+    public string? ExternalProgram { get; set; }
+
+    public int? ExternalReferences { get; set; }
 }
