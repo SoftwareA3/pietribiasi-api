@@ -132,35 +132,6 @@ namespace apiPB.Mappers.Dto
             return deleteMoComponentList;
         }
 
-        public static List<SyncPrelMatRequestDto> ToAddMaterialSyncPrelMatRequestDto(this SettingsDto settings, AddMoComponentRequestDto addMoComponent)
-        {
-            var syncPrelMatList = new List<SyncPrelMatRequestDto>
-            {
-                new SyncPrelMatRequestDto
-                {
-                    MoId = addMoComponent.MoId,
-                    WorkerId = addMoComponent.WorkerId,
-                    ExternalReferences = settings.ExternalReference.ToString(),
-                    ActionDetails = new List<SyncPrelMatDetailsRequestdto>
-                    {
-                        new SyncPrelMatDetailsRequestdto
-                        {
-                            Position = 0,
-                            PickedQty = 0,
-                            Closed = settings.Closed,
-                            SpecificatorType = settings.SpecificatorType,
-                            Storage = settings.Storage,
-                            Component = addMoComponent.Component,
-                            NeededQty = addMoComponent.NeededQty,
-                        }
-                    }.ToList()
-                }
-            }
-            .ToList();
-
-            return syncPrelMatList;
-        }
-
         public static List<SyncInventarioRequestDto> ToSyncInventarioRequestDto(this SettingsDto settings, List<InventarioDto> inventarioList)
         {
             var syncInventarioList = new List<SyncInventarioRequestDto>();

@@ -101,5 +101,7 @@ namespace apiPB.Services.Abstraction
         /// </summary>
         /// <param name="requestToken">Richiesta di logoff</param>
         Task LogoffAsync(MagoTokenRequestDto requestToken);
+
+        Task<DeleteMoComponentRequestDto> DeleteMoComponentAsync(MagoLoginResponseDto responseDto, DeleteMoComponentRequestDto request);
     }
 }

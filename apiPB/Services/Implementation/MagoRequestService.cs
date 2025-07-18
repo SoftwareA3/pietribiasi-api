@@ -76,7 +76,7 @@ namespace apiPB.Services.Implementation
 
         public async Task<IEnumerable<SyncRegOreRequestDto>> SyncRegOreFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncRegOreFilteredDto? request, bool isFiltered = true)
         {
-            if(string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
+            if (string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
@@ -167,7 +167,7 @@ namespace apiPB.Services.Implementation
 
         public async Task<IEnumerable<SyncPrelMatRequestDto>> SyncPrelMatFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncPrelMatFilteredDto? request, bool isFiltered = true)
         {
-            if(string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
+            if (string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
@@ -453,6 +453,31 @@ namespace apiPB.Services.Implementation
             {
                 throw new HttpRequestException($"Errore nel logout. Stato: {response.StatusCode}");
             }
+        }
+        
+        public async Task<DeleteMoComponentRequestDto> DeleteMoComponentAsync(MagoLoginResponseDto responseDto, DeleteMoComponentRequestDto request)
+        {
+            if (string.IsNullOrEmpty(responseDto.Token) || request == null)
+            {
+                throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
+            }
+
+            var settings = _settingsRepository.GetSettings() ?? throw new InvalidOperationException("Settings cannot be null");
+            
+            var mappedRequest = settings.ToDeleteMoComponentRequestDto(request);
+
+            var response = await _magoApiClient.SendPostAsyncWithToken<DeleteMoComponentRequestDto>(
+                "openMes/delete-mo-component",
+                mappedRequest,
+                responseDto.Token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("SyncRegOre failed");
+            }
+            Console.WriteLine($"SyncRegOre successfull response: {response}");
+
+            return mappedRequest.FirstOrDefault() ?? throw new InvalidOperationException("No data returned from Mago");
         }
     }
 }
