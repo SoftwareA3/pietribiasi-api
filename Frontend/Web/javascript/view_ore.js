@@ -708,7 +708,9 @@ async function openLogOverlay(logList) {
 
         // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
         if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
-            logItem.actionMessageDetails.forEach(msg => {
+            logItem.actionMessageDetails
+                .sort((a, b) => b.messageId - a.messageId)
+                .forEach(msg => {
                 const messageDateTimeAction = parseDateTime(msg.tbcreated);
                 logMessagesDiv.innerHTML += `
                 <div style="margin-bottom:10px;">

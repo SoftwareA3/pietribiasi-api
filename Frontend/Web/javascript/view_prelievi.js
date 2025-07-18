@@ -690,22 +690,23 @@ async function openLogOverlay(logList) {
 
         // Prima mostra gli errori di omMessageDetails
         if(Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails && logItem.omMessageDetails.length > 0) {
-            logItem.omMessageDetails.forEach(msg => {
-                if(msg.messageId)
-                {
-                    const messageDateTime = parseDateTime(msg.messageDate);
-                    logMessagesDiv.innerHTML += `
-                    <div style="margin-bottom:10px;">
-                        <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
-                        <div class="msg-content">
-                            <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
-                            <strong>Messaggio:</strong> ${msg.messageText} <br>
-                            <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
+            logItem.omMessageDetails
+                .sort((a, b) => b.messageId - a.messageId)
+                .forEach(msg => {
+                    if (msg.messageId) {
+                        const messageDateTime = parseDateTime(msg.messageDate);
+                        logMessagesDiv.innerHTML += `
+                        <div style="margin-bottom:10px;">
+                            <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
+                            <div class="msg-content">
+                                <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
+                                <strong>Messaggio:</strong> ${msg.messageText} <br>
+                                <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
+                            </div>
                         </div>
-                    </div>
-                    `;
-                }
-            });
+                        `;
+                    }
+                });
         }
 
         // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
