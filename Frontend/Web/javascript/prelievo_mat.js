@@ -1178,9 +1178,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     errorQty.style.display = "block";
                 }
 
-                // FIXME: Controllo anche su quantità inserita minore di quella disponibile 
-                // (solo un controllo perché) materiale nuovo
-
                 isAddingNewItem = false; // Imposta il flag per indicare che si sta aggiungendo un nuovo articolo
 
                 return dataItem;
