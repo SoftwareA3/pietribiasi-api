@@ -35,6 +35,12 @@ input:checked + .toggle-slider:before {
     margin-left: var(--spacing-4);
 }
 
+#save-settings:disabled {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    filter: opacity(70%); 
+    cursor: not-allowed; 
+}
+
 /* Input di testo e password */
 /* #settings-form input[type="text"],
 #settings-form input[type="password"],
