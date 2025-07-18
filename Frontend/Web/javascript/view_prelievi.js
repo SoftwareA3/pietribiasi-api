@@ -715,7 +715,7 @@ async function openLogOverlay(logList) {
                 const messageDateTimeAction = parseDateTime(msg.tbcreated);
                 logMessagesDiv.innerHTML += `
                 <div style="margin-bottom:10px;">
-                    <strong class="msg-id"><u>Messaggio #${msg.actionId}:</u></strong> <br>
+                    <strong class="msg-id"><u>Azione #${msg.actionId}:</u></strong> <br>
                     <div class="msg-content">
                         <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
                         <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>" } 
