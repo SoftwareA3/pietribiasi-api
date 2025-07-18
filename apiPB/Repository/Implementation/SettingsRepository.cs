@@ -90,7 +90,7 @@ namespace apiPB.Repository.Implementation
             var settings = _context.A3AppSettings.FirstOrDefault();
             if (settings != null)
             {
-                settings.ExternalReference = settings.ExternalReference + 1;
+                settings.ExternalReferences = settings.ExternalReferences + 1;
                 _context.SaveChanges();
             }
             else

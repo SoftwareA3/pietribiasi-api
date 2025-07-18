@@ -26,7 +26,7 @@ namespace apiPB.Mappers.Dto
                 Storage = settings.Storage,
                 Closed = settings.Closed,
                 SyncGlobalActive = settings.SyncGlobalActive,
-                ExternalReference = settings.ExternalReference
+                ExternalReferences = settings.ExternalReferences.ToString()
             };
         }
 
@@ -98,7 +98,7 @@ namespace apiPB.Mappers.Dto
                 {
                     MoId = group.Key.Moid,
                     WorkerId = group.Key.WorkerId,
-                    ExternalReferences = settings.ExternalReference.ToString(),
+                    ExternalReferences = "PB000" + settings.ExternalReferences?.ToString(),
                     ActionDetails = group
                         .Select(p => new SyncPrelMatDetailsRequestdto
                         {
@@ -107,27 +107,33 @@ namespace apiPB.Mappers.Dto
                             Closed = settings.Closed,
                             SpecificatorType = settings.SpecificatorType,
                             Storage = p.Storage,
-                            NeededQty = 0,
-                            Component = string.Empty,
-                        }).ToList()
+                            NeededQty = p.NeededQty,
+                            Component = p.NeededQty == 0 ? string.Empty : p.Component,
+                            ExternalProgram = settings.ExternalProgram
+                        }).ToList(),
+                    ExternalProgram = settings.ExternalProgram
                 })
                 .ToList();
 
             return syncPrelMatList;
         }
 
-        public static List<DeleteMoComponentRequestDto> ToDeleteMoComponentRequestDto(this SettingsDto settings, DeleteMoComponentRequestDto deleteMoComponent)
+        public static List<DeleteMoComponentRequestDto> ToDeleteMoComponentRequestDto(this SettingsDto settings, List<PrelMatDto> prelMatList)
         {
-            var deleteMoComponentList = new List<DeleteMoComponentRequestDto>()
+            var deleteMoComponentList = new List<DeleteMoComponentRequestDto>();
+
+            foreach (var item in prelMatList)
             {
-                new DeleteMoComponentRequestDto
+                var deleteMoComponent = new DeleteMoComponentRequestDto
                 {
-                    MoId = deleteMoComponent.MoId,
-                    Position = deleteMoComponent.Position,
-                    ExternalReferences = settings.ExternalReference.ToString(),
-                    ExternalProgram = deleteMoComponent.ExternalProgram,
-                }
-            };
+                    MoId = item.Moid ?? 0,
+                    Position = item.Position ?? 0,
+                    ExternalReferences = "PB000" + settings.ExternalReferences?.ToString(),
+                    ExternalProgram = settings.ExternalProgram
+                };
+
+                deleteMoComponentList.Add(deleteMoComponent);
+            }
 
             return deleteMoComponentList;
         }

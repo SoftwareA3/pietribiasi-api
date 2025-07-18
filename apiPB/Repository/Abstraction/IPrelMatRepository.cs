@@ -56,7 +56,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>
         /// IEnumerable di A3AppPrelMat: restituisce una collezione generica di modelli A3AppPrelMat, cioè i record modificati
         /// </returns>
-        IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter);
+        IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter, bool updateDeletedItems = false);
 
         /// <summary>
         /// Ritorna la lista di A3AppPrelMat in base al filtro passato per recuperare le informazioni sulla quantità salvata
@@ -75,8 +75,9 @@ namespace apiPB.Repository.Abstraction
         /// </returns>
         IEnumerable<A3AppPrelMat> GetNotImportedPrelMat();
 
+        // Non importati e non da eliminare (gestiti separatamente)
         IEnumerable<A3AppPrelMat> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestFilter filter);
-        
-        IEnumerable<A3AppPrelMat> UpdateImportedById(UpdateImportedIdFilter filter);
+
+        IEnumerable<A3AppPrelMat> UpdateImportedById(UpdateImportedIdFilter filter, bool updateDeletedItems = false);
     }
 }

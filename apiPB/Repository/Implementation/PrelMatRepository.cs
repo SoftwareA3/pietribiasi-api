@@ -57,6 +57,7 @@ namespace apiPB.Repository.Implementation
                     Wc = filter.Wc,
                     PrelQty = filter.PrelQty,
                     Deleted = filter.Deleted,
+                    NeededQty = filter.NeededQty,
                 };
 
                 list.Add(prelMat);
@@ -127,14 +128,14 @@ namespace apiPB.Repository.Implementation
             return deletePrelMat;
         }
 
-        public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter)
+        public IEnumerable<A3AppPrelMat> UpdatePrelMatImported(WorkerIdSyncFilter filter, bool updateDeletedItems)
         {
             if (filter == null || filter.WorkerId == null)
             {
                 throw new ArgumentNullException(nameof(filter), "Il filtro non può essere nullo");
             }
             var notImported = _context.A3AppPrelMats
-                .Where(x => x.Imported == false)
+                .Where(x => x.Imported == false && (updateDeletedItems ? x.Deleted == true : x.Deleted == false))
                 .ToList();
 
             ApplicationExceptionHandler.ValidateNotNullOrEmptyList(notImported, nameof(PrelMatRepository), nameof(UpdatePrelMatImported));
@@ -186,14 +187,14 @@ namespace apiPB.Repository.Implementation
             return query;
         }
 
-        public IEnumerable<A3AppPrelMat> UpdateImportedById(UpdateImportedIdFilter filter)
+        public IEnumerable<A3AppPrelMat> UpdateImportedById(UpdateImportedIdFilter filter, bool updateDeletedItems)
         {
             if (filter == null || filter.WorkerId == null)
             {
                 throw new ArgumentNullException(nameof(filter), "Il filtro non può essere nullo");
             }
             var notImported = _context.A3AppPrelMats
-                .Where(x => x.Imported == false && x.PrelMatId == filter.Id)
+                .Where(x => x.Imported == false && (updateDeletedItems ? x.Deleted == true : x.Deleted == false) && x.PrelMatId == filter.Id)
                 .ToList();
 
             ApplicationExceptionHandler.ValidateNotNullOrEmptyList(notImported, nameof(PrelMatRepository), nameof(UpdateImportedById));
