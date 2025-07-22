@@ -588,7 +588,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const giacenza = await fetchGiacenzeByItem(selectedMaterialSearchRow.item);
             if (giacenza) {
-                quantitaLabel.textContent = `Nuova qta. da prelevare: ${selectedMaterialSearchRow.neededQty} - Qta. prelevabile: ${selectedMaterialSearchRow.neededQty} - Giacenza: ${giacenza.bookInv} - UoM: ${selectedMaterialSearchRow.uoM}`;
+                quantitaLabel.textContent = `Nuova qta. da prelevare: ${selectedMaterialSearchRow.neededQty} - Qta. prelevabile: ${selectedMaterialSearchRow.neededQty} - UoM: ${selectedMaterialSearchRow.uoM} - Giacenza: ${giacenza.bookInv} (${giacenza.uoM})`; 
 
                 quantitaInput.value = selectedMaterialSearchRow.neededQty;
                 quantitaInput.disabled = false; // Abilita il campo quantità
@@ -1126,7 +1126,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const invItem = await fetchGiacenzeByItem(allDataResult[0].component);
 
                 if (quantitaLabel && invItem) {
-                    quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - Qta. già prelevata su ERP: ${allDataResult[0].pickedQuantity} - Giacenza: ${invItem.bookInv} - UoM: ${allDataResult[0].prelUoM}`;
+                    quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - Qta. già prelevata su ERP: ${allDataResult[0].pickedQuantity} - UoM: ${allDataResult[0].prelUoM} - Giacenza: ${invItem.bookInv} (${invItem.uoM})`;
                 }
 
                 if (parseFloat(allDataResult[0].pickedQuantity) === 0) {
@@ -1185,7 +1185,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const invItem = fetchGiacenzeByItem(dataItem.component);
 
                 if (quantitaLabel && invItem) {
-                    quantitaLabel.innerHTML = `Nuova qta. da prelevare: ${dataItem.prelNeededQty} - Qta. prelevabile: ${dataItem.prelResQty} - Giacenza: ${invItem.bookInv} - UoM: ${dataItem.prelUoM}`;
+                    quantitaLabel.innerHTML = `Nuova qta. da prelevare: ${dataItem.prelNeededQty} - Qta. prelevabile: ${dataItem.prelResQty} - UoM: ${dataItem.prelUoM} - Giacenza: ${invItem.bookInv} (${invItem.uoM})`;
                 }
                 
                 // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
