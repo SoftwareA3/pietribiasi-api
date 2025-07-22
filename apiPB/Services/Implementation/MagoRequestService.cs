@@ -204,7 +204,7 @@ namespace apiPB.Services.Implementation
 
             var prelMatList = settings.ToSyncPrelMatRequestDto(syncPrelMatListNotDeleted); 
 
-            if (prelMatList != null && prelMatList.Count > 0)
+            if (syncPrelMatRequest != null && syncPrelMatRequest.Count > 0)
             {
                 // Invio Lista di record a Mago
                 try
