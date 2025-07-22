@@ -1246,6 +1246,21 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
 ---
 
+### TestingGround
+Per evitare di dover realizzare una distribuzione ad ogni cambio di Frontend o Backend, è disponibile uno **script batch** per testare l'applicazione.
+Lo script crea una cartella `TestingGround` nella quale:
+- Viene compilato il backend (in maniera analoga a quanto accade per la distribuzione)
+- Viene copiato il frontend (in una cartella `wwwroot`)
+- Viene letto il file `BuildScripts/build.json` per ricavare IP, Porta e la stringa di connessione al database
+- Viene avviato il file del backend `apiPB.exe` e aperto un terminale.  
+
+Questo permette di poter testare l'applicazione in locale e effettuare modifiche frontend. Infatti, una volta avviata l'applicazione, se viene eseguito nuovamente lo script, questo controllerà che il terminale o l'applicazione siano attivi e, in caso positivo, si limiterà a copiare di nuovo il contenuto del Frontend in `wwwroot`. Aggiornando la pagina web (con `Ctrl + Shift + R` per eliminare la cache della pagina) verranno applicate le modifiche.
+
+Per le modifiche Backend è necessario terminare il terminale dell'applicazione (con `Ctrl + C`) e avviare nuovamente lo script per ricompilare il backend e sovrascriverlo a quello presente in `TestingGround`
+Questa cartella non viene caricata nel Repository per evitare l'aggiunta di file non necessari.
+
+---
+
 ## Torna all'inizio
 
 Per tornare rapidamente all'inizio di questo documento, puoi cliccare su questo link:
