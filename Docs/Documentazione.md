@@ -125,6 +125,13 @@ La pagina per il Prelievo di Materiali per Produzione si presenta come una serie
 - Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
 
+Sono state aggiunte due funzionalità aggiuntive per il prelievo dei materiali:
+Se la quantità già prelevata sull'ERP è 0, viene abilitato un pulsante **Elimina Materiale** indicato dall'icona 🗑️ che consente di inserire l'articolo che, una volta sincronizzato, verrà eliminato.
+Inoltre durante la selezione dell'articolo è sempre disponibile una funzionalità per **Aggiungere un nuovo materiale**, indicato con un'icona ➕.
+Se cliccato, il pulsante apre una tabella in sovrimpressione dalla quale è possibile selezionare o cercare un materiale da aggiungere. Selezionato il materiale, viene richiesta una quantità necessaria di materiale da prelevare. Inserita anche quest'ultima, il materiale viene inserito nel form e viene richiesto di inserire la quantità da prelevare. Da qui il procedimento di inserimento e salvataggio è analogo a quello per i prelievi standard.
+
+I materiali aggiunti sono sempre indicati nell'applicazione con un colore verde nella lista temporanea, mentre quelli da eliminare, con un colore rosso.
+
 ---
 
 ## Visualizza Prelievi Effettuati
