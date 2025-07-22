@@ -261,9 +261,8 @@ async def build_backend_for_target(obj, target):
     
     return build_output
 
-def create_launcher_script(obj, target):
-    if target['name'] == "Windows":
-        script_content = '''@echo off
+def create_launcher_script(obj):
+    script_content = '''@echo off
     echo Avvio di apiPB.exe...
     cd /d "%~dp0"
     if exist "Application\\apiPB.exe" (
@@ -280,58 +279,16 @@ def create_launcher_script(obj, target):
     '''
 
         # Percorso completo del file batch
-        script_file_path = os.path.join(obj.app_dir, "start.bat")
-
-    if target['name'] == "Linux":
-        script_content = '''#!/bin/bash
-        #!/bin/bash
-
-echo "Avvio di apiPB.exe..."
-cd "$(dirname "$0")"
-if [ -f "Application/apiPB" ]; then
-    echo "File apiPB trovato in Application"
-    cd Application
-    chmod +x apiPB
-    echo "Avvio di apiPB..."
-    ./apiPB
-    echo "Script avviato con successo"
-else
-    echo "ERRORE: File apiPB non trovato nella cartella Application"
-    read -p "Premi Invio per continuare..."
-fi
-        '''
-
-    else:
-        print(f"❌ Target {target['name']} non supportato per la creazione dello script di avvio.")
-        return None
+    script_file_path = os.path.join(obj.app_dir, "start.bat")
     
     try:
         
         # Scrivi il file batch
         with open(script_file_path, 'w', encoding='utf-8') as f:
             f.write(script_content)
-
-        if target['name'] == "Linux":
-            # Rendi il file eseguibile su Linux
-            os.chmod(script_file_path, 0o755)
         
         print(f"✅ Script creato con successo in: {script_file_path}")
         
     except Exception as e:
         print(f"Errore durante la creazione dello script: {e}")
         return None
-        
-# async def copy_backend_dist(obj, build_name):
-#     """Copia il backend compilato nella cartella di build"""
-#     print("Copia del backend compilato nella cartella di build...")
-    
-#     backend_src = obj.project_root / "DistTmp"
-#     backend_dst = obj.app_dir
-    
-#     if backend_dst.exists():
-#         shutil.rmtree(backend_dst)
-    
-#     shutil.copytree(backend_src, backend_dst)
-    
-#     print("✅ Backend copiato nella cartella di build")
-#     return True

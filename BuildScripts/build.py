@@ -72,7 +72,7 @@ class AppBuilder:
             script_utils.copy_documentation_to_build(self)
 
             # Crea lo script di avvio per il target specificato
-            script_utils.create_launcher_script(self, target)
+            script_utils.create_launcher_script(self)
         
             # Creazione del file ZIP di distribuzione
             script_utils.create_zip_archive(self)
