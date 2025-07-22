@@ -1,4 +1,5 @@
 using apiPB.Dto.Models;
+using apiPB.Dto.Request;
 
 namespace apiPB.Services.Abstraction
 {
@@ -11,5 +12,7 @@ namespace apiPB.Services.Abstraction
         /// IEnumerable di GiacenzeDto: restituisce una collezione generica di GiacenzeDto
         /// </returns>
         IEnumerable<GiacenzeDto> GetGiacenze();
+
+        GiacenzeDto GetGiacenzeByItem(ComponentRequestDto request);
     }
 }

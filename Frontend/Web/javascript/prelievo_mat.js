@@ -586,11 +586,20 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Componente trovato in overlay:", selectedMaterialSearchRow.item);
             barcodeInput.value = `Item: ${selectedMaterialSearchRow.item} ${selectedMaterialSearchRow.barCode === "" || selectedMaterialSearchRow.barCode === null ? "" : `- Code: ${selectedMaterialSearchRow.barCode}`} - ${selectedMaterialSearchRow.description === "" || selectedMaterialSearchRow.description === null ? "Nessuna descrizione disponibile" : selectedMaterialSearchRow.description}`;
 
-            quantitaLabel.textContent = `Nuova qta. da prelevare: ${selectedMaterialSearchRow.neededQty} - Qta. prelevabile: ${selectedMaterialSearchRow.prelQty} - UoM: ${selectedMaterialSearchRow.uoM}`;
+            const giacenza = await fetchGiacenzeByItem(selectedMaterialSearchRow.item);
+            if (giacenza) {
+                quantitaLabel.textContent = `Nuova qta. da prelevare: ${selectedMaterialSearchRow.neededQty} - Qta. prelevabile: ${selectedMaterialSearchRow.neededQty} - Giacenza: ${giacenza.bookInv} - UoM: ${selectedMaterialSearchRow.uoM}`;
 
-            quantitaInput.value = selectedMaterialSearchRow.neededQty;
-            quantitaInput.disabled = false; // Abilita il campo quantità
-            isAddingNewItem = true;
+                quantitaInput.value = selectedMaterialSearchRow.neededQty;
+                quantitaInput.disabled = false; // Abilita il campo quantità
+                isAddingNewItem = true;
+            }
+            else {
+                alert("Nessuna giacenza disponibile per questo materiale.");
+                quantitaInput.value = "";
+                quantitaInput.disabled = true; // Disabilita il campo quantità
+                isAddingNewItem = false;
+            }
         }
         else {
             barcodeInput.value = ""; // Resetta il campo se non c'è un barcode
@@ -1114,11 +1123,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 quantitaInput.value = finalSum;
                 
                 const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
-                if (quantitaLabel) {
-                    quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - UoM: ${allDataResult[0].prelUoM}`;
+                const invItem = await fetchGiacenzeByItem(allDataResult[0].component);
+
+                if (quantitaLabel && invItem) {
+                    quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - Qta. già prelevata su ERP: ${allDataResult[0].pickedQuantity} - Giacenza: ${invItem.bookInv} - UoM: ${allDataResult[0].prelUoM}`;
                 }
 
-                if (parseFloat(allDataResult[0].prelResQty) <= 0 || parseFloat(quantitaInput.value) - parseFloat(tmpListSum) <= 0) {
+                if (parseFloat(allDataResult[0].pickedQuantity) === 0) {
                     eliminaArticoloButton.classList.remove("disabled-button-look");
                 }
                 
@@ -1158,6 +1169,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             dataItem.barCode = selectedMaterialSearchRow.barCode || "";
             dataItem.itemDesc = selectedMaterialSearchRow.itemDesc || "";
             dataItem.prelQty = selectedMaterialSearchRow.neededQty || 0;
+            dataItem.prelResQty = selectedMaterialSearchRow.neededQty || 0;
             dataItem.prelNeededQty = selectedMaterialSearchRow.neededQty || 0;
             dataItem.neededQty = selectedMaterialSearchRow.neededQty || 0;
             dataItem.storage = selectedMaterialSearchRow.storage || "";
@@ -1169,8 +1181,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             if(dataItem) {
                 quantitaInput.disabled = false;
                 const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
-                if (quantitaLabel) {
-                    quantitaLabel.textContent = `Nuova qta. da prelevare: ${dataItem.prelResQty} - Qta. prelevabile: ${dataItem.prelQty} - UoM: ${dataItem.prelUoM}`;
+                
+                const invItem = fetchGiacenzeByItem(dataItem.component);
+
+                if (quantitaLabel && invItem) {
+                    quantitaLabel.innerHTML = `Nuova qta. da prelevare: ${dataItem.prelNeededQty} - Qta. prelevabile: ${dataItem.prelResQty} - Giacenza: ${invItem.bookInv} - UoM: ${dataItem.prelUoM}`;
                 }
                 
                 // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
@@ -1386,7 +1401,30 @@ async function fetchAllGiacenze() {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
-            }
+            },
+        });
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return [];
+        }
+        const giacenze = await request.json();
+        return giacenze;
+    } catch (error) {
+        console.error("Errore durante la fetch delle giacenze:", error);
+        return [];
+    }
+}
+
+async function fetchGiacenzeByItem(item) {
+    try {
+        const request = await fetchWithAuth(getApiUrl("api/giacenze/get_by_item"), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "component": item
+            }),
         });
         if (!request || !request.ok) {
             console.error("Errore nella richiesta:", request.status, request.statusText);

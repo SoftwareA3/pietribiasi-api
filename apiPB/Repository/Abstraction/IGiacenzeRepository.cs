@@ -1,3 +1,4 @@
+using apiPB.Filters;
 using apiPB.Models;
 
 namespace apiPB.Repository.Abstraction
@@ -10,5 +11,7 @@ namespace apiPB.Repository.Abstraction
         /// <returns>IEnumerable<VwApiGiacenze> Ritorna una collezione generica di Modelli ApiGiacenze</returns>
         /// <remarks>
         IEnumerable<VwApiGiacenze> GetGiacenze();
+
+        VwApiGiacenze GetGiacenzaByItem(ComponentFilter request);
     }
 }
