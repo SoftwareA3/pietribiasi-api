@@ -34,9 +34,6 @@ let prelieviLists = {
     barcodeList: []
 };
 
-// Action Types
-const ACTION_TYPE_PRELIEVI = 2051538946;
-
 // Tab attiva corrente
 let activeTab = 'global';
 
