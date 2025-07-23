@@ -209,44 +209,48 @@ namespace apiPB.Services.Implementation
                 // Invio Lista di record a Mago
                 try
                 {
-                    Console.WriteLine($"SyncPrelMatList: {prelMatList}");
-                    var response = await SyncPrelMat(prelMatList, responseDto.Token);
-                    if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                    if (prelMatList.Count > 0)
                     {
-                        throw new Exception("SyncPrelMat failed");
-                    }
 
-                    // Aggiornamento della lista di record in A3_app_prel_mat
-                    Console.WriteLine("Updating records in A3_app_prel_mat...");
-                    // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
-                    // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
-                    if (!isFiltered || (!isFiltered && syncPrelMatListNotDeleted.Count == 0))
-                    {
-                        var prelMatListUpdated = _prelMatRequestService.UpdatePrelMatImported(request.WorkerIdSyncRequestDto);
-                        Console.WriteLine($"PrelMatListUpdated: {prelMatListUpdated}");
-                        if (prelMatListUpdated == null)
+                        Console.WriteLine($"SyncPrelMatList: {prelMatList}");
+                        var response = await SyncPrelMat(prelMatList, responseDto.Token);
+                        if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
                         {
-                            throw new Exception("No records updated in A3_app_prel_mat: logging off...");
+                            throw new Exception("SyncPrelMat failed");
                         }
-                    }
-                    // In questo caso la lista è una lista filtrata e la sincronizzaiozne non è generale
-                    // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
-                    else
-                    {
-                        foreach (var item in syncPrelMatListNotDeleted)
+
+                        // Aggiornamento della lista di record in A3_app_prel_mat
+                        Console.WriteLine("Updating records in A3_app_prel_mat...");
+                        // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
+                        // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
+                        if (!isFiltered || (!isFiltered && syncPrelMatListNotDeleted.Count == 0))
                         {
-                            _prelMatRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                            var prelMatListUpdated = _prelMatRequestService.UpdatePrelMatImported(request.WorkerIdSyncRequestDto);
+                            Console.WriteLine($"PrelMatListUpdated: {prelMatListUpdated}");
+                            if (prelMatListUpdated == null)
                             {
-                                Id = item.PrelMatId,
-                                WorkerId = request.WorkerIdSyncRequestDto.WorkerId
-                            });
+                                throw new Exception("No records updated in A3_app_prel_mat: logging off...");
+                            }
                         }
+                        // In questo caso la lista è una lista filtrata e la sincronizzaiozne non è generale
+                        // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
+                        else
+                        {
+                            foreach (var item in syncPrelMatListNotDeleted)
+                            {
+                                _prelMatRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                                {
+                                    Id = item.PrelMatId,
+                                    WorkerId = request.WorkerIdSyncRequestDto.WorkerId
+                                });
+                            }
+                        }
+
+                        _settingsRepository.IncrementExternalReferenceCounter();
+
+                        Console.WriteLine($"ExternalReferenceCounter incremented: {settings.ExternalReferences}");
                     }
-
-                    _settingsRepository.IncrementExternalReferenceCounter();
-
-                    Console.WriteLine($"ExternalReferenceCounter incremented: {settings.ExternalReferences}");
-
+                    
                     // Sincronizzazione materiali da eliminare
                     var deletedPrelMatList = syncPrelMatRequest
                         .Where(p => p.Deleted == true)
