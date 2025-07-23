@@ -48,7 +48,7 @@
 # Installazione e Configurazione
 
 ## Download Artefatto
-Per installare il prodotto, è necessario scaricare l'artefatto dal Workflow `Build Windown Distribution` su Github.
+Per installare il prodotto, è necessario scaricare l'artefatto dal Workflow `Build Windows Distribution` su Github.
 Se il workflow non è molto recente, è possibile avviarne uno nuovo nella tendina che compare `run workflow` per poi selezionare il branch (di solito develop o main) e premere `Run Workflow`
 
 Una volta completato il Workflow, in fondo alla pagina "Summary" comparirà l'artefatto da scaricare. 
@@ -59,6 +59,8 @@ Una volta scaricato, l'artefatto conterrà i seguenti elementi:
 - `build.exe`: eseguibile per la costruzione e la configurazione dell'applicazione
 - `build.json`: 
 - `Documentazione.md`: documentazione sull'applicazione
+- `Installazione.md`: documentazione sull'installazione
+- `documentazione_api.pdf`: documentazione sull'API 
 
 
 ## Build locale
@@ -95,7 +97,7 @@ Per installare l'applicazione, una volta effettuate le configurazioni necessarie
 Il risultato sarà una cartella chiamata come il nome specificato nel file `build.json` e la rispettiva cartella compressa.
 
 All'interno si troveranno i seguenti file:
-- Application: contiene il backend compilato e i file statici del frontend;
+- `Application`: contiene il backend compilato e i file statici del frontend;
 - `Documentazione.md`: documentazione sull'applicazione;
 - `start.bat`: script di avvio per l'applicazione.
 
@@ -532,6 +534,21 @@ public IActionResult GetGiacenze()
 - **Ritorna:** `IActionResult`  
     - `200 Ok` se l'operazione va a buon fine. Ritorna le informazioni della vista
     - `404 Not Found` se la richiesta non ha prodotto risultati
+
+---
+
+```csharp
+public IActionResult GetGiacenzeByItem([FromBody] ComponentRequestDto request)
+```
+- **Endpoint:** `get_by_item`
+- **Richiesta:** POST
+- **Descrizione:** Recupera la giacenza dalla vista `vw_api_giacenze` filtrata per il parametro passato
+- **Parametri:**
+    - `ComponentRequestDto`: DTO contenente l'articolo da ricercare
+- **Ritorna:** `IActionResult`  
+    - `200 Ok` se l'operazione va a buon fine. Ritorna le informazioni della vista
+    - `404 Not Found` se la richiesta non ha prodotto risultati
+    - `400 Bad Request` se la richiesta ha corpo nullo
 
 ---
 
@@ -1199,8 +1216,9 @@ Per aggiungere una nuova richiesta al Back End, la procedura più efficace è la
 ## Comandi
 
 ### Avvio API
-Per avviare l'API, il comando è: ```dotnet run watch```. Questo comando aprirà una porta di comunicazione con l'API.
+Per avviare il backend ed esporre l'API, il comando è: ```dotnet run watch```. Questo comando aprirà una porta di comunicazione con l'API.
 Per compilare il progetto o l'API nello specifico, bisogna spostarsi nella cartella dove risiede il file `.csprog` e usare il comando `dotnet build`. In caso di errori, il terminale mostrerà solamente gli errori di compilazione e non quelli a runtime.
+La compilazione appena specificata è diversa dalla compilazione per la distribuzione: questa serve solo per "costruire" l'applicazione e verificare che non ci siano errori di compilazione prima di poterla effettivamente utilizzare. La compilazione per la distribuzione, ripete il comando di build per poi compilare effettivamente il backend.
 
 ### Scaffolding
 Per eseguire lo scaffolding del database e creare in automatico sia le tabelle che il DbContext, si deve usare il comando:
