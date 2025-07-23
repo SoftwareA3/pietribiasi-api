@@ -56,22 +56,21 @@ class AppBuilder:
 
             # Controlla che host e port non siano stringhe vuote
             if any(x in ("", None) for x in [backend_host, backend_port]):
-                print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port, server:frontend:host, server:frontend:port è mancante o vuoto in build.json")
+                print("❌ Build interrotta: uno dei valori server:backend:host, server:backend:port è mancante o vuoto in build.json")
                 return False
 
+            # Copia il backend compilato nella directory di build
             if all([backend_host, backend_port]):
                 script_utils.copy_backend_to_build(self)
             
-            # Configura il backend con i valori di configurazione
+            # Aggiorna il file appsettings.json con i valori di build.json
             print("Aggiornamento di appsettings.json...")
-
-            # Percorsi dei file da aggiornare
             await script_utils.update_appsettings(self)
             
             # Copia la documentazione nella directory di build
             script_utils.copy_documentation_to_build(self)
 
-            # Crea lo script di avvio per il target specificato
+            # Crea lo script di avvio
             script_utils.create_launcher_script(self)
         
             # Creazione del file ZIP di distribuzione
