@@ -74,8 +74,19 @@ namespace apiPB.Services.Abstraction
         /// </returns>
         IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request, bool updateDeletedItems = false);
 
+        /// <summary>
+        /// Ritorna la lista di A3AppPrelMat non importati in base al filtro passato
+        /// </summary>
+        /// <param name="request">Filtro per l'esecuzione della query. Richiede le proprietà: Job, MoNo, Operation, Component</param>
+        /// <returns></returns>
         IEnumerable<PrelMatDto> GetNotImportedAppPrelMatByFilter(ViewPrelMatRequestDto request);
 
+        /// <summary>
+        /// Aggiorna le informazioni della tabella A3_app_prel_mat in base alla lista passata, impostando Imported a true
+        /// </summary>
+        /// <param name="request">Lista di ID da aggiornare</param>
+        /// <param name="updateDeletedItems">Aggiorna anche le operazioni di eliminazione di materiale</param>
+        /// <returns>Ritorna le informazioni aggiornate</returns>
         IEnumerable<PrelMatDto> UpdateImportedById(UpdateImportedIdRequestDto request, bool updateDeletedItems = false);
     }
 }

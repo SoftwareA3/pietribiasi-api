@@ -13,6 +13,11 @@ namespace apiPB.Services.Abstraction
         /// </returns>
         IEnumerable<GiacenzeDto> GetGiacenze();
 
+        /// <summary>
+        /// Restituisce le informazioni dalla tabella vw_api_giacenze in base al filtro passato
+        /// </summary>
+        /// <param name="request">Componente da usare come filtro per la richiesta</param>
+        /// <returns></returns>
         GiacenzeDto GetGiacenzeByItem(ComponentRequestDto request);
     }
 }
