@@ -526,9 +526,9 @@ namespace apiPB.Services.Implementation
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("SyncRegOre failed");
+                throw new Exception("SyncPrelMat failed");
             }
-            Console.WriteLine($"SyncRegOre successfull response: {response}");
+            Console.WriteLine($"SyncPrelMat successful response: {response}");
 
             return response;
         }
