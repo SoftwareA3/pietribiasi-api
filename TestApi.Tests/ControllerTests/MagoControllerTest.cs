@@ -98,9 +98,6 @@ namespace TestApi.Tests.ControllerTests
         private readonly SyncPrelMatRequestDto _testSyncPrelMatRequest = new SyncPrelMatRequestDto
         {
             MoId = 123,
-            RtgStep = 2,
-            Alternate = "Alt1",
-            AltRtgStep = 3,
             WorkerId = 1,
             ActionDetails = new List<SyncPrelMatDetailsRequestdto>
             {

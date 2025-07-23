@@ -96,9 +96,6 @@ namespace TestApi.Tests.ServicesTests
             new SyncPrelMatRequestDto
             {
                 MoId = 2001,
-                RtgStep = 1,
-                Alternate = "A1",
-                AltRtgStep = 2,
                 WorkerId = 1,
                 ActionDetails = new List<SyncPrelMatDetailsRequestdto>
                 {
@@ -117,9 +114,6 @@ namespace TestApi.Tests.ServicesTests
             new SyncPrelMatRequestDto
             {
                 MoId = 2002,
-                RtgStep = 2,
-                Alternate = "A2",
-                AltRtgStep = 3,
                 WorkerId = 2,
                 ActionDetails = new List<SyncPrelMatDetailsRequestdto>
                 {
@@ -738,7 +732,7 @@ namespace TestApi.Tests.ServicesTests
                 It.IsAny<List<SyncPrelMatRequestDto>>(),
                 responseDto.Token,
                 It.IsAny<bool>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
-            _mockPrelMatRequestService.Setup(x => x.UpdateImportedById(It.IsAny<UpdateImportedIdRequestDto>()));
+            _mockPrelMatRequestService.Setup(x => x.UpdateImportedById(It.IsAny<UpdateImportedIdRequestDto>(), It.IsAny<bool>()));
             _mockMapper.Setup(m => m.Map<IEnumerable<SyncPrelMatRequestDto>>(It.IsAny<List<PrelMatDto>>()))
                 .Returns(syncPrelMatList);
 
@@ -747,7 +741,7 @@ namespace TestApi.Tests.ServicesTests
 
             // Assert
             Assert.NotNull(result);
-            _mockPrelMatRequestService.Verify(x => x.UpdateImportedById(It.IsAny<UpdateImportedIdRequestDto>()), Times.Once);
+            _mockPrelMatRequestService.Verify(x => x.UpdateImportedById(It.IsAny<UpdateImportedIdRequestDto>(), It.IsAny<bool>()), Times.Once);
         }
 
         [Fact]
@@ -785,7 +779,7 @@ namespace TestApi.Tests.ServicesTests
                 responseDto.Token,
                 It.IsAny<bool>())).ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-            _mockPrelMatRequestService.Setup(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>()))
+            _mockPrelMatRequestService.Setup(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>(), It.IsAny<bool>()))
                 .Returns(new List<PrelMatDto>());
             _mockMapper.Setup(m => m.Map<IEnumerable<SyncPrelMatRequestDto>>(It.IsAny<List<PrelMatDto>>()))
                 .Returns(syncPrelMatList);
@@ -796,7 +790,7 @@ namespace TestApi.Tests.ServicesTests
             // Assert
             Assert.NotNull(result);
             _mockPrelMatRequestService.Verify(x => x.GetNotImportedPrelMat(), Times.Once);
-            _mockPrelMatRequestService.Verify(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>()), Times.Once);
+            _mockPrelMatRequestService.Verify(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>(), It.IsAny<bool>()), Times.Once);
         }
 
         [Fact]
@@ -1037,7 +1031,7 @@ namespace TestApi.Tests.ServicesTests
 
             _mockRegOreRequestService.Setup(x => x.UpdateRegOreImported(It.IsAny<WorkerIdSyncRequestDto>()))
                 .Returns(new List<RegOreDto>());
-            _mockPrelMatRequestService.Setup(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>()))
+            _mockPrelMatRequestService.Setup(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>(), It.IsAny<bool>()))
                 .Returns(new List<PrelMatDto>());
             _mockInventarioRequestService.Setup(x => x.UpdateInventarioImported(It.IsAny<WorkerIdSyncRequestDto>()))
                 .Returns(new List<InventarioDto>());
@@ -1061,7 +1055,7 @@ namespace TestApi.Tests.ServicesTests
             _mockMagoApiClient.Verify(x => x.SendPostAsyncWithToken("openMes/materials-picking", It.IsAny<IEnumerable<SyncPrelMatRequestDto>>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
             _mockMagoApiClient.Verify(x => x.SendPostAsyncWithToken("ERPInventory/ImportInventoryEntries", It.IsAny<IEnumerable<SyncInventarioRequestDto>>(), It.IsAny<string>(), It.IsAny<bool>()), Times.AtLeastOnce); // Called in a loop
             _mockRegOreRequestService.Verify(x => x.UpdateRegOreImported(It.IsAny<WorkerIdSyncRequestDto>()), Times.Once);
-            _mockPrelMatRequestService.Verify(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>()), Times.Once);
+            _mockPrelMatRequestService.Verify(x => x.UpdatePrelMatImported(It.IsAny<WorkerIdSyncRequestDto>(), It.IsAny<bool>()), Times.Once);
             _mockInventarioRequestService.Verify(x => x.UpdateInventarioImported(It.IsAny<WorkerIdSyncRequestDto>()), Times.Once);
         }
 
