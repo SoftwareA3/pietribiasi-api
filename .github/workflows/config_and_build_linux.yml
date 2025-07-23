@@ -1,14 +1,13 @@
-name: Build Python to sh Linux
+name: Build Linux Distribution
 
 on:
   workflow_dispatch:
 
 permissions:
   contents: write
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout code
@@ -24,41 +23,56 @@ jobs:
         with:
           dotnet-version: '9.0'
 
+      - name: Cleanup previous distribution directory
+        run: |
+          rm -rf "${{ github.workspace }}/App"
+
+      - name: Setup Distribution Directory
+        run: |
+          mkdir -p "${{ github.workspace }}/App"
+          mkdir -p "${{ github.workspace }}/App/Backend"
+
       - name: Publish ASP.NET Core Backend
         run: |
-          mkdir -p "${{ github.workspace }}/DistTmp"
-          dotnet publish ./apiPB/apiPB.csproj --configuration Release --output ${{github.workspace}}/DistTmp --runtime linux-x64 --self-contained true /p:UseAppHost=true # Modificato da win-x64 a linux-x64
+          dotnet publish ./apiPB/apiPB.csproj --configuration Release --output ${{github.workspace}}/App/Backend --runtime linux-x64 --self-contained true /p:UseAppHost=true
       
-      - name: Install dependencies
+      - name: Copy Frontend files in wwwroot
+        run: |
+          if [ -d "${{ github.workspace }}/App/Backend" ]; then
+            mkdir -p "${{ github.workspace }}/App/Backend/wwwroot"
+            cp -r "${{ github.workspace }}/Frontend/"* "${{ github.workspace }}/App/Backend/wwwroot/"
+          else
+            echo "Error: Backend directory not found."
+            exit 1
+          fi
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
 
-      - name: Build sh
+      - name: Build SH
         run: |
           cd BuildScripts
           pyinstaller --onefile --add-data "script_utils.py:." --add-data "build.json:." build.py
 
-      - name: Move sh to root and cleanup
+      - name: Move EXE to distribution directory and cleanup
         run: |
-          rm -f build.sh || true
-          rm -f build.exe || true
-          mv BuildScripts/dist/build build.sh
-          chmod +x build.sh
-          rm -rf BuildScripts/dist
-          rm -rf BuildScripts/build
-          rm -f BuildScripts/build.spec
+          mv BuildScripts/dist/build "${{ github.workspace }}/App"
+          rm -rf BuildScripts/build BuildScripts/dist BuildScripts/__pycache__
+          rm -rf BuildScripts/build.spec
+      
+      - name: Copy documentation to distribution directory
+        run: |
+          cp -r "${{ github.workspace }}/Docs/"* "${{ github.workspace }}/App"
 
-      - name: Commit and push executable
+      - name: Copy configuration file to distribution directory
         run: |
-          git config --local user.email "raul.pianon@studenti.unipd.it"
-          git config --local user.name "RaulPianon"
-          git add build.sh
-          git commit -m "Auto-build: Updated build.sh" || exit 0
-          git push
+          cp "${{ github.workspace }}/BuildScripts/build.json" "${{ github.workspace }}/App/build.json"
 
       - name: Upload artifact (backup)
         uses: actions/upload-artifact@v4
         with:
-          name: config-generator
-          path: build.sh
+          name: PietribiasiApp-Distribution
+          path: App/
+          retention-days: 30

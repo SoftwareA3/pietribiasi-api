@@ -192,6 +192,10 @@ a:hover {
     gap: var(--spacing-3);
 }
 
+.loading-cursor {
+    cursor: wait !important;
+}
+
 #current-user {
     display: flex;
     align-items: center;

@@ -76,7 +76,7 @@ namespace apiPB.Services.Implementation
 
         public async Task<IEnumerable<SyncRegOreRequestDto>> SyncRegOreFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncRegOreFilteredDto? request, bool isFiltered = true)
         {
-            if(string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
+            if (string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
@@ -167,7 +167,7 @@ namespace apiPB.Services.Implementation
 
         public async Task<IEnumerable<SyncPrelMatRequestDto>> SyncPrelMatFiltered(MagoLoginResponseDto responseDto, SettingsDto settings, SyncPrelMatFilteredDto? request, bool isFiltered = true)
         {
-            if(string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
+            if (string.IsNullOrEmpty(responseDto.Token) || settings == null || request == null)
             {
                 throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
             }
@@ -187,6 +187,7 @@ namespace apiPB.Services.Implementation
             else
             {
                 Console.WriteLine("No filter applied, retrieving all records from A3_app_prel_mat");
+                // QUA LI PRENDE SENZA FILTRO PER I MATERIALI DA ELIMINARE
                 syncPrelMatRequest = _prelMatRequestService.GetNotImportedPrelMat().ToList();
 
                 if (syncPrelMatRequest == null)
@@ -196,10 +197,14 @@ namespace apiPB.Services.Implementation
                 }
             }
 
-            // Crea il Dto con tutti i dati per effettuare le richieste all'API di Mago
-            var prelMatList = settings.ToSyncPrelMatRequestDto(syncPrelMatRequest);
+            // Estrae i materiali da non eliminare
+            var syncPrelMatListNotDeleted = syncPrelMatRequest
+                .Where(p => p.Deleted == false)
+                .ToList();
 
-            if (prelMatList != null && prelMatList.Count > 0)
+            var prelMatList = settings.ToSyncPrelMatRequestDto(syncPrelMatListNotDeleted); 
+
+            if (syncPrelMatRequest != null && syncPrelMatRequest.Count > 0)
             {
                 // Invio Lista di record a Mago
                 try
@@ -215,7 +220,7 @@ namespace apiPB.Services.Implementation
                     Console.WriteLine("Updating records in A3_app_prel_mat...");
                     // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
                     // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
-                    if (!isFiltered || (!isFiltered && request.PrelMatList?.Count == 0))
+                    if (!isFiltered || (!isFiltered && syncPrelMatListNotDeleted.Count == 0))
                     {
                         var prelMatListUpdated = _prelMatRequestService.UpdatePrelMatImported(request.WorkerIdSyncRequestDto);
                         Console.WriteLine($"PrelMatListUpdated: {prelMatListUpdated}");
@@ -228,7 +233,7 @@ namespace apiPB.Services.Implementation
                     // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
                     else
                     {
-                        foreach (var item in syncPrelMatRequest)
+                        foreach (var item in syncPrelMatListNotDeleted)
                         {
                             _prelMatRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
                             {
@@ -237,6 +242,56 @@ namespace apiPB.Services.Implementation
                             });
                         }
                     }
+
+                    _settingsRepository.IncrementExternalReferenceCounter();
+
+                    Console.WriteLine($"ExternalReferenceCounter incremented: {settings.ExternalReferences}");
+
+                    // Sincronizzazione materiali da eliminare
+                    var deletedPrelMatList = syncPrelMatRequest
+                        .Where(p => p.Deleted == true)
+                        .ToList();
+
+                    if (deletedPrelMatList.Count > 0)
+                    {
+                        Console.WriteLine($"SyncPrelMatList Deleted: {deletedPrelMatList}");
+
+                        var responseDelete = await DeleteMoComponentAsync(responseDto, deletedPrelMatList);
+                        if (responseDelete.StatusCode != HttpStatusCode.OK && responseDelete.StatusCode != HttpStatusCode.NoContent)
+                        {
+                            throw new Exception("SyncPrelMat failed");
+                        }
+
+                        Console.WriteLine($"SyncPrelMatList Deleted response: {responseDelete}");
+
+                        Console.WriteLine("Updating deleted records in A3_app_prel_mat...");
+                        // Aggiorna i record eliminati in A3_app_prel_mat
+                        if (!isFiltered)
+                        {
+                            var deletedPrelMatListUpdated = _prelMatRequestService.UpdatePrelMatImported(request.WorkerIdSyncRequestDto, true);
+                            Console.WriteLine($"DeletedPrelMatListUpdated: {deletedPrelMatListUpdated}");
+                            if (deletedPrelMatListUpdated == null)
+                            {
+                                throw new Exception("No deleted records updated in A3_app_prel_mat: logging off...");
+                            }
+                        }
+                        else
+                        {
+                            foreach (var item in deletedPrelMatList)
+                            {
+                                _prelMatRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                                {
+                                    Id = item.PrelMatId,
+                                    WorkerId = request.WorkerIdSyncRequestDto.WorkerId
+                                }, true);
+                            }
+                        }
+
+                        _settingsRepository.IncrementExternalReferenceCounter();
+
+                        prelMatList.AddRange(settings.ToSyncPrelMatRequestDto(deletedPrelMatList));
+                    }
+
 
                     return prelMatList;
                 }
@@ -451,6 +506,31 @@ namespace apiPB.Services.Implementation
             {
                 throw new HttpRequestException($"Errore nel logout. Stato: {response.StatusCode}");
             }
+        }
+        
+        public async Task<HttpResponseMessage> DeleteMoComponentAsync(MagoLoginResponseDto responseDto, List<PrelMatDto> request)
+        {
+            if (string.IsNullOrEmpty(responseDto.Token) || request == null)
+            {
+                throw new ArgumentNullException("ResponseDto, Settings or RequestId cannot be null");
+            }
+
+            var settings = _settingsRepository.GetSettings() ?? throw new InvalidOperationException("Settings cannot be null");
+            
+            var mappedRequest = settings.ToDeleteMoComponentRequestDto(request);
+
+            var response = await _magoApiClient.SendPostAsyncWithToken<DeleteMoComponentRequestDto>(
+                "openMes/delete-mo-component",
+                mappedRequest,
+                responseDto.Token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("SyncRegOre failed");
+            }
+            Console.WriteLine($"SyncRegOre successfull response: {response}");
+
+            return response;
         }
     }
 }

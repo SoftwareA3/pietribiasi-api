@@ -26,4 +26,8 @@ public partial class A3AppSetting
     public string? Storage { get; set; }
 
     public bool? SyncGlobalActive { get; set; }
+
+    public string? ExternalProgram { get; set; }
+
+    public int? ExternalReferences { get; set; }
 }

@@ -82,6 +82,11 @@
                                 <input type="text" id="prel-mat-barcode" name="prel-mat-barcode" required="" autocomplete="off" disabled="true">
                                 <div id="prel-mat-barcode-autocomplete-list" class="autocomplete-items hidden"></div>
                             </div>
+                            <button type="button" id="prel-mat-aggiungi-articolo" class="button button-primary button-inline">
+                                <i class="fa-solid fa-plus button-icon"></i>
+                            <button type="button" id="prel-mat-elimina-articolo" class="button button-danger button-inline">
+                                <i class="fa-solid fa-trash button-icon"></i>
+                            </button>
                         </div>
                     </div>
                     
@@ -152,6 +157,58 @@
                 </div>
             </div>
         </div>
+
+        <div id="search-materials-overlay" class="search-overlay">
+            <div class="search-results">
+                <div class="search-results-header">
+                    <h2>Risultati Ricerca Materiali</h2>
+                    <button class="close-btn" id="close-search-overlay-materials">&times;</button>
+                </div>
+                <div class="search-input-container">
+                    <input type="text" id="search-materials-input" placeholder="Cerca per Articolo, Descrizione o Barcode" autocomplete="off">
+                    <button id="search-materials-button" class="button button-secondary">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <button id="cancel-search-materials-input" class="button button-danger">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="search-results-content">
+                    <table class="search-results-table">
+                        <thead>
+                            <tr>
+                                <th>Articolo</th>
+                                <th>Descrizione</th>
+                                <th>Barcode</th>
+                                <th>Quantità</th>
+                                <th>UM</th>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results-materials-body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="search-results-actions">
+                    <button id="cancel-search-materials" class="button button-danger">Annulla</button>
+                    <button id="select-search-result-materials" class="button button-primary">Seleziona</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="material-qty-overlay" class="qty-overlay">
+            <div class="overlay-content">
+                <h2>Aggiungi Quantità Necessaria</h2>
+                <form id="material-qty-form">
+                    <div class="form-group">
+                        <label for="material-qty-input">Quantità Necessaria:</label>
+                        <input type="number" id="material-qty-input" name="material-qty-input" required>
+                    </div>
+                    <button type="button" id="add-material-qty-button" class="button button-primary">Aggiungi</button>
+                    <button type="button" id="cancel-material-qty-button" class="button button-danger">Annulla</button>
+                </form>
+            </div>
+        </div>
+
         <footer class="app-footer" id="app-main-footer">
             <p>Pietribiasi Michelangelo S.r.l.</p>
             <p>App Produzione v.1.0.0 - Powered by A3 Soluzioni Informatiche</p>

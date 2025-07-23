@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace apiPB.Dto.Request
-{ 
+{
     /// <summary>
     /// DTO per la richiesta di sincronizzazione dei materiali prelevati.
     /// I primi campi raggruppano le informazioni comuni dei prelievi,
@@ -13,10 +13,9 @@ namespace apiPB.Dto.Request
     public class SyncPrelMatRequestDto
     {
         public int? MoId { get; set; }
-        public int? RtgStep { get; set; }
-        public string? Alternate { get; set; } = string.Empty;
-        public int? AltRtgStep { get; set; }
         public int? WorkerId { get; set; }
+        public string? ExternalReferences { get; set; } = string.Empty;
         public List<SyncPrelMatDetailsRequestdto> ActionDetails { get; set; } = new List<SyncPrelMatDetailsRequestdto>();
+        public string? ExternalProgram { get; set; } = "Pietribiasi App";
     }
 }

@@ -14,9 +14,9 @@ namespace apiPB.Dto.Request
         public string? UoM { get; set; }
         public short? Position { get; set; }
         public string? Component { get; set; }
-
         public string BarCode { get; set; } = null!;
-
         public double? PrelQty { get; set; }
+        public bool? Deleted { get; set; }
+        public double? NeededQty { get; set; }
     }
 }

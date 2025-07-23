@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             rectificationNegInput.disabled = false;
             storageInput.disabled = false;
             syncToggle.disabled = false;
+            saveButton.disabled = false;
         } else {
             urlInput.disabled = true;
             usernameInput.disabled = true;
@@ -118,6 +119,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             rectificationNegInput.disabled = true;
             storageInput.disabled = true;
             syncToggle.disabled = true;
+            saveButton.disabled = true;
         }
     });
 });

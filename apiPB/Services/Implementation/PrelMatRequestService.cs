@@ -95,10 +95,10 @@ namespace apiPB.Services.Implementation
             .Select(m => m.ToDtoPrelMatDto());
         }
 
-        public IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request)
+        public IEnumerable<PrelMatDto> UpdatePrelMatImported(WorkerIdSyncRequestDto request, bool updateDeletedItems)
         {
             var filter = _mapper.Map<WorkerIdSyncFilter>(request);
-            var result = _repository.UpdatePrelMatImported(filter);
+            var result = _repository.UpdatePrelMatImported(filter, updateDeletedItems);
 
             return result
             .Select(m => m.ToDtoPrelMatDto());
@@ -113,10 +113,10 @@ namespace apiPB.Services.Implementation
             .Select(m => m.ToDtoPrelMatDto());
         }
 
-        public IEnumerable<PrelMatDto> UpdateImportedById(UpdateImportedIdRequestDto request)
+        public IEnumerable<PrelMatDto> UpdateImportedById(UpdateImportedIdRequestDto request, bool updateDeletedItems)
         {
             var filter = _mapper.Map<UpdateImportedIdFilter>(request);
-            var result = _repository.UpdateImportedById(filter);
+            var result = _repository.UpdateImportedById(filter, updateDeletedItems);
 
             return result
             .Select(m => m.ToDtoPrelMatDto());

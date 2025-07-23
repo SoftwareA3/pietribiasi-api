@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             
             // Autocompletamento personalizzato per evitare di visualizzare troppi elementi
             setupCustomAutocomplete(barCodeInput, barcodeAutocompleteList, barcodeList);
+            barCodeInput.focus();
         }
     } catch (error) {
         console.error("Error fetching items:", error);
@@ -105,8 +106,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     // Verifica se è un numero finito e non NaN
                     if (!isNaN(bookInvValue) && isFinite(bookInvValue)) {
-                        // Usa toFixed per arrotondare correttamente
-                        bookInvValue = Number(bookInvValue.toFixed(4));
+                        bookInvValue = parseFloat(bookInvValue);
                     } else {
                         console.warn("bookInv non è un numero valido:", selectedItem.bookInv);
                         bookInvValue = 0;

@@ -20,6 +20,12 @@ form p strong {
     font-size: 0.95rem;
 }
 
+#search-materials-button,
+#cancel-search-materials-input {
+    width: 25%;
+    font-size: 1rem;
+}
+
 /* Adattamento campo quantità */
 #prel-mat-quantita {
     max-width: 100% !important;

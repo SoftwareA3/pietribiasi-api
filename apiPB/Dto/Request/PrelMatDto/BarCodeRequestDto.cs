@@ -12,6 +12,7 @@ namespace apiPB.Dto.Request
     /// </summary>
     public class BarCodeRequestDto : OperationRequestDto
     {
-        public required string BarCode { get; set; }
+        public string? BarCode { get; set; } = string.Empty;
+        public string? Component { get; set; } = string.Empty;
     }
 }

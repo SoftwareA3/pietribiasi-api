@@ -404,6 +404,13 @@ async function populatePrelieviList(data) {
             ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDateTime.date} alle ${parsedDateTime.time} </div>` : ''}
             ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
+
+        if(item.deleted === 1 || item.deleted === true)
+            itemContent.classList.add("deleted-prel-item");
+        
+        if(item.position === 0)
+            itemContent.classList.add("new-prel-item");
+        
         
         li.appendChild(itemContent);
         
@@ -412,45 +419,52 @@ async function populatePrelieviList(data) {
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
             
-            // Container per il campo di modifica delle quantità prelevate (inizialmente nascosto)
-            const editContainer = document.createElement("div");
-            editContainer.className = "edit-prel-container hidden";
-            editContainer.id = `edit-container-${item.prelMatId}`;
+            if(item.deleted === 0 || item.deleted === false)
+            {
+                // Container per il campo di modifica delle quantità prelevate (inizialmente nascosto)
+                const editContainer = document.createElement("div");
+                editContainer.className = "edit-prel-container hidden";
+                editContainer.id = `edit-container-${item.prelMatId}`;
+                
+                // Campo input per la modifica
+                const editInput = document.createElement("input");
+                editInput.type = "number";
+                editInput.step = "0.1";
+                editInput.className = "edit-prel-input";
+                editInput.id = `edit-prel-input-${item.prelMatId}`;
+                editInput.value = item.prelQty;
+                
+                // Pulsante di conferma modifica
+                const confirmButton = document.createElement("button");
+                confirmButton.className = "button-icon confirm option-button";
+                confirmButton.title = "Conferma modifica";
+                confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
+                confirmButton.addEventListener("click", () => savePrelieviEdit(item, data));
+                
+                // Pulsante di annullamento modifica
+                const cancelButton = document.createElement("button");
+                cancelButton.className = "button-icon cancel option-button";
+                cancelButton.title = "Annulla modifica";
+                cancelButton.innerHTML = '<i class="fa-solid fa-times"></i>';
+                cancelButton.addEventListener("click", () => cancelPrelieviEdit(item));    
+                // Aggiunge gli elementi al container di modifica
+                editContainer.appendChild(editInput);
+                editContainer.appendChild(confirmButton);
+                editContainer.appendChild(cancelButton);
             
-            // Campo input per la modifica
-            const editInput = document.createElement("input");
-            editInput.type = "number";
-            editInput.step = "0.1";
-            editInput.className = "edit-prel-input";
-            editInput.id = `edit-prel-input-${item.prelMatId}`;
-            editInput.value = item.prelQty;
-            
-            // Pulsante di conferma modifica
-            const confirmButton = document.createElement("button");
-            confirmButton.className = "button-icon confirm option-button";
-            confirmButton.title = "Conferma modifica";
-            confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
-            confirmButton.addEventListener("click", () => savePrelieviEdit(item, data));
-            
-            // Pulsante di annullamento modifica
-            const cancelButton = document.createElement("button");
-            cancelButton.className = "button-icon cancel option-button";
-            cancelButton.title = "Annulla modifica";
-            cancelButton.innerHTML = '<i class="fa-solid fa-times"></i>';
-            cancelButton.addEventListener("click", () => cancelPrelieviEdit(item));
-            
-            // Aggiunge gli elementi al container di modifica
-            editContainer.appendChild(editInput);
-            editContainer.appendChild(confirmButton);
-            editContainer.appendChild(cancelButton);
-            
-            // Pulsante di modifica
-            const editButton = document.createElement("button");
-            editButton.className = "button-icon edit option-button";
-            editButton.title = "Modifica Quantità Prelevate";
-            editButton.id = `edit-button-${item.prelMatId}`;
-            editButton.innerHTML = '<i class="fa-solid fa-pencil"></i>';
-            editButton.addEventListener("click", () => editPrelievi(item));
+                // Pulsante di modifica
+                const editButton = document.createElement("button");
+                editButton.className = "button-icon edit option-button";
+                editButton.title = "Modifica Quantità Prelevate";
+                editButton.id = `edit-button-${item.prelMatId}`;
+                editButton.innerHTML = '<i class="fa-solid fa-pencil"></i>';
+                editButton.addEventListener("click", () => editPrelievi(item));
+
+                // Aggiunge il container di modifica e il pulsante di modifica alle azioni
+                // Solo se l'elemento non è in lista per essere eliminato
+                itemActions.appendChild(editContainer);
+                itemActions.appendChild(editButton);
+            }
             
             // Pulsante di eliminazione
             const deleteButton = document.createElement("button");
@@ -460,8 +474,6 @@ async function populatePrelieviList(data) {
             deleteButton.addEventListener("click", () => deletePrelievi(item));
             
             // Aggiunge gli elementi al container delle azioni
-            itemActions.appendChild(editContainer);
-            itemActions.appendChild(editButton);
             itemActions.appendChild(deleteButton);
             li.appendChild(itemActions);
         }
@@ -678,22 +690,23 @@ async function openLogOverlay(logList) {
 
         // Prima mostra gli errori di omMessageDetails
         if(Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails && logItem.omMessageDetails.length > 0) {
-            logItem.omMessageDetails.forEach(msg => {
-                if(msg.messageId)
-                {
-                    const messageDateTime = parseDateTime(msg.messageDate);
-                    logMessagesDiv.innerHTML += `
-                    <div style="margin-bottom:10px;">
-                        <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
-                        <div class="msg-content">
-                            <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
-                            <strong>Messaggio:</strong> ${msg.messageText} <br>
-                            <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
+            logItem.omMessageDetails
+                .sort((a, b) => b.messageId - a.messageId)
+                .forEach(msg => {
+                    if (msg.messageId) {
+                        const messageDateTime = parseDateTime(msg.messageDate);
+                        logMessagesDiv.innerHTML += `
+                        <div style="margin-bottom:10px;">
+                            <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
+                            <div class="msg-content">
+                                <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
+                                <strong>Messaggio:</strong> ${msg.messageText} <br>
+                                <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
+                            </div>
                         </div>
-                    </div>
-                    `;
-                }
-            });
+                        `;
+                    }
+                });
         }
 
         // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
@@ -702,7 +715,7 @@ async function openLogOverlay(logList) {
                 const messageDateTimeAction = parseDateTime(msg.tbcreated);
                 logMessagesDiv.innerHTML += `
                 <div style="margin-bottom:10px;">
-                    <strong class="msg-id"><u>Messaggio #${msg.actionId}:</u></strong> <br>
+                    <strong class="msg-id"><u>Azione #${msg.actionId}:</u></strong> <br>
                     <div class="msg-content">
                         <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
                         <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>" } 

@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }));
         // console.log("Lista di lavori:", jobList);
         setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
+        commessaInput.focus();
     } catch (error) {
         console.error("Errore nel caricamento iniziale dei lavori:", error);
         alert("Qualcosa è andato storto durante il caricamento iniziale dei dati.");
@@ -530,6 +531,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     odlInput.disabled = true;
                 }, 100);
             }
+            else {
+                odlInput.focus();
+            }
         } catch (error) {
             console.error("Errore nel caricamento dei dati ODP:", error);
         }
@@ -561,6 +565,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     lavorazioneInput.dispatchEvent(event);
                     lavorazioneInput.disabled = true;
                 }, 100);
+            }
+            else { 
+                lavorazioneInput.focus();
             }
         } catch (error) {
             console.error("Errore nel caricamento dei dati lavorazione:", error);

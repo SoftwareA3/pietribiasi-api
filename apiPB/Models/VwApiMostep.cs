@@ -40,4 +40,8 @@ public partial class VwApiMostep
     public string Storage { get; set; } = null!;
 
     public string? Wc { get; set; }
+
+    public string? PickingSpecificator { get; set; }
+
+    public int? PickingSpecificatorType { get; set; }
 }

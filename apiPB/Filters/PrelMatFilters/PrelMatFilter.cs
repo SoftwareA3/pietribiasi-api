@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace apiPB.Filters
 {
     public class PrelMatFilter : A3AppBaseFilter
-    {   
+    {
         public short? Position { get; set; }
 
         public string? Component { get; set; }
@@ -16,5 +16,8 @@ namespace apiPB.Filters
         public string BarCode { get; set; } = null!;
 
         public double? PrelQty { get; set; }
+
+        public bool? Deleted { get; set; }
+        public double? NeededQty { get; set; }
     }
 }

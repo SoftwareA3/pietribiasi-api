@@ -688,7 +688,9 @@ async function openLogOverlay(logList) {
 
         // Prima mostra gli errori di omMessageDetails
         if(Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails && logItem.omMessageDetails.length > 0) {
-            logItem.omMessageDetails.forEach(msg => {
+            logItem.omMessageDetails
+                .sort((a, b) => b.messageId - a.messageId)
+                .forEach(msg => {
                 if(msg.messageId)
                 {
                     const messageDateTime = parseDateTime(msg.messageDate);
@@ -708,11 +710,12 @@ async function openLogOverlay(logList) {
 
         // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
         if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
-            logItem.actionMessageDetails.forEach(msg => {
+            logItem.actionMessageDetails
+                .forEach(msg => {
                 const messageDateTimeAction = parseDateTime(msg.tbcreated);
                 logMessagesDiv.innerHTML += `
                 <div style="margin-bottom:10px;">
-                    <strong class="msg-id"><u>Messaggio #${msg.actionId}:</u></strong> <br>
+                    <strong class="msg-id"><u>Azione #${msg.actionId}:</u></strong> <br>
                     <div class="msg-content">
                         <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
                         <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>"}

@@ -25,7 +25,8 @@ namespace apiPB.Mappers.Dto
                 RectificationReasonNegative = settings.RectificationReasonNegative,
                 Storage = settings.Storage,
                 Closed = settings.Closed,
-                SyncGlobalActive = settings.SyncGlobalActive
+                SyncGlobalActive = settings.SyncGlobalActive,
+                ExternalReferences = settings.ExternalReferences.ToString()
             };
         }
 
@@ -92,14 +93,12 @@ namespace apiPB.Mappers.Dto
         public static List<SyncPrelMatRequestDto> ToSyncPrelMatRequestDto(this SettingsDto settings, List<PrelMatDto> prelMatList)
         {
             var syncPrelMatList = prelMatList
-                .GroupBy(p => new { p.Moid, p.RtgStep, p.Alternate, p.AltRtgStep, p.WorkerId })
+                .GroupBy(p => new { p.Moid, p.WorkerId })
                 .Select(group => new SyncPrelMatRequestDto
                 {
                     MoId = group.Key.Moid,
-                    RtgStep = group.Key.RtgStep,
-                    Alternate = group.Key.Alternate,
-                    AltRtgStep = group.Key.AltRtgStep,
                     WorkerId = group.Key.WorkerId,
+                    ExternalReferences = "PB000" + settings.ExternalReferences?.ToString(),
                     ActionDetails = group
                         .Select(p => new SyncPrelMatDetailsRequestdto
                         {
@@ -107,12 +106,36 @@ namespace apiPB.Mappers.Dto
                             PickedQty = p.PrelQty,
                             Closed = settings.Closed,
                             SpecificatorType = settings.SpecificatorType,
-                            Storage = p.Storage
-                        }).ToList()
+                            Storage = p.Storage,
+                            NeededQty = p.NeededQty,
+                            Component = p.NeededQty == 0 ? string.Empty : p.Component,
+                            ExternalProgram = settings.ExternalProgram
+                        }).ToList(),
+                    ExternalProgram = settings.ExternalProgram
                 })
                 .ToList();
 
             return syncPrelMatList;
+        }
+
+        public static List<DeleteMoComponentRequestDto> ToDeleteMoComponentRequestDto(this SettingsDto settings, List<PrelMatDto> prelMatList)
+        {
+            var deleteMoComponentList = new List<DeleteMoComponentRequestDto>();
+
+            foreach (var item in prelMatList)
+            {
+                var deleteMoComponent = new DeleteMoComponentRequestDto
+                {
+                    MoId = item.Moid ?? 0,
+                    Position = item.Position ?? 0,
+                    ExternalReferences = "PB000" + settings.ExternalReferences?.ToString(),
+                    ExternalProgram = settings.ExternalProgram
+                };
+
+                deleteMoComponentList.Add(deleteMoComponent);
+            }
+
+            return deleteMoComponentList;
         }
 
         public static List<SyncInventarioRequestDto> ToSyncInventarioRequestDto(this SettingsDto settings, List<InventarioDto> inventarioList)

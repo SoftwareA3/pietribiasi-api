@@ -17,17 +17,18 @@
 /.vs
 /.venv
 
-# Ignora le cartelle realizzate con lo script di build
-/BuildAndDistr
-Scripts
-DistTmp
-
 # Ignora pycaches e file temporanei
 __pycache__
 
 # Ignora i file di configurazione, binari e di debug nei Test
 /TestApi.Tests/bin
 /TestApi.Tests/obj
+
+# Ignora i file di distribuzione e di build
+/App
+
+# Ignora i file di prova dell'applicazione
+/TestingGround
 
 # Ignora momentaneamente il progetto con i test di unità
 # /TestApi.Tests

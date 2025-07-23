@@ -1,10 +1,11 @@
 # Pietribiasi APP
 [![dotnet workflow](https://github.com/SoftwareA3/pietribiasi-api/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/SoftwareA3/pietribiasi-api/actions/workflows/dotnet.yml)
 # Indice 
-1. [Configurazione (dopo aver clonato la repository)](#configurazione-dopo-aver-clonato-la-repository)
-   1. [File build.json](#file-buildjson)
-   2. [Build](#build)
-   3. [Avvio Applicazione con build (Avvio Frontend e Backend)](#avvio-applicazione-con-build-avvio-frontend-e-backend)
+1. [Installazione e Configurazione](#installazione-e-configurazione)
+   1. [Download Artefatto](#download-artefatto)
+   2. [Build locale](#build-locale)
+   3. [Configurazione](#configurazione)
+   4. [Installazione](#installazione)
 2. [Documentazione API](#documentazione-api)
 3. [FrontEnd](#frontend)
    1. [Accesso e validazione delle credenziali](#accesso-e-validazione-delle-credenziali)
@@ -44,105 +45,62 @@
    2. [Scaffolding](#scaffolding)
    3. [Scaffolding con stringa di connessione in locale](#scaffolding-con-stringa-di-connessione-in-locale) 
 
-# Configurazione (dopo aver clonato la repository)
-La configurazione dell'applicazione è definita nella cartella `BuildScripts`. In questa cartella sono situati sia i file di configurazione dell'applicazione, sia quelli che dovranno essere copiati all'interno della cartella dove verrà situata l'applicazione. 
-I file verranno descritti brevemente di seguito:
-- `build.py`: script che serve per la configurazione e la costruzione della cartella dove verrà creata la distribuzione dell'applicazione (nonché la cartella contenente la cartella dell'applicazione compressa.
-- `build.json`: file di configurazione dell'applicazione che verrà descritto in seguito con una sezione apposita. Viene copiato, filtrato e usato in entrambe le cartelle di build;
-- `script_utils.py`: file contenente funzioni usate sia da `build_script_FE_only.py` che da `build_script.py`. Viene usato per evitare la duplicazione di codice;
+# Installazione e Configurazione
 
-Di seguito viene approfondito il file `build.json`
+## Download Artefatto
+Per installare il prodotto, è necessario scaricare l'artefatto dal Workflow `Build Windown Distribution` su Github.
+Se il workflow non è molto recente, è possibile avviarne uno nuovo nella tendina che compare `run workflow` per poi selezionare il branch (di solito develop o main) e premere `Run Workflow`
 
-## File build.json
+Una volta completato il Workflow, in fondo alla pagina "Summary" comparirà l'artefatto da scaricare. 
 
-``` json
-{
-    "app": {
-        "name": "Pietribiasi App",
-        "version": "1.0.0",
-        "description": "Applicazione Pietribiasi",
-        "author": "A3 Soluzioni Informatiche"
-    },
-    "build": {
-        "backend_project": "apiPB",
-        "frontend_path": "Frontend",
-        "output_dir": "PietribiasiApp_distribution",
-        "temp_dir": "PietribiasiApp"
-    },
-    "targets": [
-        {
-            "name": "Windows",
-            "runtime": "win-x64",
-            "executable_extension": ".exe"
-        },
-        {
-            "name": "Linux",
-            "runtime": "linux-x64",
-            "executable_extension": ""
-        },
-        {
-            "name": "macOS",
-            "runtime": "osx-x64",
-            "executable_extension": ""
-        }
-    ],
-    "packaging": {
-        "create_installer": true,
-        "create_portable": true,
-        "compression_level": 6
-    },
-    "server": {
-        "backend": {
-            "host": "localhost",
-            "port": 5245,
-            "connection_string": "connection_string_placeholder",
-            "resolve_ip_automatically": true
-        }
-    }
-}
-```
-- `app`: contiene le informazioni relative all'app:
-    - Nome
-    - Versione
-    - Descrizione
-    - Autore
-- `build`: indica quali cartelle contengono il `frontend` e il `backend` per poi copiarli nelle cartelle `output_dir` e `temp_dir` e come chiamare queste cartelle. Al momento il loro nome è `build` e `dist` rispettivamente;
-- `targets`: contengono le informazioni sul sistema dove viene fatta la distribuzione. Al momento gli script hanno distribuzione Windows e alcune impostazioni per gli altri sistemi (sono state aggiunte per manutenibilità);
-- `packaging`: 
-    - `"create_installer": true` -> consente la creazione della cartella distribuibile (`build`);
-    - `"create_portable": true` -> consente la creazione della cartella `dist` contenente i file di `build` in forma compressa
-    - `"compression_level": 6` -> indica il livello di compressione
-    - Queste configurazioni valgono sia per `build` e `dist` che per `build_FE` e `dist_FE`.
-- `server`: contiene le informazioni su:
-    - Porte
-    - IP
-    - La stringa di connessione.
-    - Le informazioni del Backend vengono copiate e inserite in `appsettings.json` nel backend, per consentire di creare il server e stabilire la connessione al database.
-    - Se l'IP viene risolto in maniera automatica durante il processo di build o se dev'essere solamente letto in `build.json`
+### Presentazione Artefatto
+Una volta scaricato, l'artefatto conterrà i seguenti elementi:
+- `Backend`: contiene il backend compilato e i file statici del frontend;
+- `build.exe`: eseguibile per la costruzione e la configurazione dell'applicazione
+- `build.json`: 
+- `Documentazione.md`: documentazione sull'applicazione
 
-## Build
-La build dell'applicazione dev'essere fatta, avviando l'eseguibile presente nella root del progetto, ossia `build.exe`. Questo file viene generato automaticamente ad ogni push effettuato in `main` attraverso una GitHub Action. Questa Action viene descritta nel file `config_and_build.yml` e si occupa di:
-- Installare le dipendenze (Python, PyInstaller per la realizzazione dell'eseguibile dal file python);
-- Realizzare l'eseguibile;
-- Spostarlo nella root del progetto;
-- Eliminare i file superflui;
-- Realizzare un commit dell'eseguibile per aggiungerlo al Repository.
-Una volta terminata la Action, il prossimo aggiornamento del Repository aggiornerà anche l'eseguibile.
 
----
+## Build locale
+Alternativamente, se clonata repository e installate le dipendenze necessarie, è possibile creare la distribuzione dell'applicaizone, eseguendo lo script `build.bat`.
+La soluzione creata sarà uguale a quella ottenuta scaricando l'artefatto dalla Action Github.
 
-L'esecuzione dell'eseguibile darà il via al processo di build, che comprende:
-- La pulizia o la creazione delle cartelle per l'applicazione;
-- La modifica dell'indirizzo IP nel file `bujild.json` (se inserita l'opzione per farlo);
-- La copia dei file di Backend nella cartella dell'applicazione (attraverso `dotnet publish`);
-- La copia del Frontend in una cartella `wwwroot` nella cartella dell'applicazione;
-- L'aggiornamento del file `appsettings.json` nella cartella dell'applicazione, dove sono situati i file del Backend;
-- La copia della documentazione;
-- La creazione di un launcher da utilizzare nella cartella dell'applicazione per l'avvio.
+### Dipendenze necessarie
+Le dipendenze necessarie per l'esecuzione in locale sono:
+- .NET SDK (v.9): 
+    - Comando: `winget install Microsoft.DotNet.SDK.9`
+    - Link: https://dotnet.microsoft.com/download/dotnet
+- Python:
+    - Comando: `winget install Python.Python.3.12`
+    - Link: https://www.python.org/downloads/
+- Pip:
+    - Comando: `python -m ensurepip --upgrade`
+- PyInstaller:
+    - Comando: `pip install pyinstaller`
 
-# Avvio Applicazione con build (Avvio Frontend e Backend)
-Per l'avvio dell'applicazione, basta spostarsi nella cartella creata dal file di build e eseguire il file `start.bat`. Il file non è altro che un piccolo script che esegue il file `apiPB.exe` nella cartella dove sono situati i file dell'applicazione.
-Eseguito il file `start.bat`, verrà aperta una console e avviati i server per il frontend e il backend. Il server backend è realizzato tramite `ASP.NET`, di conseguenza IP e porte del server backend coincidono con quelli del frontend. Al completamento dell'avvio del server, verrà generato l'URL dove sarà disponibile l'applicazione.
+## Configurazione
+Per configurare l'applicazione è necessario modificare il file `build.json`, il quale si occupa di fornire alcune informazioni all'applicazione durante il processo di build. 
+
+Nel file json è possibile configurare:
+- La stringa di connessione al database;
+- L'IP dove verrà hostato il server;
+- La porta sulla quale sarà disponibile il server;
+- Se risolvere l'IP in maniera automatica (durante la build inserirà l'IP locale)
+- Come chiamare le cartelle di build e di distribuzione (e da dove prendere le informazioni per backend e frontend)
+- Nome, versione, descrizione e autore dell'app;
+- Se abilitare la build e la distribuzione (per la distribuzione, crea il file compresso solo se l'impostazione è a `true`)
+
+## Installazione
+Per installare l'applicazione, una volta effettuate le configurazioni necessarie, bisogna eseguire lo script `build.exe`. 
+Il risultato sarà una cartella chiamata come il nome specificato nel file `build.json` e la rispettiva cartella compressa.
+
+All'interno si troveranno i seguenti file:
+- Application: contiene il backend compilato e i file statici del frontend;
+- `Documentazione.md`: documentazione sull'applicazione;
+- `start.bat`: script di avvio per l'applicazione.
+
+Una volta avviato lo script, verrà aperto il terminale dell'applicazione e il link definito all'inizio, collega all'IP e alla porta dove sarà disponibile l'applicazione.
+
 
 ---
 
@@ -253,6 +211,14 @@ La pagina per il Prelievo di Materiali per Produzione si presenta come una serie
 - Ogni informazione salvata nella lista temporanea, è eliminabile tramite l'icona 🗑️. Quest’icona elimina sia l’elemento dalla lista, sia le informazioni che sono state salvate e preparate per il salvataggio.
 - Per salvare le informazioni presenti nella lista temporanea, è possibile premere il pulsante **“Salva”**, indicato anche dall'icona 💾. Questo passa la lista temporanea ad una chiamata all’API che invia e salva le informazioni nella tabella del database.
 In qualsiasi momento è possibile tornare alla home, tramite il pulsante **Annulla**, indicato anche dall'icona ❌. La pressione del pulsante riporta alla homepage, senza salvare le informazioni non salvate, presenti nella lista temporanea.
+
+
+Sono state aggiunte due funzionalità aggiuntive per il prelievo dei materiali:
+Se la quantità già prelevata sull'ERP è 0, viene abilitato un pulsante **Elimina Materiale** indicato dall'icona 🗑️ che consente di inserire l'articolo che, una volta sincronizzato, verrà eliminato.
+Inoltre durante la selezione dell'articolo è sempre disponibile una funzionalità per **Aggiungere un nuovo materiale**, indicato con un'icona ➕.
+Se cliccato, il pulsante apre una tabella in sovrimpressione dalla quale è possibile selezionare o cercare un materiale da aggiungere. Selezionato il materiale, viene richiesta una quantità necessaria di materiale da prelevare. Inserita anche quest'ultima, il materiale viene inserito nel form e viene richiesto di inserire la quantità da prelevare. Da qui il procedimento di inserimento e salvataggio è analogo a quello per i prelievi standard.
+
+I materiali aggiunti sono sempre indicati nell'applicazione con un colore verde nella lista temporanea, mentre quelli da eliminare, con un colore rosso.
 
 ---
 
@@ -1277,6 +1243,21 @@ E nel file di contesto del database:
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:YourDatabaseAlias");
 ```
+
+---
+
+### TestingGround
+Per evitare di dover realizzare una distribuzione ad ogni cambio di Frontend o Backend, è disponibile uno **script batch** per testare l'applicazione.
+Lo script crea una cartella `TestingGround` nella quale:
+- Viene compilato il backend (in maniera analoga a quanto accade per la distribuzione)
+- Viene copiato il frontend (in una cartella `wwwroot`)
+- Viene letto il file `BuildScripts/build.json` per ricavare IP, Porta e la stringa di connessione al database
+- Viene avviato il file del backend `apiPB.exe` e aperto un terminale.  
+
+Questo permette di poter testare l'applicazione in locale e effettuare modifiche frontend. Infatti, una volta avviata l'applicazione, se viene eseguito nuovamente lo script, questo controllerà che il terminale o l'applicazione siano attivi e, in caso positivo, si limiterà a copiare di nuovo il contenuto del Frontend in `wwwroot`. Aggiornando la pagina web (con `Ctrl + Shift + R` per eliminare la cache della pagina) verranno applicate le modifiche.
+
+Per le modifiche Backend è necessario terminare il terminale dell'applicazione (con `Ctrl + C`) e avviare nuovamente lo script per ricompilare il backend e sovrascriverlo a quello presente in `TestingGround`
+Questa cartella non viene caricata nel Repository per evitare l'aggiunta di file non necessari.
 
 ---
 
