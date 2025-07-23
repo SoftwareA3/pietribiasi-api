@@ -67,11 +67,11 @@ jobs:
 
       - name: Move Documentation to distribution directory
         run: |
-          if (Test-Path "${{ github.workspace }}/Docs/Documentazione.md") {
-            Copy-Item -Path "${{ github.workspace }}/Docs/Documentazione.md" -Destination "${{ github.workspace }}/App/Documentazione.md"
-          } else {
-            Write-Host "Warning: Documentazione.md not found in Docs."
-          }
+            if (Test-Path "${{ github.workspace }}/Docs") {
+            Copy-Item -Path "${{ github.workspace }}/Docs/*" -Destination "${{ github.workspace }}/App/" -Recurse -Force
+            } else {
+            Write-Host "Warning: Docs directory not found."
+            }
 
       - name: Move Configuration files to distribution directory
         run: |

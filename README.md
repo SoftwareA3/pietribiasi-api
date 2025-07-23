@@ -106,7 +106,7 @@ Una volta avviato lo script, verrà aperto il terminale dell'applicazione e il l
 
 # Documentazione API
 Il link permette di scaricare il pdf con la documentazione dell'API. La documentazione è presa dal client Swagger, generato nel backend tramite il comando `dotnet run watch` e disponibile all'IP esposto nella console. All'URL dell'IP esposto, è necessario aggiungere l'endpoint `/swagger`.
-[📄 Scarica la documentazione API in PDF](assets/documentazione_api.pdf)
+[📄 Scarica la documentazione API in PDF](Docs/documentazione_api.pdf)
 
 ---
 
