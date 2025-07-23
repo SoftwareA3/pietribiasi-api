@@ -1013,6 +1013,12 @@ async function synchronizeData() {
             console.log("Response DTO:", data);
             // Mostra l'icona di successo
             showSuccessIcon(iconElement);
+
+            setTimeout(() => {
+                if (data && data.inventarioRequest.length === 0 && data.regOreRequest.length === 0 && data.prelMatRequest.length === 0) {
+                    alert("Nessun dato da sincronizzare.");
+                }
+            }, 700);
         } else {
             console.error("Errore durante la sincronizzazione dei dati:", response.statusText);
             // Mostra l'icona di errore
