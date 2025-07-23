@@ -1,10 +1,10 @@
 import { deleteCookie, getCookie } from "./cookies.js";
 
-// API configuration - this placeholder will be replaced by the build script
+// API configuration - recupera l'URL base dell'API dal server
 const API_BASE_URL = window.location.origin; 
 
 document.addEventListener("DOMContentLoaded", async function() {
-    // Check if the user is authenticated
+    // Controlla se l'utente è autenticato
     if (sessionStorage.getItem("login") !== "true") {
         if (!window.location.href.includes("login.html")) {
             window.location.href = "../html/login.html";
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             window.location.reload();
         }
     });
-    // Reference to the scroll-to-top button
+    // Scroll to top
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
     if (scrollToTopBtn) {
         scrollToTopBtn.addEventListener('click', function() {
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     await loadWorkerInfo();
 });
 
-// Setup for the logout button, including cookie deletion
+// Inizializza il pulsante di logout e aggiungi l'evento di click
 function setupLogoutButton() {
     const logoutButton = document.getElementById("logout");
     if (logoutButton) {
@@ -99,7 +99,7 @@ async function loadWorkerInfo() {
     }
 }
 
-// Populate the header with worker information
+// Aggiunge le informazioni del lavoratore al contenitore
 function displayWorkerInfo(container, cookie) {
     try {
         const parsedCookie = JSON.parse(cookie);
@@ -115,7 +115,8 @@ function displayWorkerInfo(container, cookie) {
     }
 }
 
-// Populate the header with worker and simulated user information
+// Aggiunge le informazioni del lavoratore e dell'utente al contenitore
+// controlla anche per la presenza del poweruser
 function displayWorkerAndPuInfo(container, worker, pu) {
     try {
         const parsedWorker = JSON.parse(worker);
@@ -147,7 +148,7 @@ function displayCurrentDate() {
     return `${dd}/${mm}/${yyyy}`;
 }
 
-// Extract unique values from an array of objects
+// Estrae valori unici
 export function extractUniqueValues(data, field) {
     const uniqueValues = [];
     const valueSet = new Set();
