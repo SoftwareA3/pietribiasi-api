@@ -10,7 +10,6 @@ if exist "%CD%\App" (
 
 echo Setup Distribution Directory
 mkdir "%CD%\App"
-mkdir "%CD%\PietribiasiApp"
 
 echo Publish ASP.NET Core Backend
 dotnet publish .\apiPB\apiPB.csproj --configuration Release --output "%CD%\App\Backend" --runtime win-x64 --self-contained true /p:UseAppHost=true
