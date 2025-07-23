@@ -10,6 +10,7 @@ using apiPB.Utils.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
+using Xunit.Sdk;
 
 namespace TestApi.Tests.Repository
 {
@@ -401,7 +402,7 @@ namespace TestApi.Tests.Repository
             var filter = new WorkerIdSyncFilter { WorkerId = "1" };
 
             // Act
-            var result = _prelMatRepository.UpdatePrelMatImported(filter);
+            var result = _prelMatRepository.UpdatePrelMatImported(filter, false);
 
             // Assert
             _mockContext.Verify(m => m.SaveChanges(), Times.AtLeastOnce);
@@ -416,7 +417,7 @@ namespace TestApi.Tests.Repository
 
             // Act & Assert
             var exception = Assert.Throws<ArgumentNullException>(() =>
-                _prelMatRepository.UpdatePrelMatImported(null));
+                _prelMatRepository.UpdatePrelMatImported(null, false));
 
             Assert.Equal("filter", exception.ParamName);
         }
@@ -430,7 +431,7 @@ namespace TestApi.Tests.Repository
 
             // Act & Assert
             var exception = Assert.Throws<ArgumentNullException>(() =>
-                _prelMatRepository.UpdatePrelMatImported(filter));
+                _prelMatRepository.UpdatePrelMatImported(filter, false));
 
             Assert.Equal("filter", exception.ParamName);
         }
@@ -448,7 +449,7 @@ namespace TestApi.Tests.Repository
 
             // Act & Assert
             var exception = Assert.Throws<EmptyListException>(() =>
-                _prelMatRepository.UpdatePrelMatImported(filter));
+                _prelMatRepository.UpdatePrelMatImported(filter, false));
 
             Assert.Equal(nameof(PrelMatRepository), exception.ClassName);
             Assert.Equal(nameof(_prelMatRepository.UpdatePrelMatImported), exception.MethodName);
@@ -467,7 +468,7 @@ namespace TestApi.Tests.Repository
             var beforeTime = DateTime.Now.AddSeconds(-1);
 
             // Act
-            _prelMatRepository.UpdatePrelMatImported(filter);
+            _prelMatRepository.UpdatePrelMatImported(filter, false);
 
             // Assert
             var afterTime = DateTime.Now.AddSeconds(1);
@@ -652,7 +653,7 @@ namespace TestApi.Tests.Repository
             var filter = new UpdateImportedIdFilter { Id = 1, WorkerId = "123" };
 
             // Act
-            var result = _prelMatRepository.UpdateImportedById(filter);
+            var result = _prelMatRepository.UpdateImportedById(filter, false);
 
             // Assert
             _mockContext.Verify(m => m.SaveChanges(), Times.AtLeastOnce);
@@ -667,7 +668,7 @@ namespace TestApi.Tests.Repository
 
             // Act & Assert
             var exception = Assert.Throws<ArgumentNullException>(() =>
-                _prelMatRepository.UpdateImportedById(null));
+                _prelMatRepository.UpdateImportedById(null, false));
 
             Assert.Equal("filter", exception.ParamName);
         }
@@ -681,7 +682,7 @@ namespace TestApi.Tests.Repository
 
             // Act & Assert
             var exception = Assert.Throws<ArgumentNullException>(() =>
-                _prelMatRepository.UpdateImportedById(filter));
+                _prelMatRepository.UpdateImportedById(filter, false));
 
             Assert.Equal("filter", exception.ParamName);
         }
@@ -699,7 +700,7 @@ namespace TestApi.Tests.Repository
 
             // Act & Assert
             var exception = Assert.Throws<EmptyListException>(() =>
-                _prelMatRepository.UpdateImportedById(filter));
+                _prelMatRepository.UpdateImportedById(filter, false));
 
             Assert.Equal(nameof(PrelMatRepository), exception.ClassName);
             Assert.Equal(nameof(_prelMatRepository.UpdateImportedById), exception.MethodName);
@@ -718,7 +719,7 @@ namespace TestApi.Tests.Repository
             var beforeTime = DateTime.Now.AddSeconds(-1);
 
             // Act
-            _prelMatRepository.UpdateImportedById(filter);
+            _prelMatRepository.UpdateImportedById(filter, false);
 
             // Assert
             var afterTime = DateTime.Now.AddSeconds(1);
@@ -742,7 +743,7 @@ namespace TestApi.Tests.Repository
             var filter = new UpdateImportedIdFilter { Id = 1, WorkerId = "789" };
 
             // Act
-            _prelMatRepository.UpdateImportedById(filter);
+            _prelMatRepository.UpdateImportedById(filter, false);
 
             // Assert
             Assert.True(testData[0].Imported); // Should be updated

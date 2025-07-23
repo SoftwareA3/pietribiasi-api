@@ -447,7 +447,7 @@ namespace TestApi.Tests.ServicesTests
             var request = new WorkerIdSyncRequestDto();
             var filter = new WorkerIdSyncFilter();
 
-            _prelMatRepositoryMock.Setup(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>())).Returns(sampleList);
+            _prelMatRepositoryMock.Setup(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>(), It.IsAny<bool>())).Returns(sampleList);
             _mapperMock.Setup(m => m.Map<WorkerIdSyncFilter>(It.IsAny<WorkerIdSyncRequestDto>())).Returns(filter);
 
             // Act
@@ -457,7 +457,7 @@ namespace TestApi.Tests.ServicesTests
             Assert.NotNull(result);
             Assert.Single(result);
             AssertPrelMatDto(result.First(), _samplePrelMatDto);
-            _prelMatRepositoryMock.Verify(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>()), Times.Once);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>(), It.IsAny<bool>()), Times.Once);
             _mapperMock.Verify(m => m.Map<WorkerIdSyncFilter>(It.IsAny<WorkerIdSyncRequestDto>()), Times.Once);
         }
 
@@ -469,7 +469,7 @@ namespace TestApi.Tests.ServicesTests
             var request = new WorkerIdSyncRequestDto();
             var filter = new WorkerIdSyncFilter();
 
-            _prelMatRepositoryMock.Setup(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>())).Returns(sampleList);
+            _prelMatRepositoryMock.Setup(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>(), It.IsAny<bool>())).Returns(sampleList);
             _mapperMock.Setup(m => m.Map<WorkerIdSyncFilter>(It.IsAny<WorkerIdSyncRequestDto>())).Returns(filter);
 
             // Act
@@ -478,7 +478,7 @@ namespace TestApi.Tests.ServicesTests
             // Assert
             Assert.NotNull(result);
             Assert.Empty(result);
-            _prelMatRepositoryMock.Verify(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>()), Times.Once);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdatePrelMatImported(It.IsAny<WorkerIdSyncFilter>(), It.IsAny<bool>()), Times.Once);
         }
 
         #endregion
@@ -539,7 +539,7 @@ namespace TestApi.Tests.ServicesTests
             var request = new UpdateImportedIdRequestDto();
             var filter = new UpdateImportedIdFilter();
 
-            _prelMatRepositoryMock.Setup(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>())).Returns(sampleList);
+            _prelMatRepositoryMock.Setup(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>(), It.IsAny<bool>())).Returns(sampleList);
             _mapperMock.Setup(m => m.Map<UpdateImportedIdFilter>(It.IsAny<UpdateImportedIdRequestDto>())).Returns(filter);
 
             // Act
@@ -549,7 +549,7 @@ namespace TestApi.Tests.ServicesTests
             Assert.NotNull(result);
             Assert.Single(result);
             AssertPrelMatDto(result.First(), _samplePrelMatDto);
-            _prelMatRepositoryMock.Verify(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>()), Times.Once);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>(), It.IsAny<bool>()), Times.Once);
             _mapperMock.Verify(m => m.Map<UpdateImportedIdFilter>(It.IsAny<UpdateImportedIdRequestDto>()), Times.Once);
         }
 
@@ -561,7 +561,7 @@ namespace TestApi.Tests.ServicesTests
             var request = new UpdateImportedIdRequestDto();
             var filter = new UpdateImportedIdFilter();
 
-            _prelMatRepositoryMock.Setup(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>())).Returns(sampleList);
+            _prelMatRepositoryMock.Setup(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>(), It.IsAny<bool>())).Returns(sampleList);
             _mapperMock.Setup(m => m.Map<UpdateImportedIdFilter>(It.IsAny<UpdateImportedIdRequestDto>())).Returns(filter);
 
             // Act
@@ -570,7 +570,7 @@ namespace TestApi.Tests.ServicesTests
             // Assert
             Assert.NotNull(result);
             Assert.Empty(result);
-            _prelMatRepositoryMock.Verify(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>()), Times.Once);
+            _prelMatRepositoryMock.Verify(repo => repo.UpdateImportedById(It.IsAny<UpdateImportedIdFilter>(), It.IsAny<bool>()), Times.Once);
         }
 
         #endregion

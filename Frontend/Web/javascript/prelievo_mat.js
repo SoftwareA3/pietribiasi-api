@@ -288,6 +288,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
         const selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
         if (selectedCommessa && selectedOdp && selectedLavorazione && selectedBarcode) {
+            if (isFillingFromOverlay) {barcodeAutocompleteList.classList.add("hidden");}
+            
             console.log("Commessa selezionata:", selectedCommessa);
             console.log("ODP selezionato:", selectedOdp);
             console.log("Lavorazione selezionata:", selectedLavorazione);
@@ -450,7 +452,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             if(selectedSearchRow.component) {
                 console.log("Component trovato in overlay:", selectedSearchRow.component);
-                barcodeInput.value = `Item: ${selectedSearchRow.component} - Code: ${selectedSearchRow.barCode} - ${selectedSearchRow.itemDesc}`;
+                barcodeInput.value = `Item: ${selectedSearchRow.component} ${selectedSearchRow.barCode === "" || selectedSearchRow.barCode === null ? "" : "- Code: " + selectedSearchRow.barCode} - ${selectedSearchRow.itemDesc === "" || selectedSearchRow.itemDesc === null ? "Nessuna descrizione disponibile" : selectedSearchRow.itemDesc}`;
             }
             else {
                 barcodeInput.value = ""; // Resetta il campo se non c'è un barcode
@@ -1057,7 +1059,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     component: barCode.component,
                     barCode: barCode.barCode || '',
                     itemDesc: barCode.itemDesc,
-                    display: `Item: ${barCode.component} ${barCode.barCode === "" ? "" : "- Code: " + barCode.barCode } - ${barCode.itemDesc}`
+                    display: `Item: ${barCode.component} ${barCode.barCode === "" ? "" : "- Code: " + barCode.barCode } - ${barCode.itemDesc === "" || barCode.itemDesc === null ? "Nessuna descrizione disponibile" : barCode.itemDesc}`,
                 }));
 
             //console.log("Lista di barcode:", barcodeList);
@@ -1131,6 +1133,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 if (parseFloat(allDataResult[0].pickedQuantity) === 0) {
                     eliminaArticoloButton.classList.remove("disabled-button-look");
+                }
+                else {
+                    eliminaArticoloButton.classList.add("disabled-button-look");
                 }
                 
                 // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore

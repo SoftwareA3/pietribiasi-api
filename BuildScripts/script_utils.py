@@ -143,16 +143,6 @@ def default_config():
                 "name": "Windows",
                 "runtime": "win-x64",
                 "executable_extension": ".exe"
-            },
-            {
-                "name": "Linux",
-                "runtime": "linux-x64",
-                "executable_extension": ""
-            },
-            {
-                "name": "macOS",
-                "runtime": "osx-x64",
-                "executable_extension": ""
             }
         ],
         "packaging": {
