@@ -335,7 +335,12 @@ async function populateOreList(data) {
     // Prepara la lista degli elementi da mostrare
     // Se ci sono elementi importati, raccogli in parallelo i log per tutti
 
+    const filterButton = document.getElementById("filter-ore-submit");
+    const showImportedToggle = document.getElementById("show-imported");
+
     document.body.style.cursor = "wait";
+    filterButton.disabled = true;
+    showImportedToggle.disabled = true;
 
     let logMap = {};
     const importedItems = displayData.filter(item => item.imported !== false && item.imported !== "0");
@@ -365,6 +370,8 @@ async function populateOreList(data) {
         }, {});
     }
 
+    filterButton.disabled = false;
+    showImportedToggle.disabled = false;
     document.body.style.cursor = "default";
 
     // Popola la lista con gli elementi

@@ -373,6 +373,12 @@ async function populatePrelieviList(data) {
     document.body.style.cursor = "wait";
 
     // Precarica tutti i log delle righe importate in parallelo
+    // Disabilita il toggle durante il caricamento dei log per evitare modifiche accidentali
+    const showImportedToggle = document.getElementById("show-imported");
+    const filterButton = document.getElementById("filter-prel-submit");
+    showImportedToggle.disabled = true;
+    filterButton.disabled = true;
+
     let logMap = {};
     const importedItems = displayData.filter(item => item.imported !== false && item.imported !== "0");
     if (importedItems.length > 0) {
@@ -398,6 +404,10 @@ async function populatePrelieviList(data) {
             return acc;
         }, {});
     }
+
+    // Riabilita il toggle dopo il caricamento dei log
+    showImportedToggle.disabled = false;
+    filterButton.disabled = false;
 
     document.body.style.cursor = "default";
 
