@@ -369,28 +369,60 @@ async function populatePrelieviList(data) {
     prelieviList.classList.remove("hidden");
     noContent.classList.add("hidden");
     
+    // Prepara la lista degli elementi da mostrare
+    document.body.style.cursor = "wait";
+
+    // Precarica tutti i log delle righe importate in parallelo
+    let logMap = {};
+    const importedItems = displayData.filter(item => item.imported !== false && item.imported !== "0");
+    if (importedItems.length > 0) {
+        // Prepara tutte le chiamate fetchLog in parallelo
+        const logPromises = importedItems.map(async item => {
+            const logFilterObject = {
+                moid: item.moid,
+                rtgStep: item.rtgStep,
+                alternate: item.alternate,
+                altRtgStep: item.altRtgStep,
+                workerId: item.workerId,
+                actionType: actionType
+            };
+            // Salva la chiave per mappare il log all'item
+            const logList = await fetchLog(logFilterObject).then(logList => ({ prelMatId: item.prelMatId, logList }));
+            return logList
+        });
+        // Attendi tutte le chiamate e crea una mappa prelMatId -> logList
+        const logs = await Promise.all(logPromises);
+        console.log("Log recuperati:", logs);
+        logMap = logs.reduce((acc, curr) => {
+            acc[curr.prelMatId] = curr.logList;
+            return acc;
+        }, {});
+    }
+
+    document.body.style.cursor = "default";
+
     // Popola la lista con gli elementi
-    await Promise.all(displayData.map(async (item) => {
+    displayData.forEach((item) => {
         const li = document.createElement("li");
         li.dataset.id = item.prelMatId; // Aggiunge un data attribute per identificare l'elemento
-        
+
         // Formatta la data in un formato più leggibile
         const savedDate = new Date(item.savedDate);
         const formattedDate = savedDate.toLocaleDateString("it-IT");
-        
+
         // Crea il contenuto dell'elemento
         const itemContent = document.createElement("div");
         itemContent.className = "item-content";
 
         const isImported = item.imported === false || item.imported === "0" ? false : true;
-        
+
         const statusIndicator = document.createElement("div");
         statusIndicator.className = `status-indicator ${isImported === true ? 'status-closed' : 'status-open'}`;
         statusIndicator.title = isImported === true ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
 
         const parsedDateTime = parseDateTime(item.dataImp);
-        
+
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
             <div><strong>Comm:</strong> ${item.job} </div>
@@ -407,25 +439,24 @@ async function populatePrelieviList(data) {
 
         if(item.deleted === 1 || item.deleted === true)
             itemContent.classList.add("deleted-prel-item");
-        
+
         if(item.position === 0)
             itemContent.classList.add("new-prel-item");
-        
-        
+
         li.appendChild(itemContent);
-        
+
         // Aggiunge i pulsanti di azione solo se imported è 0
         if (!isImported) {
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
-            
+
             if(item.deleted === 0 || item.deleted === false)
             {
                 // Container per il campo di modifica delle quantità prelevate (inizialmente nascosto)
                 const editContainer = document.createElement("div");
                 editContainer.className = "edit-prel-container hidden";
                 editContainer.id = `edit-container-${item.prelMatId}`;
-                
+
                 // Campo input per la modifica
                 const editInput = document.createElement("input");
                 editInput.type = "number";
@@ -433,14 +464,14 @@ async function populatePrelieviList(data) {
                 editInput.className = "edit-prel-input";
                 editInput.id = `edit-prel-input-${item.prelMatId}`;
                 editInput.value = item.prelQty;
-                
+
                 // Pulsante di conferma modifica
                 const confirmButton = document.createElement("button");
                 confirmButton.className = "button-icon confirm option-button";
                 confirmButton.title = "Conferma modifica";
                 confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
                 confirmButton.addEventListener("click", () => savePrelieviEdit(item, data));
-                
+
                 // Pulsante di annullamento modifica
                 const cancelButton = document.createElement("button");
                 cancelButton.className = "button-icon cancel option-button";
@@ -451,7 +482,7 @@ async function populatePrelieviList(data) {
                 editContainer.appendChild(editInput);
                 editContainer.appendChild(confirmButton);
                 editContainer.appendChild(cancelButton);
-            
+
                 // Pulsante di modifica
                 const editButton = document.createElement("button");
                 editButton.className = "button-icon edit option-button";
@@ -461,34 +492,26 @@ async function populatePrelieviList(data) {
                 editButton.addEventListener("click", () => editPrelievi(item));
 
                 // Aggiunge il container di modifica e il pulsante di modifica alle azioni
-                // Solo se l'elemento non è in lista per essere eliminato
                 itemActions.appendChild(editContainer);
                 itemActions.appendChild(editButton);
             }
-            
+
             // Pulsante di eliminazione
             const deleteButton = document.createElement("button");
             deleteButton.className = "button-icon delete option-button";
             deleteButton.title = "Elimina Registrazione";
             deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
             deleteButton.addEventListener("click", () => deletePrelievi(item));
-            
+
             // Aggiunge gli elementi al container delle azioni
             itemActions.appendChild(deleteButton);
             li.appendChild(itemActions);
         }
         else
         {
-            const logFilterObject = 
-            {
-                moid: item.moid,
-                rtgStep: item.rtgStep,
-                alternate: item.alternate,
-                altRtgStep: item.altRtgStep,
-                workerId: item.workerId,
-                actionType: actionType
-            }
-            const logList = await fetchLog(logFilterObject);
+            // Usa il log già recuperato in precedenza
+            const logList = logMap[item.prelMatId] || {};
+            console.log("Log recuperato per prelMatId:", item.prelMatId, logList);
 
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
@@ -500,8 +523,7 @@ async function populatePrelieviList(data) {
             logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
             itemActions.appendChild(logButton);
             li.appendChild(itemActions);
-            
-            
+
             // Controlla se almeno un elemento nella lista interna "actionMessageDetails" ha messageType === "Errore"
             // Mostra icona di warning se ci sono errori nei log
             let hasError = false;
@@ -542,9 +564,9 @@ async function populatePrelieviList(data) {
                 openLogOverlay(logList);
             });
         }
-        
+
         prelieviList.appendChild(li);
-    }));
+    });
 
     if(paginationControls)
     {

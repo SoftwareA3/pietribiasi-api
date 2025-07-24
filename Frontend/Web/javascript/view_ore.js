@@ -332,8 +332,43 @@ async function populateOreList(data) {
     oreList.classList.remove("hidden");
     noContent.classList.add("hidden");
     
+    // Prepara la lista degli elementi da mostrare
+    // Se ci sono elementi importati, raccogli in parallelo i log per tutti
+
+    document.body.style.cursor = "wait";
+
+    let logMap = {};
+    const importedItems = displayData.filter(item => item.imported !== false && item.imported !== "0");
+    if (importedItems.length > 0) {
+        // Prepara tutte le chiamate fetchLog in parallelo
+        const logPromises = importedItems.map(item => {
+            const logFilterObject = {
+                moid: item.moid,
+                rtgStep: item.rtgStep,
+                alternate: item.alternate,
+                altRtgStep: item.altRtgStep,
+                mono: item.mono,
+                bom: item.bom,
+                variant: item.variant,
+                wc: item.wc,
+                operation: item.operation,
+                workerId: item.workerId,
+                actionType: actionType
+            };
+            return fetchLog(logFilterObject).then(logList => ({ regOreId: item.regOreId, logList }));
+        });
+        // Attendi tutte le chiamate e crea una mappa regOreId -> logList
+        const logs = await Promise.all(logPromises);
+        logMap = logs.reduce((acc, curr) => {
+            acc[curr.regOreId] = curr.logList;
+            return acc;
+        }, {});
+    }
+
+    document.body.style.cursor = "default";
+
     // Popola la lista con gli elementi
-    await Promise.all(displayData.map(async (item) => {
+    displayData.forEach((item) => {
         const li = document.createElement("li");
         li.dataset.id = item.regOreId; // Aggiunge un data attribute per identificare l'elemento
         
@@ -432,22 +467,8 @@ async function populateOreList(data) {
         }
         else
         {
-            const logFilterObject = 
-            {
-                moid: item.moid,
-                rtgStep: item.rtgStep,
-                alternate: item.alternate,
-                altRtgStep: item.altRtgStep,
-                mono: item.mono,
-                bom: item.bom,
-                variant: item.variant,
-                wc: item.wc,
-                operation: item.operation,
-                workerId: item.workerId,
-                actionType: actionType
-            }
-            console.log("Log filter object:", logFilterObject); 
-            const logList = await fetchLog(logFilterObject);
+            // Usa il log già recuperato in precedenza
+            const logList = logMap[item.regOreId] || {};
 
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
@@ -502,7 +523,7 @@ async function populateOreList(data) {
         }
         
         oreList.appendChild(li);
-    }));
+    });
 
     if(paginationControls)
     {
