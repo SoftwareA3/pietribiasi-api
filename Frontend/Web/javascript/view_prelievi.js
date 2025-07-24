@@ -369,28 +369,70 @@ async function populatePrelieviList(data) {
     prelieviList.classList.remove("hidden");
     noContent.classList.add("hidden");
     
+    // Prepara la lista degli elementi da mostrare
+    document.body.style.cursor = "wait";
+
+    // Precarica tutti i log delle righe importate in parallelo
+    // Disabilita il toggle durante il caricamento dei log per evitare modifiche accidentali
+    const showImportedToggle = document.getElementById("show-imported");
+    const filterButton = document.getElementById("filter-prel-submit");
+    showImportedToggle.disabled = true;
+    filterButton.disabled = true;
+
+    let logMap = {};
+    const importedItems = displayData.filter(item => item.imported !== false && item.imported !== "0");
+    if (importedItems.length > 0) {
+        // Prepara tutte le chiamate fetchLog in parallelo
+        const logPromises = importedItems.map(async item => {
+            const logFilterObject = {
+                moid: item.moid,
+                rtgStep: item.rtgStep,
+                alternate: item.alternate,
+                altRtgStep: item.altRtgStep,
+                workerId: item.workerId,
+                actionType: actionType
+            };
+            // Salva la chiave per mappare il log all'item
+            const logList = await fetchLog(logFilterObject).then(logList => ({ prelMatId: item.prelMatId, logList }));
+            return logList
+        });
+        // Attendi tutte le chiamate e crea una mappa prelMatId -> logList
+        const logs = await Promise.all(logPromises);
+        console.log("Log recuperati:", logs);
+        logMap = logs.reduce((acc, curr) => {
+            acc[curr.prelMatId] = curr.logList;
+            return acc;
+        }, {});
+    }
+
+    // Riabilita il toggle dopo il caricamento dei log
+    showImportedToggle.disabled = false;
+    filterButton.disabled = false;
+
+    document.body.style.cursor = "default";
+
     // Popola la lista con gli elementi
-    await Promise.all(displayData.map(async (item) => {
+    displayData.forEach((item) => {
         const li = document.createElement("li");
         li.dataset.id = item.prelMatId; // Aggiunge un data attribute per identificare l'elemento
-        
+
         // Formatta la data in un formato più leggibile
         const savedDate = new Date(item.savedDate);
         const formattedDate = savedDate.toLocaleDateString("it-IT");
-        
+
         // Crea il contenuto dell'elemento
         const itemContent = document.createElement("div");
         itemContent.className = "item-content";
 
         const isImported = item.imported === false || item.imported === "0" ? false : true;
-        
+
         const statusIndicator = document.createElement("div");
         statusIndicator.className = `status-indicator ${isImported === true ? 'status-closed' : 'status-open'}`;
         statusIndicator.title = isImported === true ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
 
         const parsedDateTime = parseDateTime(item.dataImp);
-        
+
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
             <div><strong>Comm:</strong> ${item.job} </div>
@@ -407,25 +449,24 @@ async function populatePrelieviList(data) {
 
         if(item.deleted === 1 || item.deleted === true)
             itemContent.classList.add("deleted-prel-item");
-        
+
         if(item.position === 0)
             itemContent.classList.add("new-prel-item");
-        
-        
+
         li.appendChild(itemContent);
-        
+
         // Aggiunge i pulsanti di azione solo se imported è 0
         if (!isImported) {
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
-            
+
             if(item.deleted === 0 || item.deleted === false)
             {
                 // Container per il campo di modifica delle quantità prelevate (inizialmente nascosto)
                 const editContainer = document.createElement("div");
                 editContainer.className = "edit-prel-container hidden";
                 editContainer.id = `edit-container-${item.prelMatId}`;
-                
+
                 // Campo input per la modifica
                 const editInput = document.createElement("input");
                 editInput.type = "number";
@@ -433,14 +474,14 @@ async function populatePrelieviList(data) {
                 editInput.className = "edit-prel-input";
                 editInput.id = `edit-prel-input-${item.prelMatId}`;
                 editInput.value = item.prelQty;
-                
+
                 // Pulsante di conferma modifica
                 const confirmButton = document.createElement("button");
                 confirmButton.className = "button-icon confirm option-button";
                 confirmButton.title = "Conferma modifica";
                 confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
                 confirmButton.addEventListener("click", () => savePrelieviEdit(item, data));
-                
+
                 // Pulsante di annullamento modifica
                 const cancelButton = document.createElement("button");
                 cancelButton.className = "button-icon cancel option-button";
@@ -451,7 +492,7 @@ async function populatePrelieviList(data) {
                 editContainer.appendChild(editInput);
                 editContainer.appendChild(confirmButton);
                 editContainer.appendChild(cancelButton);
-            
+
                 // Pulsante di modifica
                 const editButton = document.createElement("button");
                 editButton.className = "button-icon edit option-button";
@@ -461,34 +502,26 @@ async function populatePrelieviList(data) {
                 editButton.addEventListener("click", () => editPrelievi(item));
 
                 // Aggiunge il container di modifica e il pulsante di modifica alle azioni
-                // Solo se l'elemento non è in lista per essere eliminato
                 itemActions.appendChild(editContainer);
                 itemActions.appendChild(editButton);
             }
-            
+
             // Pulsante di eliminazione
             const deleteButton = document.createElement("button");
             deleteButton.className = "button-icon delete option-button";
             deleteButton.title = "Elimina Registrazione";
             deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
             deleteButton.addEventListener("click", () => deletePrelievi(item));
-            
+
             // Aggiunge gli elementi al container delle azioni
             itemActions.appendChild(deleteButton);
             li.appendChild(itemActions);
         }
         else
         {
-            const logFilterObject = 
-            {
-                moid: item.moid,
-                rtgStep: item.rtgStep,
-                alternate: item.alternate,
-                altRtgStep: item.altRtgStep,
-                workerId: item.workerId,
-                actionType: actionType
-            }
-            const logList = await fetchLog(logFilterObject);
+            // Usa il log già recuperato in precedenza
+            const logList = logMap[item.prelMatId] || {};
+            console.log("Log recuperato per prelMatId:", item.prelMatId, logList);
 
             const itemActions = document.createElement("div");
             itemActions.className = "item-actions";
@@ -500,8 +533,7 @@ async function populatePrelieviList(data) {
             logButton.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
             itemActions.appendChild(logButton);
             li.appendChild(itemActions);
-            
-            
+
             // Controlla se almeno un elemento nella lista interna "actionMessageDetails" ha messageType === "Errore"
             // Mostra icona di warning se ci sono errori nei log
             let hasError = false;
@@ -542,9 +574,9 @@ async function populatePrelieviList(data) {
                 openLogOverlay(logList);
             });
         }
-        
+
         prelieviList.appendChild(li);
-    }));
+    });
 
     if(paginationControls)
     {
@@ -687,52 +719,83 @@ async function openLogOverlay(logList) {
         logMessagesDiv.innerHTML += `<div class="msg-header"><strong>WorkerId:</strong> ${logItem.workerId}</div>
         <div class="msg-header"><strong>MoId:</strong> ${logItem.moid}</div>
         <div class="msg-header"><strong>MoNo:</strong> ${logItem.mono}</div>`;
+        // NAV: Pulsanti per filtrare Errori e Azioni
+        logMessagesDiv.innerHTML += `
+            <div class="log-nav">
+            <button id="log-nav-azioni" class="log-nav-btn active nav-btn-clicked">Azioni</button>
+            <button id="log-nav-errori" class="log-nav-btn">Errori</button>
+            </div>
+            <div id="log-section-azioni"></div>
+            <div id="log-section-errori" style="display:none"></div>
+        `;
 
-        // Prima mostra gli errori di omMessageDetails
-        if(Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails && logItem.omMessageDetails.length > 0) {
+        // Sezione Errori: solo messaggi da omMessageDetails
+        const erroriDiv = logMessagesDiv.querySelector("#log-section-errori");
+        if (Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails.length > 0) {
             logItem.omMessageDetails
-                .sort((a, b) => b.messageId - a.messageId)
-                .forEach(msg => {
-                    if (msg.messageId) {
-                        const messageDateTime = parseDateTime(msg.messageDate);
-                        logMessagesDiv.innerHTML += `
-                        <div style="margin-bottom:10px;">
-                            <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
-                            <div class="msg-content">
-                                <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
-                                <strong>Messaggio:</strong> ${msg.messageText} <br>
-                                <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
-                            </div>
-                        </div>
-                        `;
-                    }
-                });
-        }
-
-        // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
-        if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
-            logItem.actionMessageDetails.forEach(msg => {
-                const messageDateTimeAction = parseDateTime(msg.tbcreated);
-                logMessagesDiv.innerHTML += `
-                <div style="margin-bottom:10px;">
-                    <strong class="msg-id"><u>Azione #${msg.actionId}:</u></strong> <br>
+            .sort((a, b) => b.messageId - a.messageId)
+            .forEach(msg => {
+                if (msg.messageId) {
+                const messageDateTime = parseDateTime(msg.messageDate);
+                erroriDiv.innerHTML += `
+                    <div style="margin-bottom:10px;">
+                    <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
                     <div class="msg-content">
-                        <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
-                        <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>" } 
-                        <strong>Stato chiusura:</strong> ${(msg.closed === true || msg.closed === 1) ? "Chiuso" : "Aperto"} <br>
-                        <strong>Tipo Specificazione:</strong> ${msg.specificatorType} <br>
-                        <strong>Mo Status:</strong> ${msg.mostatus} <br>
-                        <strong>Data Messaggio:</strong> ${messageDateTimeAction.date} alle ${messageDateTimeAction.time} <br>
-                        <strong>Sincronizzato da:</strong> ${msg.tbcreatedId} <br>
+                        <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
+                        <strong>Messaggio:</strong> ${msg.messageText} <br>
+                        <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
                     </div>
-                </div>
+                    </div>
                 `;
+                }
             });
         } else {
-            logMessagesDiv.innerHTML += "";
-            logMessagesDiv.innerHTML += `<div class="msg-header"><strong>Attenzione!</strong></div>
-                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
+            erroriDiv.innerHTML += `<div>Nessun errore disponibile.</div>`;
         }
+
+        // Sezione Azioni: solo messaggi da actionMessageDetails
+        const azioniDiv = logMessagesDiv.querySelector("#log-section-azioni");
+        if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
+            logItem.actionMessageDetails.forEach(msg => {
+            const messageDateTimeAction = parseDateTime(msg.tbcreated);
+            azioniDiv.innerHTML += `
+                <div style="margin-bottom:10px;">
+                <strong class="msg-id"><u>Azione #${msg.actionId}:</u></strong> <br>
+                <div class="msg-content">
+                    <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
+                    <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>"}
+                    <strong>Stato chiusura:</strong> ${(msg.closed === true || msg.closed === 1) ? "Chiuso" : "Aperto"} <br>
+                    <strong>Tipo Specificazione:</strong> ${msg.specificatorType} <br>
+                    <strong>Mo Status:</strong> ${msg.mostatus} <br>
+                    <strong>Data Messaggio:</strong> ${messageDateTimeAction.date} alle ${messageDateTimeAction.time} <br>
+                    <strong>Sincronizzato da:</strong> ${msg.tbcreatedId} <br>
+                </div>
+                </div>
+            `;
+            });
+        } else {
+            azioniDiv.innerHTML += `<div>Nessuna azione disponibile.</div>`;
+        }
+
+        // Gestione click sui pulsanti NAV
+        const btnErrori = logMessagesDiv.querySelector("#log-nav-errori");
+        const btnAzioni = logMessagesDiv.querySelector("#log-nav-azioni");
+        btnErrori.addEventListener("click", () => {
+            btnErrori.classList.add("active");
+            btnAzioni.classList.remove("active");
+            erroriDiv.style.display = "";
+            azioniDiv.style.display = "none";
+            btnErrori.classList.add("nav-btn-clicked");
+            btnAzioni.classList.remove("nav-btn-clicked");
+        });
+        btnAzioni.addEventListener("click", () => {
+            btnAzioni.classList.add("active");
+            btnErrori.classList.remove("active");
+            erroriDiv.style.display = "none";
+            azioniDiv.style.display = "";
+            btnAzioni.classList.add("nav-btn-clicked");
+            btnErrori.classList.remove("nav-btn-clicked");
+        });
     } else {
         logMessagesDiv.innerHTML += "";
         logMessagesDiv.innerHTML = `<div class="msg-header"><strong>Attenzione!</strong></div>
