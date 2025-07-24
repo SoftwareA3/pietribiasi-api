@@ -17,6 +17,28 @@
     margin-top: var(--spacing-2);
 }
 
+.log-nav {
+    gap: var(--spacing-5);
+    display: flex;
+}
+
+.log-nav-btn {
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-size: 1rem;
+    border: none;
+    font-weight: bold;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--border-radius-sm);
+}
+
+.nav-btn-clicked {
+    background-color: var(--primary-dark);
+    color: var(--white);
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 .filter-form .button-primary {
     margin-top: var(--spacing-2);
 }
