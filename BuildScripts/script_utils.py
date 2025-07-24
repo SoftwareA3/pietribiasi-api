@@ -58,6 +58,10 @@ def get_local_ip():
 
 def create_zip_archive(obj):
     """Crea l'archivio ZIP finale"""
+    if obj.config['packaging']['create_portable'] is False:
+        print("❌ Creazione dell'archivio ZIP disabilitata in build.json")
+        return None
+    
     print("Creazione del file ZIP di distribuzione...")
     zip_filename = f"{obj.config['app']['name']}_build_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
     zip_path = obj.project_root / zip_filename
