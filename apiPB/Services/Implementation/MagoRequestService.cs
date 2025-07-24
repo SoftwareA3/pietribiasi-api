@@ -50,9 +50,9 @@ namespace apiPB.Services.Implementation
             {
                 var syncDataListToReturn = new SyncronizedDataDto();
 
-                var syncRegOreList = await SyncRegOreFiltered(responseDto, settings, new SyncRegOreFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
-
                 var syncPrelMatList = await SyncPrelMatFiltered(responseDto, settings, new SyncPrelMatFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
+
+                var syncRegOreList = await SyncRegOreFiltered(responseDto, settings, new SyncRegOreFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
                 var syncInventarioList = await SyncInventarioFiltered(responseDto, settings, new SyncInventarioFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
