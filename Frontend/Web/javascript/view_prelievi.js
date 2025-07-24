@@ -687,52 +687,83 @@ async function openLogOverlay(logList) {
         logMessagesDiv.innerHTML += `<div class="msg-header"><strong>WorkerId:</strong> ${logItem.workerId}</div>
         <div class="msg-header"><strong>MoId:</strong> ${logItem.moid}</div>
         <div class="msg-header"><strong>MoNo:</strong> ${logItem.mono}</div>`;
+        // NAV: Pulsanti per filtrare Errori e Azioni
+        logMessagesDiv.innerHTML += `
+            <div class="log-nav">
+            <button id="log-nav-azioni" class="log-nav-btn active nav-btn-clicked">Azioni</button>
+            <button id="log-nav-errori" class="log-nav-btn">Errori</button>
+            </div>
+            <div id="log-section-azioni"></div>
+            <div id="log-section-errori" style="display:none"></div>
+        `;
 
-        // Prima mostra gli errori di omMessageDetails
-        if(Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails && logItem.omMessageDetails.length > 0) {
+        // Sezione Errori: solo messaggi da omMessageDetails
+        const erroriDiv = logMessagesDiv.querySelector("#log-section-errori");
+        if (Array.isArray(logItem.omMessageDetails) && logItem.omMessageDetails.length > 0) {
             logItem.omMessageDetails
-                .sort((a, b) => b.messageId - a.messageId)
-                .forEach(msg => {
-                    if (msg.messageId) {
-                        const messageDateTime = parseDateTime(msg.messageDate);
-                        logMessagesDiv.innerHTML += `
-                        <div style="margin-bottom:10px;">
-                            <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
-                            <div class="msg-content">
-                                <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
-                                <strong>Messaggio:</strong> ${msg.messageText} <br>
-                                <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
-                            </div>
-                        </div>
-                        `;
-                    }
-                });
-        }
-
-        // Se actionMessageDetails è un array, mostra ogni messaggio come JSON
-        if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
-            logItem.actionMessageDetails.forEach(msg => {
-                const messageDateTimeAction = parseDateTime(msg.tbcreated);
-                logMessagesDiv.innerHTML += `
-                <div style="margin-bottom:10px;">
-                    <strong class="msg-id"><u>Azione #${msg.actionId}:</u></strong> <br>
+            .sort((a, b) => b.messageId - a.messageId)
+            .forEach(msg => {
+                if (msg.messageId) {
+                const messageDateTime = parseDateTime(msg.messageDate);
+                erroriDiv.innerHTML += `
+                    <div style="margin-bottom:10px;">
+                    <strong class="msg-id"><u>Messaggio #${msg.messageId}:</u></strong> <br>
                     <div class="msg-content">
-                        <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
-                        <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>" } 
-                        <strong>Stato chiusura:</strong> ${(msg.closed === true || msg.closed === 1) ? "Chiuso" : "Aperto"} <br>
-                        <strong>Tipo Specificazione:</strong> ${msg.specificatorType} <br>
-                        <strong>Mo Status:</strong> ${msg.mostatus} <br>
-                        <strong>Data Messaggio:</strong> ${messageDateTimeAction.date} alle ${messageDateTimeAction.time} <br>
-                        <strong>Sincronizzato da:</strong> ${msg.tbcreatedId} <br>
+                        <strong>Tipo Messaggio:</strong> ${msg.messageType} <br>
+                        <strong>Messaggio:</strong> ${msg.messageText} <br>
+                        <strong>Data:</strong> ${messageDateTime.date} alle ${messageDateTime.time} <br>
                     </div>
-                </div>
+                    </div>
                 `;
+                }
             });
         } else {
-            logMessagesDiv.innerHTML += "";
-            logMessagesDiv.innerHTML += `<div class="msg-header"><strong>Attenzione!</strong></div>
-                <div><strong>Messaggio:</strong> Nessun messaggio disponibile. L'operazione potrebbe non essere disponibile o essere stata chiusa</div>`;
+            erroriDiv.innerHTML += `<div>Nessun errore disponibile.</div>`;
         }
+
+        // Sezione Azioni: solo messaggi da actionMessageDetails
+        const azioniDiv = logMessagesDiv.querySelector("#log-section-azioni");
+        if (Array.isArray(logItem.actionMessageDetails) && logItem.actionMessageDetails.length > 0) {
+            logItem.actionMessageDetails.forEach(msg => {
+            const messageDateTimeAction = parseDateTime(msg.tbcreated);
+            azioniDiv.innerHTML += `
+                <div style="margin-bottom:10px;">
+                <strong class="msg-id"><u>Azione #${msg.actionId}:</u></strong> <br>
+                <div class="msg-content">
+                    <strong>Stato Azione:</strong> ${msg.actionStatus} <br>
+                    <strong>Messaggio:</strong> ${(msg.actionMessage !== null && msg.actionMessage !== "") ? msg.actionMessage + "<br>" : "Nessun Messaggio" + "<br>"}
+                    <strong>Stato chiusura:</strong> ${(msg.closed === true || msg.closed === 1) ? "Chiuso" : "Aperto"} <br>
+                    <strong>Tipo Specificazione:</strong> ${msg.specificatorType} <br>
+                    <strong>Mo Status:</strong> ${msg.mostatus} <br>
+                    <strong>Data Messaggio:</strong> ${messageDateTimeAction.date} alle ${messageDateTimeAction.time} <br>
+                    <strong>Sincronizzato da:</strong> ${msg.tbcreatedId} <br>
+                </div>
+                </div>
+            `;
+            });
+        } else {
+            azioniDiv.innerHTML += `<div>Nessuna azione disponibile.</div>`;
+        }
+
+        // Gestione click sui pulsanti NAV
+        const btnErrori = logMessagesDiv.querySelector("#log-nav-errori");
+        const btnAzioni = logMessagesDiv.querySelector("#log-nav-azioni");
+        btnErrori.addEventListener("click", () => {
+            btnErrori.classList.add("active");
+            btnAzioni.classList.remove("active");
+            erroriDiv.style.display = "";
+            azioniDiv.style.display = "none";
+            btnErrori.classList.add("nav-btn-clicked");
+            btnAzioni.classList.remove("nav-btn-clicked");
+        });
+        btnAzioni.addEventListener("click", () => {
+            btnAzioni.classList.add("active");
+            btnErrori.classList.remove("active");
+            erroriDiv.style.display = "none";
+            azioniDiv.style.display = "";
+            btnAzioni.classList.add("nav-btn-clicked");
+            btnErrori.classList.remove("nav-btn-clicked");
+        });
     } else {
         logMessagesDiv.innerHTML += "";
         logMessagesDiv.innerHTML = `<div class="msg-header"><strong>Attenzione!</strong></div>
