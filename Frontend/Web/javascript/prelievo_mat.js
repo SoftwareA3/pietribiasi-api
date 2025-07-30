@@ -910,6 +910,29 @@ document.addEventListener("DOMContentLoaded", async function () {
                     data.deleted = false;
                 }
 
+                // Recupera le informazioni sulla giacenza e il controllo dell'unità di misura
+                // Per verificare se la quantità richiesta supera la giacenza disponibile durante l'aggiunta
+                // Se il controllo dell'unità di misura è attivo, verifica se la quantità richiesta supera la giacenza disponibile
+                // Se positivo, mostra un messaggio di errore e imposta la quantità al valore della giacenza disponibile, sospendendo l'operazione
+                
+                const invItem = await fetchGiacenzeByItem(data.component);
+
+                if( (invItem.uoM === data.uoM) && (parseFloat(data.prelQty) > parseFloat(invItem.bookInv))) {
+                    // Questo controllo limita le chiamate API, quindi viene eseguito solo se necessario
+                    const controlloUoM = await fetchControlloUoM();
+                    //console.log("UoM:", data.uoM, " - Giacenza:", invItem.bookInv, " - Quantità richiesta:", data.prelQty);
+                    //console.log("Controllo UoM attivo:", controlloUoM.controlloUoM);
+                    //console.log("Unità di misura della giacenza:", invItem.uoM);
+                    if(controlloUoM.controlloUoM === true) {
+                        console.log("La quantità richiesta supera la giacenza disponibile.");
+                        errorQty.style.display = "block";
+                        errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
+                        alert("La quantità richiesta supera la giacenza disponibile.");
+                        quantitaInput.value = invItem.bookInv;
+                        return null;
+                    }
+                }
+
                 dataResultList.push(data);
 
                 if(selectedQta > result.finalSum) 
@@ -1095,7 +1118,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 var sum = 0;
                 // Dati lista temporanea
-                var tmpListSum = 0;
                 dataResultList.forEach(element => {
                     // console.log("Elemento della lista temporanea:", element);
                     // console.log("Elemento corrente:", allDataResult[0]);
@@ -1106,7 +1128,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 });
                 console.log("Somma delle quantità della lista temporanea:", sum);
-                tmpListSum = sum;
                 console.log("Component:", allDataResult[0].component);
                 const prelMatQtyList = await fetchA3PrelMatQtyList(allDataResult[0].component);
                 console.log("Lista di quantità da A3_app_prel_mat:", prelMatQtyList);
@@ -1143,12 +1164,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                     errorQty.style.display = "block";
                 }
 
-                if( parseFloat(finalSum) > parseFloat(invItem.bookInv)) {
-                    errorQty.style.display = "block";
-                    errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
-                    alert("La quantità richiesta supera la giacenza disponibile.");
-                    quantitaInput.value = invItem.bookInv;
-                    return null;
+                // Recupera le informazioni sulla giacenza e il controllo dell'unità di misura
+                // Per verificare se la quantità richiesta supera la giacenza disponibile durante l'inserimento della quantità di default
+
+                if( (invItem.uoM === allDataResult[0].prelUoM) && (parseFloat(quantitaInput.value) > parseFloat(invItem.bookInv))) {
+                    const controlloUoM = await fetchControlloUoM();
+                    if(controlloUoM.controlloUoM === true) {
+                        //console.log("UoM:", allDataResult[0].prelUoM, " - Giacenza:", invItem.bookInv, " - Quantità richiesta:", quantitaInput.value);
+                        //console.log("Controllo UoM attivo:", controlloUoM.controlloUoM);
+                        //console.log("Unità di misura della giacenza:", invItem.uoM);
+                        console.log("La quantità richiesta supera la giacenza disponibile.");
+                        errorQty.style.display = "block";
+                        errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
+                        alert("La quantità richiesta supera la giacenza disponibile.");
+                        quantitaInput.value = invItem.bookInv;
+                        return null;
+                    }
                 }
 
                 allDataResult[0].finalSum = finalSum;
@@ -1204,6 +1235,17 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
                 if (parseFloat(quantitaInput.value) < 0) {
                     errorQty.style.display = "block";
+                }
+
+                if( (invItem.uoM === dataItem.prelUoM) && parseFloat(quantitaInput.value) > parseFloat(invItem.bookInv)) {
+                    const controlloUoM = await fetchControlloUoM();
+                    if(controlloUoM.controlloUoM === true) {
+                        errorQty.style.display = "block";
+                        errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
+                        alert("La quantità richiesta supera la giacenza disponibile.");
+                        quantitaInput.value = invItem.bookInv;
+                        return null;
+                    }
                 }
 
                 isAddingNewItem = false; // Imposta il flag per indicare che si sta aggiungendo un nuovo articolo
@@ -1447,6 +1489,26 @@ async function fetchGiacenzeByItem(item) {
         return giacenze;
     } catch (error) {
         console.error("Errore durante la fetch delle giacenze:", error);
+        return [];
+    }
+}
+
+async function fetchControlloUoM() {
+    try {
+        const request = await fetchWithAuth(getApiUrl("api/settings/get_controllo_uom"), {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+        if (!request || !request.ok) {
+            console.error("Errore nella richiesta:", request.status, request.statusText);
+            return [];
+        }
+        const controlloUoM = await request.json();
+        return controlloUoM;
+    } catch (error) {
+        console.error("Errore durante la fetch del controllo UoM:", error);
         return [];
     }
 }
