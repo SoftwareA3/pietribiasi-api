@@ -44,7 +44,17 @@
         </header>
         <main class="container">
             <div class="card">
-                <div class="card-header">Registrazione Ore Commessa</div>
+                <div class="card-header" id="reg-ore-header">Registrazione Ore Commessa</div>
+                <div class="tabs-nav hidden" id="reg-ore-nav">
+                    <button class="tab-button active" data-tab="ore">
+                        <i class="fa-solid fa-clock"></i>
+                        Registrazione Ore Commessa
+                    </button>
+                    <button class="tab-button" data-tab="chiusura-commesse">
+                        <i class="fa-solid fa-lock"></i>
+                        Chiusura Commesse
+                    </button>
+                </div>
                 <form id="reg-ore-form">
                     <div class="form-group">
                         <label for="reg-ore-commessa">Codice Commessa:</label>
@@ -74,7 +84,12 @@
                     </div>
                     <div class="form-group">
                         <label for="reg-ore-ore">Ore Lavorate:</label>
-                        <input type="number" id="reg-ore-ore" name="reg-ore-ore" step="0.1" min="0" required="" autocomplete="off" disabled="true">
+                        <div class="ore-qty">
+                            <input type="number" id="reg-ore-ore" name="reg-ore-ore" step="0.1" min="0" required="" autocomplete="off" disabled="true">
+                            <div class="form-group hidden" id="warning-commessa">
+                                <p><strong>Attenzione! La commessa selezionata verrà chiusa una volta sincronizzata.</strong></p>
+                            </div>
+                        </div>
                     </div>
                     <div class="button-group">
                         <button type="button" id="inv-add-list" class="button button-primary">Aggiungi 
