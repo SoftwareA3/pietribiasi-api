@@ -16,12 +16,10 @@ namespace apiPB.Controllers
     {
         private readonly IResponseHandler _responseHandler;
         private readonly IMoStepRequestService _moStepRequestService;
-        private readonly bool _isLogActive;
         public MoStepController(IResponseHandler responseHandler, IMoStepRequestService moStepRequestService)
         {
             _responseHandler = responseHandler;
             _moStepRequestService = moStepRequestService;
-            _isLogActive = false;
         }
 
         [HttpPost("job")]
@@ -33,25 +31,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetVwApiMostepWithJob([FromBody] JobRequestDto? mostepRequestDto)
         {
-            if (mostepRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var mostepDto = _moStepRequestService.GetMostepWithJob(mostepRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in MoStepController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
             }
         }
 
@@ -64,25 +62,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepWithMono([FromBody] MonoRequestDto? mostepMonoRequestDto)
         {
-            if (mostepMonoRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepMonoRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var mostepDto = _moStepRequestService.GetMostepWithMono(mostepMonoRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in MoStepController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
             }
         }
 
@@ -95,25 +93,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepWithOperation([FromBody] OperationRequestDto? mostepOperationRequestDto)
         {
-            if(mostepOperationRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if(mostepOperationRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var mostepDto = _moStepRequestService.GetMostepWithOperation(mostepOperationRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, mostepDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in MoStepController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in MoStepController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in MoStepController: " + ex.Message);
             }
         }
     }

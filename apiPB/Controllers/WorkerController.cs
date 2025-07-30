@@ -18,14 +18,12 @@ namespace apiPB.Controllers
     {
         private readonly IResponseHandler _responseHandler;
         private readonly IWorkersRequestService _workerRequestService;
-        private readonly bool _isLogActive;
         
         public WorkerController(IResponseHandler responseHandler, IWorkersRequestService workersRequestService
         )
         {
             _responseHandler = responseHandler;
             _workerRequestService = workersRequestService;
-            _isLogActive = false;
         }
 
         [HttpGet]
@@ -40,19 +38,19 @@ namespace apiPB.Controllers
             {
                 var workersDto = _workerRequestService.GetWorkers().ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, workersDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, workersDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio ritorna null in WorkerController: {ex.Message}");
+                return _responseHandler.HandleNotFound(HttpContext, $"Il servizio ritorna null in WorkerController: {ex.Message}");
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio non ha trovato dati in WorkerController: {ex.Message}");
+                return _responseHandler.HandleNotFound(HttpContext, $"Il servizio non ha trovato dati in WorkerController: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Errore durante l'esecuzione del Service in WorkerController: {ex.Message}");
+                return _responseHandler.HandleNotFound(HttpContext, $"Errore durante l'esecuzione del Service in WorkerController: {ex.Message}");
             }
         }
 
@@ -63,25 +61,25 @@ namespace apiPB.Controllers
         [HttpPost("login")]
         public IActionResult LoginWithPassword([FromBody] PasswordWorkersRequestDto? passwordWorkersRequestDto)
         {
-            if (passwordWorkersRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (passwordWorkersRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var workerDto = _workerRequestService.LoginWithPassword(passwordWorkersRequestDto);
 
-                return _responseHandler.HandleOkAndItem(HttpContext, workerDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, workerDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio ritorna null in WorkerController: {ex.Message}");
+                return _responseHandler.HandleNotFound(HttpContext, $"Il servizio ritorna null in WorkerController: {ex.Message}");
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Il servizio non ha trovato dati in WorkerController: {ex.Message}");
+                return _responseHandler.HandleNotFound(HttpContext, $"Il servizio non ha trovato dati in WorkerController: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, $"Errore durante l'esecuzione del Service in WorkerController: {ex.Message}");
+                return _responseHandler.HandleNotFound(HttpContext, $"Errore durante l'esecuzione del Service in WorkerController: {ex.Message}");
             }
         }
     }

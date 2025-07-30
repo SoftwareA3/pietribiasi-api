@@ -16,7 +16,6 @@ namespace apiPB.Controllers
     {
         private readonly ISettingsRequestService _settingsService;
         private readonly IResponseHandler _responseHandler;
-        private readonly bool _isLogActive = false;
 
         public SettingsController(ISettingsRequestService settingsService, IResponseHandler responseHandler)
         {
@@ -35,15 +34,15 @@ namespace apiPB.Controllers
             try
             {
                 var settingsDto = _settingsService.GetSettings();
-                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
 
@@ -58,21 +57,21 @@ namespace apiPB.Controllers
         [HttpPost("edit_settings")]
         public IActionResult EditSettings([FromBody] SettingsDto? request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di modifica delle impostazioni non valida");
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, "Richiesta di modifica delle impostazioni non valida");
 
             try
             {
                 var settingsDto = _settingsService.EditSettings(request);
 
-                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive, "Impostazioni modificate con successo");
+                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, "Impostazioni modificate con successo");
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
 
@@ -89,15 +88,15 @@ namespace apiPB.Controllers
             try
             {
                 var syncGlobalActiveDto = _settingsService.GetSyncGlobalActive();
-                return _responseHandler.HandleOkAndItem(HttpContext, syncGlobalActiveDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, syncGlobalActiveDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
 
@@ -115,15 +114,15 @@ namespace apiPB.Controllers
             try
             {
                 var terminaLavorazioniUtenteDto = _settingsService.GetTerminaLavorazioniUtente();
-                return _responseHandler.HandleOkAndItem(HttpContext, terminaLavorazioniUtenteDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, terminaLavorazioniUtenteDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
     }

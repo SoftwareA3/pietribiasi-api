@@ -15,13 +15,11 @@ namespace apiPB.Controllers
     {
         private readonly IResponseHandler _responseHandler;
         private readonly IActionMessageRequestService _actionMessageRequestService;
-        private readonly bool _isLogActive;
 
         public ActionMessageController(IResponseHandler responseHandler, IActionMessageRequestService actionMessageRequestService)
         {
             _responseHandler = responseHandler;
             _actionMessageRequestService = actionMessageRequestService;
-            _isLogActive = false;
         }
 
         [HttpPost("get_action_messages_filtered")]
@@ -35,7 +33,7 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetActionMessagesByFilter([FromBody] ImportedLogMessageDto? request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
@@ -43,18 +41,18 @@ namespace apiPB.Controllers
 
                 if (actionMessagesDto == null)
                 {
-                    return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Nessun messaggio di azione trovato con i filtri specificati.");
+                    return _responseHandler.HandleNoContent(HttpContext, "Nessun messaggio di azione trovato con i filtri specificati.");
                 }
 
-                return _responseHandler.HandleOkAndItem(HttpContext, actionMessagesDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, actionMessagesDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in ActionMessageController" + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in ActionMessageController" + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in ActionMessageController" + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in ActionMessageController" + ex.Message);
             }
         }
     }

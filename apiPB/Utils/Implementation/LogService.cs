@@ -4,6 +4,7 @@ using apiPB.Utils.Abstraction;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using apiPB.Utils.Implementation;
+using apiPB.Repository.Abstraction;
 
 namespace apiPB.Utils.Implementation
 {
@@ -14,9 +15,12 @@ namespace apiPB.Utils.Implementation
         private readonly string _logFolderPath = string.Empty;
         private readonly string _logFilePath = string.Empty;
         private readonly string _logErrorFilePath = string.Empty;
-        public LogService()
+
+        private readonly ISettingsRepository _settingsRepository;
+        public LogService(ISettingsRepository settingsRepository)
         {
-            _logFolderPath = "Logs\\";
+            _settingsRepository = settingsRepository;
+            _logFolderPath = "..\\Logs\\";
             _logFilePath = Path.Combine(_logFolderPath, "API.log");
             _logErrorFilePath = Path.Combine(_logFolderPath, "APIErrors.log");
         }
@@ -38,7 +42,8 @@ namespace apiPB.Utils.Implementation
             {
                 using (File.Create(_logFilePath))
                 {
-                };
+                }
+                ;
             }
         }
 
@@ -49,7 +54,8 @@ namespace apiPB.Utils.Implementation
             {
                 using (File.Create(_logErrorFilePath))
                 {
-                };
+                }
+                ;
             }
         }
 
@@ -70,11 +76,11 @@ namespace apiPB.Utils.Implementation
             }
 
             return ipAddress;
-        } 
+        }
 
-        public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive)
+        public void AppendMessageToLog(string requestType, int? statusCode, string statusMessage)
         {
-            if(isActive == false)
+            if (IsLogEnabled() == false)
             {
                 return;
             }
@@ -83,10 +89,10 @@ namespace apiPB.Utils.Implementation
             using var fileStream = new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
             string message = $"{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - [{requestType}] - StatusCode: {statusCode} - Message: {statusMessage}";
-            
+
             writer.WriteLine(message);
         }
-        
+
         public void AppendErrorToLog(string errorMessage)
         {
             CreateErrorLogFile();
@@ -94,7 +100,7 @@ namespace apiPB.Utils.Implementation
             using var fileStream = new FileStream(_logErrorFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
             string message = $"===== ERROR =====\n{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - ErrorMessage:\n{errorMessage}\n===== END ERROR =====\n";
-            
+
             // Scrive il messaggio di errore nella console
             Console.WriteLine(message);
 
@@ -109,7 +115,7 @@ namespace apiPB.Utils.Implementation
             using var fileStream = new FileStream(_logErrorFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
             string message = $"===== WARNING =====\n{AppendIpAddress()} - Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - WarningMessage:\n{warningMessage}\n===== END WARNING =====\n";
-            
+
             // Scrive il messaggio di attenzione nella console
             Console.WriteLine(message);
 
@@ -117,13 +123,13 @@ namespace apiPB.Utils.Implementation
             writer.WriteLine(message);
         }
 
-        
-        public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive)
+
+        public void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list)
         {
-            AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
+            AppendMessageToLog(requestType, statusCode, statusMessage);
             // Se isActive è false, non eseguire AppendListToLog
             // Necessario perché in AppendMessageToLog viene controllato, ma semplicemente ritorna senza eseguire
-            if (isActive == false)
+            if (IsLogEnabled() == false)
             {
                 return;
             }
@@ -133,10 +139,10 @@ namespace apiPB.Utils.Implementation
             }
         }
 
-        public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item, bool isActive)
+        public void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item)
         {
-            AppendMessageToLog(requestType, statusCode, statusMessage, isActive);
-            if(isActive == false)
+            AppendMessageToLog(requestType, statusCode, statusMessage);
+            if (IsLogEnabled() == false)
             {
                 return;
             }
@@ -157,7 +163,7 @@ namespace apiPB.Utils.Implementation
 
             // Itera sugli elementi della lista
             foreach (var item in list)
-            {  
+            {
                 // Ottiene le proprietà dell'oggetto attraverso la riflessione
                 PropertyInfo[] property = typeof(T).GetProperties();
 
@@ -166,7 +172,7 @@ namespace apiPB.Utils.Implementation
                 // Itera sulle proprietà dell'oggetto
                 foreach (var p in property)
                 {
-                    var value = p.GetValue(item); 
+                    var value = p.GetValue(item);
                     writer.Write($"{p.Name}: {value}");
 
                     if (p != property.Last())
@@ -195,7 +201,7 @@ namespace apiPB.Utils.Implementation
 
             foreach (var p in property)
             {
-                var value = p.GetValue(item); 
+                var value = p.GetValue(item);
                 writer.Write($"{p.Name}: {value}");
 
                 if (p != property.Last())
@@ -204,6 +210,12 @@ namespace apiPB.Utils.Implementation
                 }
             }
             writer.WriteLine();
+        }
+        
+        public bool IsLogEnabled()
+        {
+            var abilitaLogResult = _settingsRepository.GetAbilitaLog();
+            return abilitaLogResult != null && abilitaLogResult.AbilitaLog == true;
         }
     }
 }

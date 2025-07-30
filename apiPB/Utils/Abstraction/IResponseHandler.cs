@@ -15,7 +15,7 @@ namespace apiPB.Utils.Abstraction
         /// <param name="httpContext">HttpContext della richiesta</param>
         /// <param name="isLogActive">Determina se il file di log è attivo</param>
         /// <returns>BadRequestObjectResult: scrive sul file di log e ritorna BadRequest</returns>
-        BadRequestObjectResult HandleBadRequest(HttpContext httpContext, bool isLogActive, string message = "Bad Request");
+        BadRequestObjectResult HandleBadRequest(HttpContext httpContext, string message = "Bad Request");
 
         /// <summary>
         /// Se il file di log è attivo, scrive la risposta del NotFound sul file di Log
@@ -23,16 +23,16 @@ namespace apiPB.Utils.Abstraction
         /// <param name="httpContext">HttpContext della richiesta</param>
         /// <param name="isLogActive">Determina se il file di log è attivo</param>
         /// <returns>NotFoundObjectResult: scrive sul file di log e ritorna NotFound</returns>
-        NotFoundObjectResult HandleNotFound(HttpContext httpContext, bool isLogActive, string message = "Not Found");
+        NotFoundObjectResult HandleNotFound(HttpContext httpContext, string message = "Not Found");
 
-        OkObjectResult HandleOk(HttpContext httpContext, bool isLogActive, string message = "Ok");
+        OkObjectResult HandleOk(HttpContext httpContext, string message = "Ok");
 
-        OkObjectResult HandleOkAndItem<T>(HttpContext httpContext, T item, bool isLogActive, string message = "Ok");
+        OkObjectResult HandleOkAndItem<T>(HttpContext httpContext, T item, string message = "Ok");
 
-        OkObjectResult HandleOkAndList<T>(HttpContext httpContext, List<T> itemList, bool isLogActive, string message = "Ok");
+        OkObjectResult HandleOkAndList<T>(HttpContext httpContext, List<T> itemList, string message = "Ok");
 
-        CreatedAtActionResult HandleCreated<T>(HttpContext httpContext, List<T> itemList, bool isLogActive, string message = "Created");
+        CreatedAtActionResult HandleCreated<T>(HttpContext httpContext, List<T> itemList, string message = "Created");
 
-        NoContentResult HandleNoContent(HttpContext httpContext, bool isLogActive, string message = "No Content");
+        NoContentResult HandleNoContent(HttpContext httpContext, string message = "No Content");
     }
 }

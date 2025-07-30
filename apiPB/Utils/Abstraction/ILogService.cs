@@ -15,7 +15,7 @@ namespace apiPB.Utils.Abstraction
         /// <param name="statusMessage">Messaggio dello stato della richiesta. Ad esempio: Ok</param>
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
-        void AppendMessageToLog(string requestType, int? statusCode, string statusMessage, bool isActive);
+        void AppendMessageToLog(string requestType, int? statusCode, string statusMessage);
 
         void AppendWarningToLog(string warningMessage);
 
@@ -31,7 +31,7 @@ namespace apiPB.Utils.Abstraction
         /// <param name="list">Lista di tipo generico</param>
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
-        void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list, bool isActive);
+        void AppendMessageAndListToLog<T>(string requestType, int? statusCode, string statusMessage, List<T> list);
 
         /// <summary>
         /// Chiama il metodo AppendMessageToLog e aggiunge un oggetto generico al file di log
@@ -43,6 +43,8 @@ namespace apiPB.Utils.Abstraction
         /// <param name="item">Oggetto generico</param>
         /// <param name="isActive">Controlla se il log è attivo o meno</param>
         /// <remarks>Il log è attivo se isActive è true</remarks>
-        void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item, bool isActive);
+        void AppendMessageAndItemToLog<T>(string requestType, int? statusCode, string statusMessage, T item);
+
+        bool IsLogEnabled();
     }
 }

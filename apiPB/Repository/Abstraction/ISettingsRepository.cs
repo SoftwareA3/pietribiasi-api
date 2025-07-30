@@ -14,5 +14,8 @@ namespace apiPB.Repository.Abstraction
         TerminaLavorazioniUtenteRequestDto? GetTerminaLavorazioniUtente();
 
         void IncrementExternalReferenceCounter();
+
+        AbilitaLogRequestDto? GetAbilitaLog();
+        ControlloUoMRequestDto? GetControlloUoM();
     }
 }

@@ -15,7 +15,6 @@ namespace apiPB.Controllers
     {
         private readonly IMagoRequestService _magoRequestService;
         private readonly IResponseHandler _responseHandler;
-        private readonly bool _isLogActive = false;
 
         public MagoController(
             IMagoRequestService magoRequestService,
@@ -36,13 +35,13 @@ namespace apiPB.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] MagoLoginRequestDto? magoLoginRequestDto)
         {
-            if (magoLoginRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di login non valida");
+            if (magoLoginRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, "Richiesta di login non valida");
 
             var magoIdDto = await _magoRequestService.LoginAsync(magoLoginRequestDto);
 
-            if (magoIdDto == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Login non riuscito");
+            if (magoIdDto == null) return _responseHandler.HandleNotFound(HttpContext, "Login non riuscito");
 
-            return _responseHandler.HandleOkAndItem(HttpContext, magoIdDto, _isLogActive, "Login effettuato con successo");
+            return _responseHandler.HandleOkAndItem(HttpContext, magoIdDto, "Login effettuato con successo");
         }
 
         /// <summary>
@@ -56,17 +55,17 @@ namespace apiPB.Controllers
         [HttpPost("logoff")]
         public async Task<IActionResult> LogOff([FromBody] MagoTokenRequestDto tokenRequestDto)
         {
-            if (tokenRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Token non valido");
+            if (tokenRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, "Token non valido");
 
             try
             {
                 await _magoRequestService.LogoffAsync(tokenRequestDto);
-                return _responseHandler.HandleOk(HttpContext, _isLogActive, "Logoff effettuato con successo");
+                return _responseHandler.HandleOk(HttpContext, "Logoff effettuato con successo");
             }
             catch (Exception)
             {
 
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Logoff non riuscito");
+                return _responseHandler.HandleBadRequest(HttpContext, "Logoff non riuscito");
             }
         }
 
@@ -82,20 +81,20 @@ namespace apiPB.Controllers
         [Authorize]
         public async Task<IActionResult> Syncronize([FromBody] WorkerIdSyncRequestDto? request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Dati della sincronizzazione non validi");
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, "Dati della sincronizzazione non validi");
 
             var settingsAndResponseTuple = await _magoRequestService.LoginWithWorkerIdAsync(request);
-            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Login non riuscito durante la sincronizzazione");
-            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Impostazioni non trovate durante la sincronizzazione");
+            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, "Login non riuscito durante la sincronizzazione");
+            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, "Impostazioni non trovate durante la sincronizzazione");
 
             try
             {
                 var response = await _magoRequestService.SyncronizeAsync(settingsAndResponseTuple.LoginResponse, settingsAndResponseTuple.Settings, request);
-                return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Sincronizzazione effettuata con successo");
+                return _responseHandler.HandleOkAndItem(HttpContext, response, "Sincronizzazione effettuata con successo");
             }
             catch (Exception e)
             {
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione non riuscita" + e.Message);
+                return _responseHandler.HandleBadRequest(HttpContext, "Sincronizzazione non riuscita" + e.Message);
             }
             finally
             {
@@ -123,20 +122,20 @@ namespace apiPB.Controllers
         [Authorize]
         public async Task<IActionResult> SyncRegOreFiltered([FromBody] SyncRegOreFilteredDto request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di sincronizzazione delle ore registrate filtrate non valida");
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, "Richiesta di sincronizzazione delle ore registrate filtrate non valida");
 
             var settingsAndResponseTuple = await _magoRequestService.LoginWithWorkerIdAsync(request.WorkerIdSyncRequestDto);
-            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Login non riuscito durante la sincronizzazione delle ore registrate filtrate");
-            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Impostazioni non trovate durante la sincronizzazione");
+            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, "Login non riuscito durante la sincronizzazione delle ore registrate filtrate");
+            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, "Impostazioni non trovate durante la sincronizzazione");
 
             try
             {
                 var response = await _magoRequestService.SyncRegOreFiltered(settingsAndResponseTuple.LoginResponse, settingsAndResponseTuple.Settings, request);
-                return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Sincronizzazione delle ore registrate filtrate effettuata con successo");
+                return _responseHandler.HandleOkAndItem(HttpContext, response, "Sincronizzazione delle ore registrate filtrate effettuata con successo");
             }
             catch (Exception e)
             {
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione delle ore registrate filtrate non riuscita: " + e.Message);
+                return _responseHandler.HandleBadRequest(HttpContext, "Sincronizzazione delle ore registrate filtrate non riuscita: " + e.Message);
             }
             finally
             {
@@ -164,20 +163,20 @@ namespace apiPB.Controllers
         [Authorize]
         public async Task<IActionResult> SyncPrelMatFiltered([FromBody] SyncPrelMatFilteredDto request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di sincronizzazione dei materiali prelevati filtrati non valida");
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, "Richiesta di sincronizzazione dei materiali prelevati filtrati non valida");
 
             var settingsAndResponseTuple = await _magoRequestService.LoginWithWorkerIdAsync(request.WorkerIdSyncRequestDto);
-            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Login non riuscito durante la sincronizzazione dei materiali prelevati filtrati");
-            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Impostazioni non trovate durante la sincronizzazione");
+            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleBadRequest(HttpContext, "Login non riuscito durante la sincronizzazione dei materiali prelevati filtrati");
+            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, "Impostazioni non trovate durante la sincronizzazione");
 
             try
             {
                 var response = await _magoRequestService.SyncPrelMatFiltered(settingsAndResponseTuple.LoginResponse, settingsAndResponseTuple.Settings, request);
-                return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Sincronizzazione dei materiali prelevati filtrati effettuata con successo");
+                return _responseHandler.HandleOkAndItem(HttpContext, response, "Sincronizzazione dei materiali prelevati filtrati effettuata con successo");
             }
             catch (Exception e)
             {
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione dei materiali prelevati filtrati non riuscita: " + e.Message);
+                return _responseHandler.HandleBadRequest(HttpContext, "Sincronizzazione dei materiali prelevati filtrati non riuscita: " + e.Message);
             }
             finally
             {
@@ -205,21 +204,21 @@ namespace apiPB.Controllers
         [Authorize]
         public async Task<IActionResult> SyncInventarioFiltered([FromBody] SyncInventarioFilteredDto request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di sincronizzazione delle movimentazioni di inventario filtrate non valida");
-            if (request.WorkerIdSyncRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "WorkerIdSyncRequestDto non valido");
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, "Richiesta di sincronizzazione delle movimentazioni di inventario filtrate non valida");
+            if (request.WorkerIdSyncRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, "WorkerIdSyncRequestDto non valido");
 
             var settingsAndResponseTuple = await _magoRequestService.LoginWithWorkerIdAsync(request.WorkerIdSyncRequestDto);
-            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Login non riuscito durante la sincronizzazione delle movimentazioni di inventario filtrate");
-            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Impostazioni non trovate durante la sincronizzazione");
+            if (settingsAndResponseTuple.LoginResponse == null) return _responseHandler.HandleNotFound(HttpContext, "Login non riuscito durante la sincronizzazione delle movimentazioni di inventario filtrate");
+            if (settingsAndResponseTuple.Settings == null) return _responseHandler.HandleBadRequest(HttpContext, "Impostazioni non trovate durante la sincronizzazione");
 
             try
             {
                 var response = await _magoRequestService.SyncInventarioFiltered(settingsAndResponseTuple.LoginResponse, settingsAndResponseTuple.Settings, request);
-                return _responseHandler.HandleOkAndItem(HttpContext, response, _isLogActive, "Sincronizzazione delle movimentazioni di inventario filtrate effettuata con successo");
+                return _responseHandler.HandleOkAndItem(HttpContext, response, "Sincronizzazione delle movimentazioni di inventario filtrate effettuata con successo");
             }
             catch (Exception e)
             {
-                return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Sincronizzazione delle movimentazioni di inventario filtrate non riuscita: " + e.Message);
+                return _responseHandler.HandleBadRequest(HttpContext, "Sincronizzazione delle movimentazioni di inventario filtrate non riuscita: " + e.Message);
             }
             finally
             {

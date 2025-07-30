@@ -57,6 +57,32 @@ namespace apiPB.Repository.Implementation
             }
         }
 
+        public AbilitaLogRequestDto? GetAbilitaLog()
+        {
+            var appSetting = _context.A3AppSettings.FirstOrDefault();
+            if (appSetting != null && appSetting.AbilitaLog != null)
+            {
+                return appSetting.ToAbilitaLogRequestDto();
+            }
+            else
+            {
+                throw new ArgumentNullException("A3AppSettings null e AbilitaLog null per GetAbilitaLog in SettingsRepository");
+            }
+        }
+        
+        public ControlloUoMRequestDto? GetControlloUoM()
+        {
+            var appSetting = _context.A3AppSettings.FirstOrDefault();
+            if (appSetting != null && appSetting.ControlloUoM != null)
+            {
+                return appSetting.ToControlloUoMRequestDto();
+            }
+            else
+            {
+                throw new ArgumentNullException("A3AppSettings null e ControlloUoM null per GetControlloUoM in SettingsRepository");
+            }
+        }
+
         public A3AppSetting EditSettings(SettingsFilter settings)
         {
             var existingSettings = _context.A3AppSettings.FirstOrDefault();
@@ -72,6 +98,8 @@ namespace apiPB.Repository.Implementation
                 existingSettings.Storage = settings.Storage;
                 existingSettings.TerminaLavorazioniUtente = settings.TerminaLavorazioniUtente;
                 existingSettings.SyncGlobalActive = settings.SyncGlobalActive;
+                existingSettings.ControlloUoM = settings.ControlloUoM;
+                existingSettings.AbilitaLog = settings.AbilitaLog;
 
                 //_context.A3AppSettings.Update(existingSettings);
                 _context.SaveChanges();
@@ -90,7 +118,10 @@ namespace apiPB.Repository.Implementation
                     RectificationReasonPositive = settings.RectificationReasonPositive,
                     RectificationReasonNegative = settings.RectificationReasonNegative,
                     Storage = settings.Storage,
-                    SyncGlobalActive = settings.SyncGlobalActive
+                    SyncGlobalActive = settings.SyncGlobalActive,
+                    ControlloUoM = settings.ControlloUoM,
+                    AbilitaLog = settings.AbilitaLog,
+
                 };
                 _context.A3AppSettings.Add(magoSettings);
                 _context.SaveChanges();

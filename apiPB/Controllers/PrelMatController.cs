@@ -22,12 +22,10 @@ namespace apiPB.Controllers
     {
         private readonly IResponseHandler _responseHandler;
         private readonly IPrelMatRequestService _prelMatRequestService;
-        private readonly bool _isLogActive;
         public PrelMatController(IResponseHandler responseHandler, IPrelMatRequestService prelMatRequestService)
         {
             _responseHandler = responseHandler;
             _prelMatRequestService = prelMatRequestService;
-            _isLogActive = false;
         }
 
         [HttpGet("get_all")]
@@ -42,19 +40,19 @@ namespace apiPB.Controllers
             {
                 var a3AppPrelMatDto = _prelMatRequestService.GetAppPrelMat().ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (ExpectedEmptyListException ex)
             {
-                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNoContent(HttpContext, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
 
@@ -68,25 +66,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult PostPrelMatList([FromBody] IEnumerable<PrelMatRequestDto>? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null || !a3AppPrelMatRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppPrelMatRequestDto == null || !a3AppPrelMatRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppPrelMatDto = _prelMatRequestService.PostPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
 
@@ -100,25 +98,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult GetViewPrelMat([FromBody] ViewPrelMatRequestDto? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppPrelMatDto = _prelMatRequestService.GetViewPrelMatList(a3AppPrelMatRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
 
@@ -131,25 +129,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult PutViewPrelMat([FromBody] ViewPrelMatPutRequestDto? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppPrelMatDto = _prelMatRequestService.PutViewPrelMat(a3AppPrelMatRequestDto);
 
-                return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
 
@@ -163,24 +161,24 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult DeletePrelMatId([FromBody] ViewPrelMatDeleteRequestDto? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
             try
             {
                 var a3AppPrelMatDto = _prelMatRequestService.DeletePrelMatId(a3AppPrelMatRequestDto);
 
-                return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
 
@@ -194,25 +192,25 @@ namespace apiPB.Controllers
         [HttpPost("get_prel_mat_with_component")]
         public IActionResult GetPrelMatWithComponent([FromBody] ComponentRequestDto? a3AppPrelMatRequestDto)
         {
-            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppPrelMatRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppPrelMatDto = _prelMatRequestService.GetPrelMatWithComponent(a3AppPrelMatRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (ExpectedEmptyListException ex)
             {
-                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNoContent(HttpContext, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
 
@@ -228,19 +226,19 @@ namespace apiPB.Controllers
             {
                 var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedPrelMat().ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (ExpectedEmptyListException ex)
             {
-                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNoContent(HttpContext, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
 
@@ -253,25 +251,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult GetNotImportedPrelMatWithFilter(ViewPrelMatRequestDto request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppPrelMatDto = _prelMatRequestService.GetNotImportedAppPrelMatByFilter(request).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppPrelMatDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in PrelMatController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna una lista vuota in PrelMatController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in PrelMatController: " + ex.Message);
             }
         }
     }

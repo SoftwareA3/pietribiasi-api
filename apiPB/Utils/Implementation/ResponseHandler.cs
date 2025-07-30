@@ -24,54 +24,54 @@ namespace apiPB.Utils.Implementation
             return $"{httpContext.Request.Method ?? string.Empty} {httpContext.Request.Path.Value?.TrimStart('/') ?? string.Empty}";
         }
 
-        public BadRequestObjectResult HandleBadRequest(HttpContext httpContext, bool isLogActive, string message = "Bad Request")
+        public BadRequestObjectResult HandleBadRequest(HttpContext httpContext, string message = "Bad Request")
         {
             string requestPath = BuildHttpContextString(httpContext);
-            _logService.AppendMessageToLog(requestPath, StatusCodes.Status400BadRequest, message, isLogActive);
+            _logService.AppendMessageToLog(requestPath, StatusCodes.Status400BadRequest, message);
             _logService.AppendErrorToLog(message);
             return new BadRequestObjectResult(message);
         }
 
-        public NotFoundObjectResult HandleNotFound(HttpContext httpContext, bool isLogActive, string message = "Not Found")
+        public NotFoundObjectResult HandleNotFound(HttpContext httpContext, string message = "Not Found")
         {
             string requestPath = BuildHttpContextString(httpContext);
-            _logService.AppendMessageToLog(requestPath, StatusCodes.Status404NotFound, message, isLogActive);
+            _logService.AppendMessageToLog(requestPath, StatusCodes.Status404NotFound, message);
             _logService.AppendErrorToLog(message);
             return new NotFoundObjectResult(message);
         }
 
-        public OkObjectResult HandleOk(HttpContext httpContext, bool isLogActive, string message = "Ok")
+        public OkObjectResult HandleOk(HttpContext httpContext, string message = "Ok")
         {
             string requestPath = BuildHttpContextString(httpContext);
-            _logService.AppendMessageToLog(requestPath, StatusCodes.Status200OK, message, isLogActive);
+            _logService.AppendMessageToLog(requestPath, StatusCodes.Status200OK, message);
             return new OkObjectResult(message);
         }
 
-        public OkObjectResult HandleOkAndItem<T>(HttpContext httpContext, T item, bool isLogActive, string message = "Ok")
+        public OkObjectResult HandleOkAndItem<T>(HttpContext httpContext, T item, string message = "Ok")
         {
             string requestPath = BuildHttpContextString(httpContext);
-            _logService.AppendMessageAndItemToLog(requestPath, StatusCodes.Status200OK, message, item, isLogActive);
+            _logService.AppendMessageAndItemToLog(requestPath, StatusCodes.Status200OK, message, item);
             return new OkObjectResult(item);
         }
 
-        public OkObjectResult HandleOkAndList<T>(HttpContext httpContext, List<T> itemList, bool isLogActive, string message = "Ok")
+        public OkObjectResult HandleOkAndList<T>(HttpContext httpContext, List<T> itemList, string message = "Ok")
         {
             string requestPath = BuildHttpContextString(httpContext);
-            _logService.AppendMessageAndListToLog(requestPath, StatusCodes.Status200OK, message, itemList, isLogActive);
+            _logService.AppendMessageAndListToLog(requestPath, StatusCodes.Status200OK, message, itemList);
             return new OkObjectResult(itemList);
         }
 
-        public CreatedAtActionResult HandleCreated<T>(HttpContext httpContext, List<T> itemList, bool isLogActive, string message = "Created")
+        public CreatedAtActionResult HandleCreated<T>(HttpContext httpContext, List<T> itemList, string message = "Created")
         {
             string requestPath = BuildHttpContextString(httpContext);
-            _logService.AppendMessageAndListToLog(requestPath, StatusCodes.Status201Created, message, itemList, isLogActive);
+            _logService.AppendMessageAndListToLog(requestPath, StatusCodes.Status201Created, message, itemList);
             return new CreatedAtActionResult(nameof(itemList), null, null, itemList);
         }
 
-        public NoContentResult HandleNoContent(HttpContext httpContext, bool isLogActive, string message = "No Content")
+        public NoContentResult HandleNoContent(HttpContext httpContext, string message = "No Content")
         {
             string requestPath = BuildHttpContextString(httpContext);
-            _logService.AppendMessageToLog(requestPath, StatusCodes.Status204NoContent, message, isLogActive);
+            _logService.AppendMessageToLog(requestPath, StatusCodes.Status204NoContent, message);
             _logService.AppendWarningToLog(message);
             return new NoContentResult();
         }
