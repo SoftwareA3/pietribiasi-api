@@ -51,5 +51,11 @@ namespace apiPB.Services.Implementation
             var appSetting = _settingsRepository.GetTerminaLavorazioniUtente();
             return appSetting;
         }
+
+        public ControlloUoMRequestDto? GetControlloUoM()
+        {
+            var appSetting = _settingsRepository.GetControlloUoM();
+            return appSetting;
+        }
     }
 }

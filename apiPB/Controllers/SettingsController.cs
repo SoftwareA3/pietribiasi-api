@@ -125,5 +125,31 @@ namespace apiPB.Controllers
                 return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
+
+        /// <summary>
+        /// Ritorna le informazioni sul controllo dell'unità di misura per le giacenze
+        /// Questa API è utilizzata per verificare se le operazioni di prelievo devono essere bloccate se
+        /// l'unità di misura è diversa da quella di default e la quantità prelevata è superiore alla giacenza disponibile.
+        /// </summary>
+        /// <response code="200">Ritorna le informazioni della colonna ControlloUoM nella tabella Settings</response>
+        /// <response code="404">Non trovato</response>
+        [HttpGet("get_controllo_uom")]
+        public IActionResult GetControlloUoM()
+        {
+            try
+            {
+                var controlloUoMDto = _settingsService.GetControlloUoM();
+                return _responseHandler.HandleOkAndItem(HttpContext, controlloUoMDto);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+            }
+        }
+
     }
 }

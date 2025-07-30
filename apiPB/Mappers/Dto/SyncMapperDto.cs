@@ -26,7 +26,10 @@ namespace apiPB.Mappers.Dto
                 Storage = settings.Storage,
                 TerminaLavorazioniUtente = settings.TerminaLavorazioniUtente,
                 SyncGlobalActive = settings.SyncGlobalActive,
-                ExternalReferences = settings.ExternalReferences.ToString()
+                ExternalReferences = settings.ExternalReferences.ToString(),
+                ExternalProgram = settings.ExternalProgram,
+                ControlloUoM = settings.ControlloUoM,
+                AbilitaLog = settings.AbilitaLog
             };
         }
 
@@ -43,6 +46,22 @@ namespace apiPB.Mappers.Dto
             return new TerminaLavorazioniUtenteRequestDto
             {
                 TerminaLavorazioniUtente = settings.TerminaLavorazioniUtente
+            };
+        }
+
+        public static ControlloUoMRequestDto ToControlloUoMRequestDto(this A3AppSetting settings)
+        {
+            return new ControlloUoMRequestDto
+            {
+                ControlloUoM = settings.ControlloUoM
+            };
+        }
+
+        public static AbilitaLogRequestDto ToAbilitaLogRequestDto(this A3AppSetting settings)
+        {
+            return new AbilitaLogRequestDto
+            {
+                AbilitaLog = settings.AbilitaLog
             };
         }
 

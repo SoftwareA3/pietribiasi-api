@@ -24,5 +24,8 @@ namespace apiPB.Filters
 
         public string? Storage { get; set; }
         public bool? SyncGlobalActive { get; set; }
+        public bool? ControlloUoM { get; set; }
+
+        public bool? AbilitaLog { get; set; }
     }
 }

@@ -29,5 +29,7 @@ namespace apiPB.Services.Abstraction
         SyncGobalActiveRequestDto? GetSyncGlobalActive();
 
         TerminaLavorazioniUtenteRequestDto? GetTerminaLavorazioniUtente();
+
+        ControlloUoMRequestDto? GetControlloUoM();
     }
 }

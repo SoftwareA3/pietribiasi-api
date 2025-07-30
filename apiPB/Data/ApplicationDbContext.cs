@@ -129,7 +129,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Bom)
                 .IsUnicode(false)
                 .HasColumnName("BOM");
-            entity.Property(e => e.Closed).HasDefaultValue(false);
             entity.Property(e => e.CreationDate).HasColumnType("datetime");
             entity.Property(e => e.DataImp).HasColumnType("datetime");
             entity.Property(e => e.Job)
