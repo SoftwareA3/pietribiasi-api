@@ -27,5 +27,7 @@ namespace apiPB.Services.Abstraction
         /// </summary>
         /// <returns>Ritorna le impostazioni per la sincronizzazione globale</returns>
         SyncGobalActiveRequestDto? GetSyncGlobalActive();
+
+        TerminaLavorazioniUtenteRequestDto? GetTerminaLavorazioniUtente();
     }
 }

@@ -35,7 +35,8 @@ namespace apiPB.Mappers.Dto
                 WorkingTime = a3AppRegOreModel.WorkingTime,
                 Imported = a3AppRegOreModel.Imported,
                 UserImp = a3AppRegOreModel.UserImp ?? string.Empty,
-                DataImp = a3AppRegOreModel.DataImp
+                DataImp = a3AppRegOreModel.DataImp,
+                Closed = a3AppRegOreModel.Closed
             };
         }
 

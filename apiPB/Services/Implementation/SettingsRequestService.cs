@@ -45,5 +45,11 @@ namespace apiPB.Services.Implementation
             var appSetting = _settingsRepository.GetSyncGlobalActive();
             return appSetting;
         }
+
+        public TerminaLavorazioniUtenteRequestDto? GetTerminaLavorazioniUtente()
+        {
+            var appSetting = _settingsRepository.GetTerminaLavorazioniUtente();
+            return appSetting;
+        }
     }
 }

@@ -100,5 +100,31 @@ namespace apiPB.Controllers
                 return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
+
+        /// <summary>
+        /// Ritorna le informazioni sulla terminazione delle lavorazioni utente
+        /// Questa API è utilizzata per verificare se un utente non amministratore
+        /// ha la possibilità di terminare le lavorazioni utente.
+        /// </summary>
+        /// <response code="200">Ritorna le informazioni della colonna TerminaLavorazioniUtente nella tabella Settings</response>
+        /// <response code="404">Non trovato</response>
+        /// <returns>Informazioni sulla terminazione delle lavorazioni utente</returns>
+        [HttpGet("get_termina_lavorazioni_utente")]
+        public IActionResult GetTerminaLavorazioniUtente()
+        {
+            try
+            {
+                var terminaLavorazioniUtenteDto = _settingsService.GetTerminaLavorazioniUtente();
+                return _responseHandler.HandleOkAndItem(HttpContext, terminaLavorazioniUtenteDto, _isLogActive);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+            }
+        }
     }
 }

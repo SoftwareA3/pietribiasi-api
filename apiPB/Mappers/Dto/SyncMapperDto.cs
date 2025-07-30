@@ -24,7 +24,7 @@ namespace apiPB.Mappers.Dto
                 RectificationReasonPositive = settings.RectificationReasonPositive,
                 RectificationReasonNegative = settings.RectificationReasonNegative,
                 Storage = settings.Storage,
-                Closed = settings.Closed,
+                TerminaLavorazioniUtente = settings.TerminaLavorazioniUtente,
                 SyncGlobalActive = settings.SyncGlobalActive,
                 ExternalReferences = settings.ExternalReferences.ToString()
             };
@@ -35,6 +35,14 @@ namespace apiPB.Mappers.Dto
             return new SyncGobalActiveRequestDto
             {
                 SyncGlobalActive = settings.SyncGlobalActive
+            };
+        }
+
+        public static TerminaLavorazioniUtenteRequestDto ToTerminaLavorazioniUtenteRequestDto(this A3AppSetting settings)
+        {
+            return new TerminaLavorazioniUtenteRequestDto
+            {
+                TerminaLavorazioniUtente = settings.TerminaLavorazioniUtente
             };
         }
 
@@ -67,7 +75,7 @@ namespace apiPB.Mappers.Dto
 
                 SyncRegOreRequestDto syncRegOre = new SyncRegOreRequestDto
                 {
-                    Closed = settings.Closed,
+                    Closed = regOre.Closed,
                     WorkerId = regOre.WorkerId,
                     MoId = regOre.Moid,
                     RtgStep = regOre.RtgStep,
@@ -104,7 +112,6 @@ namespace apiPB.Mappers.Dto
                         {
                             Position = p.Position,
                             PickedQty = p.PrelQty,
-                            Closed = settings.Closed,
                             SpecificatorType = settings.SpecificatorType,
                             Storage = p.Storage,
                             NeededQty = p.NeededQty,

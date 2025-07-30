@@ -20,7 +20,7 @@ namespace apiPB.Dto.Models
 
         public int? SpecificatorType { get; set; }
 
-        public bool? Closed { get; set; }
+        public bool? TerminaLavorazioniUtente { get; set; }
 
         public string? RectificationReasonPositive { get; set; }
 

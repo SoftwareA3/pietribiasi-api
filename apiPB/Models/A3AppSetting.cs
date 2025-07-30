@@ -17,7 +17,7 @@ public partial class A3AppSetting
 
     public int? SpecificatorType { get; set; }
 
-    public bool? Closed { get; set; }
+    public bool? TerminaLavorazioniUtente { get; set; }
 
     public string? RectificationReasonPositive { get; set; }
 

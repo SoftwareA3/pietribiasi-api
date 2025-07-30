@@ -50,11 +50,11 @@ namespace apiPB.Services.Implementation
             {
                 var syncDataListToReturn = new SyncronizedDataDto();
 
+                var syncInventarioList = await SyncInventarioFiltered(responseDto, settings, new SyncInventarioFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
+
                 var syncPrelMatList = await SyncPrelMatFiltered(responseDto, settings, new SyncPrelMatFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
                 var syncRegOreList = await SyncRegOreFiltered(responseDto, settings, new SyncRegOreFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
-
-                var syncInventarioList = await SyncInventarioFiltered(responseDto, settings, new SyncInventarioFilteredDto { WorkerIdSyncRequestDto = requestId }, false);
 
                 // ======================================================
                 // Se le operazioni vanno a buon fine, invia Logout
@@ -105,47 +105,99 @@ namespace apiPB.Services.Implementation
                 }
             }
 
-            // Crea il Dto con tutti i dati per effettuare le richieste all'API di Mago
-            var regOreList = settings.ToSyncregOreRequestDto(syncRegOreRequest);
+            // Estrae le operazioni da non chiudere
+            var syncRegOreListNotClosed = syncRegOreRequest
+                .Where(p => p.Closed == false)
+                .ToList();
 
-            if (regOreList != null && regOreList.Count > 0)
+            // Crea il Dto con tutti i dati per effettuare le richieste all'API di Mago
+            var regOreList = settings.ToSyncregOreRequestDto(syncRegOreListNotClosed);
+
+            if (syncRegOreRequest != null && syncRegOreRequest.Count > 0)
             {
                 // Invio Lista di record a Mago assieme a magoApiRequest
                 try
                 {
-                    Console.WriteLine($"SyncRegOreList: {regOreList}");
-
-                    var response = await SyncRegOre(regOreList, responseDto.Token);
-                    if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
+                    if (regOreList.Count > 0)
                     {
-                        throw new Exception("SyncRegOre failed");
-                    }
 
-                    // Aggiornamento della lista di record in A3_app_reg_ore 
-                    Console.WriteLine("Updating records in A3_app_reg_ore...");
-                    // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
-                    // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
-                    if (!isFiltered || (!isFiltered && request.RegOreList?.Count == 0))
-                    {
-                        var regOreListUpdatedByWorkerId = _regoreRequestService.UpdateRegOreImported(request.WorkerIdSyncRequestDto);
-                        Console.WriteLine($"RegOreListUpdatedByWorkerId: {regOreListUpdatedByWorkerId}");
-                        if (regOreListUpdatedByWorkerId == null)
+                        Console.WriteLine($"SyncRegOreList: {regOreList}");
+
+                        var response = await SyncRegOre(regOreList, responseDto.Token);
+                        if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
                         {
-                            throw new Exception("No records updated in A3_app_reg_ore by WorkerId: logging off...");
+                            throw new Exception("SyncRegOre failed");
                         }
-                    }
-                    // In questo caso la lista è una lista filtrata e la sincronizzaiozne non è generale
-                    // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
-                    else
-                    {
-                        foreach (var item in syncRegOreRequest)
+
+                        // Aggiornamento della lista di record in A3_app_reg_ore 
+                        Console.WriteLine("Updating records in A3_app_reg_ore...");
+                        // Se la sincronizzaizone è generale o se è generale e non sono state passate liste filtrate
+                        // Aggiorna tutti i record. Quest'operaizone è fatta per evitare foreach inutili.
+                        if (!isFiltered || (!isFiltered && syncRegOreListNotClosed.Count == 0))
                         {
-                            _regoreRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                            var regOreListUpdatedByWorkerId = _regoreRequestService.UpdateRegOreImported(request.WorkerIdSyncRequestDto);
+                            Console.WriteLine($"RegOreListUpdatedByWorkerId: {regOreListUpdatedByWorkerId}");
+                            if (regOreListUpdatedByWorkerId == null)
                             {
-                                Id = item.RegOreId,
-                                WorkerId = request.WorkerIdSyncRequestDto.WorkerId
-                            });
+                                throw new Exception("No records updated in A3_app_reg_ore by WorkerId: logging off...");
+                            }
                         }
+                        // In questo caso la lista è una lista filtrata e la sincronizzaiozne non è generale
+                        // Quindi aggiorna i record in base al WorkerId passato e all'Id dei record da aggiornare
+                        else
+                        {
+                            foreach (var item in syncRegOreListNotClosed)
+                            {
+                                _regoreRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                                {
+                                    Id = item.RegOreId,
+                                    WorkerId = request.WorkerIdSyncRequestDto.WorkerId
+                                });
+                            }
+                        }
+                    }
+
+                    var closedRegOreList = syncRegOreRequest
+                        .Where(p => p.Closed == true)
+                        .ToList();
+
+                    if (closedRegOreList.Count > 0)
+                    {
+                        Console.WriteLine($"SyncRegOreList Closed: {closedRegOreList}");
+
+                        // Chiude le commesse
+                        var responseClose = await _magoApiClient.SendPostAsyncWithToken("openMes/mo-confirmation", closedRegOreList, responseDto.Token);
+                        if (responseClose.StatusCode != HttpStatusCode.OK && responseClose.StatusCode != HttpStatusCode.NoContent)
+                        {
+                            throw new Exception("SyncRegOre failed");
+                        }
+
+                        Console.WriteLine($"SyncRegOreList Closed response: {responseClose}");
+
+                        Console.WriteLine("Updating closed records in A3_app_reg_ore...");
+                        // Aggiorna i record chiusi in A3_app_reg_ore
+                        if (!isFiltered)
+                        {
+                            var closedRegOreListUpdated = _regoreRequestService.UpdateRegOreImported(request.WorkerIdSyncRequestDto, true);
+                            Console.WriteLine($"ClosedRegOreListUpdated: {closedRegOreListUpdated}");
+                            if (closedRegOreListUpdated == null)
+                            {
+                                throw new Exception("No closed records updated in A3_app_reg_ore: logging off...");
+                            }
+                        }
+                        else
+                        {
+                            foreach (var item in closedRegOreList)
+                            {
+                                _regoreRequestService.UpdateImportedById(new UpdateImportedIdRequestDto
+                                {
+                                    Id = item.RegOreId,
+                                    WorkerId = request.WorkerIdSyncRequestDto.WorkerId
+                                }, true);
+                            }
+                        }
+
+                        regOreList.AddRange(settings.ToSyncregOreRequestDto(closedRegOreList));
                     }
 
                     return regOreList;
