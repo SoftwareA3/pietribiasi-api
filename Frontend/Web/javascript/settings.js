@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         password: "",
         company: "",
         specificatorType: "",
-        closed: false,
+        terminaLavorazioniUtente: false,
         syncGlobalActive: false,
     }
 
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     rectificationPosInput.value = settings.rectificationReasonPositive;
     rectificationNegInput.value = settings.rectificationReasonNegative;
     storageInput.value = settings.storage;
-    closedComboBox.value = settings.closed ? "True" : "False"
+    closedComboBox.value = settings.terminaLavorazioniUtente ? "True" : "False"
     syncToggle.value = settings.syncGlobalActive ? "True" : "False";
     editToggle.checked = false;
 
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         settings.rectificationReasonPositive = rectificationPosInput.value;
         settings.rectificationReasonNegative = rectificationNegInput.value;
         settings.storage = storageInput.value;
-        settings.closed = closedComboBox.value === "True" ? true : false;
+        settings.terminaLavorazioniUtente = closedComboBox.value === "True" ? true : false;
         settings.syncGlobalActive = syncToggle.value === "True" ? true : false;
         console.log("Settings to save:", settings);
 

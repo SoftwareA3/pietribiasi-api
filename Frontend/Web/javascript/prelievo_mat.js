@@ -1143,6 +1143,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                     errorQty.style.display = "block";
                 }
 
+                if( parseFloat(finalSum) > parseFloat(invItem.bookInv)) {
+                    errorQty.style.display = "block";
+                    errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
+                    alert("La quantità richiesta supera la giacenza disponibile.");
+                    quantitaInput.value = invItem.bookInv;
+                    return null;
+                }
+
                 allDataResult[0].finalSum = finalSum;
                 allDataResult[0].neededQty = 0;
 
@@ -1451,10 +1459,10 @@ function addToTemporaryList(data, dataResultList) {
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono}</div>
-        <div><spam class="item-content-heading">Lav:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc} </div>
-        <div><spam class="item-content-heading">BOM:</spam> ${data.bom}</div>
-        <div><spam class="item-content-heading">Item:</spam> ${data.component} ${data.barCode === "" || null ? "" : `- <spam class="item-content-heading">Code:</spam> ${data.barCode}`} </div>
+        <div class="item-content"><div><span class="item-content-heading">Comm:</span> ${data.job} - <span class="item-content-heading">MoId:</span> ${data.moid} - <span class="item-content-heading">MoNo:</span> ${data.mono}</div>
+        <div><span class="item-content-heading">Lav:</span> ${data.operation} - <span class="item-content-heading">Desc:</span> ${data.operDesc} </div>
+        <div><span class="item-content-heading">BOM:</span> ${data.bom}</div>
+        <div><span class="item-content-heading">Item:</span> ${data.component} ${data.barCode === "" || null ? "" : `- <span class="item-content-heading">Code:</span> ${data.barCode}`} </div>
         <div class=temp-list-qta-${data.moid}><strong>Qta: ${data.prelQty}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
