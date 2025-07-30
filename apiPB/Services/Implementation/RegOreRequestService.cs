@@ -80,10 +80,10 @@ namespace apiPB.Services.Implementation
             .Select(m => m.ToA3AppRegOreDto());
         }
 
-        public IEnumerable<RegOreDto> UpdateRegOreImported(WorkerIdSyncRequestDto request)
+        public IEnumerable<RegOreDto> UpdateRegOreImported(WorkerIdSyncRequestDto request, bool updateClosedItems)
         {
             var filter = _mapper.Map<WorkerIdSyncFilter>(request);
-            var result = _repository.UpdateRegOreImported(filter);
+            var result = _repository.UpdateRegOreImported(filter, updateClosedItems);
 
             return result
             .Select(m => m.ToA3AppRegOreDto());
@@ -98,10 +98,10 @@ namespace apiPB.Services.Implementation
             .Select(m => m.ToA3AppRegOreDto());
         }
 
-        public IEnumerable<RegOreDto> UpdateImportedById(UpdateImportedIdRequestDto request)
+        public IEnumerable<RegOreDto> UpdateImportedById(UpdateImportedIdRequestDto request, bool updateClosedItems)
         {
             var filter = _mapper.Map<UpdateImportedIdFilter>(request);
-            var result = _repository.UpdateImportedById(filter);
+            var result = _repository.UpdateImportedById(filter, updateClosedItems);
 
             return result
             .Select(m => m.ToA3AppRegOreDto());

@@ -53,7 +53,8 @@ namespace apiPB.Repository.Implementation
                     ResQty = filter.ResQty,
                     Storage = filter.Storage,
                     Wc = filter.Wc,
-                    WorkingTime = filter.WorkingTime
+                    WorkingTime = filter.WorkingTime,
+                    Closed = filter.Closed
                 };
 
                 list.Add(regOre);
@@ -134,14 +135,14 @@ namespace apiPB.Repository.Implementation
             return query;
         }
 
-        public IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter? filter)
+        public IEnumerable<A3AppRegOre> UpdateRegOreImported(WorkerIdSyncFilter? filter, bool updateClosedItems)
         {
             if (filter == null || filter.WorkerId == null)
             {
                 throw new ArgumentNullException(nameof(filter), "Il filtro non può essere nullo");
             }
             var notImported = _context.A3AppRegOres
-                .Where(x => x.Imported == false)
+                .Where(x => x.Imported == false && (updateClosedItems ? x.Closed == true : x.Closed == false))
                 .ToList();
             
             ApplicationExceptionHandler.ValidateNotNullOrEmptyList(notImported, nameof(RegOreRepository), nameof(UpdateRegOreImported));
@@ -182,14 +183,14 @@ namespace apiPB.Repository.Implementation
             return query;
         }
 
-        public IEnumerable<A3AppRegOre> UpdateImportedById(UpdateImportedIdFilter filter)
+        public IEnumerable<A3AppRegOre> UpdateImportedById(UpdateImportedIdFilter filter, bool updateClosedItems)
         {
             if (filter == null || filter.WorkerId == null)
             {
                 throw new ArgumentNullException(nameof(filter), "Il filtro non può essere nullo o l'ID deve essere maggiore di zero e il WorkerId non può essere nullo.");
             }
             var notImported = _context.A3AppRegOres
-                .Where(x => x.Imported == false && x.RegOreId == filter.Id)
+                .Where(x => x.Imported == false && x.RegOreId == filter.Id && (updateClosedItems ? x.Closed == true : x.Closed == false))
                 .ToList();
             
             ApplicationExceptionHandler.ValidateNotNullOrEmptyList(notImported, nameof(RegOreRepository), nameof(UpdateImportedById));

@@ -16,7 +16,6 @@ namespace apiPB.Controllers
     {
         private readonly ISettingsRequestService _settingsService;
         private readonly IResponseHandler _responseHandler;
-        private readonly bool _isLogActive = false;
 
         public SettingsController(ISettingsRequestService settingsService, IResponseHandler responseHandler)
         {
@@ -35,15 +34,15 @@ namespace apiPB.Controllers
             try
             {
                 var settingsDto = _settingsService.GetSettings();
-                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
 
@@ -58,21 +57,21 @@ namespace apiPB.Controllers
         [HttpPost("edit_settings")]
         public IActionResult EditSettings([FromBody] SettingsDto? request)
         {
-            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta di modifica delle impostazioni non valida");
+            if (request == null) return _responseHandler.HandleBadRequest(HttpContext, "Richiesta di modifica delle impostazioni non valida");
 
             try
             {
                 var settingsDto = _settingsService.EditSettings(request);
 
-                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, _isLogActive, "Impostazioni modificate con successo");
+                return _responseHandler.HandleOkAndItem(HttpContext, settingsDto, "Impostazioni modificate con successo");
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
 
@@ -89,16 +88,68 @@ namespace apiPB.Controllers
             try
             {
                 var syncGlobalActiveDto = _settingsService.GetSyncGlobalActive();
-                return _responseHandler.HandleOkAndItem(HttpContext, syncGlobalActiveDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, syncGlobalActiveDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
             }
         }
+
+        /// <summary>
+        /// Ritorna le informazioni sulla terminazione delle lavorazioni utente
+        /// Questa API è utilizzata per verificare se un utente non amministratore
+        /// ha la possibilità di terminare le lavorazioni utente.
+        /// </summary>
+        /// <response code="200">Ritorna le informazioni della colonna TerminaLavorazioniUtente nella tabella Settings</response>
+        /// <response code="404">Non trovato</response>
+        /// <returns>Informazioni sulla terminazione delle lavorazioni utente</returns>
+        [HttpGet("get_termina_lavorazioni_utente")]
+        public IActionResult GetTerminaLavorazioniUtente()
+        {
+            try
+            {
+                var terminaLavorazioniUtenteDto = _settingsService.GetTerminaLavorazioniUtente();
+                return _responseHandler.HandleOkAndItem(HttpContext, terminaLavorazioniUtenteDto);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ritorna le informazioni sul controllo dell'unità di misura per le giacenze
+        /// Questa API è utilizzata per verificare se le operazioni di prelievo devono essere bloccate se
+        /// l'unità di misura è diversa da quella di default e la quantità prelevata è superiore alla giacenza disponibile.
+        /// </summary>
+        /// <response code="200">Ritorna le informazioni della colonna ControlloUoM nella tabella Settings</response>
+        /// <response code="404">Non trovato</response>
+        [HttpGet("get_controllo_uom")]
+        public IActionResult GetControlloUoM()
+        {
+            try
+            {
+                var controlloUoMDto = _settingsService.GetControlloUoM();
+                return _responseHandler.HandleOkAndItem(HttpContext, controlloUoMDto);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in SettingsController: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in SettingsController: " + ex.Message);
+            }
+        }
+
     }
 }

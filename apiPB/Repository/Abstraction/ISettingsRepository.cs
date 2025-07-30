@@ -11,7 +11,11 @@ namespace apiPB.Repository.Abstraction
         SettingsDto? GetSettings();
 
         SyncGobalActiveRequestDto? GetSyncGlobalActive();
+        TerminaLavorazioniUtenteRequestDto? GetTerminaLavorazioniUtente();
 
         void IncrementExternalReferenceCounter();
+
+        AbilitaLogRequestDto? GetAbilitaLog();
+        ControlloUoMRequestDto? GetControlloUoM();
     }
 }

@@ -13,5 +13,6 @@ namespace apiPB.Dto.Request
     {
         public string? Uom { get; set; }
         public long? WorkingTime { get; set; }
+        public bool? Closed { get; set; }
     }
 }

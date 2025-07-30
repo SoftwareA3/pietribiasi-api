@@ -16,12 +16,10 @@ namespace apiPB.Controllers
     {
         private readonly IResponseHandler _responseHandler;
         private readonly IRegOreRequestService _regOreRequestService;
-        private readonly bool _isLogActive;
         public RegOreController(IResponseHandler responseHandler, IRegOreRequestService regOreRequestService)
         {
             _responseHandler = responseHandler;
             _regOreRequestService = regOreRequestService;
-            _isLogActive = false;
         }
 
         [HttpGet("get_all")]
@@ -36,19 +34,19 @@ namespace apiPB.Controllers
             {
                 var a3AppRegOreDto = _regOreRequestService.GetAppRegOre().ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in RegOreController: " + ex.Message);
             }
             catch (ExpectedEmptyListException ex)
             {
-                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota: " + ex.Message);
+                return _responseHandler.HandleNoContent(HttpContext, "Il servizio ritorna una lista vuota: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
             }
         }
 
@@ -62,25 +60,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult PostRegOreList([FromBody] IEnumerable<RegOreRequestDto>? a3AppRegOreRequestDto)
         {
-            if (a3AppRegOreRequestDto == null || !a3AppRegOreRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppRegOreRequestDto == null || !a3AppRegOreRequestDto.Any()) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppRegOreDto = _regOreRequestService.PostAppRegOre(a3AppRegOreRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in RegOreController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
             }
         }
 
@@ -94,25 +92,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult GetA3AppRegOre([FromBody] ViewOreRequestDto? a3AppViewOreRequestDto)
         {
-            if (a3AppViewOreRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppViewOreRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppRegOreDto = _regOreRequestService.GetAppViewOre(a3AppViewOreRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in RegOreController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
             }
         }
 
@@ -126,25 +124,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult PutA3AppRegOre([FromBody] ViewOrePutRequestDto? a3AppViewOrePutRequestDto)
         {
-            if (a3AppViewOrePutRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppViewOrePutRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppRegOreDto = _regOreRequestService.PutAppViewOre(a3AppViewOrePutRequestDto);
 
-                return _responseHandler.HandleOkAndItem(HttpContext, a3AppRegOreDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, a3AppRegOreDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in RegOreController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
             }
         }
 
@@ -158,25 +156,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult DeleteRegOreId([FromBody] ViewOreDeleteRequestDto? a3AppDeleteRequestDto)
         {
-            if (a3AppDeleteRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (a3AppDeleteRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppRegOreDto = _regOreRequestService.DeleteRegOreId(a3AppDeleteRequestDto);
 
-                return _responseHandler.HandleOkAndItem(HttpContext, a3AppRegOreDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem(HttpContext, a3AppRegOreDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in RegOreController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
             }
         }
 
@@ -192,19 +190,19 @@ namespace apiPB.Controllers
             {
                 var a3AppRegOreDto = _regOreRequestService.GetNotImportedAppRegOre().ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in RegOreController: " + ex.Message);
             }
             catch (ExpectedEmptyListException ex)
             {
-                return _responseHandler.HandleNoContent(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota: " + ex.Message);
+                return _responseHandler.HandleNoContent(HttpContext, "Il servizio ritorna una lista vuota: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
             }
         }
 
@@ -218,25 +216,25 @@ namespace apiPB.Controllers
         /// <response code="400">Bad Request</response>
         public IActionResult GetNotImportedAppRegOre([FromBody] ViewOreRequestDto? filter)
         {
-            if (filter == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (filter == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var a3AppRegOreDto = _regOreRequestService.GetNotImportedAppRegOreByFilter(filter).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, a3AppRegOreDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in RegOreController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in RegOreController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in RegOreController: " + ex.Message);
             }
         }
     }

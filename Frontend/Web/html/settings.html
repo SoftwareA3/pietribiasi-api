@@ -32,7 +32,7 @@
         <header class="app-header" id="main-app-header">
             <div class="header-left">
                 <div id="logo" class="logo">P</div>
-                <h1 id="header-title">Pietribiasi App</h1>
+                <h1 id="header-title">App Produzione</h1>
             </div>
             
             <div class="user-info">
@@ -83,8 +83,22 @@
                         <input type="text" id="settings-specificator" name="specificatorType" autocomplete="off" disabled="true"/>
                     </div>
                     <div class="form-group">
-                        <label for="settings-closed">Chiuso con sincronizzazione:</label>
+                        <label for="settings-closed">Termina lavorazione per utenti:</label>
                         <select id="settings-closed" class="settings-toggle" name="closed" disabled="true">
+                            <option value="True">Attivo</option>
+                            <option value="False">Disattivo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-log">Abilita la scrittura dei file di log:</label>
+                        <select id="settings-log" class="settings-toggle" name="log" disabled="true">
+                            <option value="True">Attivo</option>
+                            <option value="False">Disattivo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-uom">Abilita il controllo dell'unità di misura:</label>
+                        <select id="settings-uom" class="settings-toggle" name="uom" disabled="true">
                             <option value="True">Attivo</option>
                             <option value="False">Disattivo</option>
                         </select>

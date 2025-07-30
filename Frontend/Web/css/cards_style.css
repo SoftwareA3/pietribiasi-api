@@ -194,6 +194,22 @@ datalist {
     padding-right: var(--spacing-2);
 }
 
+.closed-indicator {
+    color: white;
+    font-weight: bold;
+    background-color: var(--error);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--border-radius-sm);
+    margin-top: var(--spacing-2);
+    display: inline-block;
+}
+
+.close-reg-ore-item {
+    background: color-mix(in srgb, var(--error) 20%, transparent);
+    padding-left: var(--spacing-2);
+    padding-right: var(--spacing-2);
+}
+
 /* Stile per elementi appena aggiunti */
 .just-added {
     animation: highlight 2s ease-out;

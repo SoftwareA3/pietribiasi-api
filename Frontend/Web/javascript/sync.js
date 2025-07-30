@@ -834,8 +834,14 @@ async function populateOreList(data) {
             <div><strong>ODP:</strong> ${item.mono} </div>
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
-            <div><strong>Ore: <span class="ore-value" id="ore-value-${item.regOreId}">${item.workingTime/3600}</strong></span> </div>
+            ${item.closed === false ? `<div><strong>Ore: <span class="ore-value" id="ore-value-${item.regOreId}">${item.workingTime/3600}</strong></span> </div>` 
+                : '<div><span class="closed-indicator">Chiusura Commessa</span></div>'}
         `;
+
+        if(item.closed === true)
+        {
+            itemContent.classList.add("close-reg-ore-item");
+        }
         
         li.appendChild(itemContent);
         oreList.appendChild(li);

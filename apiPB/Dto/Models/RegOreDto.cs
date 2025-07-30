@@ -60,6 +60,7 @@ namespace apiPB.Dto.Models
         public string? UserImp { get; set; }
 
         public DateTime? DataImp { get; set; }
+        public bool? Closed { get; set; }
 
     }
 }

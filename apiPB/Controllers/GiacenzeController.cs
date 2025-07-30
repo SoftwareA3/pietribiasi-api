@@ -19,13 +19,11 @@ namespace apiPB.Controllers
 
         private readonly IGiacenzeRequestService _giacenzeRequestService;
 
-        private readonly bool _isLogActive;
 
         public GiacenzeController(IResponseHandler responseHandler, IGiacenzeRequestService giacenzeRequestService)
         {
             _responseHandler = responseHandler;
             _giacenzeRequestService = giacenzeRequestService;
-            _isLogActive = false;
         }
 
         [HttpGet("get_all")]
@@ -40,19 +38,19 @@ namespace apiPB.Controllers
             {
                 var giacenzeDto = _giacenzeRequestService.GetGiacenze().ToList();
 
-                return _responseHandler.HandleOkAndList<GiacenzeDto>(HttpContext, giacenzeDto, _isLogActive);
+                return _responseHandler.HandleOkAndList<GiacenzeDto>(HttpContext, giacenzeDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in GiacenzeController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in GiacenzeController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna una lista vuota in GiacenzeController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna una lista vuota in GiacenzeController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in GiacenzeController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in GiacenzeController: " + ex.Message);
             }
         }
 
@@ -70,20 +68,20 @@ namespace apiPB.Controllers
             {
                 if (request == null || string.IsNullOrEmpty(request.Component))
                 {
-                    return _responseHandler.HandleBadRequest(HttpContext, _isLogActive, "Richiesta non valida: il componente non può essere nullo o vuoto.");
+                    return _responseHandler.HandleBadRequest(HttpContext, "Richiesta non valida: il componente non può essere nullo o vuoto.");
                 }
 
                 var giacenzaDto = _giacenzeRequestService.GetGiacenzeByItem(request);
 
-                return _responseHandler.HandleOkAndItem<GiacenzeDto>(HttpContext, giacenzaDto, _isLogActive);
+                return _responseHandler.HandleOkAndItem<GiacenzeDto>(HttpContext, giacenzaDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in GiacenzeController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in GiacenzeController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in GiacenzeController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in GiacenzeController: " + ex.Message);
             }
         }
     }

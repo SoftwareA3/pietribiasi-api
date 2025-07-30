@@ -406,10 +406,15 @@ async function populateOreList(data) {
             <div><strong>ODP:</strong> ${item.mono} </div>
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
-            <div><strong>Ore:</strong> <span class="ore-value" id="ore-value-${item.regOreId}">${convertedTime}</span> </div>
+            ${item.closed === false ? `<div><strong>Ore:</strong> <span class="ore-value" id="ore-value-${item.regOreId}">${convertedTime}</span> </div>`
+                : `<div><span class="closed-indicator">Chiusura Commessa</span></div>`}
             ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDateTime.date} alle ${parsedDateTime.time} </div>` : ''}
             ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
+
+        if(item.closed === true) {
+            itemContent.classList.add("close-reg-ore-item");
+        } 
         
         li.appendChild(itemContent);
         
@@ -419,45 +424,50 @@ async function populateOreList(data) {
             itemActions.className = "item-actions";
             
             // Container per il campo di modifica delle ore (inizialmente nascosto)
-            const editContainer = document.createElement("div");
-            editContainer.className = "edit-ore-container hidden";
-            editContainer.id = `edit-container-${item.regOreId}`;
-            
-            // Campo input per la modifica
-            const editInput = document.createElement("input");
-            editInput.type = "number";
-            editInput.min = "0.1";
-            editInput.step = "0.1";
-            editInput.className = "edit-ore-input";
-            editInput.id = `edit-ore-input-${item.regOreId}`;
-            editInput.value = item.workingTime;
-            
-            // Pulsante di conferma modifica
-            const confirmButton = document.createElement("button");
-            confirmButton.className = "button-icon confirm option-button";
-            confirmButton.title = "Conferma modifica";
-            confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
-            confirmButton.addEventListener("click", () => saveOreEdit(item, data));
-            
-            // Pulsante di annullamento modifica
-            const cancelButton = document.createElement("button");
-            cancelButton.className = "button-icon cancel option-button";
-            cancelButton.title = "Annulla modifica";
-            cancelButton.innerHTML = '<i class="fa-solid fa-times"></i>';
-            cancelButton.addEventListener("click", () => cancelOreEdit(item));
-            
-            // Aggiunge gli elementi al container di modifica
-            editContainer.appendChild(editInput);
-            editContainer.appendChild(confirmButton);
-            editContainer.appendChild(cancelButton);
-            
-            // Pulsante di modifica
-            const editButton = document.createElement("button");
-            editButton.className = "button-icon edit option-button";
-            editButton.title = "Modifica Ore";
-            editButton.id = `edit-button-${item.regOreId}`;
-            editButton.innerHTML = '<i class="fa-solid fa-pencil"></i>';
-            editButton.addEventListener("click", () => editOre(item));
+            if(item.closed === false) {
+                const editContainer = document.createElement("div");
+                editContainer.className = "edit-ore-container hidden";
+                editContainer.id = `edit-container-${item.regOreId}`;
+                
+                // Campo input per la modifica
+                const editInput = document.createElement("input");
+                editInput.type = "number";
+                editInput.min = "0.1";
+                editInput.step = "0.1";
+                editInput.className = "edit-ore-input";
+                editInput.id = `edit-ore-input-${item.regOreId}`;
+                editInput.value = item.workingTime;
+                
+                // Pulsante di conferma modifica
+                const confirmButton = document.createElement("button");
+                confirmButton.className = "button-icon confirm option-button";
+                confirmButton.title = "Conferma modifica";
+                confirmButton.innerHTML = '<i class="fa-solid fa-check"></i>';
+                confirmButton.addEventListener("click", () => saveOreEdit(item, data));
+                
+                // Pulsante di annullamento modifica
+                const cancelButton = document.createElement("button");
+                cancelButton.className = "button-icon cancel option-button";
+                cancelButton.title = "Annulla modifica";
+                cancelButton.innerHTML = '<i class="fa-solid fa-times"></i>';
+                cancelButton.addEventListener("click", () => cancelOreEdit(item));
+                
+                // Aggiunge gli elementi al container di modifica
+                editContainer.appendChild(editInput);
+                editContainer.appendChild(confirmButton);
+                editContainer.appendChild(cancelButton);
+                
+                // Pulsante di modifica
+                const editButton = document.createElement("button");
+                editButton.className = "button-icon edit option-button";
+                editButton.title = "Modifica Ore";
+                editButton.id = `edit-button-${item.regOreId}`;
+                editButton.innerHTML = '<i class="fa-solid fa-pencil"></i>';
+                editButton.addEventListener("click", () => editOre(item));
+
+                itemActions.appendChild(editContainer);
+                itemActions.appendChild(editButton);
+            }
             
             // Pulsante di eliminazione
             const deleteButton = document.createElement("button");
@@ -467,8 +477,6 @@ async function populateOreList(data) {
             deleteButton.addEventListener("click", () => deleteOre(item));
             
             // Aggiunge gli elementi al container delle azioni
-            itemActions.appendChild(editContainer);
-            itemActions.appendChild(editButton);
             itemActions.appendChild(deleteButton);
             li.appendChild(itemActions);
         }

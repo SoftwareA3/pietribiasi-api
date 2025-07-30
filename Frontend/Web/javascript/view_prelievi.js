@@ -381,6 +381,7 @@ async function populatePrelieviList(data) {
 
     let logMap = {};
     const importedItems = displayData.filter(item => item.imported !== false && item.imported !== "0");
+    console.log("Elementi importati:", importedItems);  
     if (importedItems.length > 0) {
         // Prepara tutte le chiamate fetchLog in parallelo
         const logPromises = importedItems.map(async item => {
@@ -389,12 +390,13 @@ async function populatePrelieviList(data) {
                 rtgStep: item.rtgStep,
                 alternate: item.alternate,
                 altRtgStep: item.altRtgStep,
+                mono: item.mono,
                 workerId: item.workerId,
                 actionType: actionType
             };
+            console.log("Chiamata log per item:", item.prelMatId, logFilterObject);
             // Salva la chiave per mappare il log all'item
-            const logList = await fetchLog(logFilterObject).then(logList => ({ prelMatId: item.prelMatId, logList }));
-            return logList
+            return await fetchLog(logFilterObject).then(logList => ({ prelMatId: item.prelMatId, logList }));
         });
         // Attendi tutte le chiamate e crea una mappa prelMatId -> logList
         const logs = await Promise.all(logPromises);

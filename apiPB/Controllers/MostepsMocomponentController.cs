@@ -16,13 +16,11 @@ namespace apiPB.Controllers
     {
         private readonly IResponseHandler _responseHandler;
         private readonly IMostepsMocomponentRequestService _mostepsMocomponentRequestService;
-        private readonly bool _isLogActive;
 
         public MostepsMocomponentController(IResponseHandler responseHandler, IMostepsMocomponentRequestService mostepsMocomponentRequestService)
         {
             _responseHandler = responseHandler;
             _mostepsMocomponentRequestService = mostepsMocomponentRequestService;
-            _isLogActive = false;
         }
 
         [HttpPost("job")]
@@ -34,25 +32,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithJob([FromBody] JobRequestDto? mostepsMocomponentJobRequestDto)
         {
-            if (mostepsMocomponentJobRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepsMocomponentJobRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentJobDistinct(mostepsMocomponentJobRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
             }
         }
 
@@ -65,25 +63,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithMono([FromBody] MonoRequestDto? mostepsMocomponentMonoRequestDto)
         {
-            if (mostepsMocomponentMonoRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepsMocomponentMonoRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentMonoDistinct(mostepsMocomponentMonoRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
             }
         }
 
@@ -97,25 +95,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithOperation([FromBody] OperationRequestDto? mostepsMocomponentOperationRequestDto)
         {
-            if (mostepsMocomponentOperationRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepsMocomponentOperationRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentOperationDistinct(mostepsMocomponentOperationRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
             }
         }
 
@@ -128,25 +126,25 @@ namespace apiPB.Controllers
         /// <response code="404">Non trovato</response>
         public IActionResult GetMostepsMocomponentWithBarCode([FromBody] BarCodeRequestDto? mostepsMocomponentBarCodeRequestDto)
         {
-            if (mostepsMocomponentBarCodeRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext, _isLogActive);
+            if (mostepsMocomponentBarCodeRequestDto == null) return _responseHandler.HandleBadRequest(HttpContext);
 
             try
             {
                 var mostepComponentDto = _mostepsMocomponentRequestService.GetMostepsMocomponentBarCodeDistinct(mostepsMocomponentBarCodeRequestDto).ToList();
 
-                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto, _isLogActive);
+                return _responseHandler.HandleOkAndList(HttpContext, mostepComponentDto);
             }
             catch (ArgumentNullException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio ritorna null in MostepsMocomponentController: " + ex.Message);
             }
             catch (EmptyListException ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Il servizio non ha trovato dati in MostepsMocomponentController: " + ex.Message);
             }
             catch (Exception ex)
             {
-                return _responseHandler.HandleNotFound(HttpContext, _isLogActive, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
+                return _responseHandler.HandleNotFound(HttpContext, "Errore durante l'esecuzione del Service in MostepsMocomponentController: " + ex.Message);
             }
         }
     }

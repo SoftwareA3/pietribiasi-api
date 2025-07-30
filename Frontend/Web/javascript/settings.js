@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", async function() {
     const saveButton = document.getElementById("save-settings");
     const syncToggle = document.getElementById("settings-sync-for-all");
     const editToggle = document.getElementById("edit-toggle");
+    const uomToggle = document.getElementById("settings-uom");
+    const logToggle = document.getElementById("settings-log");  
 
     var settings = {
         magoUrl: "",
@@ -22,8 +24,10 @@ document.addEventListener("DOMContentLoaded", async function() {
         password: "",
         company: "",
         specificatorType: "",
-        closed: false,
+        terminaLavorazioniUtente: false,
         syncGlobalActive: false,
+        controlloUoM: false,
+        abilitaLog: false,
     }
 
     try {
@@ -55,8 +59,10 @@ document.addEventListener("DOMContentLoaded", async function() {
     rectificationPosInput.value = settings.rectificationReasonPositive;
     rectificationNegInput.value = settings.rectificationReasonNegative;
     storageInput.value = settings.storage;
-    closedComboBox.value = settings.closed ? "True" : "False"
+    closedComboBox.value = settings.terminaLavorazioniUtente ? "True" : "False"
     syncToggle.value = settings.syncGlobalActive ? "True" : "False";
+    uomToggle.value = settings.controlloUoM ? "True" : "False";
+    logToggle.value = settings.abilitaLog ? "True" : "False";
     editToggle.checked = false;
 
     saveButton.addEventListener("click", async function() {
@@ -68,8 +74,10 @@ document.addEventListener("DOMContentLoaded", async function() {
         settings.rectificationReasonPositive = rectificationPosInput.value;
         settings.rectificationReasonNegative = rectificationNegInput.value;
         settings.storage = storageInput.value;
-        settings.closed = closedComboBox.value === "True" ? true : false;
+        settings.terminaLavorazioniUtente = closedComboBox.value === "True" ? true : false;
         settings.syncGlobalActive = syncToggle.value === "True" ? true : false;
+        settings.controlloUoM = uomToggle.value === "True" ? true : false;
+        settings.abilitaLog = logToggle.value === "True" ? true : false;
         console.log("Settings to save:", settings);
 
         try {
@@ -107,6 +115,8 @@ document.addEventListener("DOMContentLoaded", async function() {
             rectificationNegInput.disabled = false;
             storageInput.disabled = false;
             syncToggle.disabled = false;
+            uomToggle.disabled = false;
+            logToggle.disabled = false;
             saveButton.disabled = false;
         } else {
             urlInput.disabled = true;
@@ -118,6 +128,8 @@ document.addEventListener("DOMContentLoaded", async function() {
             rectificationPosInput.disabled = true;
             rectificationNegInput.disabled = true;
             storageInput.disabled = true;
+            uomToggle.disabled = true;
+            logToggle.disabled = true;
             syncToggle.disabled = true;
             saveButton.disabled = true;
         }

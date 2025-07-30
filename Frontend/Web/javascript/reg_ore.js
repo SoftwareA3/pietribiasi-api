@@ -4,6 +4,7 @@ import { setupAutocomplete } from "./autocomplete.js";
 import { getApiUrl } from "./main.js";
 
 let globalAllData = null;
+let activeTab = "ore"; // Imposta il tab attivo inizialmente
 
 document.addEventListener("DOMContentLoaded", async function () {
     // Recupera elementi DOM
@@ -23,7 +24,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     const oreInput = document.getElementById("reg-ore-ore");
     const saveButton = document.getElementById("inv-save");
     const noContent = document.getElementById("nocontent");
-
+    const closedCommessaWarning = document.getElementById("warning-commessa");
+    const tabsNav = document.getElementById("reg-ore-nav");
+    const regOreHeader = document.getElementById("reg-ore-header");
+    
     // Liste di dati
     let jobList = [];
     let odpList = [];
@@ -34,23 +38,40 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let isFillingFromOverlay = false;
 
-    // Inizializza l'autocompletamento per la commessa e carica i dati iniziali
+    await loadInitialData();
+
+    // Inizializza le schede
+
+    const userCookie = JSON.parse(getCookie("userInfo"));
+    // console.log("Cookie utente:", userCookie);
+
     try {
-        const jobResult = await fetchAllJobs();
-        jobList = jobResult
-            .filter(job => job && job.job && job.description)
-            .map(job => ({
-                job: job.job,
-                description: job.description,
-                display: `${job.job} - ${job.description}`
-            }));
-        // console.log("Lista di lavori:", jobList);
-        setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
-        commessaInput.focus();
-    } catch (error) {
-        console.error("Errore nel caricamento iniziale dei lavori:", error);
-        alert("Qualcosa è andato storto durante il caricamento iniziale dei dati.");
+        const response = await fetchWithAuth(getApiUrl("api/settings/get_termina_lavorazioni_utente"), {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Informazioni sulla terminazione delle commesse:", data);
+            if(data.terminaLavorazioniUtente || (userCookie && userCookie.tipoUtente === "Amministrazione")) {
+                regOreHeader.classList.add("hidden");
+                tabsNav.classList.remove("hidden");
+            }
+            else {
+                regOreHeader.classList.remove("hidden");
+                tabsNav.classList.add("hidden");
+            }
+        } else {
+            console.error("Errore durante il recupero delle informazioni sulla terminazione delle commesse:", response.statusText);
+        }
     }
+    catch (error) {
+        console.error("Non è stato possibile recuperare le informazioni sulla terminazione delle commesse:", error);
+    }
+
+    await initializeTabs();
 
     // Event listener per il cambio di commessa
     commessaInput.addEventListener("change", async function() {
@@ -155,8 +176,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("ODP selezionato:", selectedOdp);
             console.log("Lavorazione selezionata:", selectedLavorazione);
             await loadAllData(selectedCommessa.job, selectedOdp.odp, selectedOdp.creationDate, selectedLavorazione.operation);
-            oreInput.disabled = false;
-            oreInput.focus();
+            if(!isChiusuraTabActive()) {
+                closedCommessaWarning.classList.add("hidden");
+                oreInput.disabled = false;
+                oreInput.focus();
+            }
+            else {
+                oreInput.disabled = true;
+                oreInput.value = 0;
+                closedCommessaWarning.classList.remove("hidden");
+            }
         }
         else {
             oreInput.disabled = true;
@@ -472,9 +501,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     producedQty: result.producedQty,
                     resQty: result.resQty,
                     storage: result.storage,
-                    workingTime: ore,
+                    workingTime: isChiusuraTabActive() ? 0 : ore,
                     wc: result.wc,
+                    closed: isChiusuraTabActive() ? true : false,
                 }
+                console.log("Dati da aggiungere:", data);
                 dataResultList.push(data);
                 // console.log("Lista di risultati:", dataResultList);
                 addToTemporaryList(data, dataResultList);
@@ -588,6 +619,58 @@ document.addEventListener("DOMContentLoaded", async function () {
             return null;
         }
     }
+
+    async function initializeTabs() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                const tabId = this.getAttribute('data-tab');
+                commessaInput.value = "";
+                odlInput.value = "";
+                odlInput.disabled = true;
+                lavorazioneInput.value = "";
+                lavorazioneInput.disabled = true;
+                oreInput.value = "";
+                oreInput.disabled = true;
+                closedCommessaWarning.classList.add("hidden");
+                
+                // Rimuovi active da tutti i bottoni e contenuti
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Aggiungi active al bottone e contenuto corrente
+                this.classList.add('active');
+
+                setTimeout(async () => {
+                    setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
+                    commessaInput.focus(); 
+                }, 100);
+                
+                activeTab = tabId;
+                console.log("Tab attiva:", activeTab);
+            });
+        });
+    }
+
+    async function loadInitialData() {
+        // Inizializza l'autocompletamento per la commessa e carica i dati iniziali
+        try {
+            const jobResult = await fetchAllJobs();
+            jobList = jobResult
+                .filter(job => job && job.job && job.description)
+                .map(job => ({
+                    job: job.job,
+                    description: job.description,
+                    display: `${job.job} - ${job.description}`
+                }));
+            // console.log("Lista di lavori:", jobList);
+            setupAutocomplete(commessaInput, commessaAutocompleteList, jobList);
+            commessaInput.focus();
+        } catch (error) {
+            console.error("Errore nel caricamento iniziale dei lavori:", error);
+            alert("Qualcosa è andato storto durante il caricamento iniziale dei dati.");
+        }
+    }
 });
 
 // Funzioni di fetch
@@ -699,16 +782,20 @@ function addToTemporaryList(data, dataResultList) {
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
     newItem.innerHTML = `
-        <div class="item-content"><div><spam class="item-content-heading">Comm:</spam> ${data.job} - <spam class="item-content-heading">MoId:</spam> ${data.moid} - <spam class="item-content-heading">MoNo:</spam> ${data.mono} </div>
-        <div><spam class="item-content-heading">Operation:</spam> ${data.operation} - <spam class="item-content-heading">Desc:</spam> ${data.operDesc}</div>
-        <div><spam class="item-content-heading">BOM:</spam> ${data.bom}</div>
-        <div><strong>Ore: ${data.workingTime}</strong></div></div>
+        <div class="item-content"><div><span class="item-content-heading">Comm:</span> ${data.job} - <span class="item-content-heading">MoId:</span> ${data.moid} - <span class="item-content-heading">MoNo:</span> ${data.mono} </div>
+        <div><span class="item-content-heading">Operation:</span> ${data.operation} - <span class="item-content-heading">Desc:</span> ${data.operDesc}</div>
+        <div><span class="item-content-heading">BOM:</span> ${data.bom}</div>
+        ${data.closed === false ? `<div><strong>Ore: ${data.workingTime}</strong></div>` : `<div><span class="closed-indicator">Chiusura Commessa</span></div>`}</div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>
             </button>
         </div>
     `;
+
+    if(data.closed === true) {
+        newItem.classList.add("close-reg-ore-item");
+    }
 
     list.appendChild(newItem);
 
@@ -729,4 +816,8 @@ function addToTemporaryList(data, dataResultList) {
             noContent.classList.remove("hidden");
         }
     });
+}
+
+function isChiusuraTabActive() {
+    return activeTab === "chiusura-commesse";
 }

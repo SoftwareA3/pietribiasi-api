@@ -17,12 +17,15 @@ namespace apiPB.Filters
 
         public int? SpecificatorType { get; set; }
 
-        public bool? Closed { get; set; }
+        public bool? TerminaLavorazioniUtente { get; set; }
         public string? RectificationReasonPositive { get; set; }
 
         public string? RectificationReasonNegative { get; set; }
 
         public string? Storage { get; set; }
         public bool? SyncGlobalActive { get; set; }
+        public bool? ControlloUoM { get; set; }
+
+        public bool? AbilitaLog { get; set; }
     }
 }

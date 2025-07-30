@@ -55,3 +55,70 @@ input[list] {
     background-color: rgba(0, 116, 217, 0.1);
     border-radius: var(--border-radius-sm);
 }
+
+#warning-commessa {
+    display: inline-block;
+    padding: var(--spacing-2) var(--spacing-3);
+    background-color: rgba(255, 193, 7, 0.1);
+    color: var(--warning);
+    border-radius: var(--border-radius-sm);
+    margin-top: var(--spacing-3);
+}
+
+.ore-qty {
+    display: flex;
+    align-items: center;
+    column-gap: 2rem;
+}
+
+
+/* Stili nav */
+.tabs-container {
+    margin-bottom: var(--spacing-4);
+}
+
+.tabs-nav {
+    display: flex;
+    background-color: var(--white);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+    margin-bottom: var(--spacing-3);
+}
+
+.tab-button {
+    flex: 1;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+}
+
+.tab-button:hover {
+    background-color: var(--gray-50);
+    color: var(--primary-color);
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background-color: var(--gray-50);
+}
+
+.tab-content {
+    display: none;
+    background-color: var(--card-bg);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-4);
+}

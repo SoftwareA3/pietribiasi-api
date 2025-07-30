@@ -17,7 +17,7 @@ public partial class A3AppSetting
 
     public int? SpecificatorType { get; set; }
 
-    public bool? Closed { get; set; }
+    public bool? TerminaLavorazioniUtente { get; set; }
 
     public string? RectificationReasonPositive { get; set; }
 
@@ -30,4 +30,8 @@ public partial class A3AppSetting
     public string? ExternalProgram { get; set; }
 
     public int? ExternalReferences { get; set; }
+
+    public bool? ControlloUoM { get; set; }
+
+    public bool? AbilitaLog { get; set; }
 }

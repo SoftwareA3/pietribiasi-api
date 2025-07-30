@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Reset dello stato dopo la visualizzazione
             setTimeout(() => {
                 sessionStorage.removeItem("login");
-            }, 1500);
+            }, 100);
         }
     }
 
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     body: JSON.stringify({"password": password}),
                     // Aggiungi un timeout per evitare richieste che non si completano mai
-                    signal: AbortSignal.timeout(10000)
+                    signal: AbortSignal.timeout(1000)
                 }).catch(error => {
                     console.error("Errore di rete:", error);
                     throw new Error("Errore di connessione al server");
@@ -130,8 +130,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    signal: AbortSignal.timeout(10000)
+                    // Non usare credenziali browser, gestisci tu i cookie
+                    credentials: "omit",
+                    signal: AbortSignal.timeout(1000)
                 }).catch(error => {
+                    // Gestione errore 401 senza mostrare dialog basicAuth
+                    if (error && error.status === 401) {
+                        console.error("Credenziali non valide:", error);
+                        throw new Error("Credenziali non valide");
+                    }
                     console.error("Errore durante la validazione:", error);
                     throw new Error("Errore nella validazione delle credenziali");
                 });
@@ -159,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Reset del flag di submitting
                 setTimeout(() => {
                     isSubmitting = false;
-                }, 2000);
+                }, 100);
             }
         });
     }

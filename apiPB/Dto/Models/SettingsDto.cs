@@ -20,7 +20,7 @@ namespace apiPB.Dto.Models
 
         public int? SpecificatorType { get; set; }
 
-        public bool? Closed { get; set; }
+        public bool? TerminaLavorazioniUtente { get; set; }
 
         public string? RectificationReasonPositive { get; set; }
 
@@ -30,5 +30,8 @@ namespace apiPB.Dto.Models
         public bool? SyncGlobalActive { get; set; }
         public string? ExternalReferences { get; set; }
         public string? ExternalProgram { get; set; }
+        public bool? ControlloUoM { get; set; }
+
+        public bool? AbilitaLog { get; set; }
     }
 }
