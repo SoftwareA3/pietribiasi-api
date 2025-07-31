@@ -47,10 +47,13 @@ if exist "BuildScripts\build.spec" (
 )
 
 echo Move Documentation to distribution directory
-if exist "%CD%\Docs\Documentazione.md" (
-    copy "%CD%\Docs\Documentazione.md" "%CD%\App\Documentazione.md"
+if exist "%CD%\Docs" (
+    if not exist "%CD%\App\Docs" (
+        mkdir "%CD%\App\Docs"
+    )
+    xcopy "%CD%\Docs\*" "%CD%\App\Docs\" /s /i /y
 ) else (
-    echo Warning: Documentazione.md not found in Docs.
+    echo Warning: Docs folder not found.
 )
 
 echo Move Configuration files to distribution directory
