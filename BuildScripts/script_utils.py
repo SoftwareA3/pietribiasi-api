@@ -114,16 +114,14 @@ def copy_backend_to_build(obj):
     print("✅ Backend copiato nella cartella di build")
 
 def copy_documentation_to_build(obj):
-    """Copia README.md nella cartella di build"""
+    """Copia la cartella Docs nella cartella di build"""
     print("Copia della documentazione nella directory di build...")
-    docs_src = obj.project_root / "Documentazione.md"
-    docs_dst = obj.app_dir / "Documentazione.md"
+    docs_src = obj.project_root / "Docs"
+    docs_dst = obj.app_dir / "Docs"
 
-    with open(docs_src, 'r', encoding='utf-8') as f:
-        docs_content = f.read()
-    
-    with open(docs_dst, 'w', encoding='utf-8') as f:
-        f.write(docs_content)
+    if docs_dst.exists():
+        shutil.rmtree(docs_dst)
+    shutil.copytree(docs_src, docs_dst)
     
     print("✅ Documentazione copiata nella cartella di build")
         
