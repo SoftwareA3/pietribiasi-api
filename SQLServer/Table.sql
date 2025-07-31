@@ -118,6 +118,7 @@ CREATE TABLE [dbo].[A3_app_reg_ore](
 	[Imported] [bit] NOT NULL,
 	[UserImp] [varchar](10) NULL,
 	[DataImp] [datetime] NULL,
+	[Closed] [bit] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[RegOreId] ASC
@@ -142,13 +143,15 @@ CREATE TABLE [dbo].[A3_app_Settings](
 	[Password] [varchar](50) NULL,
 	[Company] [varchar](50) NULL,
 	[SpecificatorType] [int] NULL,
-	[Closed] [bit] NULL,
+	[TerminaLavorazioniUtente] [bit] NULL,
 	[RectificationReasonPositive] [varchar](50) NULL,
 	[RectificationReasonNegative] [varchar](50) NULL,
 	[Storage] [varchar](50) NULL,
 	[SyncGlobalActive] [bit] NULL,
 	[ExternalProgram] [nvarchar](255) NULL,
 	[ExternalReferences] [int] NULL,
+	[ControlloUoM] [bit] NULL,
+	[AbilitaLog] [bit] NULL,
  CONSTRAINT [PK_A3_app_Settings] PRIMARY KEY CLUSTERED 
 (
 	[SettingsId] ASC
