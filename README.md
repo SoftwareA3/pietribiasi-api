@@ -62,6 +62,12 @@ Una volta scaricato, l'artefatto conterrà i seguenti elementi:
 - `Installazione.md`: documentazione sull'installazione
 - `documentazione_api.pdf`: documentazione sull'API 
 
+### Pro e contro
+Questo tipo di distribuzione è relativamente veloce (circa 2 minuti) e non richiede dipendenze per l'esecuzione. Tuttavia GitHib offre uno spazio di archiviazione gratuito ma limitato per le repository, di conseguenza se vengono fatte molte run del workflow, lo spazio verrà saturato e non sarà più possibile costruire artefatti. Di tanto in tanto sarebbe meglio eliminarli e non utilizzare troppo questo tipo di distribuzione.
+
+### Soluzione per il problema di archiviazione
+All'interno della pagina GitHub della Repository, nella sezione "Settings" sul pannello a sinistra compare una voce "Actions". Entrando nella sezione "General" è possibile ridurre il periodo di ritenzione degli artefatti e dei log delle Action. Riducendo il periodo di ritenzione, gli artefatti saranno eliminati dopo meno tempo e lo spazio di archiviazione verrebbe liberato prima.
+
 
 ## Build locale
 Alternativamente, se clonata repository e installate le dipendenze necessarie, è possibile creare la distribuzione dell'applicaizone, eseguendo lo script `build.bat`.
@@ -79,6 +85,9 @@ Le dipendenze necessarie per l'esecuzione in locale sono:
     - Comando: `python -m ensurepip --upgrade`
 - PyInstaller:
     - Comando: `pip install pyinstaller`
+
+### Pro e contro:
+Questo tipo di distribuzione è molto più veloce, ma richiede l'installazione sulla macchina delle dipendenze elencate in precedenza.
 
 ## Configurazione
 Per configurare l'applicazione è necessario modificare il file `build.json`, il quale si occupa di fornire alcune informazioni all'applicazione durante il processo di build. 
