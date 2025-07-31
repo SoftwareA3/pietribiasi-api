@@ -929,6 +929,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
                         alert("La quantità richiesta supera la giacenza disponibile.");
                         quantitaInput.value = invItem.bookInv;
+                        await loadAllData();
                         return null;
                     }
                 }
