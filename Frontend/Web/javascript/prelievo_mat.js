@@ -829,21 +829,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     }); 
 
     // Event listener per il pulsante Aggiungi
-    addButton.addEventListener("click", async function() {
+    addButton.addEventListener("click", async function () {
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
         const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
-        const selectedQta = document.getElementById("prel-mat-quantita").value;
-        var selectedBarcode = null;
+        const selectedQta = parseFloat(document.getElementById("prel-mat-quantita").value) || 0;
+        console.log("Valore iniziale di selectedQta:", selectedQta, "Raw input:", document.getElementById("prel-mat-quantita").value);
+        let selectedBarcode = null;
 
-        if(isAddingNewItem)
-        {
-            console.log("Barcode selezionato dalla tabella: ", selectedMaterialSearchRow)
-        }
-        else
-        {
+        if (isAddingNewItem) {
+            console.log("Barcode selezionato dalla tabella:", selectedMaterialSearchRow);
+        } else {
             selectedBarcode = findSelectedItem(barcodeInput.value, barcodeList);
-            console.log("Barcode selezionato dal form: ", selectedBarcode)
+            console.log("Barcode selezionato dal form:", selectedBarcode);
         }
 
         console.log("Dati selezionati:", {
@@ -854,116 +852,147 @@ document.addEventListener("DOMContentLoaded", async function () {
             selectedQta
         });
 
-        var result = null;
-    
-        if (selectedCommessa && selectedOdp && selectedLavorazione && (selectedBarcode || selectedMaterialSearchRow) && selectedQta) {
-            if(isAddingNewItem) {
-                console.log("Aggiunta di un nuovo articolo in corso...");
-
-                result = await loadDataForNewItem(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedMaterialSearchRow);
-                console.log("Risultato di loadDataForNewItem:", result);
-                selectedMaterialSearchRow = null; // Resetta la selezione del materiale
-
-                isAddingNewItem = false;
-            }
-            else {
-                result = await loadAllData(selectedCommessa.job, selectedOdp.mono, selectedOdp.creationDate, selectedLavorazione.operation, selectedBarcode.component, selectedBarcode.barCode);
-            }
-            //console.log("Risultato di loadAllData:", result);
-            if (result) {
-                var data = {
-                    job: result.job,
-                    rtgStep: result.rtgStep,
-                    alternate: result.alternate,
-                    altRtgStep: result.altRtgStep,
-                    operation: result.operation,
-                    operDesc: result.operDesc,
-                    position: result.position,
-                    component: result.component,
-                    bom: result.bom,
-                    variant: result.variant,
-                    itemDesc: result.itemDesc,
-                    moid: result.moid,
-                    mono: result.mono,
-                    creationDate: result.creationDate,
-                    uoM: result.uoM,
-                    productionQty: result.productionQty,
-                    producedQty: result.producedQty,
-                    resQty: result.resQty,
-                    storage: result.storage,
-                    barCode: result.barCode,
-                    wc: result.wc,
-                    prelQty: selectedQta,
-                    neededQty: result.neededQty
-                }
-
-                if(isDelitingItem)
-                {
-                    // Se sta eliminando l'articolo, inserisce il valore deleted
-                    console.log("Eliminazione dell'articolo in corso...");
-                    data.deleted = true;
-                    isDelitingItem = false; // Resetta il flag di eliminazione
-                }
-                else
-                {
-                    // Se sta aggiungendo un articolo, inserisce il valore false
-                    data.deleted = false;
-                }
-
-                // Recupera le informazioni sulla giacenza e il controllo dell'unità di misura
-                // Per verificare se la quantità richiesta supera la giacenza disponibile durante l'aggiunta
-                // Se il controllo dell'unità di misura è attivo, verifica se la quantità richiesta supera la giacenza disponibile
-                // Se positivo, mostra un messaggio di errore e imposta la quantità al valore della giacenza disponibile, sospendendo l'operazione
-                
-                const invItem = await fetchGiacenzeByItem(data.component);
-
-                if( (invItem.uoM === data.uoM) && (parseFloat(data.prelQty) > parseFloat(invItem.bookInv))) {
-                    // Questo controllo limita le chiamate API, quindi viene eseguito solo se necessario
-                    const controlloUoM = await fetchControlloUoM();
-                    //console.log("UoM:", data.uoM, " - Giacenza:", invItem.bookInv, " - Quantità richiesta:", data.prelQty);
-                    //console.log("Controllo UoM attivo:", controlloUoM.controlloUoM);
-                    //console.log("Unità di misura della giacenza:", invItem.uoM);
-                    if(controlloUoM.controlloUoM === true) {
-                        console.log("La quantità richiesta supera la giacenza disponibile.");
-                        errorQty.style.display = "block";
-                        errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
-                        alert("La quantità richiesta supera la giacenza disponibile.");
-                        quantitaInput.value = invItem.bookInv;
-                        await loadAllData();
-                        return null;
-                    }
-                }
-
-                dataResultList.push(data);
-
-                if(selectedQta > result.finalSum) 
-                {
-                    errorQty.style.display = "block";
-                }
-
-                //console.log("Lista di risultati:", dataResultList);
-                addToTemporaryList(data, dataResultList);
-                // Reset campo quantità
-                commessaInput.value = "";
-                odlInput.value = "";
-                odlInput.disabled = true;
-                lavorazioneInput.value = "";
-                lavorazioneInput.disabled = true;
-                barcodeInput.value = "";
-                barcodeInput.disabled = true;
-                quantitaInput.value = "";
-                quantitaInput.disabled = true;
-                aggiungiArticoloButton.classList.add("disabled-button-look");
-                eliminaArticoloButton.classList.add("disabled-button-look");
-                const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
-                if (quantitaLabel) {
-                    quantitaLabel.textContent = "Quantità: ";
-                }
-            } else {
-                alert("Errore: impossibile aggiungere l'elemento. Dati mancanti o non validi.");
-            }
-        } else {
+        if (!selectedCommessa || !selectedOdp || !selectedLavorazione || (!selectedBarcode && !selectedMaterialSearchRow) || !selectedQta) {
             alert("Compilare tutti i campi richiesti");
+            return;
+        }
+
+        try {
+            let result = null;
+            if (isAddingNewItem) {
+                console.log("Aggiunta di un nuovo articolo in corso...");
+                result = await loadDataForNewItem(
+                    selectedCommessa.job,
+                    selectedOdp.mono,
+                    selectedOdp.creationDate,
+                    selectedLavorazione.operation,
+                    selectedMaterialSearchRow
+                );
+                console.log("Risultato di loadDataForNewItem:", result);
+                selectedMaterialSearchRow = null;
+                isAddingNewItem = false;
+            } else {
+                result = await loadAllData(
+                    selectedCommessa.job,
+                    selectedOdp.mono,
+                    selectedOdp.creationDate,
+                    selectedLavorazione.operation,
+                    selectedBarcode.component,
+                    selectedBarcode.barCode
+                );
+            }
+
+            console.log("Risultato loadAllData/loadDataForNewItem:", result);
+            console.log("selectedQta dopo loadAllData/loadDataForNewItem:", selectedQta, "Raw input:", document.getElementById("prel-mat-quantita").value);
+
+            if (!result || !result.component || !result.uoM) {
+                alert("Errore: dati di risultato non validi.");
+                console.error("Risultato non valido:", result);
+                return;
+            }
+
+            const data = {
+                job: result.job,
+                rtgStep: result.rtgStep,
+                alternate: result.alternate,
+                altRtgStep: result.altRtgStep,
+                operation: result.operation,
+                operDesc: result.operDesc,
+                position: result.position,
+                component: result.component,
+                bom: result.bom,
+                variant: result.variant,
+                itemDesc: result.itemDesc,
+                moid: result.moid,
+                mono: result.mono,
+                creationDate: result.creationDate,
+                uoM: result.uoM,
+                productionQty: result.productionQty,
+                producedQty: result.producedQty,
+                resQty: result.resQty,
+                storage: result.storage,
+                barCode: result.barCode,
+                wc: result.wc,
+                prelQty: selectedQta, // Use user-entered quantity
+                neededQty: result.neededQty
+            };
+
+            console.log("data.prelQty prima del controllo giacenza:", data.prelQty);
+
+            data.deleted = isDelitingItem ? true : false;
+            if (isDelitingItem) {
+                console.log("Eliminazione dell'articolo in corso...");
+                isDelitingItem = false;
+            }
+
+            // Fetch inventory data
+            let invItem = await fetchGiacenzeByItem(data.component);
+            console.log("Dati giacenza per componente:", invItem);
+
+            if (Array.isArray(invItem)) {
+                invItem = invItem.length > 0 ? invItem[0] : null;
+            }
+
+            if (!invItem || invItem.bookInv === undefined || invItem.uoM === undefined) {
+                alert("Errore: dati di giacenza non validi o nessun dato trovato per il componente.");
+                console.error("Giacenza non valida:", invItem, "Componente:", data.component);
+                return;
+            }
+
+            const bookInv = parseFloat(invItem.bookInv) || 0;
+            console.log("Confronto quantità - prelQty:", selectedQta, "bookInv:", bookInv, "uoM match:", invItem.uoM === data.uoM);
+
+            // Inventory check
+            if (invItem.uoM === data.uoM && selectedQta > bookInv) {
+                const controlloUoM = await fetchControlloUoM();
+                console.log("Controllo UoM:", controlloUoM);
+
+                if (!controlloUoM || controlloUoM.controlloUoM === undefined) {
+                    alert("Errore: controllo UoM non valido.");
+                    console.error("Controllo UoM non valido:", controlloUoM);
+                    return;
+                }
+
+                if (controlloUoM.controlloUoM === true) {
+                    console.log(`Errore: Quantità richiesta (${selectedQta}) supera giacenza disponibile (${bookInv}).`);
+                    errorQty.style.display = "block";
+                    errorQty.innerHTML = `<p><strong>La quantità richiesta (${selectedQta}) supera la giacenza disponibile (${bookInv}).</strong></p>`;
+                    alert(`La quantità richiesta (${selectedQta}) supera la giacenza disponibile (${bookInv}).`);
+                    quantitaInput.value = bookInv;
+                    return;
+                }
+            }
+
+            // Optional: Check against needed quantity
+            if (selectedQta > result.neededQty) {
+                console.log(`Attenzione: Quantità richiesta (${selectedQta}) supera quantità necessaria (${result.neededQty}).`);
+                if (!confirm(`La quantità richiesta (${selectedQta}) supera la quantità necessaria (${result.neededQty}). Continuare?`)) {
+                    return;
+                }
+            }
+
+            dataResultList.push(data);
+            addToTemporaryList(data, dataResultList);
+
+            // Reset form fields
+            commessaInput.value = "";
+            odlInput.value = "";
+            odlInput.disabled = true;
+            lavorazioneInput.value = "";
+            lavorazioneInput.disabled = true;
+            barcodeInput.value = "";
+            barcodeInput.disabled = true;
+            quantitaInput.value = "";
+            quantitaInput.disabled = true;
+            aggiungiArticoloButton.classList.add("disabled-button-look");
+            eliminaArticoloButton.classList.add("disabled-button-look");
+            const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
+            if (quantitaLabel) {
+                quantitaLabel.textContent = "Quantità: ";
+            }
+        } catch (error) {
+            console.error("Errore durante l'aggiunta dell'articolo:", error);
+            alert("Errore durante l'aggiunta dell'articolo. Riprova.");
         }
     });
 
@@ -1070,37 +1099,54 @@ document.addEventListener("DOMContentLoaded", async function () {
     async function loadBarCodeData(jobId, mono, creationDate, operation) {
         console.log("Caricamento barcode per jobId:", jobId, ", mono:", mono, " e operation:", operation);
         if (!jobId || !mono || !creationDate || !operation) return;
-        
+
         try {
+            // Fetch barcode data
             barcodeInput.disabled = false;
             aggiungiArticoloButton.classList.remove("disabled-button-look");
             eliminaArticoloButton.classList.add("disabled-button-look");
             const barCodeResult = await fetchJobsByLavorazione(jobId, mono, creationDate, operation);
-            //console.log("Risultato barcode:", barCodeResult);
-            barcodeList = barCodeResult
-                .filter(barCode => barCode && barCode.itemDesc && barCode.component)
-                .map(barCode => ({
-                    component: barCode.component,
-                    barCode: barCode.barCode || '',
-                    itemDesc: barCode.itemDesc,
-                    display: `Item: ${barCode.component} ${barCode.barCode === "" ? "" : "- Code: " + barCode.barCode } - ${barCode.itemDesc === "" || barCode.itemDesc === null ? "Nessuna descrizione disponibile" : barCode.itemDesc}`,
-                }));
 
-            //console.log("Lista di barcode:", barcodeList);
+            // Fetch giacenze data to get correct descriptions
+            const giacenze = await fetchAllGiacenze();
+
+            // Create a map of giacenze for quick lookup (using item as the key)
+            const giacenzeMap = new Map();
+            giacenze.forEach(g => {
+                giacenzeMap.set(g.item, g.description); // Match barCode.component to g.item
+            });
+
+            // Process barcode data and replace itemDesc with giacenze description
+            barcodeList = barCodeResult
+                .filter(barCode => barCode && barCode.component)
+                .map(barCode => {
+                    // Get the correct description from giacenzeMap, fallback to default
+                    const description = giacenzeMap.get(barCode.component) || 
+                                    "Nessuna descrizione disponibile";
+
+                    return {
+                        component: barCode.component,
+                        barCode: barCode.barCode || '',
+                        itemDesc: description, // Use the correct description from giacenze
+                        display: `Item: ${barCode.component} ${barCode.barCode === "" ? "" : "- Code: " + barCode.barCode} - ${description}`,
+                    };
+                });
+
+            // Setup autocomplete with the updated barcodeList
             setupAutocomplete(barcodeInput, barcodeAutocompleteList, barcodeList);
 
+            // Deduplicate barcodeList
             const barcodeDistinctList = barcodeList.filter((item, index, self) =>
                 index === self.findIndex((t) => t.component === item.component && t.barCode === item.barCode && t.itemDesc === item.itemDesc));
-            if(barcodeDistinctList.length === 1) {
+
+            if (barcodeDistinctList.length === 1) {
                 setTimeout(() => {
                     barcodeInput.value = barcodeDistinctList[0].display;
                     const event = new Event('change', { bubbles: true });
                     barcodeInput.dispatchEvent(event);
                     barcodeInput.disabled = true;
                 }, 100);
-            }
-            else
-            {
+            } else {
                 barcodeInput.focus();
             }
         } catch (error) {
@@ -1110,30 +1156,25 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function loadAllData(jobId, mono, creationDate, operation, component, barCode = "") {
         if (!jobId || !mono || !creationDate || !operation || !component) return null;
-        
+
         try {
             const allDataResult = await fetchJobsByComponent(jobId, mono, creationDate, operation, component, barCode);
             console.log("Lista di tutti i dati:", allDataResult);
 
-            if(allDataResult.length > 0) {
-
+            if (allDataResult.length > 0) {
                 var sum = 0;
-                // Dati lista temporanea
+                // Sum quantities from temporary list
                 dataResultList.forEach(element => {
-                    // console.log("Elemento della lista temporanea:", element);
-                    // console.log("Elemento corrente:", allDataResult[0]);
-                    // console.log("moId:", element.moid, "component:", element.component);
-                    // console.log("moId:", allDataResult[0].moid, "component:", allDataResult[0].component);
-                    if(element.moid === allDataResult[0].moid && element.component === allDataResult[0].component) {
+                    if (element.moid === allDataResult[0].moid && element.component === allDataResult[0].component) {
                         sum += parseFloat(element.prelQty || 0);
                     }
                 });
                 console.log("Somma delle quantità della lista temporanea:", sum);
-                console.log("Component:", allDataResult[0].component);
+
                 const prelMatQtyList = await fetchA3PrelMatQtyList(allDataResult[0].component);
                 console.log("Lista di quantità da A3_app_prel_mat:", prelMatQtyList);
 
-                if(prelMatQtyList.length > 0) {
+                if (prelMatQtyList.length > 0) {
                     prelMatQtyList.forEach(element => {
                         sum += parseFloat(element.prelQty || 0);
                     });
@@ -1141,13 +1182,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 console.log("Somma totale:", sum);
 
+                const finalSum = parseFloat(allDataResult[0].prelResQty || 0) - sum;
+                console.log("prelResQty:", allDataResult[0].prelResQty, "sum:", sum, "finalSum:", finalSum);
+
                 quantitaInput.disabled = false;
-                // Il valore comincia dalla quantità disponibile meno quella già prelevata
-                const finalSum =  parseFloat(allDataResult[0].prelResQty || 0) - sum;
-                quantitaInput.value = finalSum;
-                
+                // Only set quantitaInput.value if empty to preserve user input
+                if (!quantitaInput.value) {
+                    quantitaInput.value = finalSum;
+                }
+                console.log("quantitaInput.value dopo impostazione:", quantitaInput.value);
+
                 const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
                 const invItem = await fetchGiacenzeByItem(allDataResult[0].component);
+                console.log("Dati giacenza:", invItem);
 
                 if (quantitaLabel && invItem) {
                     quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - Qta. già prelevata su ERP: ${allDataResult[0].pickedQuantity} - UoM: ${allDataResult[0].prelUoM} - Giacenza: ${invItem.bookInv} (${invItem.uoM})`;
@@ -1155,44 +1202,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 if (parseFloat(allDataResult[0].pickedQuantity) === 0) {
                     eliminaArticoloButton.classList.remove("disabled-button-look");
-                }
-                else {
+                } else {
                     eliminaArticoloButton.classList.add("disabled-button-look");
                 }
-                
-                // Se la quantità è negativa o maggiore di prelResQty, mostra un messaggio di errore
-                if (parseFloat(quantitaInput.value) < 0) {
-                    errorQty.style.display = "block";
-                }
 
-                // Recupera le informazioni sulla giacenza e il controllo dell'unità di misura
-                // Per verificare se la quantità richiesta supera la giacenza disponibile durante l'inserimento della quantità di default
-
-                if( (invItem.uoM === allDataResult[0].prelUoM) && (parseFloat(quantitaInput.value) > parseFloat(invItem.bookInv))) {
-                    const controlloUoM = await fetchControlloUoM();
-                    if(controlloUoM.controlloUoM === true) {
-                        //console.log("UoM:", allDataResult[0].prelUoM, " - Giacenza:", invItem.bookInv, " - Quantità richiesta:", quantitaInput.value);
-                        //console.log("Controllo UoM attivo:", controlloUoM.controlloUoM);
-                        //console.log("Unità di misura della giacenza:", invItem.uoM);
-                        console.log("La quantità richiesta supera la giacenza disponibile.");
-                        errorQty.style.display = "block";
-                        errorQty.innerHTML = "<p><strong>La quantità richiesta supera la giacenza disponibile.</strong></p>";
-                        alert("La quantità richiesta supera la giacenza disponibile.");
-                        quantitaInput.value = invItem.bookInv;
-                        return null;
-                    }
-                }
+                // Remove redundant inventory check to avoid returning null
+                // Inventory check will be handled in addButton
 
                 allDataResult[0].finalSum = finalSum;
-                allDataResult[0].neededQty = 0;
+                allDataResult[0].neededQty = parseFloat(allDataResult[0].prelResQty || 0); // Set neededQty correctly
 
                 return allDataResult[0];
-            }
-            else {
+            } else {
                 console.error("Nessun dato trovato per i parametri forniti.");
                 return null;
             }
-
         } catch (error) {
             console.error("Errore nel caricamento dei dati:", error);
             return null;
