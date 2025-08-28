@@ -283,6 +283,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Event listener per il cambio di barcode
     barcodeInput.addEventListener("change", async function() {
+    //Pulisco il campo quantità quando si cambia il barcode
+        quantitaInput.value = "";
+
         const selectedCommessa = findSelectedItem(commessaInput.value, jobList);
         const selectedOdp = findSelectedItem(odlInput.value, odpList);
         const selectedLavorazione = findSelectedItem(lavorazioneInput.value, lavorazioneList);
@@ -975,16 +978,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             addToTemporaryList(data, dataResultList);
 
             // Reset form fields
-            commessaInput.value = "";
-            odlInput.value = "";
-            odlInput.disabled = true;
-            lavorazioneInput.value = "";
-            lavorazioneInput.disabled = true;
+
+            //commessaInput.value = "";
+            //odlInput.value = "";
+            //odlInput.disabled = true;
+            //lavorazioneInput.value = "";
+            //lavorazioneInput.disabled = true;
             barcodeInput.value = "";
-            barcodeInput.disabled = true;
+            //barcodeInput.disabled = true;
             quantitaInput.value = "";
             quantitaInput.disabled = true;
-            aggiungiArticoloButton.classList.add("disabled-button-look");
+            //aggiungiArticoloButton.classList.add("disabled-button-look");
             eliminaArticoloButton.classList.add("disabled-button-look");
             const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
             if (quantitaLabel) {
