@@ -1020,6 +1020,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!jobId) return;
         
         try {
+            odlInput.value = ""; // pulisco il campo ODP al cambio della commessa
             odlInput.disabled = false;
             const odpResult = await fetchJobMostep(jobId);
             //console.log("Risultato ODP:", odpResult);
@@ -1035,7 +1036,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             //console.log("Lista di ODP:", odpList);
             setupAutocomplete(odlInput, odlAutocompleteList, odpList);
             const odpDistinctList = odpList.filter((item, index, self) =>
-                index === self.findIndex((t) => t.odp === item.odp && t.creationDate === item.creationDate));
+                index === self.findIndex((t) => t.mono === item.mono && t.creationDate === item.creationDate));
             //console.log("Lista di ODP Distinti:", odpDistinctList);
             if(odpDistinctList.length === 1) {
                 setTimeout(() => {
