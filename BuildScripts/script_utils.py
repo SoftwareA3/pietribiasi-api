@@ -113,19 +113,56 @@ def copy_backend_to_build(obj):
 
     print("✅ Backend copiato nella cartella di build")
 
+# def copy_documentation_to_build(obj):
+#     """Copia README.md nella cartella di build"""
+#     print("Copia della documentazione nella directory di build...")
+#     docs_src = obj.project_root / "Docs" / "Documentazione.md"
+#     docs_dst = obj.app_dir / "Documentazione.md"
+
+#     with open(docs_src, 'r', encoding='utf-8') as f:
+#         docs_content = f.read()
+    
+#     with open(docs_dst, 'w', encoding='utf-8') as f:
+#         f.write(docs_content)
+    
+#     print("✅ Documentazione copiata nella cartella di build")
+
 def copy_documentation_to_build(obj):
-    """Copia README.md nella cartella di build"""
+    """Copia la documentazione nella cartella di build"""
     print("Copia della documentazione nella directory di build...")
-    docs_src = obj.project_root / "Docs" / "Documentazione.md"
+
+    # Percorso cartella Docs
+    docs_dir = obj.project_root / "Docs"
+    docs_dir.mkdir(exist_ok=True)  # Crea la cartella se non esiste
+
+    # File da spostare nella cartella Docs
+    files_to_move = ["Documentazione.md", "Table.sql", "Installazione.md", "documentazione_api.pdf", "Create_or_Update_Procedure.sql", "A3_app_Settings_data.sql"]
+
+    for filename in files_to_move:
+        source = obj.project_root / filename
+        destination = docs_dir / filename
+
+        # Se il file esiste nella root e non è già nella cartella Docs, lo sposto
+        if source.exists() and not destination.exists():
+            shutil.move(str(source), str(destination))
+            print(f"Spostato: {filename}")
+        elif destination.exists():
+            print(f"File già presente in Docs: {filename}")
+        else:
+            print(f"Attenzione: file non trovato -> {filename}")
+
+    # Percorso finale del file da copiare nella cartella di build
+    docs_src = docs_dir / "Documentazione.md"
     docs_dst = obj.app_dir / "Documentazione.md"
 
-    with open(docs_src, 'r', encoding='utf-8') as f:
-        docs_content = f.read()
-    
-    with open(docs_dst, 'w', encoding='utf-8') as f:
-        f.write(docs_content)
-    
-    print("✅ Documentazione copiata nella cartella di build")
+    # Copia il file nella directory di build
+    if docs_src.exists():
+        shutil.copy2(str(docs_src), str(docs_dst))
+        print(f"Copiato Documentazione.md in: {docs_dst}")
+    else:
+        print("Errore: Documentazione.md non trovato in Docs!")
+
+
         
 def default_config():
     """Configurazione di default"""
