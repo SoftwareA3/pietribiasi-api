@@ -344,7 +344,7 @@ GO
   as
   -- 1 no parametri
 
-  select distinct j.job, j.Description
+  select distinct j.job, REPLACE(REPLACE(j.Description, CHAR(13), ''), CHAR(10), ' ') AS Description   --j.Description (Precedente e sbagliato), ora fa in modo che non vada a capo, CHAR(13) = /r e CHAR(10) = /n
   from [dbo].[MA_MO]  OP with (nolock)
   inner join [dbo].[MA_Jobs] J with (nolock) on op.Job = j.Job
   where op.MOStatus in ('20578304','20578305')
