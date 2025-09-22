@@ -334,7 +334,10 @@ async function fetchViewPrelievi(filteredObject) {
             console.error("Errore nella richiesta:", request.status, request.statusText);
             return [];
         }
-
+        //====================================================
+        //Aggiunta per debug
+        //console.log("Dati ricevuti da get_view_prel_mat:", await request.json());
+        //====================================================
         const info = await request.json();
         return info;
     } catch (error) {
@@ -435,6 +438,9 @@ async function populatePrelieviList(data) {
 
         const parsedDateTime = parseDateTime(item.dataImp);
 
+        //Debug
+        //console.log("Generando HTML per la lista con item:", item);
+
         // Aggiunge le informazioni dell'elemento
         itemContent.innerHTML += `
             <div><strong>Comm:</strong> ${item.job} </div>
@@ -444,10 +450,14 @@ async function populatePrelieviList(data) {
             <div><strong>Item:</strong> ${item.component} </div>
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
+            <div><strong>UoM:</strong> ${item.uoM || 'N/A'} </div>
+            <div class="description"><strong>Descrizione:</strong> ${item.itemDesc || 'N/A'} </div>
             <div><strong>Qta: <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</strong></span> </div>
             ${isImported === true ? `<div><strong>Importato il:</strong> ${parsedDateTime.date} alle ${parsedDateTime.time} </div>` : ''}
             ${isImported === true ? `<div><strong>Importato da:</strong> ${item.userImp} </div>` : ''}
         `;
+        //Debug
+        console.log("HTML generato per itemContent:", itemContent.innerHTML);
 
         if(item.deleted === 1 || item.deleted === true)
             itemContent.classList.add("deleted-prel-item");

@@ -490,6 +490,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             alert("Selezionare una commessa, un odp e una lavorazione prima di procedere.");
             return;
         }
+        console.log("Apertura overlay di ricerca materiali, isAddingNewItem impostato a true"); // Per Debug
+        isAddingNewItem = true; // Imposta qui per chiarezza
+
         searchMaterialsInput.value = "";
         if(isMaterialResultsFetched == false) {
             materialsSearchResults = [];
@@ -598,6 +601,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 quantitaInput.value = selectedMaterialSearchRow.neededQty;
                 quantitaInput.disabled = false; // Abilita il campo quantità
                 isAddingNewItem = true;
+                console.log("isAddingNewItem impostato a true dopo selezione materiale"); // Per Debug
             }
             else {
                 alert("Nessuna giacenza disponibile per questo materiale.");
@@ -790,6 +794,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 item.workerId = workerId;
             });
             console.log("Lista con Worker ID:", dataResultList);
+            console.log("JSON inviato a api/prel_mat/post_prel_mat:", JSON.stringify(dataResultList, null, 2)); // Log dettagliato
 
             try {
                 const response = await fetchWithAuth(getApiUrl("api/prel_mat/post_prel_mat"), {
@@ -872,8 +877,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     selectedMaterialSearchRow
                 );
                 console.log("Risultato di loadDataForNewItem:", result);
-                selectedMaterialSearchRow = null;
-                isAddingNewItem = false;
+                console.log("itemDesc da loadDataForNewItem:", result?.itemDesc); // Log per debug
+               // selectedMaterialSearchRow = null;
+               // isAddingNewItem = false;
             } else {
                 result = await loadAllData(
                     selectedCommessa.job,
@@ -883,6 +889,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     selectedBarcode.component,
                     selectedBarcode.barCode
                 );
+                console.log("itemDesc da loadAllData:", result?.itemDesc); // Log per debug
             }
 
             console.log("Risultato loadAllData/loadDataForNewItem:", result);
@@ -919,6 +926,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 prelQty: selectedQta, // Use user-entered quantity
                 neededQty: result.neededQty
             };
+            
+            console.log("Oggetto data prima di aggiungere a dataResultList:", data); // Log dettagliato
+            console.log("itemDesc nell'oggetto data:", data.itemDesc); // Log specifico per itemDesc
 
             console.log("data.prelQty prima del controllo giacenza:", data.prelQty);
 
@@ -1167,16 +1177,23 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Lista di tutti i dati:", allDataResult);
 
             if (allDataResult.length > 0) {
+                const dataItem = { ...allDataResult[0] };
+                //Imposto itemDesc usando fetchHiacenzaByItem
+                const giacenza = await fetchGiacenzeByItem(component);
+                dataItem.itemDesc = giacenza && giacenza.description ? giacenza.description : "Nessuna descrizione disponibile";
+                console.log("Descrizione impostata per itemDesc in loadAllData:", dataItem.itemDesc);
+
+
                 var sum = 0;
                 // Sum quantities from temporary list
                 dataResultList.forEach(element => {
-                    if (element.moid === allDataResult[0].moid && element.component === allDataResult[0].component) {
+                    if (element.moid === dataItem.moid && element.component === dataItem.component) {
                         sum += parseFloat(element.prelQty || 0);
                     }
                 });
                 console.log("Somma delle quantità della lista temporanea:", sum);
 
-                const prelMatQtyList = await fetchA3PrelMatQtyList(allDataResult[0].component);
+                const prelMatQtyList = await fetchA3PrelMatQtyList(dataItem.component);
                 console.log("Lista di quantità da A3_app_prel_mat:", prelMatQtyList);
 
                 if (prelMatQtyList.length > 0) {
@@ -1187,8 +1204,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 console.log("Somma totale:", sum);
 
-                const finalSum = parseFloat(allDataResult[0].prelResQty || 0) - sum;
-                console.log("prelResQty:", allDataResult[0].prelResQty, "sum:", sum, "finalSum:", finalSum);
+                const finalSum = parseFloat(dataItem.prelResQty || 0) - sum;
+                console.log("prelResQty:", dataItem.prelResQty, "sum:", sum, "finalSum:", finalSum);
 
                 quantitaInput.disabled = false;
                 // Only set quantitaInput.value if empty to preserve user input
@@ -1198,11 +1215,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log("quantitaInput.value dopo impostazione:", quantitaInput.value);
 
                 const quantitaLabel = document.querySelector('label[for="prel-mat-quantita"]');
-                const invItem = await fetchGiacenzeByItem(allDataResult[0].component);
+                const invItem = await fetchGiacenzeByItem(dataItem.component);
                 console.log("Dati giacenza:", invItem);
 
                 if (quantitaLabel && invItem) {
-                    quantitaLabel.textContent = `Qta. da prelevare: ${allDataResult[0].prelResQty} - Qta. prelevabile: ${finalSum} - Qta. già prelevata su ERP: ${allDataResult[0].pickedQuantity} - UoM: ${allDataResult[0].prelUoM} - Giacenza: ${invItem.bookInv} (${invItem.uoM})`;
+                    quantitaLabel.textContent = `Qta. da prelevare: ${dataItem.prelResQty} - Qta. prelevabile: ${finalSum} - Qta. già prelevata su ERP: ${dataItem.pickedQuantity} - UoM: ${dataItem.prelUoM} - Giacenza: ${invItem.bookInv} (${invItem.uoM})`;
                 }
 
                 if (parseFloat(allDataResult[0].pickedQuantity) === 0) {
@@ -1214,10 +1231,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // Remove redundant inventory check to avoid returning null
                 // Inventory check will be handled in addButton
 
-                allDataResult[0].finalSum = finalSum;
-                allDataResult[0].neededQty = parseFloat(allDataResult[0].prelResQty || 0); // Set neededQty correctly
+                dataItem.finalSum = finalSum;
+                dataItem.neededQty = parseFloat(dataItem.prelResQty || 0); // Set neededQty correctly
 
-                return allDataResult[0];
+                return dataItem;
             } else {
                 console.error("Nessun dato trovato per i parametri forniti.");
                 return null;
@@ -1238,10 +1255,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.log("Lista di tutti i dati:", allDataResult);
             console.log("Riga selezionata dalla tabella:", selectedMaterialSearchRow);
 
+            /*
             var dataItem = allDataResult[0];
             dataItem.component = selectedMaterialSearchRow.item;
             dataItem.barCode = selectedMaterialSearchRow.barCode || "";
-            dataItem.itemDesc = selectedMaterialSearchRow.itemDesc || "";
+            //dataItem.itemDesc = selectedMaterialSearchRow.itemDesc || "";
             dataItem.prelQty = selectedMaterialSearchRow.neededQty || 0;
             dataItem.prelResQty = selectedMaterialSearchRow.neededQty || 0;
             dataItem.prelNeededQty = selectedMaterialSearchRow.neededQty || 0;
@@ -1249,8 +1267,44 @@ document.addEventListener("DOMContentLoaded", async function () {
             dataItem.storage = selectedMaterialSearchRow.storage || "";
             dataItem.prelUoM = selectedMaterialSearchRow.uoM || "";
             dataItem.position = 0;
+            */
 
+            const dataItem = {
+                job: allDataResult[0].job || '',
+                rtgStep: allDataResult[0].rtgStep || '',
+                alternate: allDataResult[0]?.alternate || '',
+                altRtgStep: allDataResult[0]?.altRtgStep || '',
+                operation: allDataResult[0]?.operation || '',
+                operDesc: allDataResult[0]?.operDesc || '',
+                moid: allDataResult[0]?.moid || '',
+                mono: allDataResult[0]?.mono || '',
+                creationDate: allDataResult[0]?.creationDate || '',
+                productionQty: allDataResult[0]?.productionQty || 0,
+                producedQty: allDataResult[0]?.producedQty || 0,
+                resQty: allDataResult[0]?.resQty || 0,
+                wc: allDataResult[0]?.wc || '',
+                component: selectedMaterialSearchRow.item,
+                barCode: selectedMaterialSearchRow.barCode || '',
+                prelQty: selectedMaterialSearchRow.neededQty || 0,
+                prelResQty: selectedMaterialSearchRow.neededQty || 0,
+                prelNeededQty: selectedMaterialSearchRow.neededQty || 0,
+                neededQty: selectedMaterialSearchRow.neededQty || 0,
+                storage: selectedMaterialSearchRow.storage || '',
+                prelUoM: selectedMaterialSearchRow.uoM || '',
+                uoM: selectedMaterialSearchRow.uoM || '',
+                position: 0,
+                bom: allDataResult[0]?.bom || '',
+                variant: allDataResult[0]?.variant || ''
+            };
+
+
+            //===================================================
+            // Aggiunta per modifica itemDesc
+            const giacenza = await fetchGiacenzeByItem(selectedMaterialSearchRow.item);
+            dataItem.itemDesc = giacenza && giacenza.description ? giacenza.description : "Nessuna descrizione disponibile";
+            //===================================================
             console.log("Dati per il nuovo articolo:", dataItem);
+             console.log("Descrizione impostata per itemDesc:", dataItem.itemDesc); // Log per debug
 
             if(dataItem) {
                 quantitaInput.disabled = false;
@@ -1554,7 +1608,7 @@ function addToTemporaryList(data, dataResultList) {
         <div class="item-content"><div><span class="item-content-heading">Comm:</span> ${data.job} - <span class="item-content-heading">MoId:</span> ${data.moid} - <span class="item-content-heading">MoNo:</span> ${data.mono}</div>
         <div><span class="item-content-heading">Lav:</span> ${data.operation} - <span class="item-content-heading">Desc:</span> ${data.operDesc} </div>
         <div><span class="item-content-heading">BOM:</span> ${data.bom}</div>
-        <div><span class="item-content-heading">Item:</span> ${data.component} ${data.barCode === "" || null ? "" : `- <span class="item-content-heading">Code:</span> ${data.barCode}`} </div>
+        <div><span class="item-content-heading">Item:</span> ${data.component} - <span class="item-content-heading">Desc:</span> ${data.itemDesc || "Nessuna descrizione disponibile"} ${data.barCode === "" || null ? "" : `- <span class="item-content-heading">Code:</span> ${data.barCode}`}</div>
         <div class=temp-list-qta-${data.moid}><strong>Qta: ${data.prelQty}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">

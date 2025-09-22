@@ -98,3 +98,26 @@
     text-align: center;
     font-weight: var(--font-weight-bold);
 }
+
+/* Stili per i contenuti degli elementi nella lista prelievi */
+.item-content div {
+    display: block;
+    margin-bottom: var(--spacing-1);
+    font-size: 1rem;
+    color: var(--gray-700);
+}
+
+/* Stile per descrizioni lunghe (itemDesc, operDesc) */
+.item-content div.description {
+    max-width: 600px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+    font-size: 0.9rem;
+}
+
+/* Stile opzionale per evidenziare i nuovi campi */
+.item-content div.description strong {
+    color: var(--primary-color);
+    font-weight: var(--font-weight-bold);
+}

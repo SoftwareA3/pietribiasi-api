@@ -429,6 +429,7 @@ function createPrelieviFilterObject() {
     const filterOdp = document.getElementById("filter-prel-odp");
     const filterItem = document.getElementById("filter-prel-item");
     const filterBarcode = document.getElementById("filter-prel-barcode");
+
     
     const filteredObject = {};
     
@@ -588,8 +589,10 @@ async function fetchPrelievi(filteredObject) {
             console.error("Errore nella richiesta prelievi:", request?.status, request?.statusText);
             return [];
         }
-        
+
         return await request.json();
+        
+        
     } catch (error) {
         console.error("Errore durante la fetch prelievi:", error);
         return [];
@@ -680,7 +683,13 @@ async function refreshOreAutocomplete() {
 
 async function refreshPrelieviAutocomplete() {
     const filteredObject = createPrelieviFilterObject();
-    const tempData = await fetchPrelievi(filteredObject);
+    //const tempData = await fetchPrelievi(filteredObject);
+    let tempData = filteredPrelieviList;
+
+    // Se filteredPrelieviList è vuoto, fai una nuova chiamata
+    if(!tempData || tempData.length === 0) {
+        tempData = await fetchPrelievi(filteredObject);
+    }
     
     prelieviLists.commessaList = extractUniqueValues(tempData, 'job');
     prelieviLists.lavorazioneList = extractUniqueValues(tempData, 'operation');
@@ -864,6 +873,10 @@ async function populateOreList(data) {
 }
 
 async function populatePrelieviList(data) {
+    //====================================================
+    //Aggiunta per debug
+    console.log("Popolamento lista prelievi con dati:", data);
+    //====================================================
     const prelieviList = document.getElementById("prelievi-list");
     const noContent = document.getElementById("prelievi-nocontent");
     let paginationControls = document.querySelector('.pagination-controls');
@@ -884,15 +897,15 @@ async function populatePrelieviList(data) {
     noContent.classList.add("hidden");
     
     await Promise.all(data.map(async (item) => {
+        //====================================================
+        //Aggiunta per debug
+        console.log(`prelMatId: ${item.prelMatId}, itemDesc: ${item.itemDesc}, uoM: ${item.uoM}, operDesc: ${item.operDesc}`);
+        //====================================================
         const li = document.createElement("li");
-        li.dataset.id = item.prelId;
-        
-        const savedDate = new Date(item.savedDate);
-        const formattedDate = savedDate.toLocaleDateString("it-IT");
-        
+        li.dataset.id = item.prelMatId; // Usato prelMatId al posto di prelId per evitare conflitti
         const itemContent = document.createElement("div");
         itemContent.className = "item-content";
-        
+
         const isImported = item.imported === false || item.imported === "0" ? false : true;
         
         const statusIndicator = document.createElement("div");
@@ -900,6 +913,8 @@ async function populatePrelieviList(data) {
         statusIndicator.title = isImported ? 'Importato' : 'Modificabile';
         itemContent.appendChild(statusIndicator);
         
+        const savedDate = new Date(item.savedDate);
+        const formattedDate = savedDate.toLocaleDateString("it-IT");
         const parsedDateTime = parseDateTime(item.dataImp);
         
         itemContent.innerHTML += `
@@ -908,6 +923,8 @@ async function populatePrelieviList(data) {
             <div><strong>Comm:</strong> ${item.job} </div>
             <div><strong>Lav:</strong> ${item.operation} </div>
             <div><strong>ODP:</strong> ${item.mono} </div>
+            <div><strong>UoM:</strong> ${item.uoM || 'N/A'} </div>
+            <div class="description"><strong>Descrizione:</strong> ${item.itemDesc || 'N/A'} </div>
             <div><strong>Operatore:</strong> ${item.workerId} </div>
             <div><strong>Data:</strong> ${formattedDate} </div>
             <div><strong>Qta: <span class="prel-value" id="prel-value-${item.prelMatId}">${item.prelQty}</strong></span> </div>
@@ -1196,17 +1213,20 @@ async function syncPrelieviFiltered() {
     try {
         console.log("Sincronizzazione dei prelievi...");
         console.log("User ID:", userCookie.workerId);
+        const body= JSON.stringify({
+                    "WorkerIdSyncRequestDto" : {"workerId": userCookie.workerId},
+                    "PrelMatList": filteredPrelieviList });
         // Esegui simultaneamente la richiesta e il timer di caricamento minimo
         const response = await fetchWithAuth(getApiUrl("api/mago_api/sync_prel_mat_filtered"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    "WorkerIdSyncRequestDto" : {"workerId": userCookie.workerId},
-                    "PrelMatList": filteredPrelieviList
-                })
+                body: body
             });
+
+        //Body per il debug
+        console.log("Body inviato a sync_prel_mat_filtered:", body);
 
         // Rimuovi l'animazione di caricamento con effetto
         iconElement.classList.remove("sync-loading");

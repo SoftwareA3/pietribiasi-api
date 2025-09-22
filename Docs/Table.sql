@@ -182,12 +182,13 @@ GO
 
 CREATE VIEW [dbo].[vw_api_giacenze]
 AS
-SELECT        dbo.MA_Items.Item, dbo.MA_Items.Description, dbo.MA_ItemsPurchaseBarCode.BarCode, dbo.MA_ItemsBalances.FiscalYear, dbo.MA_ItemsBalances.Storage, dbo.MA_ItemsBalances.BookInv, isnull(dbo.MA_Items.BaseUoM,'NR') UoM
+SELECT        dbo.MA_Items.Item, dbo.MA_Items.Description, dbo.MA_ItemsPurchaseBarCode.BarCode, dbo.MA_ItemsBalances.FiscalYear, dbo.MA_ItemsBalances.Storage, dbo.MA_ItemsBalances.LastCost, dbo.MA_ItemsBalances.BookInv, isnull(dbo.MA_Items.BaseUoM,'NR') UoM
 FROM            dbo.MA_ItemsBalances INNER JOIN
                          dbo.MA_Items ON dbo.MA_ItemsBalances.Item = dbo.MA_Items.Item LEFT OUTER JOIN
                          dbo.MA_ItemsPurchaseBarCode ON dbo.MA_Items.Item = dbo.MA_ItemsPurchaseBarCode.Item
-WHERE        (dbo.MA_ItemsBalances.FiscalYear = (SELECT MAX(FiscalYear) FROM MA_ItemsBalances WHERE Item = MA_Items.Item)/*YEAR(GETDATE())*/) AND (dbo.MA_ItemsBalances.Storage = 'SEDE')
+WHERE        (dbo.MA_ItemsBalances.FiscalYear = (SELECT MAX(FiscalYear) FROM MA_ItemsBalances WHERE Item = MA_Items.Item)/*YEAR(GETDATE())*/) AND (dbo.MA_ItemsBalances.Storage = 'SEDE') AND (MA_Items.Disabled = 0)
 GO
+
 
 EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPane1', @value=N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
 Begin DesignProperties = 
@@ -393,7 +394,8 @@ GO
   inner join [dbo].[MA_Operations] O with (nolock) on l.Operation = o.Operation
   inner join [dbo].[MA_Items] I with (nolock) on OP.BOM = I.Item
   inner join [dbo].[MA_MOComponents] C with (nolock) on op.MOId = c.MOId --aggiunto per le ultime modifiche di Mago
-  where op.MOStatus in ('20578304','20578305') and l.MOStatus in ('20578304','20578305')
+  inner join [dbo].[MA_WorkCenters] WC with (nolock) on l.WC = wc.WC
+  where op.MOStatus in ('20578304','20578305') and l.MOStatus in ('20578304','20578305') and wc.ConfirmMOBy = ('2032730114')
   -- and l.ProcessingTime > l.ActualProcessingTime
   --and c.ReferredPosition = -1 and c.Closed = 0
 GO
@@ -413,11 +415,13 @@ SELECT        J.Job, L.RtgStep, L.Alternate, L.AltRtgStep, L.Operation, O.Descri
 FROM            dbo.MA_MO AS OP WITH (nolock) INNER JOIN
                          dbo.MA_Jobs AS J WITH (nolock) ON OP.Job = J.Job INNER JOIN
                          dbo.MA_MOSteps AS L WITH (nolock) ON OP.MOId = L.MOId INNER JOIN
+						 dbo.MA_WorkCenters WC with (nolock) on l.WC = wc.WC INNER JOIN
                          dbo.MA_Operations AS O WITH (nolock) ON L.Operation = O.Operation INNER JOIN
                          dbo.MA_Items AS I WITH (nolock) ON OP.BOM = I.Item INNER JOIN
                          dbo.MA_MOComponents AS C WITH (nolock) ON OP.MOId = C.MOId LEFT OUTER JOIN
                          dbo.MA_ItemsPurchaseBarCode AS P WITH (nolock) ON C.Component = P.Item
-WHERE        (OP.MOStatus IN ('20578304', '20578305')) AND (L.MOStatus IN ('20578304', '20578305')) /* AND (L.ProcessingTime > L.ActualProcessingTime) */ AND (C.ReferredPosition = - 1) AND (C.Closed = 0)
+						 
+WHERE        (OP.MOStatus IN ('20578304', '20578305')) AND (L.MOStatus IN ('20578304', '20578305')) AND (C.ReferredPosition = - 1) AND (C.Closed = 0) AND wc.ConfirmMOBy = ('2032730114')
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPane1', @value=N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
