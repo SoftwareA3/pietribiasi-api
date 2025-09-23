@@ -878,8 +878,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
                 console.log("Risultato di loadDataForNewItem:", result);
                 console.log("itemDesc da loadDataForNewItem:", result?.itemDesc); // Log per debug
-               // selectedMaterialSearchRow = null;
-               // isAddingNewItem = false;
+                //selectedMaterialSearchRow = null;
+                //isAddingNewItem = false;
             } else {
                 result = await loadAllData(
                     selectedCommessa.job,
@@ -905,7 +905,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 job: result.job,
                 rtgStep: result.rtgStep,
                 alternate: result.alternate,
-                altRtgStep: result.altRtgStep,
+                altRtgStep: result.altRtgStep || null,
                 operation: result.operation,
                 operDesc: result.operDesc,
                 position: result.position,
@@ -1269,7 +1269,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             dataItem.position = 0;
             */
 
-            const dataItem = {
+           const dataItem = {
                 job: allDataResult[0].job || '',
                 rtgStep: allDataResult[0].rtgStep || '',
                 alternate: allDataResult[0]?.alternate || '',
@@ -1296,6 +1296,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 bom: allDataResult[0]?.bom || '',
                 variant: allDataResult[0]?.variant || ''
             };
+
 
 
             //===================================================
@@ -1604,12 +1605,12 @@ function addToTemporaryList(data, dataResultList) {
     const newItem = document.createElement("li");
     newItem.classList.add("just-added"); // Aggiungi classe per l'animazione
 
+
     newItem.innerHTML = `
         <div class="item-content"><div><span class="item-content-heading">Comm:</span> ${data.job} - <span class="item-content-heading">MoId:</span> ${data.moid} - <span class="item-content-heading">MoNo:</span> ${data.mono}</div>
         <div><span class="item-content-heading">Lav:</span> ${data.operation} - <span class="item-content-heading">Desc:</span> ${data.operDesc} </div>
         <div><span class="item-content-heading">BOM:</span> ${data.bom}</div>
-        <div><span class="item-content-heading">Item:</span> ${data.component} - <span class="item-content-heading">Desc:</span> ${data.itemDesc || "Nessuna descrizione disponibile"} ${data.barCode === "" || null ? "" : `- <span class="item-content-heading">Code:</span> ${data.barCode}`}</div>
-        <div class=temp-list-qta-${data.moid}><strong>Qta: ${data.prelQty}</strong></div></div>
+        <div><span class="item-content-heading">Item:</span> ${data.component} - <span class="item-content-heading">Desc:</span> ${data.itemDesc || "Nessuna descrizione disponibile"} ${data.barCode === "" || null ? "" : `- <span class="item-content-heading">Code:</span> ${data.barCode}`}</div>        <div class=temp-list-qta-${data.moid}><strong>Qta: ${data.prelQty}</strong></div></div>
         <div class="item-actions">
             <button class="button-icon delete option-button" title="Rimuovi">
                 <i class="fa-solid fa-trash"></i>
