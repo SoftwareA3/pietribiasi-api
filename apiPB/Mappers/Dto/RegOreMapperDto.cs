@@ -28,7 +28,7 @@ namespace apiPB.Mappers.Dto
                 CreationDate = a3AppRegOreModel.CreationDate,
                 Uom = a3AppRegOreModel.Uom ?? string.Empty,
                 ProductionQty = a3AppRegOreModel.ProductionQty,
-                ProducedQty = a3AppRegOreModel.ProducedQty,
+                ProducedQty = a3AppRegOreModel.ProductionQty, // Impostato ProducedQty uguale a ProductionQty cosi al termine lavorazioni la da al 100%
                 ResQty = a3AppRegOreModel.ResQty,
                 Storage = a3AppRegOreModel.Storage ?? string.Empty,
                 Wc = a3AppRegOreModel.Wc ?? string.Empty,

@@ -49,7 +49,7 @@ namespace apiPB.Repository.Implementation
                     Uom = filter.Uom,
                     CreationDate = filter.CreationDate,
                     ProductionQty = filter.ProductionQty,
-                    ProducedQty = filter.ProducedQty,
+                    ProducedQty = filter.ProductionQty, // Impostato ProducedQty uguale a ProductionQty cosi al termine lavorazioni la da al 100%
                     ResQty = filter.ResQty,
                     Storage = filter.Storage,
                     Wc = filter.Wc,
